@@ -87,7 +87,7 @@ namespace Rock.Jobs
                 && ( t.EndDate == null || t.EndDate > DateTime.Now ) )
                 .AsNoTracking();
 
-            var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+            var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
 
             // Get the current month and year 
             DateTime now = DateTime.Now;
@@ -98,7 +98,12 @@ namespace Rock.Jobs
             {
                 int expirationMonthDecrypted = Int32.Parse( Encryption.DecryptString( transaction.FinancialPaymentDetail.ExpirationMonthEncrypted ) );
                 int expirationYearDecrypted = Int32.Parse( Encryption.DecryptString( transaction.FinancialPaymentDetail.ExpirationYearEncrypted ) );
-                string acctNum = transaction.FinancialPaymentDetail.AccountNumberMasked.Substring( transaction.FinancialPaymentDetail.AccountNumberMasked.Length - 4 );
+                string acctNum = string.Empty;
+
+                if ( !string.IsNullOrEmpty( transaction.FinancialPaymentDetail.AccountNumberMasked ) && transaction.FinancialPaymentDetail.AccountNumberMasked.Length >= 4 )
+                {
+                    acctNum = transaction.FinancialPaymentDetail.AccountNumberMasked.Substring( transaction.FinancialPaymentDetail.AccountNumberMasked.Length - 4 );
+                }
 
                 int warningYear = expirationYearDecrypted;
                 int warningMonth = expirationMonthDecrypted - 1;
