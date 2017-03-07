@@ -678,7 +678,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                     phDuplicates.Controls.Add( dupRow );
 
                     var newPersonCol = new HtmlGenericControl( "div" );
-                    newPersonCol.AddCssClass( "col-md-3" );
+                    newPersonCol.AddCssClass( "col-md-4" );
                     newPersonCol.ID = string.Format( "newPersonCol_{0}", groupMemberGuidString );
                     dupRow.Controls.Add( newPersonCol );
 
@@ -687,6 +687,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                         groupMember.Person,
                         groupMember.GroupRole,
                         location,
+                        "newPersonPnl",
                         rockContext ) );
 
                     LinkButton lbRemoveMember = new LinkButton();
@@ -700,7 +701,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                     if ( Duplicates.ContainsKey( groupMember.Person.Guid ) )
                     {
                         var dupPersonCol = new HtmlGenericControl( "div" );
-                        dupPersonCol.AddCssClass( "col-md-3" );
+                        dupPersonCol.AddCssClass( "col-md-4" );
                         dupPersonCol.ID = string.Format( "dupPersonCol_{0}", groupMemberGuidString );
                         dupRow.Controls.Add( dupPersonCol );
 
@@ -733,6 +734,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                                 duplicate,
                                 groupTypeRole,
                                 duplocation,
+                                "dupPersonPnl",
                                 rockContext ) );
                         }
                     }
@@ -741,7 +743,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                     if ( MatchingAddresses.ContainsKey( groupMember.Person.Guid ) )
                     {
                         var matchAddressCol = new HtmlGenericControl( "div" );
-                        matchAddressCol.AddCssClass( "col-md-3" );
+                        matchAddressCol.AddCssClass( "col-md-4" );
                         matchAddressCol.ID = string.Format( "matchAddressCol_{0}", groupMemberGuidString );
                         dupRow.Controls.Add( matchAddressCol );
 
@@ -774,6 +776,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                                 duplicate,
                                 groupTypeRole,
                                 duplocation,
+                                "matchAddressPnl",
                                 rockContext ) );
                         }
                     }
@@ -816,6 +819,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             Person person,
             GroupTypeRole groupTypeRole,
             Location location,
+            string controlIdPrefix,
             RockContext rockContext )
         {
             var personInfoHtml = new StringBuilder();
@@ -901,7 +905,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             personInfoHtml.Append( "</div>" );
 
             var dupPersonPnl = new Panel();
-            dupPersonPnl.ID = string.Format( "dupPersonPnl_{0}_{1}", groupMemberGuidString, person.Id );
+            dupPersonPnl.ID = string.Format( "{0}_{1}_{2}", controlIdPrefix, groupMemberGuidString, person.Id );
             dupPersonPnl.Controls.Add( new LiteralControl( personInfoHtml.ToString() ) );
 
             return dupPersonPnl;
@@ -1225,19 +1229,22 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                     }
                 }
             }
-
-            // since addresses are one per family, only show the head of household
-            var dups = othersAtAddress.HeadOfHouseholds().ToList();
-
-            foreach ( var person in GroupMembers
-                .Where( m =>
-                    m.Person != null &&
-                    m.Person.FirstName != "" )
-                .Select( m => m.Person ) )
+            
+            if ( othersAtAddress != null && othersAtAddress.Any() )
             {
-                if ( othersAtAddress.Any() )
+                // since addresses are one per family, only show the head of household
+                var dups = othersAtAddress.HeadOfHouseholds().ToList();
+
+                foreach ( var person in GroupMembers
+                    .Where( m =>
+                        m.Person != null &&
+                        m.Person.FirstName != "" )
+                    .Select( m => m.Person ) )
                 {
-                    MatchingAddresses.Add( person.Guid, dups );
+                    if ( othersAtAddress.Any() )
+                    {
+                        MatchingAddresses.Add( person.Guid, dups );
+                    }
                 }
             }
 
