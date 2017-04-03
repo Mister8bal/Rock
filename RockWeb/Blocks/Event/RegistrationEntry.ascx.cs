@@ -699,14 +699,6 @@ namespace RockWeb.Blocks.Event
                 CurrentRegistrantIndex = RegistrationState != null ? RegistrationState.RegistrantCount - 1 : 0;
                 CurrentFormIndex = FormCount - 1;
 
-                tbDiscountCode.Text = string.Empty;
-                nbAmountPaid.Text = string.Empty;
-
-                RegistrationState.DiscountCode = string.Empty;
-                RegistrationState.DiscountPercentage = 0.0M;
-                RegistrationState.DiscountAmount = 0.0M;
-                RegistrationState.PaymentAmount = null;
-
                 ShowRegistrant( false, false );
             }
             else
@@ -1400,9 +1392,10 @@ namespace RockWeb.Blocks.Event
                         // option selected
                         foreach( var field in RegistrationTemplate.Forms
                             .SelectMany( f => f.Fields )
-                            .Where( f => 
-                                f.PersonFieldType == RegistrationPersonFieldType.FirstName ||
-                                f.PersonFieldType == RegistrationPersonFieldType.LastName ) )
+                            .Where( f =>
+                                ( f.PersonFieldType == RegistrationPersonFieldType.FirstName ||
+                                f.PersonFieldType == RegistrationPersonFieldType.LastName ) &&
+                                f.FieldSource == RegistrationFieldSource.PersonField ) )
                         {
                             registrant.FieldValues.AddOrReplace( field.Id, 
                                 new FieldValueObject( field, field.PersonFieldType == RegistrationPersonFieldType.FirstName ? CurrentPerson.NickName : CurrentPerson.LastName ) );
@@ -4709,8 +4702,9 @@ namespace RockWeb.Blocks.Event
                             object dbValue = null;
 
                             if ( field.ShowCurrentValue ||
-                                field.PersonFieldType == RegistrationPersonFieldType.FirstName ||
-                                field.PersonFieldType == RegistrationPersonFieldType.LastName )
+                                ( ( field.PersonFieldType == RegistrationPersonFieldType.FirstName ||
+                                field.PersonFieldType == RegistrationPersonFieldType.LastName ) &&
+                                field.FieldSource == RegistrationFieldSource.PersonField ) )
                             {
                                 dbValue = registrant.GetRegistrantValue( null, person, family, field, rockContext );
                             }
