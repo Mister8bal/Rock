@@ -5,7 +5,7 @@
 
         <asp:Panel ID="pCharReference" runat="server" class="panel panel-block">
             <div class="panel-heading clearfix">
-                <h4>Information</h4>
+                <asp:Literal runat="server" ID="lHeader"></asp:Literal>
             </div>
             <div class="panel-body">
                 <div class="well">
@@ -19,6 +19,12 @@
 
                 <div class="well">
                     <h4>Character Reference</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <asp:Literal ID="lType" runat="server"></asp:Literal>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <asp:Literal ID="lReference" runat="server"></asp:Literal>
