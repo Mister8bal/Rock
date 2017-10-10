@@ -38,7 +38,16 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     
     [LinkedPage( "Detail Page" )]
     public partial class VolunteerScreeningGlobalList : RockBlock
-    {                
+    {
+        // the actual types of Volunteer Screening Applications aren't
+        // defined anywhere. However, in order to filter on them, we need thm listed.
+        // we put them here since this is the only area in all of Volunteer Screening that cares about them.
+        const string sApplicationType_Standard = "Standard";
+        const string sApplicationType_KidsStudents = "Kids & Students";
+        const string sApplicationType_SafetySecurity = "Safety & Security";
+        const string sApplicationType_STARS = "STARS";
+        const string sApplicationType_Renewal = "Renewal";
+
         #region Control Methods
         
         protected override void OnInit( EventArgs e )
@@ -73,8 +82,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         {
             rFilter.SaveUserPreference( "Campus", "Campus", cblCampus.SelectedValues.AsDelimited( ";" ) );
             rFilter.SaveUserPreference( "Status", ddlStatus.SelectedValue );
-            rFilter.SaveUserPreference( "STARS Applicant", ddlStarsApp.SelectedValue );
-            rFilter.SaveUserPreference( "Person Name", tbPersonName.Text );
+            rFilter.SaveUserPreference( "Application Type", ddlApplicationType.SelectedValue );
+            rFilter.SaveUserPreference( "Applicant Name", tbApplicantName.Text );
 
             BindFilter( );
             BindGrid( );
@@ -105,15 +114,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     break;
                 }
 
-                case "STARS Applicant":
+                case "Application Type":
                 {
-                    e.Value = rFilter.GetUserPreference( "STARS Applicant" );
+                    e.Value = rFilter.GetUserPreference( "Application Type" );
                     break;
                 }
 
-                case "Person Name":
+                case "Applicant Name":
                 {
-                    e.Value = rFilter.GetUserPreference( "Person Name" );
+                    e.Value = rFilter.GetUserPreference( "Applicant Name" );
                     break;
                 }
 
@@ -154,15 +163,18 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
             ddlStatus.SetValue( rFilter.GetUserPreference( "Status" ) );
 
-            // setup the STARS applicants
-            ddlStarsApp.Items.Clear( );
-            ddlStarsApp.Items.Add( string.Empty );
-            ddlStarsApp.Items.Add( "Yes" );
-            ddlStarsApp.Items.Add( "No" );
-            ddlStarsApp.SetValue( rFilter.GetUserPreference( "STARS Applicant" ) );
+            // setup the application types
+            ddlApplicationType.Items.Clear( );
+            ddlApplicationType.Items.Add( string.Empty );
+            ddlApplicationType.Items.Add( sApplicationType_Standard );
+            ddlApplicationType.Items.Add( sApplicationType_KidsStudents );
+            ddlApplicationType.Items.Add( sApplicationType_SafetySecurity );
+            ddlApplicationType.Items.Add( sApplicationType_STARS );
+            ddlApplicationType.Items.Add( sApplicationType_Renewal );
+            ddlApplicationType.SetValue( rFilter.GetUserPreference( "Application Type" ) );
 
-            // setup the Person Name
-            tbPersonName.Text = rFilter.GetUserPreference( "Person Name" );
+            // setup the Applicant Name
+            tbApplicantName.Text = rFilter.GetUserPreference( "Applicant Name" );
         }
         #endregion
 
@@ -202,6 +214,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             using ( RockContext rockContext = new RockContext( ) )
             {
                 List<CampusCache> campusCache = CampusCache.All( );
+                PersonAliasService paService = new PersonAliasService( rockContext );
 
                 // get all volunteer screening instances. This is complicated, so I'll explain:
 
@@ -243,6 +256,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 // Its Person (Taken from the PersonAlias table)
                 // Its Campus (Taken from the AttributeValue table)
 
+                // get a list of all "MinistryLead" attribute values, which we'll match up with each Application when binding the rows
+                var ministryLeadResult = attribWithValue.Where( a => a.Attribute.Key == "MinistryLead" )
+                                                        .Select( a => new MinistryLeadResult {  EntityId = a.AttribValue.EntityId,
+                                                                                                MinistryLead = a.AttribValue.Value }  )
+                                                        .ToList( );
+
                 // JHM 7-10-17
                 // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
                 // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
@@ -272,15 +291,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     filteredQuery = filteredQuery.Where( vs => VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.Workflow.Status ) == statusValue ).ToList( );
                 }
 
-                // STARS Applicant
-                string starsApp = rFilter.GetUserPreference( "STARS Applicant" );
-                if ( string.IsNullOrWhiteSpace( starsApp ) == false )
+                // Application Type
+                string appType = rFilter.GetUserPreference( "Application Type" );
+                if ( string.IsNullOrWhiteSpace( appType ) == false )
                 {
-                    filteredQuery = filteredQuery.Where( vs => IsStars( vs.Workflow, starsQueryResult ) == starsApp ).ToList( );
+                    filteredQuery = filteredQuery.Where( vs => ParseApplicationType( vs.Workflow, starsQueryResult ) == appType ).ToList( );
                 }
 
                 // Name
-                string personName = rFilter.GetUserPreference( "Person Name" );
+                string personName = rFilter.GetUserPreference( "Applicant Name" );
                 if ( string.IsNullOrWhiteSpace( personName ) == false )
                 {
                     filteredQuery = filteredQuery.Where( vs => vs.PersonName.ToLower( ).Contains( personName.ToLower( ).Trim( ) ) ).ToList( );
@@ -297,7 +316,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 CompletedDate = ParseCompletedDate( vs.SentDate, vs.CompletedDate ),
                                 State = VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.Workflow.Status ),
                                 Campus = campusCache.Where( c => c.Guid == vs.CampusGuid.AsGuid( ) ).SingleOrDefault( ).Name,
-                                IsStars = IsStars( vs.Workflow, starsQueryResult )
+                                MinistryLeader = TryGetMinistryLead( vs.Workflow, ministryLeadResult, paService ),
+                                ApplicationType = ParseApplicationType( vs.Workflow, starsQueryResult )
                             } ).ToList( );
                 }
 
@@ -307,13 +327,17 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         #endregion
 
         #region Helper Methods
+        // JHM 7-10-17
+        // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
+        // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
+        // We can get rid of this when all workflows of type 202 are marked as 'completed'
         public class ApplyingForStars
         {
             public int? EntityId { get; set; }
             public string Applying { get; set; }
         }
 
-        string IsStars( Workflow workflow, List<ApplyingForStars> starsQueryResult )
+        string ParseApplicationType( Workflow workflow, List<ApplyingForStars> starsQueryResult )
         {
             // JHM 7-10-17
             // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
@@ -322,18 +346,49 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             ApplyingForStars applyingForStars = starsQueryResult.Where( av => av.EntityId == workflow.Id ).SingleOrDefault( );
             if ( applyingForStars != null )
             {
-                return applyingForStars.Applying == "True" ? "Yes" : "No";
+                return applyingForStars.Applying == "True" ? sApplicationType_STARS : sApplicationType_Standard;
             }
             else
             {
-                // The newer applications will simply have 'STARS' in their name
-                if ( workflow.Name.Contains( "STARS" ) )
+                // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
+                // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
+                int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
+                if ( appTypeStartIndex > -1 )
                 {
-                    return "Yes";
-                }
+                    // there was an ending "()", so take just that part of the workflow name
+                    string applicationType = workflow.Name.Substring( appTypeStartIndex );
 
-                return "No";
+                    // take the character after the first, up to just before the closing ')', which removes the ()s
+                    return applicationType.Substring( 1, applicationType.Length - 2 );
+                }
+                else
+                {
+                    return sApplicationType_Standard;
+                }
             }
+        }
+
+        public class MinistryLeadResult
+        {
+            public int? EntityId { get; set; }
+            public string MinistryLead { get; set; }
+        }
+
+        string TryGetMinistryLead( Workflow workflow, List<MinistryLeadResult> ministryLeadQueryResult, PersonAliasService paService )
+        {
+            // it's possible that no ministry lead has been assigned yet. In that case, we'll return an empty string
+            MinistryLeadResult ministryLead = ministryLeadQueryResult.Where( ml => ml.EntityId == workflow.Id ).SingleOrDefault( );
+            if ( ministryLead != null )
+            {
+                // make sure the person exists
+                Person person = paService.Get( ministryLead.MinistryLead.AsGuid( ) ).Person;
+                if ( person != null )
+                {
+                    return person.FullName;
+                }
+            }
+
+            return string.Empty;
         }
 
         string ParseCompletedDate( DateTime sentDate, DateTime completedDate )
