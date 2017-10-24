@@ -516,7 +516,7 @@ namespace Rock
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public static void AddOrReplace<TKey, TValue>( this Dictionary<TKey, TValue> dictionary, TKey key, TValue value )
+        public static void AddOrReplace<TKey, TValue>( this IDictionary<TKey, TValue> dictionary, TKey key, TValue value )
         {
             if ( !dictionary.ContainsKey( key ) )
             {
@@ -541,6 +541,31 @@ namespace Rock
             if ( !dictionary.ContainsKey( key ) )
             {
                 dictionary.Add( key, value );
+            }
+        }
+
+        /// <summary>
+        /// Adds if not empty.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="replace">if set to <c>true</c> [replace].</param>
+        public static void AddIfNotBlank( this IDictionary<string, string> dictionary, string key, string value, bool replace = true ) 
+        {
+            if ( value.IsNotNullOrWhitespace() )
+            {
+                if ( !dictionary.ContainsKey( key ) )
+                {
+                    dictionary.Add( key, value );
+                }
+                else
+                {
+                    if ( replace )
+                    {
+                        dictionary[key] = value;
+                    }
+                }
             }
         }
 

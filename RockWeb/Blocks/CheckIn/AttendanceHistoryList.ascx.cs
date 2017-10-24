@@ -39,7 +39,7 @@ namespace RockWeb.Blocks.Checkin
     [Description( "Block for displaying the attendance history of a person or a group." )]
     [BooleanField( "Filter Attendance By Default", "Sets the default display of Attended to Did Attend instead of [All]", false )]
     [ContextAware]
-    public partial class AttendanceHistoryList : RockBlock
+    public partial class AttendanceHistoryList : RockBlock, ICustomGridColumns
     {
         #region Fields
 
@@ -223,7 +223,7 @@ namespace RockWeb.Blocks.Checkin
         protected void RFilter_ClearFilterClick( object sender, EventArgs e )
         {
             rFilter.DeleteUserPreferences();
-            BindGrid();
+            BindFilter();
         }
 
         #endregion

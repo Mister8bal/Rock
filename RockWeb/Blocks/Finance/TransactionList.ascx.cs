@@ -27,6 +27,7 @@ using Rock.Attribute;
 using Rock.Constants;
 using Rock.Data;
 using Rock.Model;
+using Rock.Security;
 using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
@@ -38,6 +39,8 @@ namespace RockWeb.Blocks.Finance
     [Description( "Builds a list of all financial transactions which can be filtered by date, account, transaction type, etc." )]
 
     [ContextAware]
+    [SecurityAction( "FilterByPerson", "The roles and/or users that can filter transactions by person." )]
+
     [LinkedPage( "Detail Page", order: 0 )]
     [TextField( "Title", "Title to display above the grid. Leave blank to hide.", false, order: 1 )]
     [BooleanField( "Show Only Active Accounts on Filter", "If account filter is displayed, only list active accounts", false, "", 2, "ActiveAccountsOnlyFilter" )]
@@ -45,9 +48,9 @@ namespace RockWeb.Blocks.Finance
     [IntegerField( "Image Height", "If the Show Images option is selected, the image height", false, 200, order: 4 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_TRANSACTION_TYPE, "Transaction Types", "Optional list of transaction types to limit the list to (if none are selected all types will be included).", false, true, "", "", 5 )]
     [CustomDropdownListField( "Default Transaction View", "Select whether you want to initially see Transactions or Transaction Details", "Transactions,Transaction Details", false, "Transactions", "", 6 )]
-
-    [LinkedPage( "Batch Page", order: 7 )]
-    public partial class TransactionList : Rock.Web.UI.RockBlock, ISecondaryBlock, IPostBackEventHandler
+    [LinkedPage( "Batch Page", required:false, order: 7 )]
+    [BooleanField( "Show Account Summary", "Should the account summary be displayed at the bottom of the list?", false, order: 8 )]
+    public partial class TransactionList : Rock.Web.UI.RockBlock, ISecondaryBlock, IPostBackEventHandler, ICustomGridColumns
     {
         private bool _isExporting = false;
 
@@ -109,8 +112,11 @@ namespace RockWeb.Blocks.Finance
             this._batchPageRoute = LinkedPageRoute( "BatchPage" );
 
             // enable delete transaction
-            gTransactions.Columns[gTransactions.Columns.Count - 1].Visible = true;
-
+            var deleteField = gTransactions.ColumnsOfType<DeleteField>().FirstOrDefault();
+            if ( deleteField != null )
+            {
+                deleteField.Visible = true;
+            }
             int currentBatchId = PageParameter( "batchId" ).AsInteger();
 
             if ( _canEdit )
@@ -934,7 +940,7 @@ namespace RockWeb.Blocks.Finance
             }
 
             // don't show the person picker if the the current context is already a specific person
-            if ( this.ContextEntity() is Person )
+            if ( this.ContextEntity() is Person || !IsUserAuthorized( "FilterByPerson" ) )
             {
                 ppPerson.Visible = false;
             }
@@ -1370,7 +1376,8 @@ namespace RockWeb.Blocks.Finance
             gTransactions.SetLinqDataSource( qry.AsNoTracking() );
             gTransactions.DataBind();
 
-            if ( _batch == null &&
+            var showAccountSummary = this.GetAttributeValue( "ShowAccountSummary" ).AsBoolean();
+            if ( showAccountSummary ||
                 _scheduledTxn == null &&
                 _registration == null &&
                 _person == null &&

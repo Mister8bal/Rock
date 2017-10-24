@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -61,7 +77,7 @@ namespace Rock.Model
         /// A <see cref="System.String"/> representing the summary of the LifestyleCluster.
         /// </value>
         [DataMember]
-        [MaxLength( 600 )]
+        [MaxLength( 1000 )]
         public string Summary { get; set; }
 
         /// <summary>
@@ -92,6 +108,16 @@ namespace Rock.Model
         [MaxLength( 120 )]
         [DataMember]
         public string LifeStage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the life stage level.
+        /// </summary>
+        /// <value>
+        /// The life stage level.
+        /// </value>
+        [MaxLength( 50 )]
+        [DataMember]
+        public string LifeStageLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the MaritalStatus

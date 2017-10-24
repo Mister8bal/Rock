@@ -45,7 +45,7 @@ namespace RockWeb.Blocks.Finance
     [BooleanField( "Show Last Modified Filter", "Allows last modified filter to be hidden.", true, "Display Filters", 3 )]
 
     [ContextAware]
-    public partial class PledgeList : RockBlock, ISecondaryBlock
+    public partial class PledgeList : RockBlock, ISecondaryBlock, ICustomGridColumns
     {
         #region Properties
 
@@ -95,18 +95,34 @@ namespace RockWeb.Blocks.Finance
             // hide the person column and filter if a person context exists 
             if ( TargetPerson != null )
             {
-                gPledges.Columns[0].Visible = false;
+                var personField = gPledges.ColumnsOfType<RockBoundField>().FirstOrDefault( a => a.HeaderText == "Person" );
+                if ( personField != null )
+                {
+                    personField.Visible = false;
+                }
                 gfPledges.Visible = false;
             }
 
-            // show/hide the group column
-            gPledges.Columns[1].Visible = GetAttributeValue( "ShowGroupColumn" ).AsBoolean();
+            var forField = gPledges.ColumnsOfType<RockBoundField>().FirstOrDefault( a => a.HeaderText == "For" );
+            if ( forField != null )
+            {
+                // show/hide the group column
+                forField.Visible = GetAttributeValue( "ShowGroupColumn" ).AsBoolean();
+            }
 
-            // show/hide the account column
-            gPledges.Columns[2].Visible = GetAttributeValue( "ShowAccountColumn" ).AsBoolean();
+            var accountField = gPledges.ColumnsOfType<RockBoundField>().FirstOrDefault( a => a.HeaderText == "Account" );
+            if ( accountField != null )
+            {
+                // show/hide the account column
+                accountField.Visible = GetAttributeValue( "ShowAccountColumn" ).AsBoolean();
+            }
 
-            // show/hide the last modified date column
-            gPledges.Columns[7].Visible = GetAttributeValue( "ShowLastModifiedDateColumn" ).AsBoolean();
+            var modifiedDateField = gPledges.ColumnsOfType<DateField>().FirstOrDefault( a => a.DataField == "ModifiedDateTime" );
+            if ( modifiedDateField != null )
+            {
+                // show/hide the last modified date column
+                modifiedDateField.Visible = GetAttributeValue( "ShowLastModifiedDateColumn" ).AsBoolean();
+            }
         }
 
         private void GPledges_RowDataBound( object sender, System.Web.UI.WebControls.GridViewRowEventArgs e )
@@ -379,15 +395,9 @@ namespace RockWeb.Blocks.Finance
             }
 
             // Date Range
-            var drp = new DateRangePicker();
-            drp.DelimitedValues = gfPledges.GetUserPreference( "Date Range" );
-            var filterStartDate = drp.LowerValue ?? DateTime.MinValue;
-            var filterEndDate = drp.UpperValue ?? DateTime.MaxValue;
-
-            if (filterEndDate != DateTime.MaxValue)
-            {
-                filterEndDate = filterEndDate.AddDays( 1 );
-            }
+            DateRange filterDateRange = DateRangePicker.CalculateDateRangeFromDelimitedValues( gfPledges.GetUserPreference( "Date Range" ) );
+            var filterStartDate = filterDateRange.Start ?? DateTime.MinValue;
+            var filterEndDate = filterDateRange.End ?? DateTime.MaxValue;
 
             /****
              * Include any pledges whose Start/EndDates overlap with the Filtered Date Range
@@ -409,24 +419,19 @@ namespace RockWeb.Blocks.Finance
              ***/
 
             // exclude pledges that start after the filter's end date or end before the filter's start date
-            if ( drpDates.Visible )
+            if ( drpDates.Visible && ( filterDateRange.Start.HasValue || filterDateRange.End.HasValue ) )
             {
                 pledges = pledges.Where( p => !(p.StartDate > filterEndDate) && !(p.EndDate < filterStartDate) );
             }
 
             // Last Modified
-            drp.DelimitedValues = gfPledges.GetUserPreference( "Last Modified" );
-            var filterModifedStartDate = drp.LowerValue ?? DateTime.MinValue;
-            var filterModifiedEndDate = drp.UpperValue ?? DateTime.MaxValue;
+            DateRange filterModifiedDateRange = DateRangePicker.CalculateDateRangeFromDelimitedValues( gfPledges.GetUserPreference( "Last Modified" ) );
+            var filterModifiedStartDate = filterModifiedDateRange.Start ?? DateTime.MinValue;
+            var filterModifiedEndDate = filterModifiedDateRange.End ?? DateTime.MaxValue;
 
-            if ( filterModifiedEndDate != DateTime.MaxValue)
+            if ( drpLastModifiedDates.Visible && ( filterModifiedDateRange.Start.HasValue || filterModifiedDateRange.End.HasValue ) )
             {
-                filterModifiedEndDate = filterModifiedEndDate.AddDays( 1 );
-            }
-
-            if ( drpLastModifiedDates.Visible )
-            {
-                pledges = pledges.Where( p => !(p.ModifiedDateTime >= filterModifiedEndDate ) && !(p.ModifiedDateTime <= filterModifedStartDate ) );
+                pledges = pledges.Where( p => !( p.ModifiedDateTime >= filterModifiedEndDate ) && !( p.ModifiedDateTime <= filterModifiedStartDate ) );
             }
 
             gPledges.DataSource = sortProperty != null ? pledges.Sort( sortProperty ).ToList() : pledges.OrderBy( p => p.AccountId ).ToList();

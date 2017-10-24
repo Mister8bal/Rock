@@ -1994,23 +1994,44 @@ BEGIN
                 DECLARE @EntityTypeId int
                 SET @EntityTypeId = (SELECT [Id] FROM [EntityType] WHERE [Name] = 'Rock.Model.DefinedValue')
 
-                -- Delete existing attribute first (might have been created by Rock system)
-                DELETE [Attribute]
-                WHERE [EntityTypeId] = @EntityTypeId
-                AND [EntityTypeQualifierColumn] = 'DefinedTypeId'
-                AND [EntityTypeQualifierValue] = CAST(@DefinedTypeId as varchar)
-                AND [Key] = '{2}'
+                IF NOT EXISTS (
+                    SELECT [Id]
+                    FROM [Attribute]
+                    WHERE [EntityTypeId] = @EntityTypeId
+                    AND [EntityTypeQualifierColumn] = 'DefinedTypeId'
+                    AND [EntityTypeQualifierValue] = CAST(@DefinedTypeId as varchar)
+                    AND [Key] = '{2}' )
+                BEGIN
 
-                INSERT INTO [Attribute] (
-                    [IsSystem],[FieldTypeId],[EntityTypeId],[EntityTypeQualifierColumn],[EntityTypeQualifierValue],
-                    [Key],[Name],[Description],
-                    [Order],[IsGridColumn],[DefaultValue],[IsMultiValue],[IsRequired],
-                    [Guid])
-                VALUES(
-                    1,@FieldTypeId, @EntityTypeId,'DefinedTypeId',CAST(@DefinedTypeId as varchar),
-                    '{2}','{3}','{4}',
-                    {5},0,'{6}',0,0,
-                    '{7}')
+                    INSERT INTO [Attribute] (
+                        [IsSystem],[FieldTypeId],[EntityTypeId],[EntityTypeQualifierColumn],[EntityTypeQualifierValue],
+                        [Key],[Name],[Description],
+                        [Order],[IsGridColumn],[DefaultValue],[IsMultiValue],[IsRequired],
+                        [Guid])
+                    VALUES(
+                        1,@FieldTypeId, @EntityTypeId,'DefinedTypeId',CAST(@DefinedTypeId as varchar),
+                        '{2}','{3}','{4}',
+                        {5},0,'{6}',0,0,
+                        '{7}')
+
+                END
+                ELSE
+                BEGIN
+
+                    UPDATE [Attribute] SET
+                        [IsSystem] = 1,
+                        [FieldTypeId] = @FieldTypeId,
+                        [Name] = '{3}',
+                        [Description] = '{4}',
+                        [Order] = {5},
+                        [DefaultValue] = '{6}',
+                        [Guid] = '{7}'
+                    WHERE [EntityTypeId] = @EntityTypeId
+                    AND [EntityTypeQualifierColumn] = 'DefinedTypeId'
+                    AND [EntityTypeQualifierValue] = CAST(@DefinedTypeId as varchar)
+                    AND [Key] = '{2}'  
+
+                END
 ",
                     definedTypeGuid,
                     fieldTypeGuid,
@@ -2219,7 +2240,7 @@ BEGIN
         }
 
         /// <summary>
-        /// Adds the defined value attribute value.
+        /// Adds/Overwrites the defined value attribute value.
         /// </summary>
         /// <param name="definedValueGuid">The defined value unique identifier.</param>
         /// <param name="attributeGuid">The attribute unique identifier.</param>
@@ -2264,6 +2285,35 @@ BEGIN
                     value.Replace( "'", "''" )
                 )
             );
+        }
+
+        /// <summary>
+        /// Adds/Overwrites the Group attribute value.
+        /// </summary>
+        public void AddGroupAttributeValue( string groupGuid, string attributeGuid, string value )
+        {
+            Migration.Sql( $@"
+
+                DECLARE @GroupId int
+                SET @GroupId = (SELECT [Id] FROM [Group] WHERE [Guid] = '{groupGuid}')
+
+                DECLARE @AttributeId int
+                SET @AttributeId = (SELECT [Id] FROM [Attribute] WHERE [Guid] = '{attributeGuid}')
+
+                -- Delete existing attribute value first (might have been created by Rock system)
+                DELETE [AttributeValue]
+                WHERE [AttributeId] = @AttributeId
+                AND [EntityId] = @GroupId
+
+                INSERT INTO [AttributeValue] (
+                    [IsSystem],[AttributeId],[EntityId],
+                    [Value],
+                    [Guid])
+                VALUES(
+                    1,@AttributeId,@GroupId,
+                    '{value.Replace( "'", "''" )}',
+                    NEWID())"
+                );
         }
 
         /// <summary>
@@ -2653,7 +2703,7 @@ WHERE [EntityTypeId] = @EntityTypeId
         }
 
         /// <summary>
-        /// Adds the page security authentication. Set GroupGuid to null when setting to a special role
+        /// Adds the page security authentication (or ignores if it already exists). Set GroupGuid to null when setting to a special role
         /// </summary>
         /// <param name="pageGuid">The page unique identifier.</param>
         /// <param name="order">The order.</param>
@@ -3544,9 +3594,9 @@ END
                     ( showInNavigation ? "1" : "0" ),
                     iconCssClass,
                     order,
-                    ( inheritedGroupTypeGuid == null ) ? "NULL" : "'" + inheritedGroupTypeGuid + "'",
+                    ( string.IsNullOrEmpty( inheritedGroupTypeGuid ) ) ? "NULL" : "'" + inheritedGroupTypeGuid + "'",
                     locationSelectionMode,
-                    ( groupTypePurposeValueGuid == null ) ? "NULL" : "'" + groupTypePurposeValueGuid + "'"
+                    ( string.IsNullOrEmpty( groupTypePurposeValueGuid ) ) ? "NULL" : "'" + groupTypePurposeValueGuid + "'"
             ) );
         }
 
@@ -3660,7 +3710,7 @@ END
         }
 
         /// <summary>
-        /// Adds the group type group attribute.
+        /// Adds (or Updates) a new GroupType "Group Attribute" for the given GroupType using the given values.
         /// </summary>
         /// <param name="groupTypeGuid">The group type unique identifier.</param>
         /// <param name="fieldTypeGuid">The field type unique identifier.</param>

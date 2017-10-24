@@ -495,6 +495,7 @@ namespace RockWeb.Blocks.Groups
             groupType.ShowInGroupList = cbShowInGroupList.Checked;
             groupType.ShowInNavigation = cbShowInNavigation.Checked;
             groupType.ShowConnectionStatus = cbShowConnectionStatus.Checked;
+            groupType.ShowMaritalStatus = cbShowMaritalStatus.Checked;
             groupType.IconCssClass = tbIconCssClass.Text;
             groupType.TakesAttendance = cbTakesAttendance.Checked;
             groupType.GroupsRequireCampus = cbGroupsRequireCampus.Checked;
@@ -562,7 +563,8 @@ namespace RockWeb.Blocks.Groups
 
             if ( !groupType.IsValid )
             {
-                // Controls will render the error messages                    
+                cvGroupType.IsValid = groupType.IsValid;
+                cvGroupType.ErrorMessage = groupType.ValidationResults.Select( a => a.ErrorMessage ).ToList().AsDelimited( "<br />" );
                 return;
             }
 
@@ -780,6 +782,7 @@ namespace RockWeb.Blocks.Groups
             cbShowInGroupList.Checked = groupType.ShowInGroupList;
             cbShowInNavigation.Checked = groupType.ShowInNavigation;
             cbShowConnectionStatus.Checked = groupType.ShowConnectionStatus;
+            cbShowMaritalStatus.Checked = groupType.ShowMaritalStatus;
             tbIconCssClass.Text = groupType.IconCssClass;
 
             // Locations
@@ -1925,6 +1928,12 @@ namespace RockWeb.Blocks.Groups
             {
                 attribute = new Attribute();
                 attribute.FieldTypeId = FieldTypeCache.Read( Rock.SystemGuid.FieldType.TEXT ).Id;
+                if (hfGroupTypeId.Value.AsInteger() > 0)
+                {
+                    attribute.EntityTypeQualifierColumn = "GroupTypeId";
+                    attribute.EntityTypeQualifierValue = hfGroupTypeId.Value;
+                }
+
                 edtGroupAttributes.ActionTitle = ActionTitle.Add( "attribute for groups of group type " + tbName.Text );
             }
             else

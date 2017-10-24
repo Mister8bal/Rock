@@ -17,6 +17,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data.Entity;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,6 +36,7 @@ using DotLiquid;
 using DotLiquid.Util;
 using Humanizer;
 using Humanizer.Localisation;
+using ImageResizer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Rock;
@@ -269,9 +271,30 @@ namespace Rock.Lava
         /// <returns></returns>
         public static string ToCssClass( string input )
         {
-            return input == null
-                ? input
-                : input.ToLower().Replace( " ", "-" );
+            // list from: https://mathiasbynens.be/notes/css-escapes
+            Regex ex = new Regex( @"[&*!""#$%'()+,.\/:;<=>?@\[\]\^`{\|}~\s]");
+
+            if (input == null )
+            {
+                return input;
+            }
+
+            // replace unsupported characters
+            input = ex.Replace( input, "-" ).ToLower();
+
+            // remove duplicate instances of dashes (cleanliness is next to... well... it's good)
+            input = Regex.Replace( input, "-+", "-" );
+
+            // ensure the class name is valid (starts with a letter or - or _ and is at least 2 characters
+            // if not add a x- to correct it and note that it is non-stanard
+
+            ex = new Regex( "-?[_a-zA-Z]+[_a-zA-Z0-9-]*");
+            if ( !ex.IsMatch( input ) )
+            {
+                input = "-x-" + input;
+            }
+            
+            return input;
         }
 
         /// <summary>
@@ -708,6 +731,68 @@ namespace Rock.Lava
             length = length > ( input.Length - start ) ? ( input.Length - start ) : length;
 
             return input.Substring(start, length);
+        }
+
+        /// <summary>
+        /// Parse the input string as a URL and then return a specific part of the URL.
+        /// </summary>
+        /// <param name="input">The string to be parsed as a URL.</param>
+        /// <param name="part">The part of the Uri object to retrieve.</param>
+        /// <param name="key">Extra parameter used by the QueryParameter key for which query parameter to retrieve.</param>
+        /// <returns>A string that identifies the part of the URL that was requested.</returns>
+        public static object Url( string input, string part, string key = null )
+        {
+            if ( string.IsNullOrEmpty( input ) || string.IsNullOrEmpty( part ) )
+            {
+                return input;
+            }
+
+            Uri uri;
+            if ( !Uri.TryCreate( input, UriKind.Absolute, out uri ) )
+            {
+                return string.Empty;
+            }
+
+            switch ( part.ToUpper() )
+            {
+                case "HOST":
+                    return uri.Host;
+
+                case "PORT":
+                    return uri.Port;
+
+                case "SEGMENTS":
+                    return uri.Segments;
+
+                case "SCHEME":
+                case "PROTOCOL":
+                    return uri.Scheme;
+
+                case "LOCALPATH":
+                    return uri.LocalPath;
+
+                case "PATHANDQUERY":
+                    return uri.PathAndQuery;
+
+                case "QUERYPARAMETER":
+                    if ( key != null )
+                    {
+                        var parameters = HttpUtility.ParseQueryString( uri.Query );
+
+                        if ( parameters.AllKeys.Contains( key ) )
+                        {
+                            return parameters[key];
+                        }
+                    }
+
+                    return string.Empty;
+
+                case "URL":
+                    return uri.ToString();
+
+                default:
+                    return string.Empty;
+            }
         }
 
         #endregion
@@ -1514,9 +1599,6 @@ namespace Rock.Lava
                 return string.Empty;
             }
 
-            // Try to get RockContext from the dotLiquid context
-            var rockContext = GetRockContext( context );
-
             AttributeCache attribute = null;
             string rawValue = string.Empty;
             int? entityId = null;
@@ -1524,7 +1606,7 @@ namespace Rock.Lava
             // If Input is "Global" then look for a global attribute with key
             if ( input.ToString().Equals( "Global", StringComparison.OrdinalIgnoreCase ) )
             {
-                var globalAttributeCache = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext );
+                var globalAttributeCache = Rock.Web.Cache.GlobalAttributesCache.Read();
                 attribute = globalAttributeCache.Attributes
                     .FirstOrDefault( a => a.Key.Equals( attributeKey, StringComparison.OrdinalIgnoreCase ) );
                 if ( attribute != null )
@@ -1567,7 +1649,7 @@ namespace Rock.Lava
                 {
                     if ( item.Attributes == null )
                     {
-                        item.LoadAttributes( rockContext );
+                        item.LoadAttributes();
                     }
 
                     if ( item.Attributes.ContainsKey( attributeKey ) )
@@ -1644,6 +1726,15 @@ namespace Rock.Lava
         {
             if ( input != null )
             {
+                if ( input is IDictionary<string, object> )
+                {
+                    var dictionaryObject = input as IDictionary<string, object>;
+                    if ( dictionaryObject.ContainsKey( propertyKey ) )
+                    {
+                        return dictionaryObject[ propertyKey];
+                    }
+                }
+
                 return input.GetPropertyValue( propertyKey );
             }
 
@@ -2738,7 +2829,72 @@ namespace Rock.Lava
             return found ? trueValue : falseValue;
         }
 
-        #endregion
+        /// <summary>
+        /// Creates a Person Token (rckipid) for the specified Person (person can be specified by Person, Guid, or Id). Specify ExpireMinutes, UsageLimit and PageId to 
+        /// limit the usage of the token for the specified number of minutes, usage count, and specific pageid
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <param name="expireMinutes">The expire minutes.</param>
+        /// <param name="usageLimit">The usage limit.</param>
+        /// <param name="pageId">The page identifier.</param>
+        /// <returns></returns>
+        public static string PersonTokenCreate( DotLiquid.Context context, object input, int? expireMinutes = null, int? usageLimit = null, int? pageId = null )
+        {
+            Person person = GetPerson( input ) ?? PersonById( context, input ) ?? PersonByGuid( context, input );
+
+            if ( person != null )
+            {
+                DateTime? expireDateTime = null;
+                if ( expireMinutes.HasValue )
+                {
+                    expireDateTime = RockDateTime.Now.AddMinutes( expireMinutes.Value );
+                }
+
+                if ( pageId.HasValue )
+                {
+                    var page = new PageService( new RockContext() ).Get( pageId.Value );
+                    if ( page == null )
+                    {
+                        // invalid page specified, so don't return a token
+                        return null;
+                    }
+                }
+
+                return person.GetImpersonationToken( expireDateTime, usageLimit, pageId );
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Looks up a Person using an encrypted person token (rckipid) with an option to incrementUsage and to validate against a specific page
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <param name="incrementUsage">if set to <c>true</c> [increment usage].</param>
+        /// <param name="pageId">The page identifier.</param>
+        /// <returns></returns>
+        public static Person PersonTokenRead( DotLiquid.Context context, object input, bool incrementUsage = false, int? pageId = null )
+        {
+            string encryptedPersonToken = input as string;
+
+            if ( !string.IsNullOrEmpty( encryptedPersonToken ) )
+            {
+                var rockContext = new RockContext();
+                
+
+                return new PersonService( rockContext ).GetByImpersonationToken( encryptedPersonToken, incrementUsage, pageId );
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion Person
 
         #region Misc Filters
 
@@ -3583,12 +3739,12 @@ namespace Rock.Lava
                             result.Add( liquidObject[selectKey] );
                         }
                     }
-                    else if ( value is IDictionary<string, object> )
+                    else if ( value is IDictionary<string, object> ) 
                     {
                         var dictionaryObject = value as IDictionary<string, object>;
-                        if ( dictionaryObject.ContainsKey( selectKey ) && dictionaryObject[selectKey].Equals( selectKey ) )
+                        if ( dictionaryObject.ContainsKey( selectKey ) )
                         {
-                            result.Add( dictionaryObject );
+                            result.Add( dictionaryObject[selectKey] );
                         }
                     }
                 }
@@ -3607,6 +3763,19 @@ namespace Rock.Lava
         /// <param name="attributeKey">The attribute key.</param>
         /// <returns></returns>
         public static object SortByAttribute( DotLiquid.Context context, object input, string attributeKey )
+        {
+            return SortByAttribute( context, input, attributeKey, "asc" );
+        }
+        
+        /// <summary>
+        /// Sorts the list of items by the specified attribute's value
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <param name="attributeKey">The attribute key.</param>
+        /// <param name="sortOrder">asc or desc for sort order.</param>
+        /// <returns></returns>
+        public static object SortByAttribute( DotLiquid.Context context, object input, string attributeKey, string sortOrder )
         {
             if ( input is IEnumerable )
             {
@@ -3630,7 +3799,14 @@ namespace Rock.Lava
                         var item2AttributeValue = item2.AttributeValues.Where( a => a.Key == attributeKey ).FirstOrDefault().Value.SortValue;
                         if ( item1AttributeValue is IComparable && item2AttributeValue is IComparable )
                         {
-                            return ( item1AttributeValue as IComparable ).CompareTo( item2AttributeValue as IComparable );
+                            if (sortOrder.ToLower() == "desc")
+                            {
+                                return ( item2AttributeValue as IComparable ).CompareTo( item1AttributeValue as IComparable );
+                            }
+                            else
+                            {
+                                return ( item1AttributeValue as IComparable ).CompareTo( item2AttributeValue as IComparable );
+                            }
                         }
                         else
                         {
@@ -3899,6 +4075,60 @@ namespace Rock.Lava
             }
 
             return currentPerson;
+        }
+
+        /// <summary>
+        /// Base64 encodes a binary file
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <param name="resizeSettings">The resize settings.</param>
+        /// <returns></returns>
+        public static string Base64Encode( DotLiquid.Context context, object input, string resizeSettings )
+        {
+            BinaryFile binaryFile = null;
+
+            if ( input is int )
+            {
+                binaryFile = new BinaryFileService( new RockContext() ).Get( (int)input );
+            }
+            else if ( input is BinaryFile )
+            {
+                binaryFile = (BinaryFile)input;
+            }
+
+            if ( binaryFile != null )
+            {
+                using ( var stream = GetResized( resizeSettings, binaryFile.ContentStream ) )
+                {
+                    byte[] imageBytes = stream.ReadBytesToEnd();
+                    return Convert.ToBase64String( imageBytes );
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static Stream GetResized( string resizeSettings, Stream fileContent )
+        {
+            try
+            {
+                if ( resizeSettings.IsNullOrWhiteSpace() )
+                {
+                    return fileContent;
+                }
+
+                ResizeSettings settings = new ResizeSettings( HttpUtility.ParseQueryString( resizeSettings ) );
+                MemoryStream resizedStream = new MemoryStream();
+
+                ImageBuilder.Current.Build( fileContent, resizedStream, settings );
+                return resizedStream;
+            }
+            catch
+            {
+                // if resize failed, just return original content
+                return fileContent;
+            }
         }
 
         #endregion

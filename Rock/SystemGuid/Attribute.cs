@@ -139,5 +139,28 @@ namespace Rock.SystemGuid
         public const string GROUP_BIRTHDATE_RANGE = "F1A43EAB-D682-403F-A05E-CCFFBF879F32";
 
         #endregion
+
+        #region Communication List (group) attributes
+
+        /// <summary>
+        /// Group attribute for groups of GroupType CommunicationList to defined additional dataviews that can be used as communication segments
+        /// </summary>
+        public const string GROUP_COMMUNICATION_LIST_SEGMENTS = "73A53BC1-2178-46A1-8413-C7A4DD49F0B4";
+
+        /// <summary>
+        /// Group attribute for groups of GroupType CommunicationList to define category
+        /// </summary>
+        public const string GROUP_COMMUNICATION_LIST_CATEGORY = "E3810936-182E-2585-4F8E-030A0E18B27A";
+
+        #endregion
+
+        #region Fundraising Attributes
+
+        /// <summary>
+        /// The defined value attribute for storing a fundraising opporunity type's donation button text.
+        /// </summary>
+        public const string DEFINED_VALUE_FUNDRAISING_DONATE_BUTTON_TEXT = "7ACD6580-0E5B-4407-BC8B-1BBBAF443B1E";
+
+        #endregion
     }
 }

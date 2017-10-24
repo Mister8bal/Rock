@@ -41,6 +41,7 @@
                 <div id="pnlEditDetails" runat="server">
 
                     <asp:ValidationSummary ID="valGroupTypeDetail" runat="server" HeaderText="Please Correct the Following" CssClass="alert alert-danger" />
+                    <asp:CustomValidator ID="cvGroupType" runat="server" Display="None" />
 
                     <div class="row">
                         <div class="col-md-6">
@@ -350,6 +351,8 @@
                                     Help="Check this option to include groups of this type in the GroupTreeView block's navigation control." />
                                 <Rock:RockCheckBox ID="cbShowConnectionStatus" runat="server" Label="Show Connection Status" Text="Yes" 
                                     Help="Check this option to show the person's connection status as a column in the group member list." />
+                                <Rock:RockCheckBox ID="cbShowMaritalStatus" runat="server" Label="Show Marital Status" Text="Yes" 
+                                    Help="Check this option to show the person's martial status as a column in the group member list." />
                             </div>
                         </div>
                     </Rock:PanelWidget>

@@ -197,6 +197,15 @@ namespace Rock.Model
         public bool ShowConnectionStatus { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to show the Person's martial status as a column in the Group Member Grid
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [show marital status]; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember]
+        public bool ShowMaritalStatus { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="Rock.Model.AttendanceRule"/> that indicates how attendance is managed a <see cref="Rock.Model.Group"/> of this GroupType
         /// </summary>
         /// <value>
@@ -523,6 +532,42 @@ namespace Rock.Model
         #region Public Methods
 
         /// <summary>
+        /// Gets a value indicating whether this instance is valid.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is valid; otherwise, <c>false</c>.
+        /// </value>
+        public override bool IsValid
+        {
+            get
+            {
+                var result = base.IsValid;
+                if ( result )
+                {
+                    // make sure it isn't getting saved with a recursive parent hierarchy
+                    var parentIds = new List<int>();
+                    parentIds.Add( this.Id );
+                    var parent = this.InheritedGroupTypeId.HasValue ? ( this.InheritedGroupType ?? new GroupTypeService( new RockContext() ).Get( this.InheritedGroupTypeId.Value ) ) : null;
+                    while ( parent != null )
+                    {
+                        if ( parentIds.Contains( parent.Id ) )
+                        {
+                            this.ValidationResults.Add( new ValidationResult( "Parent Group Type cannot be a child of this Group Type (recursion)" ) );
+                            return false;
+                        }
+                        else
+                        {
+                            parentIds.Add( parent.Id );
+                            parent = parent.InheritedGroupType;
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Pres the save.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
@@ -567,6 +612,8 @@ namespace Rock.Model
                     }
                 }
             }
+
+            base.PreSaveChanges( dbContext, state );
         }
 
         /// <summary>
