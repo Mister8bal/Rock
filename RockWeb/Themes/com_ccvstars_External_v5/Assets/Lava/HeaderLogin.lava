@@ -1,0 +1,28 @@
+{% comment %}
+
+
+REQUIRED VARIABLES
+==================
+
+{% assign loginPage = "/page/908" %}
+{% assign myAccountPage = "/page/890" %}
+
+
+{% endcomment %}
+
+
+{% capture currentPage %}/page/{{ CurrentPage.Id }}{% endcapture %}
+{% assign currentPageEscaped = currentPage | Replace: ' ', '%20' | Replace: '&', '%26' | Replace: '?', '%3F' | Replace: '!', '%21' | Replace: ',', '%2C' | Replace: "'", "%27" | Replace: '/', '%252f' %}
+
+{% if CurrentPerson %}
+  <div>
+    <a class="small header-login-item" href="{{ myAccountPage }}">My Account</a>
+    <a class="small header-login-item" href="https://rock.ccv.church/page/887">Volunteer</a>
+    <a class="small header-login-item margin-r-md" href="?logout=true">Logout</a>
+  </div>
+{% else %}
+  <div>
+    <a class="small header-login-item" href="{{ loginPage }}?returnurl={{ currentPageEscaped }}">Login</a>
+    <a class="small header-login-item" href="https://rock.ccv.church/page/887">Volunteer</a>
+  </div>
+{% endif %}
