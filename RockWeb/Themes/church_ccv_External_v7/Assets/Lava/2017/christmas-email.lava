@@ -1,0 +1,32 @@
+{% comment %}
+
+{% include '~~/Assets/Lava/2017/christmas-email.lava' %}
+
+{% endcomment %}
+
+{% assign inviteBtnClasses = inviteBtnClasses | Default: 'btn btn-default' %}
+
+{% capture subject %}
+Join me for Christmas at CCV
+{% endcapture %}
+
+{% capture body %} I’m going to Christmas Eve service at CCV. Would you like to come with me? I’m thinking about going on {{ day.Date }} at {{ rawTime }} on the {{ item.Name }} campus. There are other service times as well, if this time doesn’t work.
+
+https://ccv.church
+{% endcapture %}
+
+<a style="text-align: left;" class="{{ inviteBtnClasses }} js-track-email" data-label="{{ item.Name }} {{ day.Date }} {{ rawTime }}" href="{{ preUrl }}mailto:?subject={{ subject | Trim | EscapeDataString }}&body={{ body | EscapeDataString }}">
+   <div class="row">
+      <div class="col-xs-6">
+         {{ rawTime }}
+      </div>
+      <div class="col-xs-6">
+            {% if hasSpecial %}
+            <i style="font-size: 1.25rem; padding-left: 5px;" class="{{ specialNeedsIcon }}"></i>
+         {% endif %}
+         {% if hasHearing %}
+            <i style="font-size: 1.25rem; padding-left: 5px;" class="{{ hearingIcon }}"></i>
+         {% endif %}
+      </div>
+   </div>
+</a>
