@@ -977,7 +977,7 @@
         box-shadow: none;
     }
 
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 1024px) {
     #cms-admin-footer {
         opacity: 0;
         position: fixed;
@@ -1306,13 +1306,13 @@ a.aspNetDisabled {
     line-height: 1.42857143;
 }
 
-    .form-group .checkbox:last-child {
-        margin-bottom: 30px;
-    }
+.form-group .checkbox:last-child {
+    margin-bottom: 30px;
+}
 
-    .form-group > .form-group {
-        margin-top: 12px;
-    }
+.form-group > .form-group {
+    margin-top: 12px;
+}
 
 .form-horizontal .form-group {
     margin-right: 0;
@@ -8514,6 +8514,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     line-height: 25px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: transparent;
 	position: fixed;
 	width: 100%;
 	z-index: 999;
@@ -8565,7 +8566,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     width: 225px;
 }
 
-@media screen and (min-width: 1224px){
+@media screen and (min-width: 1024px){
     .masthead-brand .logo {
         margin-left: 15px;
         margin-top: 12px;
@@ -8577,10 +8578,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 }
 
-.masthead-nav {
-    /*text-align: right;*/
-}
-
 .navbar-collapse {
     box-shadow: none;
 }
@@ -8588,7 +8585,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .masthead-navitems {
     list-style-type: none;
     text-transform: uppercase;
-    display: inline-block;
+    display: flex;
     line-height: 40px;
     padding-left: 13px;
 }
@@ -8805,7 +8802,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     background: #7A1315;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     padding: 40px 0px;
 }
@@ -8813,74 +8809,71 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .mainfooterlogo {
     font-size: 70%;
     color: #FFFFFF;
-    text-align: center;
 }
 
 .mainfootercontent {
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .mainfootercontent a {
     color: #FFFFFF;
 }
 
-.mainfooter-privacypolicy {
-    margin-top: 10px;
-}
-
-.mainfooter-privacypolicy a {
-    color: #FFFFFF;
-}
-
-.mainfooterlinks {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    justify-content: center;
-    align-content: space-between;
-}
-
 .mainfootersocial {
+    display: flex;
+    flex-direction: column;
     color: #FFFFFF;
-    font-size: 18px;
-    margin: 30px 15px;
+    font-family: Akrobat;
+    font-size: 12px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 10px 10px;
+}
+
+.mainfootersocial i {
+    color: #FFFFFF;
+    padding-right: 10px;
+    font-size: 20px;
 }
 
 .mainfootersocial a {
     color: #FFFFFF;
+    text-decoration: none;
+    padding: 5px 0px;
 }
 
-.mainfooterweblinks {
-    color: #FFFFFF;
-    font-family: akrobat;
-    font-size: 14px;
-    margin: 30px 15px;
+.mainfooter hr {
+    margin: 1em 0;
+    border-top: 1px solid;
 }
 
-.mainfooterlinks a {
-    color: #FFFFFF;
+.mainfooter-flex {
+    text-align: center;
 }
 
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 1024px) {
     .mainfooter {
-        padding: 10px 30px;
+        padding: 10px 40px;
         display: block;
     }
 
     .mainfooter-flex {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        text-align: start;
     }
 
     .mainfooterlogo {
         display: flex;
-        align-items: center;    
+        flex-direction: column;
+        width: 500px;
+        padding-top: 10px;
     }
 
-    .mainfootercontent {
-        margin: 20px;
+    .mainfootersocial {
+        width: 340px;
+        padding: 0px 10px 20px 10px;
     }
 
     .mainfooter-privacypolicy {
@@ -10216,10 +10209,6 @@ legend {
     padding-right: 0;
 }
 
-.form-control {
-	width: 75%;
-}
-
 .form-control ,input {
   border: 0;
   outline: 0;
@@ -10313,7 +10302,7 @@ legend {
     margin: 5px;
 }
 
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 1024px) {
     #subnavbar ul {
         margin: 0px;
     }
@@ -10440,9 +10429,9 @@ html,body{
     content: "\f107";
 }
 
-/* style for Campus Selector in header*/
-.contextsetter-campus-navbar .navbar-nav .dropdown-menu {
-    background: rgba(0,0,0,0.6);
+/* style for Campus Selector and dropdown menus in header*/
+.contextsetter-campus-navbar .navbar-nav .dropdown-menu, .masthead-navitems .dropdown-menu {
+    background: rgba(0,0,0,0.9);
     border-radius: 5px 5px;
     padding: 0px;
     font-size: 14px;
@@ -10456,11 +10445,12 @@ html,body{
 
 .contextsetter-campus-navbar .contextsetter .navbar-link, .contextsetter-campus-navbar .contextsetter .navbar-link:hover {
     background-color: transparent;
-    padding-top: 13px;
+    padding-top: 12px;
 }
 
-.contextsetter-campus-navbar .dropdown-menu li a  {
+.contextsetter-campus-navbar .dropdown-menu li a, .masthead-navitems .dropdown-menu li a  {
     color: #999999;
+    padding: 3px 5px;
 }
 
 .contextsetter-campus-navbar {
@@ -10474,7 +10464,7 @@ html,body{
 /* sytle for login block*/
 .loginstatus {
     float: left;
-    padding: 8px 2px 0px 2px;
+    padding: 7px 2px 0px 2px;
     color: #FFFFFF;
     font-family: akrobat;
     font-weight: bold;
@@ -10493,15 +10483,16 @@ html,body{
 
 .loginstatus .dropdown-menu {
     font-size: 14px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.9);
     margin-top: 52px;
 }
 
 .loginstatus .dropdown-menu li a {
     color: #999999;
+    padding: 3px 5px;
 }
 
-.loginstatus .dropdown-menu li a:hover {
+.loginstatus .dropdown-menu li a:hover, .masthead-navitems .dropdown-menu li a:hover {
 	background-color: #7A1315;
 }
 
@@ -10519,11 +10510,12 @@ html,body{
 	border-radius: 4px;
 }
 
-.masthead-navitem:hover {
+.masthead-navitem:hover, .contextsetter-campus:hover {
     color: #FFFFFF;
     transition: .25s;
 	background: rgba( 255, 255, 255, .15);
 	border-radius: 4px;
+    cursor: pointer;
 }
 
 .masthead-navitem.active {
@@ -10552,7 +10544,7 @@ html,body{
     display: block;
 }
 
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 1024px) {
     .announcement-bar {
         padding: 20px 0px;
         margin-bottom: 5px;
@@ -10577,11 +10569,10 @@ html,body{
 /* Formatting for select a day event block */
 .event-item-list-container {
 	display: flex;
-	justify-content: center;
     flex-wrap: wrap;
 }
 
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 1024px) {
     .event-item-list-container {
         justify-content: flex-start;
         margin-left: 10px;
@@ -10617,14 +10608,18 @@ html,body{
 .event-page-wrapper {
    display: flex;
    flex-direction: row;
-   flex-wrap: wrap;
-   align-items: center;
    width: 100%;
 }
 
 .event-page-wrapper .event-calendar {
-   width: 90%;
-   margin: 0 auto;
+   width: 100%;
+   margin-left: 30px;
+}
+
+@media screen and (max-width: 800px) {
+    .event-page-wrapper .event-calendar {
+        margin-left: 15px;
+     }
 }
 
 .event-page-wrapper .event-calendar .header {
@@ -10706,6 +10701,12 @@ html,body{
    min-width: 72%;
 }
 
+@media screen and (max-width: 800px) {
+    .event-page-wrapper .event-calendar .event-item .details {
+        min-width: 65%;
+    }        
+}
+
 .event-page-wrapper .event-calendar .event-item .details .info h4{
    font-family: akrobat;
    font-weight: 900;
@@ -10771,7 +10772,7 @@ html,body{
 }
 
 /* ---- Overrides for desktop size ---- */
-@media screen and (min-width: 1457px) {
+@media screen and (min-width: 1000px) {
    .event-page-wrapper {
       padding: 0;
       align-items: stretch;
@@ -10779,8 +10780,9 @@ html,body{
    }
    
    .event-page-wrapper .event-calendar {
-      width: 60%;
-      margin: 0 auto;
+      width: 50%;
+      padding-left: 30px;
+      /* margin: 0 auto; */
    }
    
    .event-page-wrapper .event-calendar .header {
@@ -10794,9 +10796,10 @@ html,body{
       font-size: 3.56rem;
    }
    
-   .event-page-wrapper .event-calendar .event-item {
+   /* .event-page-wrapper .event-calendar .event-item {
       width: 600px;
-   }
+      min-width: 100%;
+   } */
    
    .event-page-wrapper .event-calendar .event-item .date {
       width: 75px;
@@ -10808,7 +10811,7 @@ html,body{
    }
    
    .event-page-wrapper .event-calendar .event-item .details .info h4 {
-      max-width: none;
+      max-width: 300px;
    }
 }
 /* ---- Overrides for desktop size ---- */
@@ -10827,7 +10830,6 @@ html,body{
 .event-detail-card {
    display: flex;
    flex-direction: column;
-   
    border-width: 0px; 
    border-color: #000; 
    border-style: solid;
@@ -10836,31 +10838,28 @@ html,body{
    padding: 25px;
    margin-top: 1.78rem;
    margin-bottom: 25px;
+   margin-left: 10px;
    height: auto;
-   /*max-height: 1024px;*/
    width: auto;
-   max-width: 380px;
+   max-width: 450px;
 }
 
-/*.event-detail-card-animation {
-   transition: max-height .5s, padding .5s, transform .5s;
-}*/
+@media screen and (max-width: 999px ){
+    .event-detail-card {
+        margin: 0px 10px;
+        width: 85%;
+    }
+}
 
-@media screen and (min-width: 1457px) {
+@media screen and (min-width: 1000px) {
    .event-detail-card {
       height: 100%;
-      width: 380px;
+      width: 500px;
    }
    .event-detail-body {
       width: 50%;
    }
 }
-
-/*.event-detail-card-hidden {
-   transform: scaleY(0);
-   padding: 0px;
-   max-height: 0px;
-}*/
 
 .event-detail-card h6 {
 	color: #7A1315;
@@ -10991,13 +10990,13 @@ html,body{
 
 .loader-bg {
 	background: rgba(0, 0, 0, .45);
-	position: absolute;
+	position: fixed;
 	padding: 0;
 	margin: 0;
 	left: 0;
 	top: 0;
 	width: 100%;
-	height: 100%;
+	height: 100vh;
 	z-index: 1500;
 }
 
@@ -11020,16 +11019,14 @@ html,body{
 /* Formatting for the Login Modal */
 #bg-screen {
 	position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.8);
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: #fff;
     z-index: 1499;
 	display: block;
-    -webkit-transition: opacity 100ms;
-    -moz-transition: opacity 100ms;
-    transition: opacity 100ms;
+	overflow-x: hidden;
 }
 
 .bg-screen-hidden {
@@ -11042,18 +11039,22 @@ html,body{
 	pointer-events: auto;
 }
 
+@media screen and (min-width: 813px) {
+	#bg-screen {
+		background: rgba(0, 0, 0, 0.8);
+		-webkit-transition: opacity 100ms;
+		-moz-transition: opacity 100ms;
+		transition: opacity 100ms;
+		overflow-y: hidden;
+	}
+}
+
 #login-modal {
 	box-sizing: border-box; 
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
-	position: relative;
-	width: 75%;
-    height: 95%; 
+	width: 100%;
 	margin: 0px auto; 
 	opacity: 1;
-	transition: top 175ms ease-in;
-	-moz-transition: top 175ms ease-in;
-	-webkit-transition: top 175ms ease-in;
-	overflow-x: hidden;
 }
 
 /* Hide scrollbar in Modal window*/
@@ -11062,37 +11063,52 @@ html,body{
     background: transparent;
 }
 
-@media screen and (min-width: 1224px) {
-    #login-modal {
-        max-width: 768px;
-        height: auto;
-    }
-}
-
 .login-modal-hidden {
 	top: -300px;
 }
 
 .login-modal-visible {
-	top: 15px;
+	top: 0px;
 }
 
-@media screen and (min-width: 768px) {
-    .login-modal-visible {
-        top: 175px;
+@media screen and (min-width: 813px) {
+	#login-modal {
+		box-sizing: border-box; 
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
+		position: relative;
+		width: 75%;
+		height: 95%; 
+		margin: 0px auto; 
+		opacity: 1;
+		transition: top 175ms ease-in;
+		-moz-transition: top 175ms ease-in;
+		-webkit-transition: top 175ms ease-in;
+		overflow-x: hidden;
+		max-width: 768px;
+		overflow-y: hidden;
+	}
+	
+	.login-modal-visible {
+        top: 12.5%;
     }
 }
 
-@media screen and (min-width: 1024px) {
-    .login-modal-visible {
-        top: 300px;
-    }
+.lm-base-panel .close-button {
+	text-align: right;
+	padding-top: 15px;
+	padding-right: 15px;
+	font-size: 18px;
 }
 
-@media screen and (min-width: 1224px) {
-    .login-modal-visible {
-        top: 150px;
-    }
+.lm-base-panel .close-button a:hover {
+   cursor: pointer;
+   text-decoration: none;
+}
+
+@media screen and (min-width: 813px) {
+	.lm-base-panel .close-button {
+		visibility: hidden;
+	}
 }
 
 .lm-base-panel {
@@ -11101,10 +11117,14 @@ html,body{
 	box-sizing: border-box; 
 	font-family: Roboto, sans-serif; 
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
-	box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px; 
-	border-radius: 2px;
 	padding-bottom: 25px;
-    
+}
+
+@media screen and (min-width: 813px) {
+	.lm-base-panel {
+		border-radius: 2px;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px; 
+	}
 }
 
 #login-panel {
@@ -11112,7 +11132,6 @@ html,body{
 	color: rgba(0, 0, 0, 0.6);
 	padding: 24px;
 	box-sizing: border-box;
-	overflow-y: hidden;
 	border-top: none;
 	border-bottom: none;
 	background-color: rgb(255, 255, 255);
@@ -11120,6 +11139,30 @@ html,body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+	padding-top: 0px;
+}
+
+@media screen and (min-width: 813px) {
+	#login-panel {
+		font-size: 16px;
+		color: rgba(0, 0, 0, 0.6);
+		padding: 24px;
+		box-sizing: border-box;
+		border-top: none;
+		border-bottom: none;
+		background-color: rgb(255, 255, 255);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+@media screen and (max-width: 813px) {
+	#login-panel-title h1 {
+		line-height: 0px;
+		padding: 15px;
+	}
 }
 
 #login-panel-title {
@@ -11136,7 +11179,7 @@ html,body{
     justify-content: center;
 }
 
-@media screen and (min-width: 1224px){
+@media screen and (min-width: 813px){
     #login-panel-form {
         width: 45%;
     }
@@ -11150,18 +11193,16 @@ html,body{
     flex-flow: row wrap;
 }
 
-#forgotpassword-panel, #accountcreationresult-panel, #accountcreationduplicates-panel {
+#forgotpassword-panel, #accountcreationresult-panel {
 	font-size: 16px;
 	color: rgba(0, 0, 0, 0.6);
 	padding: 24px;
 	box-sizing: border-box;
 	transition: left 250ms ease-in;
 	width: 100%;
-    height: auto;
-	top: 0px;
+	top: 40px;
 	position: absolute;
 	background-color: rgb(255, 255, 255);
-	overflow-y: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11173,11 +11214,9 @@ html,body{
 	padding: 24px;
 	box-sizing: border-box;
 	width: 100%;
-    height: auto;
-	top: 0px;
+	top: 40px;
 	position: absolute;
 	background-color: rgb(255, 255, 255);
-	overflow-y: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11197,20 +11236,9 @@ html,body{
     justify-content: center;
 }
 
-
-#create-username-firstname {
-    display: flex;
-    flex-flow: row wrap;    
-}
-
-#create-password-lastname {
-    display: flex;
-    flex-flow: row wrap;
-}
-
-#create-confirm-email {
-    display: flex;
-    flex-flow: row wrap;
+.create-panel-form-col {
+	width: 300px;
+	padding-right: 25px;
 }
 
 #create-panel-buttons {
@@ -11234,13 +11262,24 @@ html,body{
 }
 
 #accountcreationduplicates-panel {
-    height: 850px;
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.6);
+	padding: 24px;
+	box-sizing: border-box;
+	transition: left 250ms ease-in;
+	width: 100%;
+	top: 40px;
+	position: absolute;
+	background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #accountcreationduplicates-panel-form {
     display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
 }
 
@@ -11252,16 +11291,20 @@ html,body{
 
 .duplicates-form-items {
     display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
+    justify-content: space-between;
+    flex-direction: row;
+	padding-bottom: 10px;
+}
+
+.duplicates-form-item {
+	text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 60%;
 }
 
 .duplicates-form-items input, .duplicates-form-item-none input {
     margin-right: 2px;
-}
-
-.duplicates-form-item-gender {
-    margin-left: 15px;
 }
 
 .duplicates-form-item-bday {
@@ -11270,6 +11313,17 @@ html,body{
 
 #accountcreationduplicates-panel-buttons {
     padding-top: 20px;
+}
+
+@media screen and (min-width: 767px) {
+	
+	#accountcreationduplicates-panel-form {
+        width: 80%;
+    }
+	
+	#duplicates-form {
+        width: 80%;
+    }
 }
 
 .lm-form-title {
@@ -11328,7 +11382,14 @@ html,body{
     display: flex;
     flex-flow: column;
     align-content: center;
-    height: 100%;
+}
+
+@media screen and (min-width: 813px) {
+	#forgotpassword-panel {
+		display: flex;
+		flex-flow: column;
+		align-content: center;
+	}
 }
 
 #forgotpassword-panel-title {
@@ -11357,7 +11418,7 @@ html,body{
 }
 
 /* Adjustments for larger screens  */
-@media screen and (min-width: 1224px) {
+@media screen and (min-width: 813px) {
     #createaccount-panel, #forgotpassword-panel, #accountcreationresult-panel, #accountcreationduplicates-panel {
         justify-content: center;
     }
@@ -11382,36 +11443,6 @@ html,body{
 
     #create-panel-buttons .lm-button {
         margin-right: 25px;
-    }
-
-    #accountcreationduplicates-panel-form {
-        width: 80%;
-        flex-direction: row;
-    }
-
-    #accountcreationduplicates-panel {
-        height: 100%;
-    }
-
-    #duplicates-form {
-        display: flex;
-        flex-direction: column;
-        width: 70%;
-        margin-left: 20px;
-    }
-
-    .duplicates-form-items {
-        display: flex;
-        justify-content: flex-start;
-        flex-direction: row;
-    }
-
-    .duplicates-form-item-gender {
-        margin-left: 110px;
-    }
-
-    .duplicates-form-item-bday {
-        margin-left: 150px;
     }
 
     #forgotpassword-panel {
@@ -11440,9 +11471,9 @@ html,body{
     margin-left: 15px;
 }
 
-/* Show Hamburger Menu on any device smaller than 768px */
+/* Show Hamburger Menu on any device smaller than 1024px */
 /* Overriding Bootstrap media query */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .navbar-toggle {
         display: inline-block;
     }
@@ -11468,6 +11499,7 @@ html,body{
     width: 66%;
 	-webkit-transition-duration: 600ms;
     transition-duration: 600ms;
+	overflow-y: auto;
 }
 
 .masthead-fullmenu.offscreen {
@@ -11503,6 +11535,7 @@ html,body{
     color: #212121;
     padding: 15px 10px;
     text-transform: uppercase;
+    background-color: transparent;
 }
 
 .masthead-fullmenu-navitem:active, .masthead-fullmenu-navitem:focus {
@@ -11566,4 +11599,42 @@ html,body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+/* Mobile View Styling */
+@media screen and (max-width: 800px) {
+    /* Hide Main-Feature and Subnavbar section in mobile view.  */    
+    .main-feature, #subnavbar-bg {
+        display: none;
+    }
+
+    /* Change header to Black */
+    .masthead {
+        background-color: #000;
+    }
+
+    /* Push first section down below header */
+    #section-a-bg {
+        padding: 40px 0px;
+    }
+
+    /* Style Form Fields */
+    .form-control {
+        width: 100%;
+    }
+}
+
+/* Event Form Entry Styling */
+.actions .btn {
+    margin-top: 15px;
+}
+
+/* Email input on all form fields */
+.email-box .control-wrapper .input-group, .input-group {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.email-box {
+    margin-bottom: 50px;
 }

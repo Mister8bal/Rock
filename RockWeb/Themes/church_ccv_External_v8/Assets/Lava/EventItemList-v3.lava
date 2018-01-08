@@ -93,6 +93,7 @@
          
          {% for eventOccurrenceSummary in EventOccurrenceSummaries %}
             {% if eventOccurrenceSummary.EventItem.IsApproved %}
+
                {% assign linkage = eventOccurrenceSummary.EventItemOccurrence.Linkages | First %}
                {% if linkage %}
                   {% assign startDateTime = linkage.RegistrationInstance.StartDateTime %}
@@ -105,8 +106,13 @@
                {% assign eventMonth = eventOccurrenceSummary.DateTime | Date: 'MMMM' %}
                {% if startDateTime <= currentDateTime and eventMonth == viewingMonth %}
                   
-                  {% assign firstEventItemOccurrenceId = eventOccurrenceSummary.EventItemOccurrence.Id %}
-                  
+                  {% if firstEventItemOccurrenceId == -1 %}
+                    {% assign firstEventItemOccurrenceId = eventOccurrenceSummary.EventItemOccurrence.Id %}
+                    <script>
+                        var gfirstEventItemOccurrenceId = {{ firstEventItemOccurrenceId }};
+                    </script>
+                  {% endif %}  
+
                   {% comment %} EventCalendarId 1 is public calendar {% endcomment %}
                   {% assign eventCalendarItem = eventOccurrenceSummary.EventItem.EventCalendarItems | Where: 'EventCalendarId', calendarId | First %}
 
@@ -120,14 +126,22 @@
                       {% capture detailUrl %}{{ DetailsPage }}?EventOccurrenceId={{ eventOccurrenceSummary.EventItemOccurrence.Id }}{% endcapture %}
                   {% endif %}
              
+                  {% comment %}If this is a starting point or baptism, we only want to render ONE to represent all for the given month {% endcomment %}
                   {% if eventOccurrenceSummary.EventItem.Id == startingpointEventId or eventOccurrenceSummary.EventItem.Id == baptismEventId %}
-                     {% if firstBaptismOfMonth == true or firstStartingPointOfMonth == true %}
-                        {% if eventOccurrenceSummary.EventItem.Id == startingpointEventId %}
-                           {% assign firstStartingPointOfMonth = false %}
-                        {% elseif eventOccurrenceSummary.EventItem.Id == baptismEventId %}
-                           {% assign firstBaptismOfMonth = false %}
-                        {% endif %}
-                        
+                     {% comment %}Go into the branch for the special event, and assume we will NOT render (meaning we already rendered one in a prior iteration) {% endcomment %}
+                     {% assign shouldRender = false %}
+                     
+                     {% comment %}See which event this is, and if we've rendered the first one for the month yet. {% endcomment %}
+                     {% if eventOccurrenceSummary.EventItem.Id == startingpointEventId and firstStartingPointOfMonth == true %}
+                        {% assign shouldRender = true %}
+                        {% assign firstStartingPointOfMonth = false %}
+                     {% elseif eventOccurrenceSummary.EventItem.Id == baptismEventId and firstBaptismOfMonth == true %}
+                        {% assign shouldRender = true %}
+                        {% assign firstBaptismOfMonth = false %}
+                     {% endif %}
+                     
+                     {% comment %}if this is true, we have not rendered the first SP or Baptism for this month {% endcomment %}
+                     {% if shouldRender == true %}
                         <script>
                            var eventItem =
                            {
@@ -262,29 +276,19 @@
          return txt.value;
       }
       
-      function getParameterByName(name, url) {
-         // gets the specified URL params
-          if (!url) url = window.location.href;
-          name = name.replace(/[\[\]]/g, "\\$&");
-          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-              results = regex.exec(url);
-          if (!results) return null;
-          if (!results[2]) return '';
-          return decodeURIComponent(results[2].replace(/\+/g, " "));
-      }
-      
       // adds on "onload" hook to the window.onload function chain
       var oldonload = window.onload;
       window.onload = (typeof window.onload != 'function') ?
         handleOnLoad : function() { 
          oldonload(); handleOnLoad(); 
          };
-      // 
       
       function handleOnLoad() {
          // if there's at least one event for this month, we'll hide the "no events" banner
          if( gMonthHasEvents == true  ) {
-            $(".no-event-placeholder").css("display", "none");
+             $(".no-event-placeholder").css("display", "none");
+             // Display theevent panel for the first event item on page load
+             setSelectedEvent( gfirstEventItemOccurrenceId, false );
          }
          else {
             $(".no-event-placeholder").css("display", "inline");
@@ -292,7 +296,7 @@
          
          
          // setup a callback for browser width changes
-         const mq = window.matchMedia( "(min-width: 1457px)" );
+         const mq = window.matchMedia( "(min-width: 1000px)" );
          mq.addListener( widthChange );
          
          widthChange( mq );

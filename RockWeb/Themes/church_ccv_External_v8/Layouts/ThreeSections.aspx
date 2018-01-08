@@ -30,32 +30,20 @@
 
         <div class="container-fluid">
 			<div class="row">
-                <div id="subnavbar-bg" class="col-md-12" style="padding: 0px;">
-					<div class="row">
-						<div class="col-md-offset-2 col-md-8">
-							<Rock:Zone Name="Sub Navbar" runat="server" />
-						</div>
-					</div>
+                <div id="subnavbar-bg" class="col-md-12">
+						<Rock:Zone Name="Sub Navbar" runat="server" />
                 </div>
             </div>
 			
             <div class="row">
-                <div id="section-a-bg" class="col-md-12" style="padding: 0px;">
-					<div class="row">
-						<div class="col-md-offset-2 col-md-8">
-							<Rock:Zone Name="Section A" runat="server" />
-						</div>
-					</div>
+                <div id="section-a-bg" class="col-md-12">
+						<Rock:Zone Name="Section A" runat="server" />
                 </div>
             </div>
 			
 			<div class="row">
-                <div id="section-b-bg" class="col-md-12" style="padding: 0px;">
-					<div class="row">
-						<div class="col-md-offset-2 col-md-8">
-							<Rock:Zone Name="Section B" runat="server" />
-						</div>
-					</div>
+                <div id="section-b-bg" class="col-md-12">
+						<Rock:Zone Name="Section B" runat="server" />
                 </div>
             </div>
             <!-- End Content Area -->

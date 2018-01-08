@@ -9,6 +9,9 @@
             </div>
 
             <div class="lm-base-panel">
+                <div class="close-button">
+                    <a onclick="hideLoginModal(); return false;">X</a>
+                </div>
                 <%-- LOGIN PANEL --%>
 			    <div id="login-panel">
  
@@ -35,11 +38,11 @@
                      </div>
 
                      <div id="login-panel-buttons">
-                       <asp:Button ID="btnLogin" runat="server" Text="Login" CssClass="btn btn-primary lm-button" OnClientClick="login(); return false;"/>
+                       <asp:Button ID="btnLogin" runat="server" Text="Login" CssClass="btn btn-primary lm-button" UseSubmitBehavior="false" OnClientClick="login(); return false;"/>
                                 
-                       <asp:Button ID="btnHelp" runat="server" Text="Forgot username or password?" CssClass="small-paragraph lm-form-forgot" OnClientClick="displayForgotPasswordPanel(); return false;" CausesValidation="false" />
+                       <asp:Button ID="btnHelp" runat="server" Text="Forgot username or password?" CssClass="small-paragraph lm-form-forgot" UseSubmitBehavior="false" OnClientClick="displayForgotPasswordPanel(); return false;" CausesValidation="false" />
                                 
-                       <asp:Button ID="btnNewAccount" runat="server" Text="Create Account" CssClass="lm-form-register btn btn-action" OnClientClick="displayCreateAccountPanel(true); return false;" CausesValidation="false" />
+                       <asp:Button ID="btnNewAccount" runat="server" Text="Create Account" CssClass="lm-form-register btn btn-action" UseSubmitBehavior="false" OnClientClick="displayCreateAccountPanel(true); return false;" CausesValidation="false" />
                      </div>
                 </div>
                 <%--END LOGIN PANEL--%>
@@ -57,46 +60,44 @@
                     </div>
 
                     <div id="create-panel-form">
-                    
-                        <div id="create-username-firstname">
+                        <div class="create-panel-form-col">
                             <div>
                                 <label class="lm-form-label" for="tb-ca-username">Username</label>
-                                <input class="form-control" name="tb-ca-username" type="text" id="tb-ca-username" value="jered-testyay">
+                                <input class="form-control" name="tb-ca-username" type="text" id="tb-ca-username">
                             </div>
-                            <div> 
-                               <label class="lm-form-label" for="tb-ca-firstname">First Name</label>
-                               <input class="form-control" name="tb-ca-firstname" type="text" id="tb-ca-firstname" value="jered">
+
+                            <div>
+                                <label class="lm-form-label" for="tb-ca-password">Password</label>
+                                <input class="form-control" name="tb-ca-password" type="password" id="tb-ca-password">
+                            </div>
+
+                            <div>
+                                <label class="lm-form-label" for="tb-ca-confirmpassword">Confirm Password</label>
+                                <input class="form-control" name="tb-ca-confirmpassword" type="password" id="tb-ca-confirmpassword">
                             </div>
                         </div>
 
-                        <div id="create-password-lastname">
-                            <div>
-                                <label class="lm-form-label" for="tb-ca-password">Password</label>
-                                <input class="form-control" name="tb-ca-password" type="password" id="tb-ca-password" value="ccv123">
+                        <div class="create-panel-form-col">
+                            <div> 
+                               <label class="lm-form-label" for="tb-ca-firstname">First Name</label>
+                               <input class="form-control" name="tb-ca-firstname" type="text" id="tb-ca-firstname">
                             </div>
 
                             <div>
                                 <label class="lm-form-label" for="tb-ca-lastname">Last Name</label>
-                                <input class="form-control" name="tb-ca-lastname" type="text" id="tb-ca-lastname" value="mcferron">
-                            </div>
-                        </div>
-
-                        <div id="create-confirm-email">
-                            <div>
-                                <label class="lm-form-label" for="tb-ca-confirmpassword">Confirm Password</label>
-                                <input class="form-control" name="tb-ca-confirmpassword" type="password" id="tb-ca-confirmpassword" value="ccv123">
+                                <input class="form-control" name="tb-ca-lastname" type="text" id="tb-ca-lastname">
                             </div>
 
                             <div>
                                 <label class="lm-form-label" for="tb-ca-email">Email</label>
-                                <input class="form-control" name="tb-ca-email" type="text" id="tb-ca-email" value="jered@mcferron.com">
+                                <input class="form-control" name="tb-ca-email" type="text" id="tb-ca-email">
                             </div>
                         </div>
                     </div>
 
                     <div id="create-panel-buttons">
-                        <asp:Button runat="server" Text="Cancel" CssClass="lm-button btn btn-action" OnClientClick="hideCreateAccountPanel(true); return false;" CausesValidation="false" />
-                        <asp:Button runat="server" Text="Register" CssClass="lm-button btn btn-primary" OnClientClick="registerUser(); return false;" CausesValidation="false" />
+                        <asp:Button runat="server" Text="Cancel" CssClass="lm-button btn btn-action" UseSubmitBehavior="false" OnClientClick="hideCreateAccountPanel(true); return false;" CausesValidation="false" />
+                        <asp:Button runat="server" Text="Register" CssClass="lm-button btn btn-primary" UseSubmitBehavior="false" OnClientClick="registerUser(); return false;" CausesValidation="false" />
                     </div>
                 </div>
                 <%-- END CREATE ACCOUNT PANEL--%>
@@ -116,8 +117,6 @@
                     <div id="accountcreationduplicates-panel-form">
                         <label class="control-label">PERSON NAME</label>
 
-                        <label class="control-label">GENDER</label>
-
                         <label class="control-label">BIRTHDAY</label>
                     </div>
                     
@@ -127,7 +126,7 @@
                     </div>
                     
                     <div id="accountcreationduplicates-panel-buttons">
-                        <asp:Button runat="server" Text="Submit" CssClass="lm-form-button btn btn-primary" OnClientClick="submitDuplicateResponse(); return false;" CausesValidation="false" />
+                        <asp:Button runat="server" Text="Submit" UseSubmitBehavior="false" CssClass="lm-form-button btn btn-primary" OnClientClick="submitDuplicateResponse(); return false;" CausesValidation="false" />
                     </div>
                 </div>
                 <%-- END ACCOUNT CREATION DUPLICATES PANEL--%>
@@ -146,7 +145,7 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-8 col-xs-12 text-center">
                             <div style="margin: 25px 0 25px 0;"></div>
-                            <asp:Button runat="server" Text="Done" CssClass="lm-form-button btn btn-primary" OnClientClick="hideLoginModal(); return false;" CausesValidation="false" />
+                            <asp:Button runat="server" UseSubmitBehavior="false" Text="Done" CssClass="lm-form-button btn btn-primary" OnClientClick="popToLoginPage(); return false;" CausesValidation="false" />
                         </div>
                     </div>
                 </div>
@@ -169,8 +168,9 @@
                     </div>
 
                     <div id="forgotpassword-panel-buttons">
-                        <asp:Button runat="server" Text="Cancel" CssClass="btn btn-action lm-button" OnClientClick="hideForgotPasswordPanel(); return false;" CausesValidation="false" />
-                        <asp:Button runat="server" Text="Confirm" CssClass="btn btn-primary lm-button" OnClientClick="sendForgotPasswordEmail(); return false;" CausesValidation="false" />
+                        <asp:Button ID="forgotPasswordButtonCancel" UseSubmitBehavior="false" runat="server" Text="Cancel" CssClass="btn btn-action lm-button" OnClientClick="hideForgotPasswordPanel(); return false;" CausesValidation="false"/>
+                        <asp:Button ID="forgotPasswordButtonConfirm" UseSubmitBehavior="false" runat="server" Text="Confirm" CssClass="btn btn-primary lm-button" OnClientClick="sendForgotPasswordEmail(); return false;" CausesValidation="false"/>
+                        <asp:Button ID="forgotPasswordReturnButton" UseSubmitBehavior="false" runat="server" Text="Return" CssClass="btn btn-primary lm-button" OnClientClick="hideForgotPasswordPanel(); return false;" CausesValidation="false"/>
                     </div>
                 </div>
 
@@ -182,18 +182,65 @@
 <%-- END LOGIN WRAPPER MODAL--%>
 
 <script type="text/javascript">
+
+    var dismissLoginAllowed = false;
+    var loginDisplayed = false;
+    var bodyCssOverflow = null;
+    var activePanel = null;
+
     // ---- UTILITY ----
    $(document).keydown(function(e) {
 		// ESCAPE key pressed
-		if (e.keyCode == 27) {
-			hideLoginModal();
+       if (e.keyCode == 27) {
+           if (dismissLoginAllowed) {
+               hideLoginModal();
+           }
 		}
-	});
+   });
+
+   function getMaxPageHeight() {
+
+       var maxHeight = 0;
+       maxHeight = Math.max(maxHeight, $("#forgotpassword-panel").outerHeight());
+       maxHeight = Math.max(maxHeight, $("#accountcreationduplicates-panel").outerHeight());
+       maxHeight = Math.max(maxHeight, $("#accountcreationresult-panel").outerHeight());
+       maxHeight = Math.max(maxHeight, $("#createaccount-panel").outerHeight());
+
+       return maxHeight;
+   }
+
+   function updatePanelHeights() {
+
+       // first, remove any height restrictions set. This will cause the browser
+       // to calculate the size each panel actually requires
+       $("#forgotpassword-panel").css("min-height", "");
+       $("#accountcreationduplicates-panel").css("min-height", "");
+       $("#accountcreationresult-panel").css("min-height", "");
+       $("#createaccount-panel").css("min-height", "");
+
+       // now get the height of the largest panel
+       var height = getMaxPageHeight();
+
+       // force all panels to match that.
+       $("#forgotpassword-panel").css("min-height", height + "px");
+       $("#accountcreationduplicates-panel").css("min-height", height + "px");
+       $("#accountcreationresult-panel").css("min-height", height + "px");
+       $("#createaccount-panel").css("min-height", height + "px");
+   }
+
+   $(window).resize(function () {
+       if (loginDisplayed == true) {
+
+           updatePanelHeights();
+       }
+   });
 	
 	var modal = document.querySelector("#bg-screen");
 	modal.addEventListener("click", function (e) {
 	    if (this == e.target) {
-	        hideLoginModal();
+	        if (dismissLoginAllowed) {
+	            hideLoginModal();
+	        }
 	    }
 	}, false);
 
@@ -208,39 +255,72 @@
 	}
     // ---- END UTILITY ----
 	
-	function displayLoginModal() {
+	function displayLoginModal(dismissable) {
 
-	    // fade in the bg screen (the grey overlay)
-	    var bgScreen = $("#bg-screen");
-	    bgScreen.removeClass("bg-screen-hidden");
-	    bgScreen.addClass("bg-screen-visible");
+	    if (loginDisplayed == false) {
 
-	    // fly in the actual login modal
-	    var loginModal = $("#login-modal");
-	    loginModal.removeClass("login-modal-hidden");
-	    loginModal.addClass("login-modal-visible");
+	        dismissLoginAllowed = dismissable;
 
-	    // make sure the loader is hidden
-	    hideLoader();
+	        // fade in the bg screen (the grey overlay)
+	        var bgScreen = $("#bg-screen");
+	        bgScreen.removeClass("bg-screen-hidden");
+	        bgScreen.addClass("bg-screen-visible");
+
+	        // fly in the actual login modal
+	        var loginModal = $("#login-modal");
+	        loginModal.removeClass("login-modal-hidden");
+	        loginModal.addClass("login-modal-visible");
+
+	        // get the current scroll value for the body,
+	        // then turn it off
+	        var body = $("body");
+	        bodyCssOverflow = body.css("overflow");
+	        body.css("overflow", "hidden");
+
+	        hideResponsePanel("#lp-form-result-panel", "#lp-form-result-message");
+
+	        // make sure the loader is hidden
+	        hideLoader();
+
+	        // if the login is dismissable, show the close button (used for mobile)
+	        if (dismissLoginAllowed == true) {
+	            $(".close-button").show();
+	        }
+	        else {
+	            $(".close-button").hide();
+	        }
+
+	        updatePanelHeights();
+
+	        loginDisplayed = true;
+	    }
 	}
 
 	function hideLoginModal() {
 
-	    // fade OUT the bg screen (the grey overlay)
-	    var bgScreen = $("#bg-screen");
-	    bgScreen.removeClass("bg-screen-visible");
-	    bgScreen.addClass("bg-screen-hidden");
+	    if (loginDisplayed == true) {
 
-	    // fly OUT the actual login modal
-	    var loginModal = $("#login-modal");
-	    loginModal.removeClass("login-modal-visible");
-	    loginModal.addClass("login-modal-hidden");
+	        // fade OUT the bg screen (the grey overlay)
+	        var bgScreen = $("#bg-screen");
+	        bgScreen.removeClass("bg-screen-visible");
+	        bgScreen.addClass("bg-screen-hidden");
 
-	    // hide all the other account panels, so we start with the correct one
-	    hideAccountCreationDuplicatesPanel();
-	    hideAccountCreationResultPanel();
-	    hideCreateAccountPanel(false);
-	    hideForgotPasswordPanel();
+	        // fly OUT the actual login modal
+	        var loginModal = $("#login-modal");
+	        loginModal.removeClass("login-modal-visible");
+	        loginModal.addClass("login-modal-hidden");
+
+	        var body = $("body");
+	        body.css("overflow", bodyCssOverflow);
+
+	        // hide all the other account panels, so we start with the correct one
+	        hideAccountCreationDuplicatesPanel();
+	        hideAccountCreationResultPanel();
+	        hideCreateAccountPanel(false);
+	        hideForgotPasswordPanel();
+
+	        loginDisplayed = false;
+	    }
 	}
     
 	function showResponsePanel(panelId, panelMessageId, errorMsg) {
@@ -274,9 +354,6 @@
 
     // ---- LOGIN ----
     function login() {
-        // hide the response panel
-        hideResponsePanel("#lp-form-result-panel", "#lp-form-result-message");
-
         // show the spinner
         displayLoader();
 
@@ -362,14 +439,29 @@
     }
 
     function handleLoginSucceeded() {
-        // reload the page so they show as logged in.
-		location.reload();
+
+        // try parsing the query param, if it exists
+        var returnUrl = getParameterByName('returnurl');
+        if (returnUrl != null) {
+            
+            var decodedUrl = decodeURIComponent(returnUrl);
+            window.location.href = window.location.origin + decodedUrl;
+        }
+        else {
+            // no page to redirect tou, so just reload the page so they show as logged in.
+            location.reload();
+        }
     }
     // ---- END LOGIN ----
 
     // ---- USER REGISTRATION ----
     function displayCreateAccountPanel(withAnimation) {
         var createAccountPanel = $("#createaccount-panel");
+
+        hideResponsePanel("#ca-form-result-panel", "#ca-form-result-message");
+        
+        updatePanelHeights();
+
         createAccountPanel.removeClass("createaccount-panel-hidden");
 
         if (withAnimation) {
@@ -397,6 +489,13 @@
 
     function displayAccountCreationResultPanel(createAccountResponse) {
         var accountCreatedPanel = $("#accountcreationresult-panel");
+
+        // hide the response panel
+        hideResponsePanel("#ca-form-result-panel", "#ca-form-result-message");
+
+        // use the currPanelId as the 'parent' of this results panel, which we can use to get the height we need.
+        updatePanelHeights();
+
         accountCreatedPanel.removeClass("accountcreationresult-panel-hidden");
         accountCreatedPanel.addClass("accountcreationresult-panel-visible");
 
@@ -429,13 +528,18 @@
         panel.addClass("accountcreationresult-panel-hidden");
     }
 
+    function popToLoginPage() {
+
+        // hide all the account panels, so we return to the login modal
+        hideAccountCreationDuplicatesPanel();
+        hideAccountCreationResultPanel();
+        hideCreateAccountPanel(false);
+    }
+
     function registerUser() {
 
         // this function will validate all info inputted, and report any errors found.
         // if no errors ARE found, it will actually try to register the user
-
-        // hide the response panel
-        hideResponsePanel("#ca-form-result-panel", "#ca-form-result-message");
 
         // show the spinner
         displayLoader();
@@ -548,11 +652,11 @@
                 })
         }).done(function (registerResponse) {
             hideLoader();
-            displayAccountCreationResultPanel( registerResponse );
+            displayAccountCreationResultPanel(registerResponse);
         });
     }
 
-    function createLogin(personId) {
+    function createLogin(currPanelId, personId) {
 
         // get the input fields
         var username = $("#tb-ca-username").val();
@@ -582,15 +686,18 @@
                 })
         }).done(function (createLoginResponse) {
             hideLoader();
-            displayAccountCreationResultPanel(createLoginResponse);
+            displayAccountCreationResultPanel(currPanelId, createLoginResponse);
         });
     }
 
     function displayAccountCreationDuplicatesPanel(duplicatesInfoList) {
 
+        var panel = $("#accountcreationduplicates-panel");
+
         hideResponsePanel("#ac-dup-form-result-panel", "#ac-dup-form-result-message");
 
-        var panel = $("#accountcreationduplicates-panel");
+        updatePanelHeights();
+
         panel.removeClass("accountcreationduplicates-panel-hidden");
         panel.addClass("accountcreationduplicates-panel-visible");
 
@@ -605,7 +712,6 @@
             duplicateHtmlList.prepend(
                 "<div class=\"duplicates-form-items\">" +
                     "<span class=\"duplicates-form-item\"><input type=\"radio\" class=\"duplicates-form-item\" name=\"person\" value=\"" + duplicatesInfoList[i].Id + "\">" + duplicatesInfoList[i].FullName +
-                    "</span><span class=\"duplicates-form-item-gender\">" + duplicatesInfoList[i].Gender +
                     "</span><span class=\"duplicates-form-item-bday\">" + duplicatesInfoList[i].Birthday + "</span>" +
                 "</div>");
         }
@@ -620,7 +726,6 @@
         
         // get the values they input on the registration page
 
-
         // see which option they selected
         var selectedOption = $("#duplicates-form input[type=radio]:checked")[0];
         if (selectedOption != null) {
@@ -632,7 +737,7 @@
                 createPersonWithLogin();
             }
             else {
-                createLogin(selectedOption.value);
+                createLogin("#accountcreationduplicates-panel", selectedOption.value);
             }
         }
         else {
@@ -651,6 +756,17 @@
     // ---- FORGOT PASSWORD ----
     function displayForgotPasswordPanel() {
         var forgotPasswordPanel = $("#forgotpassword-panel");
+
+        $("#forgotpassword-panel-form").show();
+        $("#<%=forgotPasswordButtonCancel.ClientID %>").show();
+        $("#<%=forgotPasswordButtonConfirm.ClientID %>").show();
+        $("#<%=forgotPasswordReturnButton.ClientID %>").hide();
+
+        // hide the response panel
+        hideResponsePanel("#fp-form-result-panel", "#fp-form-result-message");
+
+        updatePanelHeights();
+
         forgotPasswordPanel.removeClass("forgotpassword-panel-hidden");
         forgotPasswordPanel.addClass("forgotpassword-panel-visible");
     }
@@ -662,9 +778,6 @@
     }
 
     function sendForgotPasswordEmail() {
-
-        // hide the response panel
-        hideResponsePanel("#fp-form-result-panel", "#fp-form-result-message");
 
         // show the spinner
         displayLoader();
@@ -705,7 +818,12 @@
     function handleForgotPasswordResponse(responseData) {
         hideLoader();
 
-        hideLoginModal();
+        $("#forgotpassword-panel-form").hide();
+        $("#<%=forgotPasswordButtonCancel.ClientID %>").hide();
+        $("#<%=forgotPasswordButtonConfirm.ClientID %>").hide();
+        $("#<%=forgotPasswordReturnButton.ClientID %>").show();
+
+        showResponsePanel("#fp-form-result-panel", "#fp-form-result-message", "Thanks. We will send an email to the address provided if a record is found.");
     }
     // ---- END FORGOT PASSWORD ----
 </script>
