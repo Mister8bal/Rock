@@ -17,14 +17,14 @@ using Rock.Web.UI.Controls;
 namespace RockWeb.Plugins.church_ccv.Pastoral
 {
     /// <summary>
-    /// Block for users to create, edit, and view counseling requests.
+    /// Block for users to create, edit, and view care requests.
     /// </summary>
-    [DisplayName( "Counseling Request Detail" )]
+    [DisplayName( "Care Request Detail" )]
     [Category( "CCV > Pastoral" )]
-    [Description( "Block for users to create, edit, and view Counseling requests." )]
-    [SecurityRoleField( "Worker Role", "The security role to draw workers from", true, church.ccv.Utility.SystemGuids.Group.GROUP_COUNSELING_WORKERS )]
-    [LinkedPage("Counseling Request Statement Page", "The page which summarises a counseling request for printing", false)]
-    public partial class CounselingRequestDetail : RockBlock
+    [Description( "Block for users to create, edit, and view Care requests." )]
+    [SecurityRoleField( "Worker Role", "The security role to draw workers from", true, church.ccv.Utility.SystemGuids.Group.GROUP_CARE_WORKERS )]
+    [LinkedPage("Care Request Statement Page", "The page which summarises a care request for printing", false)]
+    public partial class CareRequestDetail : RockBlock
     {
         #region Properties
         private List<int> DocumentsState { get; set; }
@@ -33,19 +33,19 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         #region ViewState and Dynamic Controls
 
         /// <summary>
-        /// ViewState of CounselingResultInfos for Counseling Request
+        /// ViewState of CareResultInfos for Care Request
         /// </summary>
         /// <value>
-        /// The state of the CounselingResultInfos for CounselingRequest.
+        /// The state of the CareResultInfos for CareRequest.
         /// </value>
-        public List<CounselingResultInfo> CounselingResultsState
+        public List<CareResultInfo> CareResultsState
         {
             get
             {
-                List<CounselingResultInfo> result = ViewState["CounselingResultInfoState"] as List<CounselingResultInfo>;
+                List<CareResultInfo> result = ViewState["CareResultInfoState"] as List<CareResultInfo>;
                 if ( result == null )
                 {
-                    result = new List<CounselingResultInfo>();
+                    result = new List<CareResultInfo>();
                 }
 
                 return result;
@@ -53,7 +53,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
 
             set
             {
-                ViewState["CounselingResultInfoState"] = value;
+                ViewState["CareResultInfoState"] = value;
             }
         }
 
@@ -78,34 +78,34 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             gResults.IsDeleteEnabled = true;
 
             // Gets any existing results and places them into the ViewState
-            CareRequest counselingRequest = null;
-            int counselingRequestId = PageParameter( "CounselingRequestId" ).AsInteger();
-            if ( !counselingRequestId.Equals( 0 ) )
+            CareRequest careRequest = null;
+            int careRequestId = PageParameter( "CareRequestId" ).AsInteger();
+            if ( !careRequestId.Equals( 0 ) )
             {
-                counselingRequest = new Service<CareRequest>( new RockContext() ).Get( counselingRequestId );
+                careRequest = new Service<CareRequest>( new RockContext() ).Get( careRequestId );
             }
 
-            if ( counselingRequest == null )
+            if ( careRequest == null )
             {
-                counselingRequest = new CareRequest { Id = 0 };
+                careRequest = new CareRequest { Id = 0 };
             }
 
-            if ( ViewState["CounselingResultInfoState"] == null )
+            if ( ViewState["CareResultInfoState"] == null )
             {
-                List<CounselingResultInfo> brInfoList = new List<CounselingResultInfo>();
-                foreach ( CareResult counselingResult in counselingRequest.CareResults )
+                List<CareResultInfo> brInfoList = new List<CareResultInfo>();
+                foreach ( CareResult careResult in careRequest.CareResults )
                 {
-                    CounselingResultInfo counselingResultInfo = new CounselingResultInfo();
-                    counselingResultInfo.ResultId = counselingResult.Id;
-                    counselingResultInfo.Amount = counselingResult.Amount;
-                    counselingResultInfo.TempGuid = counselingResult.Guid;
-                    counselingResultInfo.ResultSummary = counselingResult.ResultSummary;
-                    counselingResultInfo.ResultTypeValueId = counselingResult.ResultTypeValueId;
-                    counselingResultInfo.ResultTypeName = counselingResult.ResultTypeValue.Value;
-                    brInfoList.Add( counselingResultInfo );
+                    CareResultInfo careResultInfo = new CareResultInfo();
+                    careResultInfo.ResultId = careResult.Id;
+                    careResultInfo.Amount = careResult.Amount;
+                    careResultInfo.TempGuid = careResult.Guid;
+                    careResultInfo.ResultSummary = careResult.ResultSummary;
+                    careResultInfo.ResultTypeValueId = careResult.ResultTypeValueId;
+                    careResultInfo.ResultTypeName = careResult.ResultTypeValue.Value;
+                    brInfoList.Add( careResultInfo );
                 }
 
-                CounselingResultsState = brInfoList;
+                CareResultsState = brInfoList;
             }
 
             dlDocuments.ItemDataBound += DlDocuments_ItemDataBound;
@@ -122,9 +122,9 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             if ( !Page.IsPostBack )
             {
                 cpCampus.Campuses = CampusCache.All();
-                ShowDetail( PageParameter( "CounselingRequestId" ).AsInteger() );
+                ShowDetail( PageParameter( "CareRequestId" ).AsInteger() );
 
-                if( !string.IsNullOrEmpty( GetAttributeValue( "CounselingRequestStatementPage" ) ) )
+                if( !string.IsNullOrEmpty( GetAttributeValue( "CareRequestStatementPage" ) ) )
                 {
                     lbPrint.Visible = true;
                 }
@@ -133,7 +133,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             else
             {
                 var rockContext = new RockContext();
-                CareRequest item = new Service<CareRequest>(rockContext).Get( hfCounselingRequestId.ValueAsInt());
+                CareRequest item = new Service<CareRequest>(rockContext).Get( hfCareRequestId.ValueAsInt());
                 if (item == null )
                 {
                     item = new CareRequest();
@@ -186,7 +186,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void Block_BlockUpdated( object sender, EventArgs e )
         {
-            ShowDetail( PageParameter( "CounselingRequestId" ).AsInteger() );
+            ShowDetail( PageParameter( "CareRequestId" ).AsInteger() );
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         protected void gResults_RowSelected( object sender, RowEventArgs e )
         {
             Guid? infoGuid = e.RowKeyValue as Guid?;
-            List<CounselingResultInfo> resultList = CounselingResultsState;
+            List<CareResultInfo> resultList = CareResultsState;
             var resultInfo = resultList.FirstOrDefault( r => r.TempGuid == infoGuid );
             if ( resultInfo != null )
             {
@@ -241,14 +241,14 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         protected void gResults_DeleteClick( object sender, RowEventArgs e )
         {
             Guid? infoGuid = e.RowKeyValue as Guid?;
-            List<CounselingResultInfo> resultList = CounselingResultsState;
+            List<CareResultInfo> resultList = CareResultsState;
             var resultInfo = resultList.FirstOrDefault( r => r.TempGuid == infoGuid );
             if ( resultInfo != null )
             {
                 resultList.Remove( resultInfo );
             }
 
-            CounselingResultsState = resultList;
+            CareResultsState = resultList;
             BindGridFromViewState();
         }
 
@@ -261,12 +261,12 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         protected void btnAddResults_Click( object sender, EventArgs e )
         {
             int? resultType = ddlResultType.SelectedItem.Value.AsIntegerOrNull();
-            List<CounselingResultInfo> counselingResultInfoViewStateList = CounselingResultsState;
+            List<CareResultInfo> careResultInfoViewStateList = CareResultsState;
             Guid? infoGuid = hfInfoGuid.Value.AsGuidOrNull();
 
             if ( infoGuid != null )
             {
-                var resultInfo = counselingResultInfoViewStateList.FirstOrDefault( r => r.TempGuid == infoGuid );
+                var resultInfo = careResultInfoViewStateList.FirstOrDefault( r => r.TempGuid == infoGuid );
                 if ( resultInfo != null )
                 {
                     resultInfo.Amount = dtbAmount.Text.AsDecimalOrNull();
@@ -281,22 +281,22 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             }
             else
             {
-                CounselingResultInfo counselingResultInfo = new CounselingResultInfo();
+                CareResultInfo careResultInfo = new CareResultInfo();
 
-                counselingResultInfo.Amount = dtbAmount.Text.AsDecimalOrNull();
+                careResultInfo.Amount = dtbAmount.Text.AsDecimalOrNull();
 
-                counselingResultInfo.ResultSummary = dtbResultSummary.Text;
+                careResultInfo.ResultSummary = dtbResultSummary.Text;
                 if ( resultType != null )
                 {
-                    counselingResultInfo.ResultTypeValueId = resultType.Value;
+                    careResultInfo.ResultTypeValueId = resultType.Value;
                 }
 
-                counselingResultInfo.ResultTypeName = ddlResultType.SelectedItem.Text;
-                counselingResultInfo.TempGuid = Guid.NewGuid();
-                counselingResultInfoViewStateList.Add( counselingResultInfo );
+                careResultInfo.ResultTypeName = ddlResultType.SelectedItem.Text;
+                careResultInfo.TempGuid = Guid.NewGuid();
+                careResultInfoViewStateList.Add( careResultInfo );
             }
 
-            CounselingResultsState = counselingResultInfoViewStateList;
+            CareResultsState = careResultInfoViewStateList;
 
             mdAddResult.Hide();
             pnlView.Visible = true;
@@ -313,72 +313,73 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             if ( Page.IsValid )
             {
                 RockContext rockContext = new RockContext();
-                Service<CareRequest> counselingRequestService = new Service<CareRequest>( rockContext );
-                Service<CareResult> counselingResultService = new Service<CareResult>( rockContext );
+                Service<CareRequest> careRequestService = new Service<CareRequest>( rockContext );
+                Service<CareResult> careResultService = new Service<CareResult>( rockContext );
 
-                CareRequest counselingRequest = null;
-                int counselingRequestId = PageParameter( "CounselingRequestId" ).AsInteger();
+                CareRequest careRequest = null;
+                int careRequestId = PageParameter( "CareRequestId" ).AsInteger();
 
-                if ( !counselingRequestId.Equals( 0 ) )
+                if ( !careRequestId.Equals( 0 ) )
                 {
-                    counselingRequest = counselingRequestService.Get( counselingRequestId );
+                    careRequest = careRequestService.Get( careRequestId );
                 }
 
-                if ( counselingRequest == null )
+                if ( careRequest == null )
                 {
-                    counselingRequest = new CareRequest { Id = 0 };
-                    counselingRequest.Type = CareRequest.Types.Counseling;
+                    careRequest = new CareRequest { Id = 0 };
+                    careRequest.Type = CareRequest.Types.Care;
                 }
 
-                counselingRequest.FirstName = dtbFirstName.Text;
-                counselingRequest.LastName = dtbLastName.Text;
-                counselingRequest.Email = ebEmail.Text;
-                counselingRequest.RequestText = dtbRequestText.Text;
-                counselingRequest.ResultSummary = dtbSummary.Text;
-                counselingRequest.CampusId = cpCampus.SelectedCampusId;
-                counselingRequest.ProvidedNextSteps = dtbProvidedNextSteps.Text;
+
+                careRequest.FirstName = dtbFirstName.Text;
+                careRequest.LastName = dtbLastName.Text;
+                careRequest.Email = ebEmail.Text;
+                careRequest.RequestText = dtbRequestText.Text;
+                careRequest.ResultSummary = dtbSummary.Text;
+                careRequest.CampusId = cpCampus.SelectedCampusId;
                 
                 if ( lapAddress.Location != null )
                 {
-                    counselingRequest.LocationId = lapAddress.Location.Id;
+                    careRequest.LocationId = lapAddress.Location.Id;
                 }
 
-                counselingRequest.RequestedByPersonAliasId = ppPerson.PersonAliasId;
-                counselingRequest.WorkerPersonAliasId = ddlWorker.SelectedValue.AsIntegerOrNull();
-                counselingRequest.ConnectionStatusValueId = ddlConnectionStatus.SelectedValue.AsIntegerOrNull();
+                careRequest.RequestStatusValueId = ddlRequestStatus.SelectedValue.AsIntegerOrNull();
+                careRequest.RequestedByPersonAliasId = ppPerson.PersonAliasId;
+                careRequest.WorkerPersonAliasId = ddlWorker.SelectedValue.AsIntegerOrNull();
+                careRequest.ConnectionStatusValueId = ddlConnectionStatus.SelectedValue.AsIntegerOrNull();
 
                 if ( dpRequestDate.SelectedDate.HasValue )
                 {
-                    counselingRequest.RequestDateTime = dpRequestDate.SelectedDate.Value;
+                    careRequest.RequestDateTime = dpRequestDate.SelectedDate.Value;
                 }
 
-                counselingRequest.HomePhoneNumber = pnbHomePhone.Number;
-                counselingRequest.CellPhoneNumber = pnbCellPhone.Number;
-                counselingRequest.WorkPhoneNumber = pnbWorkPhone.Number;
+                careRequest.HomePhoneNumber = pnbHomePhone.Number;
+                careRequest.CellPhoneNumber = pnbCellPhone.Number;
+                careRequest.WorkPhoneNumber = pnbWorkPhone.Number;
 
-                List<CounselingResultInfo> resultListUI = CounselingResultsState;
-                var resultListDB = counselingRequest.CareResults.ToList();
+                List<CareResultInfo> resultListUI = CareResultsState;
+                var resultListDB = careRequest.CareResults.ToList();
 
-                // remove any Counseling Results that were removed in the UI
+                // remove any Care Results that were removed in the UI
                 foreach ( CareResult resultDB in resultListDB )
                 {
                     if ( !resultListUI.Any( r => r.ResultId == resultDB.Id ) )
                     {
-                        counselingRequest.CareResults.Remove( resultDB );
-                        counselingResultService.Delete( resultDB );
+                        careRequest.CareResults.Remove( resultDB );
+                        careResultService.Delete( resultDB );
                     }
                 }
 
-                // add any Counseling Results that were added in the UI
-                foreach ( CounselingResultInfo resultUI in resultListUI )
+                // add any Care Results that were added in the UI
+                foreach ( CareResultInfo resultUI in resultListUI )
                 {
                     var resultDB = resultListDB.FirstOrDefault( r => r.Guid == resultUI.TempGuid );
                     if ( resultDB == null )
                     {
                         resultDB = new CareResult();
-                        resultDB.CareRequestId = counselingRequest.Id;
+                        resultDB.CareRequestId = careRequest.Id;
                         resultDB.Guid = resultUI.TempGuid;
-                        counselingRequest.CareResults.Add( resultDB );
+                        careRequest.CareResults.Add( resultDB );
                     }
 
                     resultDB.Amount = resultUI.Amount;
@@ -386,29 +387,29 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                     resultDB.ResultTypeValueId = resultUI.ResultTypeValueId;
                 }
 
-                if ( counselingRequest.IsValid )
+                if ( careRequest.IsValid )
                 {
-                    if ( counselingRequest.Id.Equals( 0 ) )
+                    if ( careRequest.Id.Equals( 0 ) )
                     {
-                        counselingRequestService.Add( counselingRequest );
+                        careRequestService.Add( careRequest );
                     }
 
                     // get attributes
-                    counselingRequest.LoadAttributes();
-                    Rock.Attribute.Helper.GetEditValues( phAttributes, counselingRequest );
+                    careRequest.LoadAttributes();
+                    Rock.Attribute.Helper.GetEditValues( phAttributes, careRequest );
 
                     rockContext.WrapTransaction( () =>
                     {
                         rockContext.SaveChanges();
-                        counselingRequest.SaveAttributeValues( rockContext );
+                        careRequest.SaveAttributeValues( rockContext );
                     } );
 
                     // update related documents
                     var documentsService = new Service<CareDocument>( rockContext );
 
-                    // delete any images that were removed
+                    // delete any documents that were removed
                     var orphanedBinaryFileIds = new List<int>();
-                    var documentsInDb = documentsService.Queryable().Where( b => b.CareRequestId == counselingRequest.Id ).ToList();
+                    var documentsInDb = documentsService.Queryable().Where( b => b.CareRequestId == careRequest.Id ).ToList();
 
                     foreach ( var document in documentsInDb.Where( i => !DocumentsState.Contains( i.BinaryFileId ) ) )
                     {
@@ -425,8 +426,8 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                         if ( document == null )
                         {
                             document = new CareDocument();
-                            document.CareRequestId = counselingRequest.Id;
-                            counselingRequest.Documents.Add( document );
+                            document.CareRequestId = careRequest.Id;
+                            careRequest.Documents.Add( document );
                         }
                         document.BinaryFileId = binaryFileId;
                         document.Order = documentOrder;
@@ -471,10 +472,10 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void lbPrint_Click(object sender, EventArgs e)
         {
-            var counselingRequestId = this.PageParameter("CounselingRequestId").AsIntegerOrNull();       
-            if (counselingRequestId.HasValue && !counselingRequestId.Equals(0) && !string.IsNullOrEmpty(GetAttributeValue("CounselingRequestStatementPage")))
+            var careRequestId = this.PageParameter("CareRequestId").AsIntegerOrNull();       
+            if (careRequestId.HasValue && !careRequestId.Equals(0) && !string.IsNullOrEmpty(GetAttributeValue("CareRequestStatementPage")))
             {
-                NavigateToLinkedPage("CounselingRequestStatementPage", new Dictionary<string, string> { { "CounselingRequestId", counselingRequestId.ToString() } });
+                NavigateToLinkedPage("CareRequestStatementPage", new Dictionary<string, string> { { "CareRequestId", careRequestId.ToString() } });
             }               
         }
 
@@ -549,8 +550,8 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                     lapAddress.SetValue( person.GetHomeLocation() );
                     lapAddress.Enabled = false;
 
-                    // set the campus but not on page load (e will be null) unless from the person profile page (in which case CounselingRequestId in the query string will be 0)
-                    int? requestId = Request["CounselingRequestId"].AsIntegerOrNull();
+                    // set the campus but not on page load (e will be null) unless from the person profile page (in which case CareRequestId in the query string will be 0)
+                    int? requestId = Request["CareRequestId"].AsIntegerOrNull();
                     
                     if ( !cpCampus.SelectedCampusId.HasValue && ( e != null || (requestId.HasValue && requestId == 0 ) ) )
                     {
@@ -638,100 +639,122 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         /// <summary>
         /// Shows the detail.
         /// </summary>
-        /// <param name="counselingRequestId">The counseling request identifier</param>
-        public void ShowDetail( int counselingRequestId )
+        /// <param name="careRequestId">The care request identifier</param>
+        public void ShowDetail( int careRequestId )
         {
-            CareRequest counselingRequest = null;
+            CareRequest careRequest = null;
             var rockContext = new RockContext();
-            Service<CareRequest> counselingRequestService = new Service<CareRequest>( rockContext );
-            if ( !counselingRequestId.Equals( 0 ) )
+            Service<CareRequest> careRequestService = new Service<CareRequest>( rockContext );
+            if ( !careRequestId.Equals( 0 ) )
             {
-                counselingRequest = counselingRequestService.Get( counselingRequestId );
-                pdAuditDetails.SetEntity( counselingRequest, ResolveRockUrl( "~" ) );
+                careRequest = careRequestService.Get( careRequestId );
+                pdAuditDetails.SetEntity( careRequest, ResolveRockUrl( "~" ) );
             }
 
-            if ( counselingRequest == null )
+            if ( careRequest == null )
             {
-                counselingRequest = new CareRequest { Id = 0 };
-                counselingRequest.RequestDateTime = RockDateTime.Now;
+                careRequest = new CareRequest { Id = 0 };
+                careRequest.RequestDateTime = RockDateTime.Now;
                 var personId = this.PageParameter( "PersonId" ).AsIntegerOrNull();
                 if ( personId.HasValue )
                 {
                     var person = new PersonService( rockContext ).Get( personId.Value );
                     if ( person != null )
                     {
-                        counselingRequest.RequestedByPersonAliasId = person.PrimaryAliasId;
-                        counselingRequest.RequestedByPersonAlias = person.PrimaryAlias;
+                        careRequest.RequestedByPersonAliasId = person.PrimaryAliasId;
+                        careRequest.RequestedByPersonAlias = person.PrimaryAlias;
                     }
                 }
                 // hide the panel drawer that show created and last modified dates
                 pdAuditDetails.Visible = false;
             }
 
-            dtbFirstName.Text = counselingRequest.FirstName;
-            dtbLastName.Text = counselingRequest.LastName;
-            ebEmail.Text = counselingRequest.Email;
-            dtbRequestText.Text = counselingRequest.RequestText;
-            dtbSummary.Text = counselingRequest.ResultSummary;
-            dtbProvidedNextSteps.Text = counselingRequest.ProvidedNextSteps;
-            dpRequestDate.SelectedDate = counselingRequest.RequestDateTime;
+            dtbFirstName.Text = careRequest.FirstName;
+            dtbLastName.Text = careRequest.LastName;
+            ebEmail.Text = careRequest.Email;
+            dtbRequestText.Text = careRequest.RequestText;
+            dtbSummary.Text = careRequest.ResultSummary;
+            dpRequestDate.SelectedDate = careRequest.RequestDateTime;
 
-            if ( counselingRequest.Campus != null )
+            if ( careRequest.Campus != null )
             {
-                cpCampus.SelectedCampusId = counselingRequest.CampusId;
+                cpCampus.SelectedCampusId = careRequest.CampusId;
             }
             else
             {
                 cpCampus.SelectedIndex = 0;
             }
 
-            if ( counselingRequest.RequestedByPersonAlias != null )
+            if ( careRequest.RequestedByPersonAlias != null )
             {
-                ppPerson.SetValue( counselingRequest.RequestedByPersonAlias.Person );
+                ppPerson.SetValue( careRequest.RequestedByPersonAlias.Person );
             }
             else
             {
                 ppPerson.SetValue( null );
             }
 
-            if ( counselingRequest.HomePhoneNumber != null )
+            if ( careRequest.HomePhoneNumber != null )
             {
-                pnbHomePhone.Text = counselingRequest.HomePhoneNumber;
+                pnbHomePhone.Text = careRequest.HomePhoneNumber;
             }
 
-            if ( counselingRequest.CellPhoneNumber != null )
+            if ( careRequest.CellPhoneNumber != null )
             {
-                pnbCellPhone.Text = counselingRequest.CellPhoneNumber;
+                pnbCellPhone.Text = careRequest.CellPhoneNumber;
             }
 
-            if ( counselingRequest.WorkPhoneNumber != null )
+            if ( careRequest.WorkPhoneNumber != null )
             {
-                pnbWorkPhone.Text = counselingRequest.WorkPhoneNumber;
+                pnbWorkPhone.Text = careRequest.WorkPhoneNumber;
             }
 
-            lapAddress.SetValue( counselingRequest.Location );
+            lapAddress.SetValue( careRequest.Location );
 
-            LoadDropDowns( counselingRequest );
+            LoadDropDowns( careRequest );
 
-            if ( counselingRequest.ConnectionStatusValueId != null )
+            if ( careRequest.RequestStatusValueId != null )
             {
-                ddlConnectionStatus.SetValue( counselingRequest.ConnectionStatusValueId );
+                ddlRequestStatus.SetValue( careRequest.RequestStatusValueId );
+
+                if ( careRequest.RequestStatusValue.Value == "Approved" )
+                {
+                    hlStatus.Text = "Approved";
+                    hlStatus.LabelType = LabelType.Success;
+                }
+
+                if ( careRequest.RequestStatusValue.Value == "Denied" )
+                {
+                    hlStatus.Text = "Denied";
+                    hlStatus.LabelType = LabelType.Danger;
+                }
+
+                if ( careRequest.RequestStatusValue.Value == "Pending" )
+                {
+                    hlStatus.Text = "Pending";
+                    hlStatus.LabelType = LabelType.Default;
+                }
             }
 
-            ddlWorker.SetValue( counselingRequest.WorkerPersonAliasId );
+            if ( careRequest.ConnectionStatusValueId != null )
+            {
+                ddlConnectionStatus.SetValue( careRequest.ConnectionStatusValueId );
+            }
+
+            ddlWorker.SetValue( careRequest.WorkerPersonAliasId );
 
             BindGridFromViewState();
 
-            DocumentsState = counselingRequest.Documents.OrderBy( s => s.Order ).Select( s => s.BinaryFileId ).ToList();
+            DocumentsState = careRequest.Documents.OrderBy( s => s.Order ).Select( s => s.BinaryFileId ).ToList();
             BindDocuments( true );
 
-            counselingRequest.LoadAttributes();
-            Rock.Attribute.Helper.AddEditControls( counselingRequest, phAttributes, true, BlockValidationGroup, 2 );
+            careRequest.LoadAttributes();
+            Rock.Attribute.Helper.AddEditControls( careRequest, phAttributes, true, BlockValidationGroup, 2 );
 
             // call the OnSelectPerson of the person picker which will update the UI based on the selected person
             ppPerson_SelectPerson( null, null );
 
-            hfCounselingRequestId.Value = counselingRequest.Id.ToString();
+            hfCareRequestId.Value = careRequest.Id.ToString();
         }
 
         /// <summary>
@@ -739,16 +762,17 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         /// </summary>
         private void BindGridFromViewState()
         {
-            List<CounselingResultInfo> counselingResultInfoViewStateList = CounselingResultsState;
-            gResults.DataSource = counselingResultInfoViewStateList;
+            List<CareResultInfo> careResultInfoViewStateList = CareResultsState;
+            gResults.DataSource = careResultInfoViewStateList;
             gResults.DataBind();
         }
 
         /// <summary>
         /// Loads the drop downs.
         /// </summary>
-        private void LoadDropDowns( CareRequest counselingRequest )
+        private void LoadDropDowns( CareRequest careRequest )
         {
+            ddlRequestStatus.BindToDefinedType( DefinedTypeCache.Read( new Guid( church.ccv.Utility.SystemGuids.DefinedType.CARE_RESULT_STATUS ) ), false );
             ddlConnectionStatus.BindToDefinedType( DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS ) ), true );
 
             Guid groupGuid = GetAttributeValue( "WorkerRole" ).AsGuid();
@@ -758,12 +782,12 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                 .Select( gm => gm.Person )
                 .ToList();
 
-            string WorkerPersonAliasValue = counselingRequest.WorkerPersonAliasId.ToString();
-            if ( counselingRequest.WorkerPersonAlias != null && 
-                counselingRequest.WorkerPersonAlias.Person != null &&
-                !personList.Select( p => p.Id ).ToList().Contains( counselingRequest.WorkerPersonAlias.Person.Id ) )
+            string WorkerPersonAliasValue = careRequest.WorkerPersonAliasId.ToString();
+            if ( careRequest.WorkerPersonAlias != null && 
+                careRequest.WorkerPersonAlias.Person != null &&
+                !personList.Select( p => p.Id ).ToList().Contains( careRequest.WorkerPersonAlias.Person.Id ) )
             {
-                personList.Add( counselingRequest.WorkerPersonAlias.Person );
+                personList.Add( careRequest.WorkerPersonAlias.Person );
             }
 
             ddlWorker.DataSource = personList.OrderBy( p => p.NickName ).ThenBy( p => p.LastName ).ToList();
@@ -775,13 +799,13 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
 
         #endregion
 
-        #region CounselingResultInfo
+        #region CareResultInfo
 
         /// <summary>
-        /// The class used to store CounselingResult info.
+        /// The class used to store CareResult info.
         /// </summary>
         [Serializable]
-        public class CounselingResultInfo
+        public class CareResultInfo
         {
             [DataMember]
             public int? ResultId { get; set; }

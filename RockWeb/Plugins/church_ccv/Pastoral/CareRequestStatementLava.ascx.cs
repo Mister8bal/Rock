@@ -13,12 +13,12 @@ using church.ccv.Pastoral.Model;
 
 namespace RockWeb.Plugins.church_ccv.Pastoral
 {
-    [DisplayName("Counseling Request Statement Lava")]
+    [DisplayName("Care Request Statement Lava")]
     [Category( "CCV > Pastoral" )]
-    [Description( "Block for displaying a Lava based Counseling Request detail." )]
-    [CodeEditorField("Lava Template", "The Lava template to use for the Counseling Request statement.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 500, true, @"
+    [Description( "Block for displaying a Lava based Care Request detail." )]
+    [CodeEditorField("Lava Template", "The Lava template to use for the Care Request statement.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 500, true, @"
 {% capture pageTitle %}
-    Counseling Request for {{ Request.FirstName }} {{ Request.LastName }}
+    Care Request for {{ Request.FirstName }} {{ Request.LastName }}
 {% endcapture %}
 {{ pageTitle | SetPageTitle }}
 
@@ -35,14 +35,14 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         </div>
     </div>
     <div class=""col-md-6 text-right hidden-print"">
-        <h4>Counseling Request for {{ Request.FirstName }} {{ Request.LastName }}</h4>
+        <h4>Care Request for {{ Request.FirstName }} {{ Request.LastName }}</h4>
         <p>Requested: {{ Request.RequestDateTime | Date:'M/d/yyyy' }}<p>
     </div>
 </div>
 <hr style=""opacity: .5;"" />
 <div class=""row"">
     <div class=""col-xs-12"">
-        <h4 class=""visible-print-block"">Counseling Request for {{ Request.FirstName }} {{ Request.LastName }}
+        <h4 class=""visible-print-block"">Care Request for {{ Request.FirstName }} {{ Request.LastName }}
         <br />
         <small>Requested: {{ Request.RequestDateTime | Date:'M/d/yyyy' }}</small></h4>
     </div>
@@ -96,10 +96,6 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         <h4>Summary</h4>
         <p> {{ Request.ResultSummary }} </p>
     </div>
-    <div class=""col-xs-4"">
-        <h4>Next Steps</h4>
-        <p> {{ Request.ProvidedNextSteps  }} </p>
-    </div>
 </div>
 
         
@@ -130,7 +126,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
     </div>
 {% endif %}", order: 2)]
     [BooleanField("Enable Debug", "Shows the merge fields available for the Lava", order:3)]
-    public partial class CounselingRequestStatementLava : Rock.Web.UI.RockBlock
+    public partial class CareRequestStatementLava : Rock.Web.UI.RockBlock
     {
         #region Base Control Methods
 
@@ -187,15 +183,15 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         {
             RockContext rockContext = new RockContext();
 
-            if (Request["CounselingRequestId"] != null)
+            if (Request["CareRequestId"] != null)
             {
                 int id;
-                int.TryParse(Request["CounselingRequestId"].ToString(), out id);
+                int.TryParse(Request["CareRequestId"].ToString(), out id);
 
-                var counselingRequest = new Service<CareRequest>(rockContext).Get(id);
+                var careRequest = new Service<CareRequest>(rockContext).Get(id);
 
                 var mergeFields = new Dictionary<string, object>();
-                mergeFields.Add("Request", counselingRequest);      
+                mergeFields.Add("Request", careRequest);      
 
                 var template = GetAttributeValue("LavaTemplate");
 

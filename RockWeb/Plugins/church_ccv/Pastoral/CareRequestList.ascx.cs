@@ -19,16 +19,16 @@ using Rock.Web.UI.Controls;
 namespace RockWeb.Plugins.church_ccv.Pastoral
 {
     /// <summary>
-    /// Block used to list Counseling Requests
+    /// Block used to list Care Requests
     /// </summary>
-    [DisplayName( "Counseling Request List" )]
+    [DisplayName( "Care Request List" )]
     [Category( "CCV > Pastoral" )]
-    [Description( "Block used to list Counseling Requests." )]
+    [Description( "Block used to list Care Requests." )]
 
     [ContextAware( typeof( Person ) )]
     [LinkedPage( "Detail Page" )]
-    [SecurityRoleField( "Worker Role", "The security role to draw workers from", true, church.ccv.Utility.SystemGuids.Group.GROUP_COUNSELING_WORKERS )]
-    public partial class CounselingRequestList : RockBlock
+    [SecurityRoleField( "Worker Role", "The security role to draw workers from", true, church.ccv.Utility.SystemGuids.Group.GROUP_CARE_WORKERS )]
+    public partial class CareRequestList : RockBlock
     {
         #region Properties
 
@@ -173,6 +173,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             rFilter.SaveUserPreference( "Last Name", "Last Name", tbLastName.Text );
             rFilter.SaveUserPreference( "Worker", "Worker", ddlWorker.SelectedItem.Value );
             rFilter.SaveUserPreference( "Result", "Result", ddlResult.SelectedItem.Value );
+            rFilter.SaveUserPreference( "Status", "Status", ddlStatus.SelectedItem.Value );
             rFilter.SaveUserPreference( "Campus", "Campus", cpCampus.SelectedCampusId.ToString() );
 
             if ( AvailableAttributes != null )
@@ -260,19 +261,19 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         {
             if ( e.Row.RowType == DataControlRowType.DataRow )
             {
-                CareRequest counselingRequest = e.Row.DataItem as CareRequest;
-                if ( counselingRequest != null )
+                CareRequest careRequest = e.Row.DataItem as CareRequest;
+                if ( careRequest != null )
                 {
                     Literal lName = e.Row.FindControl( "lName" ) as Literal;
                     if ( lName != null )
                     {
-                        if ( counselingRequest.RequestedByPersonAlias != null )
+                        if ( careRequest.RequestedByPersonAlias != null )
                         {
-                            lName.Text = string.Format( "<a href=\"{0}\">{1}</a>", ResolveUrl( string.Format( "~/Person/{0}", counselingRequest.RequestedByPersonAlias.PersonId ) ), counselingRequest.RequestedByPersonAlias.Person.FullName ?? string.Empty );
+                            lName.Text = string.Format( "<a href=\"{0}\">{1}</a>", ResolveUrl( string.Format( "~/Person/{0}", careRequest.RequestedByPersonAlias.PersonId ) ), careRequest.RequestedByPersonAlias.Person.FullName ?? string.Empty );
                         }
                         else
                         {
-                            lName.Text = string.Format( "{0} {1}", counselingRequest.FirstName, counselingRequest.LastName );
+                            lName.Text = string.Format( "{0} {1}", careRequest.FirstName, careRequest.LastName );
                         }
                     }
 
@@ -281,7 +282,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                     {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.Append( "<div class='col-md-12'>" );
-                        foreach ( CareResult result in counselingRequest.CareResults )
+                        foreach ( CareResult result in careRequest.CareResults )
                         {
                             if ( result.Amount != null )
                             {
@@ -296,6 +297,26 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                         stringBuilder.Append( "</div>" );
                         lResults.Text = stringBuilder.ToString();
                     }
+
+                    HighlightLabel hlStatus = e.Row.FindControl( "hlStatus" ) as HighlightLabel;
+                    if ( hlStatus != null )
+                    {
+                        switch ( careRequest.RequestStatusValue.Value )
+                        {
+                            case "Approved":
+                                hlStatus.Text = "Approved";
+                                hlStatus.LabelType = LabelType.Success;
+                                return;
+                            case "Denied":
+                                hlStatus.Text = "Denied";
+                                hlStatus.LabelType = LabelType.Danger;
+                                return;
+                            case "Pending":
+                                hlStatus.Text = "Pending";
+                                hlStatus.LabelType = LabelType.Default;
+                                return;
+                        }
+                    }
                 }
             }
         }
@@ -309,7 +330,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         protected void gList_AddClick( object sender, EventArgs e )
         {
             var qryParams = new Dictionary<string, string>();
-            qryParams.Add( "CounselingRequestId", 0.ToString() );
+            qryParams.Add( "CareRequestId", 0.ToString() );
             if ( TargetPerson != null )
             {
                 qryParams.Add( "PersonId", TargetPerson.Id.ToString() );
@@ -326,7 +347,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
         protected void gList_Edit( object sender, RowEventArgs e )
         {
             var qryParams = new Dictionary<string, string>();
-            qryParams.Add( "CounselingRequestId", e.RowKeyId.ToString() );
+            qryParams.Add( "CareRequestId", e.RowKeyId.ToString() );
             if ( TargetPerson != null )
             {
                 qryParams.Add( "PersonId", TargetPerson.Id.ToString() );
@@ -346,10 +367,10 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
 
             Service<CareRequest> service = new Service<CareRequest>( rockContext );
 
-            CareRequest counselingRequest = service.Get( e.RowKeyId );
-            if ( counselingRequest != null )
+            CareRequest careRequest = service.Get( e.RowKeyId );
+            if ( careRequest != null )
             {
-                service.Delete( counselingRequest );
+                service.Delete( careRequest );
                 rockContext.SaveChanges();
             }
 
@@ -402,6 +423,9 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
 
             ddlResult.BindToDefinedType( DefinedTypeCache.Read( new Guid( church.ccv.Utility.SystemGuids.DefinedType.CARE_RESULT_TYPE ) ), true );
             ddlResult.SetValue( rFilter.GetUserPreference( "Result" ) );
+
+            ddlStatus.BindToDefinedType( DefinedTypeCache.Read( new Guid( church.ccv.Utility.SystemGuids.DefinedType.CARE_RESULT_STATUS ) ), true );
+            ddlStatus.SetValue( rFilter.GetUserPreference( "Status" ) );
 
             // set attribute filters
             BindAttributes();
@@ -483,8 +507,8 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             gList.Visible = true;
             RockContext rockContext = new RockContext();
 
-            Service<CareRequest> counselingService = new Service<CareRequest>( rockContext );
-            var qry = counselingService.Queryable( "CareResults,RequestedByPersonAlias,RequestedByPersonAlias.Person,WorkerPersonAlias,WorkerPersonAlias.Person" ).Where(p => p.Type == CareRequest.Types.Counseling);
+            Service<CareRequest> careService = new Service<CareRequest>( rockContext );
+            var qry = careService.Queryable( "CareResults,RequestedByPersonAlias,RequestedByPersonAlias.Person,WorkerPersonAlias,WorkerPersonAlias.Person" ).Where(p => p.Type == CareRequest.Types.Care);
             
             // Filter by Start Date
             DateTime? startDate = drpDate.LowerValue;
@@ -541,6 +565,13 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
             if ( resultTypeValueId != null )
             {
                 qry = qry.Where( b => b.CareResults.Where( r => r.ResultTypeValueId == resultTypeValueId ).Count() > 0 );
+            }
+
+            // Filter by Request Status
+            int? requestStatusValueId = ddlStatus.SelectedItem.Value.AsIntegerOrNull();
+            if ( requestStatusValueId != null )
+            {
+                qry = qry.Where( b => b.RequestStatusValueId == requestStatusValueId );
             }
 
             SortProperty sortProperty = gList.SortProperty;
