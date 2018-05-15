@@ -8990,27 +8990,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     z-index: 1;
 }
 
-.campusmodal {
-    position: relative;
-    background: #FFF;
-    width: auto;
-    margin: 20px 10%;
-}
-
-.campusmodal-map {
-    min-height: 70vh;
-}
-
-.campusmodal-instructions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1em;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-}
-
 .card {
     position: relative;
     display: block;
@@ -10363,17 +10342,19 @@ html,body{
 
 /* sytle for login block*/
 .loginstatus {
-    float: left;
-    padding: 7px 2px 0px 2px;
     color: #FFFFFF;
     font-family: akrobat;
     font-weight: bold;
     font-size: 14px;
-	text-transform: uppercase;
+    text-transform: uppercase;
 }
 
-.loginstatus a {
-	text-decoration: none;
+.loginstatus li a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding-top: unset;
+    padding-bottom: unset;
 }
 
 .loginstatus .masthead-navitem {
