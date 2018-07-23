@@ -1,8 +1,7 @@
 {% include '~~/Assets/Lava/home/locations/campus-landing-page-util.lava' %} 
 
-<div class="container-fluid infoSection">
-    <div class="row">
-        <div class="col-md-6">
+    <div class="campus-info">
+        <div class="campus-info-content">
             <h5 style="color: black;">EVERYTHING YOU NEED TO KNOW</h5>
             <h3>ABOUT CCV {{ campus.Name }}</h3>
             <p>{{ campus.History }}</p>
@@ -17,7 +16,7 @@
                You will receive a matching pick-up receipt which will be required to pick your child up after service. Jr High and High School Students are able to check themselves into class using the self-service kiosks.
             </p>
         </div>
-        <div class="col-md-offset-2 col-md-4">
+        <div class="campus-info-right">
             <div class="campus-info-card">
                 <div class="content">
                     <div class="address">
@@ -41,14 +40,14 @@
                         {% endif %}
                         
                         {% assign times = campus.ServiceTimes %}
-                        {% include '~~/Assets/Lava/ServiceTimes/Grid.lava' %}
+                        {% include '~~/Assets/Lava/service-times/grid.lava' %}
                     </div>
 
                     <div class="kids-students-times">
                         <h5>KIDS & STUDENTS TIMES</h5>
                         <div class="time-entry">
                             <p class="time-entry-label">Infant to 6th Grade</p>
-                            <p>Available during all services</p>
+                            <p class="time-entry-details">Available during all services</p>
                         </div>
                         <div class="time-entry">
                             <p class="time-entry-label">7th Grade</p>
@@ -74,6 +73,13 @@
                     </div>
                 </div>
             </div>
+            <div class="icon-details">
+                <div class="icon-desc">
+                    <p><span class="csi csi-slt"></span> Sign language available</p>
+                </div>
+                <div class="icon-desc">
+                    <p><span class="csi csi-special-needs"></span> Special Needs</p>
+                </div>
+            </div>
         </div>
     </div>
-</div>

@@ -1,55 +1,56 @@
 .page-background {
-   background-color: #EBEBEB;
-   background-image: url("/Themes/church_ccv_External_v8/Assets/Images/hero-image-missing.jpg");
+	background-color: #EBEBEB;
+	background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-missions-partners.jpg");
+ }
+ 
+ /* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-missions-partners.jpg");
+    }
 }
 
-#ternavbar-bg {
-    display: flex;
-}
+ #ternavbar-bg {
+	 display: flex;
+ }
+ 
+ .navigation-tertiary-items {
+	 margin-left: -15%;
+ }
+ 
+ .navigation-tertiary-item {
+	 
+ }
+ 
+ .event-cards-row {
+	flex-wrap: wrap;
+	justify-content: space-between;
+ }
+ 
+ @media screen and (min-width: 992px) {
+	.event-cards-row {
+	   justify-content: left;
+	}
+ }
+ 
+ @media (max-width: 1100px){
 
-#section-a-bg {
-	background-color: #F6F6F6;
 }
-
-#section-b-bg {
-	display: none;
-}
-
-.navigation-tertiary-items {
-    margin-left: -15%;
-}
-
-.navigation-tertiary-item {
-    padding: 10px 20px;
-}
-
-.event-cards-row {
-   flex-wrap: wrap;
-   justify-content: center;
-}
-
-@media screen and (min-width: 992px) {
-   .event-cards-row {
-      justify-content: left;
-   }
-}
-
-.event-card {
-   width: 370px;
-   height: 450px;
-}
-
-.missions-partners-card-override {
-   padding-bottom: 25px;
-   height: 500px;
-   margin-bottom: 25px;
-}
-
-.event-card.missions-partners-card-override .image img {
-   object-fit: contain;
-}
-
-.event-card.missions-partners-card-override .read-more a {
-   font-weight: 900;
-   display: flex;
-}
+ .event-card {
+	height: 450px;
+ }
+ 
+ .missions-partners-card-override {
+	padding-bottom: 25px;
+	height: 500px;
+	margin-bottom: 25px;
+ }
+ 
+ .event-card.missions-partners-card-override .image img {
+	object-fit: cover;
+ }
+ 
+ .event-card.missions-partners-card-override .read-more a {
+	font-weight: 900;
+	display: flex;
+ }

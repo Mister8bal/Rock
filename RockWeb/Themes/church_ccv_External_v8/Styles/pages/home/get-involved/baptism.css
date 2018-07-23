@@ -1,18 +1,36 @@
 .page-background {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/hero-image-missing.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-baptism.jpg");
     background-color: #FFFFFF;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-baptism.jpg");
+    }
 }
 
 #ternavbar-bg {
     display: none;
 }
 
-#section-a-bg {
-	background-color: #f9f9f9;
+#section-b-bg {
+    background-color: #ffffff;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
-#section-b-bg {
-	background-color: #ffffff;
+.faqs h2 {
+    margin-top: 0;
+}
+
+/* Weird padding fix... */
+/* Standard Layout Tablet Styling */
+@media screen and (max-width: 768px) {
+    #section-c-bg {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
 }
 
 /* Start Select A Day styling */
@@ -47,10 +65,9 @@
 }
 
 /* Select A Day Mobile Styling */
-@media screen and (min-width: 1024px) {
+@media screen and (max-width: 500px) {
     .event-item-list-container {
-        justify-content: flex-start;
-        margin-left: 10px;
+        justify-content: center;
     }
 }
 /* End Select A Day Styling */

@@ -1,11 +1,23 @@
 .page-background {
     background-color :#000 !important;
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/hero-home.jpg") !important;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/hero-home.jpg") !important;
     background-size: unset;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/hero-mobile-home.jpg") !important;
+    }
+}
+
+#subnavbar-bg {
+    display: none;
 }
 
 .main-feature {
     padding-top: 175px;
+    height: unset;
 }
 
 .title h1 {
@@ -20,6 +32,12 @@
     align-items: center;
     margin-bottom: 155px;
     margin-top: 25px;
+}
+
+@media screen and (max-width: 500px) {
+    .title-buttons {
+        flex-direction: column;
+    }
 }
 
 .btn-register, .btn-login {
@@ -64,6 +82,10 @@
     background-color: #000;
 }
 
+#section-a-bg {
+    display: none;
+}
+
 #ternavbar-bg {
     display: none;
 }
@@ -93,7 +115,7 @@
 .cta-cards {
     display: flex;
     justify-content: space-around;
-    /* margin: 0 -30px; */
+    margin-bottom: 100px;
 }
 
 .cta-card {
@@ -101,9 +123,9 @@
     flex-direction: column;
     width: 30%;
     min-height: 210px;
-    background-color: rgba(0,0,0,.7);
-    /* margin: 0 15px; */
+    background-color: rgba(247, 244, 244, 0.15);
     padding: 30px;
+    border-radius: 5px;
 }
 
 .cta-link {
@@ -152,7 +174,7 @@
     }
 
     .cta-card {
-        width: 85%;
+        width: 100%;
         align-self: center;
         margin-bottom: 10px;
         min-height: 250px;
@@ -346,14 +368,26 @@
     }
 }
 
+/* Tablet Styling */
+@media screen and (max-width: 768px) { 
+    .about-church {
+        margin: 0;
+        padding: 20px 0;
+    }
+}
+
 /* End About Church Section */
 
 /* Kids / Students Section */
 #zone-sectiond {
-    margin: unset;
+    margin: 0 -15px;
     max-width: unset;
-    margin-left: -15px;
-    margin-right: -15px;
+}
+
+@media screen and (max-width: 500px) {
+    #zone-sectiond {
+        margin: 0;
+    }
 }
 
 .kids-students {
@@ -362,7 +396,7 @@
 }
 
 .kids {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home-kids-info.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-kids.jpg");
     width: 50%;
     height: 600px;
     display: flex;
@@ -376,7 +410,7 @@
 }
 
 .students {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home-students-info.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-students.jpg");
     width: 50%;
     height: 600px;
     display: flex;
@@ -393,6 +427,21 @@
     margin-top: 30px;
 }
 
+/* Tablet Styling */
+@media screen and (max-width: 768px) { 
+    .kids-students {
+        flex-direction: column
+    }
+
+    .kids, .students {
+        width: 100%;
+    }
+
+    .kids-students .btn {
+        width: 95%;
+    }
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) { 
     .kids-students {
@@ -406,38 +455,14 @@
     .students img {
         width: 90%;
     }
+
+    .kids-students .btn {
+        width: 85%
+    }
 }
+
 
 /* End Kids / Studetns Section */
-
-/* Events Section */
-
-.dashboard-events-row {
-    margin-top: 30px;
-}
-
-/* Mobile Styling */
-@media screen and (max-width: 500px) { 
-    .dashboard-events-row {
-        margin-top: 0;
-    }
-
-    .event-cards-header {
-        flex-direction: column;
-        align-items: flex-start;
-        margin-left: 0;
-    }
-
-    .event-card {
-        margin: 5px 0;
-    }
-}
-
-.event-card .image img {
-    object-fit: cover;
- }
-
-/* End Events Section */
 
 .btn.btn-primary:focus {
     outline: none;

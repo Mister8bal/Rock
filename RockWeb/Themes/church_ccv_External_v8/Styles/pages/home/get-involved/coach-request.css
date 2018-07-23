@@ -1,22 +1,24 @@
 .page-background {   
     background-color: #EBEBEB;
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/hero-image-missing.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-coach.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-coach.jpg");
+    }
+}
+
+/* use the expanded main feature only for tablet and larger */
+@media screen and (min-width: 501px) {
+    .main-feature {
+        height: 350px;
+        padding-top: 125px;
+    }
 }
 
 #ternavbar-bg {
-    display: none;
-}
-
-#section-a-bg {
-    background-color: #f9f9f9;
-    padding: 20px 0px 20px 0px;
-}
-
-#section-b-bg {
-    display: none;
-}
-
-#section-c-bg {
     display: none;
 }
 
@@ -28,18 +30,9 @@ h4 {
     color: #000000;
 }
 
-.workflow-entry-panel {
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; 
-    border-radius: 5px;
-    margin-top: 20px;
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 0 auto;
-}
-
 .coaching-name-fields {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: 25px;
     flex-wrap: wrap;
 }
@@ -50,16 +43,12 @@ h4 {
 
 .first-name, .last-name, .email-address, .phone-number {
     width: 300px;
+    margin-right: 15px;
 }
 
 .coaching-info-fields {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
+    justify-content: flex-start;
 
-@media screen and (min-width: 927px) {
-    .workflow-entry-panel {
-        width: 60%;
-    }
+    flex-wrap: wrap;
 }

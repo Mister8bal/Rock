@@ -3,8 +3,13 @@
 {% endcomment %}
 
 {% assign urlSegs = 'Global' | Page:'Url' | Url:'segments' %}
-{% assign navSection = urlSegs[1] | Downcase %}
-{% assign navSection = navSection | Replace:'/', '' %}
+{% assign urlSegsSize = urlSegs | Size %}
+{% if urlSegsSize > 1 %}
+    {% assign navSection = urlSegs[1] | Downcase %}
+    {% assign navSection = navSection | Replace:'/', '' %}
+{% else %}
+    {% assign navSection = 'home' %}
+{% endif %}
 
 {% if Page.DisplayChildPages == 'true' and Page.Pages != empty %}
 
@@ -29,16 +34,12 @@
                     {% if childPageTitle == 'get involved' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
-                {% when 'locationsv2' %}
+                {% when 'locations' %}
                     {% if childPageTitle == 'locations' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
-                {% when 'watchv2' %}
+                {% when 'watch' %}
                     {% if childPageTitle == 'watch' %}
-                        {% assign activeClass = 'active' %}
-                    {% endif %}
-                {% when 'givingv2' %}
-                    {% if childPageTitle == 'giving' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
                 {% else %}

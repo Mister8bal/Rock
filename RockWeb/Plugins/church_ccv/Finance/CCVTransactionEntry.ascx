@@ -1,6 +1,6 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVTransactionEntry.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVTransactionEntry" %>
 
-<link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/giving.css">
+<link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/home/get-involved/giving.css">
 
 <asp:UpdatePanel ID="upPayment" runat="server">
     <ContentTemplate>
@@ -262,7 +262,7 @@
 
                     <asp:Label runat="server" ID="lblSuccessMessage" CssClass="success-message">
                         Thank you for your generous contribution.<br />
-                        Your support is helping actively achieve our mission.<br />
+                        Your support is helping to actively achieve our mission.<br />
                         We are so grateful for your commitment.
                     </asp:Label>
 
@@ -324,7 +324,7 @@
                     </asp:Panel>
 
                     <%-- Manage Transaction Link --%>
-                    <asp:HyperLink ID="hlSuccessLink" runat="server" Text="To fully manage your account, please login / register" NavigateUrl="/loginv2" CssClass="success-link" />
+                    <asp:HyperLink ID="hlSuccessLink" runat="server" Text="To fully manage your account, please login / register" NavigateUrl="/login" CssClass="success-link" />
 
                     <%-- Success Details --%>
                     <div class="success-details">
