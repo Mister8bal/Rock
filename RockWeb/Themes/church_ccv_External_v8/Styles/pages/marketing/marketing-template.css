@@ -7,19 +7,18 @@
     background-color: rgb(248, 248, 244);
 }
 
-.main-feature {
+/* .main-feature {
     padding-top: 65px;
-    max-height: max-content;
-    height: unset;
-}
+} */
 
 /*  
  *  Declaring global variables
  */
 
  .page-background {
-    background-color: var(--page-bg-color); /*  rgb(2, 0, 0);  */
+    background-color: var(--page-bg-color);
  }
+
  .event-cards-header h3 {
     color: black;
     font-size: 35px;
@@ -171,48 +170,60 @@ p {
  *  Page Background Section
  */
 
- /* .page-background {
-    /* background-image: var(--section-feature-bg-desktop);   *
-    background-size: cover;
-} */
 
-#zone-feature {
-    margin-left: -15px;
-    margin-right: -15px;  
-    max-width: initial;
-}
 
 #feature-image-desktop {
-    background-image: var(--section-feature-bg-desktop); 
-    height: var(--section-feature-height-desktop);
-    display: block;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-#feature-image-mobile {
-    display: none;
+    padding-top: var(--section-feature-padding-top-desktop); /* 300px; */
 }
 
 .page-background {
-    background-image: unset;
+    background-image: var(--section-feature-bg-desktop);  
 }  
+
+.main-feature {
+    height: var(--section-feature-height-desktop);
+}
+
+ul.feature-list {
+    list-style-position: inside;
+    font-size: var(--section-feature-fontsize-desktop);
+    padding-left: var(--section-feature-list-padding-left-desktop);
+}
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) { 
-
-    #feature-image-mobile {
+    .page-background {
         background-image: var(--section-feature-bg-mobile); 
-        height: var(--section-feature-height-mobile);
-        display: block;
-        background-size: cover;
-        background-position: right;
-        background-repeat: no-repeat;
+        background-size: contain;
     }
 
-    #feature-image-desktop {
-        display: none;
+    .main-feature {
+        min-height: 390px;
+        height: var(--section-feature-height-mobile);
+    }
+}
+
+@media screen and (max-width: 375px) { 
+    .page-background {
+        background-image: var(--section-feature-bg-mobile); 
+        background-size: contain;
+    }
+
+    .main-feature {
+        min-height: 360px;
+        height: var(--section-feature-height-mobile);
+    }
+}
+
+@media screen and (max-width: 320px) { 
+    .page-background {
+        background-image: var(--section-feature-bg-mobile); 
+        background-size: contain;
+    }
+
+    .main-feature {
+        min-height: 300px;
+        height: var(--section-feature-height-mobile);
     }
 }
 
@@ -236,8 +247,6 @@ p {
 .sectionA {
     padding-top: var(--section-a-padding-top-desktop); /* 300px; */
 }
-
-
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) { 
@@ -437,6 +446,11 @@ p {
     .leftsidepicture, .rightsidepicture {
         width: 100%;
         height: var(--section-e-height-mobile-and-desktop); /* 300px; */
+    }
+
+    #zone-sectione {
+        margin-left: 0px;
+        margin-right: 0px;
     }
 }
 

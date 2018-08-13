@@ -182,7 +182,7 @@
                                     <div id="{{eventOccurrenceSummary.EventItemOccurrence.Id}}" class="item-details" onClick="setSelectedEvent( {{eventOccurrenceSummary.EventItemOccurrence.Id}} );">
                                         <div class="item-info">
                                             <h4>{{ eventOccurrenceSummary.Name }}</h4>
-                                            <p>Click for Dates</p>
+                                            <p>Click on Learn More for Dates</p>
                                         </div>
                                         <i class="mdi mdi-chevron-right"></i> 
                                     </div>
@@ -212,14 +212,12 @@
                                 {% endif %}
 
                                 {% if showRegistration == true %}
-                                    {% if linkage.RegistrationInstance.RegistrationTemplate.FinancialGatewayId == 4 %}
-                                        {% capture regInfo %}<a href="{{ starsRegistrationPage }}?RegistrationInstanceId={{ linkage.RegistrationInstanceId }}&EventOccurrenceID={{ eventOccurrenceSummary.EventItemOccurrence.Id }}" class="btn btn-primary">Register Now</a>{% endcapture %}
-                                    {% else %}
-                                        {% capture regInfo %}<a href="{{ registrationPage }}?RegistrationInstanceId={{ linkage.RegistrationInstanceId }}&EventOccurrenceID={{ eventOccurrenceSummary.EventItemOccurrence.Id }}" class="btn btn-primary">Register Now</a>{% endcapture %}
-                                    {% endif %}
+                                    {% capture regInfo %}<a href="{{ registrationPage }}?RegistrationInstanceId={{ linkage.RegistrationInstanceId }}&EventOccurrenceID={{ eventOccurrenceSummary.EventItemOccurrence.Id }}" class="btn btn-primary">Register Now</a>{% endcapture %}
                                 {% else %}
                                     {% capture regInfo %}<div class="btn btn-primary" disabled>Registration Closed</div><br/><span class="registration-closed">{{ registrationMessage }}</span></div>{% endcapture %}
                                 {% endif %}
+                            {% else %}
+                                {% assign regInfo = '' %}
                             {% endif %}
                            
                             <script>
