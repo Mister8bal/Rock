@@ -13,6 +13,7 @@
         <asp:HiddenField ID="hfPaymentType" runat="server" Value="CC" ClientIDMode="Static" />
         <asp:HiddenField ID="hfSavedPaymentAccountName" runat="server" Value="" />
         <asp:HiddenField ID="hfIsScheduledTransaction" runat="server" Value="false" ClientIDMode="Static" />
+        <asp:HiddenField ID="hfSuccessScheduleStartDate" runat="server" Value="" ClientIDMode="Static" />
 
         <div class="transaction-card">
         
@@ -343,11 +344,10 @@
 
                             <Rock:RockDropDownList ID="ddlSuccessScheduleFrequency" runat="server" ClientIDMode="Static" AutoPostBack="false" DataValueField="Id" DataTextField="Name" Label="Frequency" />
 
-                            <div class="schedule-date">
+                            <span class="control-label">Next Payment Date</span><br />
 
-                                <Rock:DatePicker runat="server" ID="dpSuccessScheduleStartDate" Label="Select a start date for your recurring giving plan" ClientIDMode="Static"></Rock:DatePicker>
-
-                            </div>
+                            <asp:Label ID="lblSuccessScheduleStartDate" runat="server" CssClass="details-item" ClientIDMode="Static"></asp:Label><br />
+                            <br />
                             
                         </asp:Panel>
 

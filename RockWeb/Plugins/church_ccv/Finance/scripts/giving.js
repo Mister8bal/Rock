@@ -241,41 +241,67 @@ function pageLoad() {
     // Schedule Recurring Transaction Panel
 
     // configure the schedule start for date pickers
-    var currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1);
+    var tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
 
     $('#dpScheduledTransactionStartDate').datepicker({
         format: 'mm/dd/yyyy',
-        startDate: currentDate
-    });
-
-    $('#dpSuccessScheduleStartDate').datepicker({
-        format: 'mm/dd/yyyy',
-        startDate: currentDate
+        startDate: tomorrowDate
     });
 
     // configured default date for date pickers
-    $('#dpScheduledTransactionStartDate').datepicker('update', currentDate);
-    $('#dpSuccessScheduleStartDate').datepicker('update', currentDate);
+    $('#dpScheduledTransactionStartDate').datepicker('update', tomorrowDate);
 
     // Validate schedule drop down list
     $('#ddlSuccessScheduleFrequency').on('click', function () {
         if ($(this).find(':selected').val() && $(this).find(':selected').val() !== '-1') {
+            // Calculate days until next payment
+            var daysUntilNextPayment = null;
+            switch ($(this).find(':selected').val()) {
+                case '35711e44-131b-4534-b0b2-f0a749292362': {
+                    // Weekly
+                    daysUntilNextPayment = 7;
+                    break;
+                }
+                case '72990023-0d43-4554-8d32-28461cab8920': {
+                    // Bi-Weekly
+                    daysUntilNextPayment = 14;
+                    break;
+                }
+                case '791c863d-2600-445b-98f8-3e5b66a3dec4': {
+                    // Twice a Month
+                    daysUntilNextPayment = 15;
+                    break;
+                }
+                case '1400753c-a0f9-4a45-8a1d-81c98450bd1f': {
+                    // Monthly
+                    daysUntilNextPayment = 31;
+                    break;
+                }
+                default: {
+                    // something went wrong, highlight error
+                    $(this).parents('div.form-group').addClass('has-error');
+                    break;
+                }
+            }
+
+            if (daysUntilNextPayment) {
+                // set hidden field so code behind has access to the value
+                $('#hfSuccessScheduleStartDate').val(moment().add(daysUntilNextPayment, 'days').calendar());
+
+                // update schedule start date label
+                $('#lblSuccessScheduleStartDate').html(moment().add(daysUntilNextPayment, 'days').calendar());
+            }
+
+            // Clear errors
             $(this).parents('div.form-group').removeClass('has-error');
         } else {
+            // errors exist
+            if ($(this).find(':selected').val() === '-1') {
+                // if placeholder selected, clear schedule start date label
+                $('#lblSuccessScheduleStartDate').html('');
+            }
             $(this).parents('div.form-group').addClass('has-error');
-        }
-
-        // enable / disable save button
-        setInputSaveButtonState();
-    });
-
-    // Validate schedule start date picker
-    $('#dpSuccessScheduleStartDate').on('change', function () {
-        if (/^02\/(?:[01]\d|2\d)\/(?:0[048]|[13579][26]|[2468][048])|(?:0[13578]|10|12)\/(?:[0-2]\d|3[01])\/\d{2}|(?:0[469]|11)\/(?:[0-2]\d|30)\/\d{2}|02\/(?:[0-1]\d|2[0-8])\/\d{2}$/.test(this.value)) {
-            $('#dpScheduleStartDate').parents('div.input-group').removeClass('has-error');
-        } else {
-            $('#dpScheduleStartDate').parents('div.input-group').addClass('has-error');
         }
 
         // enable / disable save button
@@ -787,8 +813,7 @@ validateSuccessInputForm = function () {
     // check if schedule input is toggled
     if ($('#tglSuccessScheduleTransaction').is(':checked')) {
         // check if its fields have values
-      if ($('#ddlSuccessScheduleFrequency').find(':selected').val() && $('#ddlSuccessScheduleFrequency').find(':selected').val() !== '-1' && /^02\/(?:[01]\d|2\d)\/(?:0[048]|[13579][26]|[2468][048])|(?:0[13578]|10|12)\/(?:[0-2]\d|3[01])\/\d{2}|(?:0[469]|11)\/(?:[0-2]\d|30)\/\d{2}|02\/(?:[0-1]\d|2[0-8])\/\d{2}$/.test($('#dpSuccessScheduleStartDate').val()))
-      {
+      if ($('#ddlSuccessScheduleFrequency').find(':selected').val() && $('#ddlSuccessScheduleFrequency').find(':selected').val() !== '-1') {
             // ready for save
             ready = true;
         } else {
@@ -827,7 +852,7 @@ getAlertClass = function (alert) {
     switch (alert) {
         case 'primary': {
             return 'alert-primary';
-        };
+        }
         case 'secondary': {
             return 'alert-secondary';
         }

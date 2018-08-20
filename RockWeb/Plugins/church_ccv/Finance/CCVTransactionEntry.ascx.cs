@@ -1008,8 +1008,22 @@ TransactionAcountDetails: [
             var financialGateway = isACHTxn ? _achGateway : _ccGateway;
             var gateway = isACHTxn ? _achGatewayComponent : _ccGatewayComponent;
 
+            // Calculate Start Date based on selected Freq
+            DateTime? successScheduleStartDate = null;
+            
+            if (hfSuccessScheduleStartDate.Value.ToString().IsNotNullOrWhitespace())
+            {
+                successScheduleStartDate = hfSuccessScheduleStartDate.Value.AsDateTime();
+            }
+
+            if (successScheduleStartDate == null)
+            {
+                errorMessage = "There was a problem getting schedule start date";
+                return false;
+            }
+
             // Create a schedule
-            PaymentSchedule schedule = CreateSchedule(ddlSuccessScheduleFrequency.SelectedValue, dpSuccessScheduleStartDate.SelectedDate.Value.Date);
+            PaymentSchedule schedule = CreateSchedule(ddlSuccessScheduleFrequency.SelectedValue, (DateTime)successScheduleStartDate);
 
             if ( schedule == null )
             {
