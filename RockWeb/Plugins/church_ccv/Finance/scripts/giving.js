@@ -253,7 +253,7 @@ function pageLoad() {
     $('#dpScheduledTransactionStartDate').datepicker('update', tomorrowDate);
 
     // Validate schedule drop down list
-    $('#ddlSuccessScheduleFrequency').on('click', function () {
+    $('#ddlSuccessScheduleFrequency').on('input', function () {
         if ($(this).find(':selected').val() && $(this).find(':selected').val() !== '-1') {
             // Calculate days until next payment
             var daysUntilNextPayment = null;

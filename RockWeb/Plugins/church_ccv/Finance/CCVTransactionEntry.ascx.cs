@@ -16,6 +16,7 @@ using Rock.Web.UI.Controls;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Rock.Transactions;
+using Rock.Communication;
 
 namespace RockWeb.Plugins.church_ccv.Finance
 {
@@ -41,10 +42,11 @@ namespace RockWeb.Plugins.church_ccv.Finance
     [GroupLocationTypeField( Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY, "Address Type", "The location type to use for the person's address", false,
         Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME, "", 11 )]
     
-    [DefinedValueField( "2E6540EA-63F0-40FE-BE50-F2A84735E600", "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, "368DD475-242C-49C4-A42C-7278BE690CC2", "", 25 )]
-    [DefinedValueField( "8522BADD-2871-45A5-81DD-C76DA07E2E7E", "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, "283999EC-7346-42E3-B807-BCE9B2BABB49", "", 26 )]
+    [DefinedValueField( "2E6540EA-63F0-40FE-BE50-F2A84735E600", "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, "368DD475-242C-49C4-A42C-7278BE690CC2", "", 24 )]
+    [DefinedValueField( "8522BADD-2871-45A5-81DD-C76DA07E2E7E", "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, "283999EC-7346-42E3-B807-BCE9B2BABB49", "", 25 )]
 
-    [SystemEmailField( "Receipt Email", "The system email to use to send the receipt.", false, "", "Email Templates", 27 )]
+    [SystemEmailField( "Receipt Email", "The system email to use to send the receipt.", false, "", "Email Templates", 26 )]
+    [SystemEmailField( "Schedule Confirmation Email","The system email to use to send the schedule confirmation", false, "", "Email Templates", 27 )]
     [CodeEditorField( "Payment Comment", @"The comment to include with the payment transaction when sending to Gateway. <span class='tip tip-lava'></span>. Merge fields include: <pre>CurrentPerson: {},
 PageParameters {},
 TransactionDateTime: '8/29/2016',
@@ -1157,6 +1159,8 @@ TransactionAcountDetails: [
             }
             rockContext.SaveChanges();
 
+            SendScheduleConfirmation( _person, scheduledTransaction.GatewayScheduleId, fundAccountName, paymentInfo.Amount.ToString(), schedule.TransactionFrequencyValue.Value, schedule.StartDate.ToShortDateString() );
+
             ScheduleId = scheduledTransaction.GatewayScheduleId;
             TransactionCode = scheduledTransaction.TransactionCode;
         }
@@ -1934,6 +1938,42 @@ TransactionAcountDetails: [
                 var newTransactionIds = new List<int> { transactionId };
                 var sendPaymentReceiptsTxn = new Rock.Transactions.SendPaymentReceipts( receiptEmail.Value, newTransactionIds );
                 Rock.Transactions.RockQueue.TransactionQueue.Enqueue( sendPaymentReceiptsTxn );
+            }
+        }
+
+        /// <summary>
+        /// Send schedule confirmation email
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="fundName"></param>
+        /// <param name="amount"></param>
+        /// <param name="frequency"></param>
+        /// <param name="startDate"></param>
+        private void SendScheduleConfirmation( Person person, string scheduleId, string fundName, string amount, string frequency, string startDate )
+        {
+            // Get the confirmation system email template
+            Guid? confirmationEmailGuid = GetAttributeValue( "ScheduleConfirmationEmail" ).AsGuidOrNull();
+            if ( confirmationEmailGuid.HasValue)
+            {
+                RockContext rockContext = new RockContext();
+
+                // Build merge fields
+                var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+
+                mergeFields.Add( "Person", person );
+                mergeFields.Add( "Fund", fundName );
+                mergeFields.Add( "Amount", amount );
+                mergeFields.Add( "Frequency", frequency );
+                mergeFields.Add( "StartDate", startDate );
+                mergeFields.Add( "ScheduleId", scheduleId );
+
+                // Send confirmation email
+                var publicApplicationRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
+
+                var recipient = new List<RecipientData>();
+                recipient.Add( new RecipientData( person.Email, mergeFields ) );
+
+                Email.Send( (Guid)confirmationEmailGuid, recipient, publicApplicationRoot );
             }
         }
 
