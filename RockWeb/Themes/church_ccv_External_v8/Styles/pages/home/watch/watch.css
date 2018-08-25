@@ -22,9 +22,9 @@
     background: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/background-watch-ccvlive.jpg");
  }
 
- /* #section-b-bg {
-    background-color: #f9f9f9;
- } */
+  /* #section-a-bg {
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/feature-ccv-live.jpg");
+ }  */
 
  .ccv-live-countdown {
      display: flex;
