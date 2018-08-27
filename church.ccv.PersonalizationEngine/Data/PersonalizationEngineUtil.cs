@@ -114,11 +114,18 @@ namespace church.ccv.PersonalizationEngine.Data
                 }
                 
                 var campaigns = peService.Queryable( ).AsNoTracking( )
-                                         .Where( c => c.StartDate <= startDate.Value || startDate.HasValue == false )
-                                         .Where( c => c.EndDate >= endDate.Value || endDate.HasValue == false )
+                                         //The campaign start date must be valid, but if the user passed in null OR the campaign start date is earlier than the date provided
+                                         .Where( c => startDate.HasValue == false || c.StartDate <= startDate.Value )
+
+                                         // A campaign does NOT need to have an end date--so if it doesn't have one just take it
+                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate >= endDate.Value )
+
                                          // for each Campaign, see if any element of typesAsString is contained in c.Type (the CSV)
                                          .Where( c => typesAsString.Any( t => c.Type.Contains( t ) ) )
-                                         .Where( c => c.IsDefault == isDefault ) // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
+                                         
+                                         // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
+                                         .Where( c => c.IsDefault == isDefault ) 
+
                                          .OrderByDescending( c => c.Priority )
                                          .ToList( ); //take those
                 return campaigns;

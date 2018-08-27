@@ -28,7 +28,7 @@ namespace church.ccv.PersonalizationEngine.Model
         public DateTime StartDate { get; set; }
 
         [DataMember]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [DataMember]
         public string Type { get; set; }
