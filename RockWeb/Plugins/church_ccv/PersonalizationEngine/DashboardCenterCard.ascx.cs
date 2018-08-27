@@ -54,23 +54,24 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             base.OnLoad( e );
             
-            var relevantCampaign = PersonalizationEngineUtil.GetRelevantCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.DashboardCard }, CurrentPerson.Id );
-            if ( relevantCampaign == null )
+            // first try to get a relevant campaign for this person
+            var campaignForCard = PersonalizationEngineUtil.GetRelevantCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard }, CurrentPerson.Id );
+            if ( campaignForCard == null )
             {
-                // JHM Hack 8-10-18 - We need to update the Personalization Engine to support getting a campaign not tied to any persona. Until then,
-                // grab the one we know to be that.
-                relevantCampaign = PersonalizationEngineUtil.GetCampaign( 9 );
+                // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaigns( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard } );
+                campaignForCard = defaultCampaigns[ 0 ];
             }
 
-            JObject jsonBlob = JObject.Parse( relevantCampaign.ContentJson );
+            JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );
                     
-            string campaignImage =  jsonBlob["img"].ToString( );
+            string campaignImage =  jsonBlob["website-card-img"].ToString( );
             string campaignTitle = jsonBlob["title"].ToString( );
             string campaignSubTitle = jsonBlob["sub-title"].ToString( );
             string campaignBody = jsonBlob["body"].ToString( );
             string campaignLinkText = jsonBlob["link-text"].ToString( );
             string campaignLink = jsonBlob["link"].ToString( );
-
+            
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
             mergeFields.Add( "CampaignImage", campaignImage );
             mergeFields.Add( "CampaignTitle", campaignTitle );

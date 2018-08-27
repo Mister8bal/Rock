@@ -1,15 +1,11 @@
-﻿using church.ccv.PersonalizationEngine.Data;
-using church.ccv.PersonalizationEngine.Model;
+﻿using church.ccv.PersonalizationEngine.Model;
 using Rock.Data;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static church.ccv.PersonalizationEngine.Model.Campaign;
 
 namespace church.ccv.PersonalizationEngine.Data
@@ -89,9 +85,13 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        public static List<Campaign> GetCampaigns( CampaignType[] typeList, DateTime? startDate = null, DateTime? endDate = null )
+        public static List<Campaign> GetCampaigns( CampaignType[] typeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
+            
+            // Default campaigns are those that are NOT tied to a persona.
+            // if isDefault is FALSE, then we get campaigns that ARE tied to personas
+            // if isDefault is TRUE, then we get campaigns that are NOT tied to personas
 
             //note: the dates are treated as inclusive, meaning the campaign must have a startDate BEFORE the provided startDate
             // and an end date that lands AFTER the provided endDate
@@ -114,10 +114,18 @@ namespace church.ccv.PersonalizationEngine.Data
                 }
                 
                 var campaigns = peService.Queryable( ).AsNoTracking( )
-                                         .Where( c => c.StartDate <= startDate.Value || startDate.HasValue == false )
-                                         .Where( c => c.EndDate >= endDate.Value || endDate.HasValue == false )
+                                         //The campaign start date must be valid, but if the user passed in null OR the campaign start date is earlier than the date provided
+                                         .Where( c => startDate.HasValue == false || c.StartDate <= startDate.Value )
+
+                                         // A campaign does NOT need to have an end date--so if it doesn't have one just take it
+                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate >= endDate.Value )
+
                                          // for each Campaign, see if any element of typesAsString is contained in c.Type (the CSV)
                                          .Where( c => typesAsString.Any( t => c.Type.Contains( t ) ) )
+                                         
+                                         // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
+                                         .Where( c => c.IsDefault == isDefault ) 
+
                                          .OrderByDescending( c => c.Priority )
                                          .ToList( ); //take those
                 return campaigns;
@@ -174,7 +182,7 @@ namespace church.ccv.PersonalizationEngine.Data
             //given a person id, simply get a relevant campaign of the given type. If there are more than one, it'll take the first found.
 
             // get all the campaigns that match the center card
-            var campaignList = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now );
+            var campaignList = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, false );
 
             // now go thru their personas, and take the first campaign with a persona that fits
             Campaign relevantCampaign = null;
@@ -199,6 +207,18 @@ namespace church.ccv.PersonalizationEngine.Data
             }
 
             return relevantCampaign;
+        }
+
+        public static List<Campaign> GetDefaultCampaigns( CampaignType[] campaignTypeList )
+        {
+            // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                // get all the campaigns that match the center card
+                var defaultCampaigns = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, true );
+
+                return defaultCampaigns;
+            }
         }
         #endregion
     }

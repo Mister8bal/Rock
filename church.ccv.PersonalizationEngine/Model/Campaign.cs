@@ -11,10 +11,12 @@ namespace church.ccv.PersonalizationEngine.Model
     {
         public enum CampaignType
         {
-            DashboardCard,
-            MobileAppCard,
-            Website
+            WebsiteCard,
+            MobileApp,
         }
+
+        [DataMember]
+        public bool IsDefault { get; set; }
 
         [DataMember]
         public string Name { get; set; }
@@ -26,7 +28,7 @@ namespace church.ccv.PersonalizationEngine.Model
         public DateTime StartDate { get; set; }
 
         [DataMember]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [DataMember]
         public string Type { get; set; }
