@@ -94,7 +94,7 @@
         switch (data.BaptismStatus) {
             case 0: {
                 // is not baptised
-                statusValue = 'You are not baptized.';
+                statusValue = 'Declare your faith through baptism.';
                 break;
             }
             case 1: {
@@ -183,7 +183,7 @@
             }
             case 1: {
                 // not in a group
-                statusValue = 'You are not connected to a CCV group.';
+                statusValue = 'Join a group near you.';
                 break;
             }
             case 2: { 
@@ -206,7 +206,7 @@
         switch (data.ServingStatus) {
             case 0: {
                 // Not serving
-                statusValue = 'You are not serving.';
+                statusValue = 'Sign up to serve.';
                 break;
             }
             case 1: {
@@ -254,7 +254,7 @@
             toggleActiveIcon('#give');
         } else {
             // not giving
-            statusValue = 'You are not giving.';
+            statusValue = 'Trust God with your finances through giving.';
         }
 
         activatePopOver('#give', statusValue);
@@ -276,7 +276,7 @@
             toggleActiveIcon('#share');
         } else {
             // Story not shared
-            statusValue = 'You have not shared a story.';
+            statusValue = 'Share what God is doing in your life.';
         }
 
         activatePopOver('#share', statusValue);
@@ -298,7 +298,7 @@
             toggleActiveIcon('#coach');
         } else {
             // is not Coach
-            statusValue = 'You are not coaching.';
+            statusValue = 'Help others take their Next Steps.';
         }
 
         activatePopOver('#coach', statusValue);
