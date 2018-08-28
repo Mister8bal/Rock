@@ -83,7 +83,7 @@
 
     <div class="toolbox-subnav-mobile">
         <div class="toolbox-subnav-mobile-items">
-            <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="subnav-item toolbox-subnav-div-selected">Dashboard</div>
+            <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="subnav-item toolbox-subnav-div-selected">Toolbox</div>
             <div id="curriculum-mobile-button" onClick="linkClicked(this, 'curriculum')" class="subnav-item">Curriculum</div>
             <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
             <div id="baptisms-mobile-button" onClick="linkClicked(this, 'baptisms')" class="subnav-item">Baptisms</div>
