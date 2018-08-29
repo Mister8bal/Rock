@@ -1,0 +1,121 @@
+/* important needed to override giving css (need to move giving block CSS into its own file so we dont have these conflicts, instead of being in giving page css file) */
+#ternavbar-bg {
+    display: flex;
+}
+
+#section-a-bg {
+    background-color: #EBEBEB !important;
+}
+
+.disclaimer {
+    padding-top: 20px;
+    width: 50%;
+    margin: 0 auto;
+}
+
+/* Giving box styling */
+.breadcrumb .active {
+    background-color: unset !important;
+}
+
+.mdi:before {
+    content: "\F12C" !important;
+}
+
+.mdi:before, .mdi-set {
+    display: inline-block;
+    text-rendering: auto;
+    line-height: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+.active, .navigation .btn {
+    background-color: #e43d35 !important;
+}
+
+.step h5, .accounts {
+    color: #e43d35 !important;
+}
+
+.amount {
+    font-weight: normal !important;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    color: #e43d35 !important;
+}
+
+.form-control {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    box-shadow: none;
+}
+
+.form-control, input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-bottom: 2px solid lightgrey;
+    border-radius: 0px;
+    color: #000;
+}
+
+.control-label {
+    padding-top: 15px !important;
+}
+.payment-type .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active, #rblAccountType .btn-primary {
+    background-color: #e43d35 !important;
+    border-color: #e43d35 !important;
+}
+
+.success-checkmark {
+    display: none !important;
+}
+/* End Giving box styling */
+
+
+/* fix conflict with giving page */
+.navigation-tertiary-item.active {
+    background-color: unset;
+}
+
+.navigation-tertiary-items {
+    width: unset !important;
+}
+
+@media screen and (max-width: 500px) {
+    #subnavbar-bg {
+        display: flex !important;
+    }
+
+    .comment-wrapper {
+        margin-top: unset !important;
+    }
+}
+
+/* End conflict fixes */
+
+/* Tablet Styling */
+@media screen and (max-width: 768px) {
+    .disclaimer {
+        width: 100%;
+    }
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    /* temporarily disable 3rd nav in mobile until we decide on design. */
+    #ternavbar-bg {
+        display: none !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 50px !important;
+    }
+}    
+
+

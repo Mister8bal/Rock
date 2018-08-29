@@ -12,12 +12,16 @@
 }
 
 #section-b-bg {
+    
+}
+
+#section-c-bg {
     background-color: #f9f9f9;
 }
 
-#section-d-bg {
-    display: none;
-}
+/* #section-d-bg {
+    background-color: #f9f9f9;
+} */
 
 #section-e-bg {
    display: none;
@@ -71,4 +75,72 @@
 
 .kid-icon {
     margin-bottom: 25px;
+}
+
+
+
+
+
+
+
+
+/*  */
+
+.kids-service-times .dropdown {
+    background-color: rgb(122, 19, 21);
+    border-radius: 10px;
+    transition: unset;
+    height: 36px;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kids-service-times .dropdown a {
+    color: #FFFFFF;
+    padding-top: unset;
+    padding-bottom: unset;
+    display: flex;
+    align-items: center;
+}
+
+.kids-service-times .dropdown a:hover {
+    background-color: transparent;
+}
+
+.kids-service-times .dropdown .dropdown-menu {
+    width: 100%;
+}
+
+.kids-service-times .dropdown .dropdown-menu a {
+    color: #333;
+}
+
+.kids-service-times {
+    display: flex;
+    flex-direction: column;
+}
+
+.kids-service-detail {
+    display: flex;
+    margin: 5px 0;
+}
+
+.kids-service-detail-label {
+    min-width: 100px;
+    color: #838383;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+.contextsetter-campus .dropdown {
+    margin-bottom: 35px;
+}
+
+@media screen and (min-width: 992px) {
+   .sn-times-header-wrapper {
+      margin-top: 0px;
+   }
 }
