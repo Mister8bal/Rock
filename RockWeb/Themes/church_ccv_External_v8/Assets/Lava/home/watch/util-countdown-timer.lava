@@ -11,8 +11,8 @@
 <style>
     .countdown-timer {
         display: none;
-        justify-content: space-between;
-        width: 100%;
+        justify-content: space-around;
+        width: 80%;
         align-items: center;
     }
 
@@ -30,18 +30,18 @@
     }
 
     p.time-digit {
-        font-size: 48px;
+        font-size: 34px;
         margin: 15px 5px 0 0;
         line-height: .9
     }
 
     p.time-label {
-        font-size: 16px;
+        font-size: 12px;
     }
 
     .spacer {
-        border-left: 1px solid white;
-        height: 64px;
+        border-left: 1px solid gray;
+        height: 44px;
     }
 
     /* Tablet size layout */
@@ -77,35 +77,35 @@
 </style>
 
 <div class="countdown-timer">
-    <div class="spacer">|</div>
+    <div class="spacer"></div>
 
     <div class="time">
         <p class="time-digit days">00</p>
         <p class="time-label">days</p>
     </div>
     
-    <div class="spacer">|</div>
+    <div class="spacer"></div>
     
     <div class="time">
         <p class="time-digit hours">00</p>
         <p class="time-label">hours</p>
     </div>
     
-    <div class="spacer">|</div>
+    <div class="spacer"></div>
     
     <div class="time">
         <p class="time-digit minutes">00</p>
         <p class="time-label">minutes</p>
     </div>
     
-    <div class="spacer">|</div>
+    <div class="spacer"></div>
 
     <div class="time">
         <p class="time-digit seconds">00</p>
         <p class="time-label">seconds</p>
     </div>
 
-    <div class="spacer">|</div>
+    <div class="spacer"></div>
 </div>
 
 <div class="countdown-complete">
