@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Rock.Rest.Filters;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using static church.ccv.PersonalizationEngine.Model.Campaign;
@@ -11,24 +12,25 @@ namespace church.ccv.PersonalizationEngine.Rest
     public class PersonalizationEngineController : Rock.Rest.ApiControllerBase
     {
         [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/PersonalizationEngine/Campaign" )]
         [System.Web.Http.Route( "api/PersonalizationEngine/RelevantCampaign" )]
         [Authenticate, Secured]
-        public HttpResponseMessage GetRelevantCampaign( string campaignTypeList, int personId )
+        public HttpResponseMessage GetCampaign( string campaignTypeList, int personId, int numCampaigns = 1 )
         {
             // convert the strings to enum
             CampaignType[] campaignTypeEnumList = StringToEnum( campaignTypeList );
 
             // now request the relevant campaign for the person
-            var campaignResult = PersonalizationEngineUtil.GetRelevantCampaign( campaignTypeEnumList, personId );
+            List<Model.Campaign> campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( campaignTypeEnumList, personId, numCampaigns );
 
             // and if nothing was found, take a default
-            if( campaignResult == null )
+            if ( campaignResults.Count == 0 )
             {
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaigns( campaignTypeEnumList );
-                campaignResult = defaultCampaigns[ 0 ];
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeEnumList );
+                campaignResults.Add( defaultCampaigns[ 0 ] );
             }
 
-            StringContent restContent = new StringContent( JsonConvert.SerializeObject( campaignResult ), Encoding.UTF8, "application/json" );
+            StringContent restContent = new StringContent( JsonConvert.SerializeObject( campaignResults ), Encoding.UTF8, "application/json" );
             return new HttpResponseMessage()
             {
                 Content = restContent
@@ -36,18 +38,18 @@ namespace church.ccv.PersonalizationEngine.Rest
         }
 
         [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/PersonalizationEngine/Campaign" )]
         [System.Web.Http.Route( "api/PersonalizationEngine/DefaultCampaign" )]
         [Authenticate, Secured]
-        public HttpResponseMessage GetDefaultCampaign( string campaignTypeList )
+        public HttpResponseMessage GetDefaultCampaign( string campaignTypeList, int numCampaigns = 1 )
         {
             // convert the strings to enum
             CampaignType[] campaignTypeEnumList = StringToEnum( campaignTypeList );
 
             // now grab a default campaign
-            var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaigns( campaignTypeEnumList );
-            var campaignResult = defaultCampaigns[ 0 ];
+            var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeEnumList, numCampaigns );
 
-            StringContent restContent = new StringContent( JsonConvert.SerializeObject( campaignResult ), Encoding.UTF8, "application/json" );
+            StringContent restContent = new StringContent( JsonConvert.SerializeObject( defaultCampaigns ), Encoding.UTF8, "application/json" );
             return new HttpResponseMessage()
             {
                 Content = restContent
