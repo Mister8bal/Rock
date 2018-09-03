@@ -14,7 +14,7 @@
         <asp:HiddenField ID="hfSavedPaymentAccountName" runat="server" Value="" />
         <asp:HiddenField ID="hfIsScheduledTransaction" runat="server" Value="false" ClientIDMode="Static" />
 
-        <div class="transaction-card">
+        <div id="divTransactionCard" class="transaction-card">
         
             <div class="transaction-alerts">
 
@@ -411,6 +411,16 @@
 
         </div>
 
+        <div id="divUnsupportedCard" class="hidden">
+            <div class="transaction-alerts">
+                <span style="text-align: center; font-size: 18px;font-weight: bold;">Unsupported web browser.</span><br />
+                This web browser is not supported for online giving at this time.<br />
+                <br />
+                 Please use Google Chrome, Apple Safari, or Mozilla Firefox for online giving.<br />
+                <br />
+                Sorry for any inconveniences this causes.
+            </div>
+        </div>
     </ContentTemplate>
 
 </asp:UpdatePanel>
