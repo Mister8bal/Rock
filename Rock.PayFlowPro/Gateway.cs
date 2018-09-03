@@ -43,6 +43,7 @@ namespace Rock.PayFlowPro
     [TextField( "PayPal User", "", false, "", "", 2, "User" )]
     [TextField( "PayPal Password", "", true, "", "", 3, "Password", true )]
     [CustomRadioListField( "Mode", "Mode to use for transactions", "Live,Test", true, "Live", "", 4 )]
+    [CustomCheckboxListField( "Frequencies", "Select the frequencies that should be available for recurring transactions", "One-Time,Weekly,Bi-Weekly,Twice a Month,Monthly,Quarterly,Twice a Year,Yearly", true, "", "", 5)]
 
     public class Gateway : GatewayComponent
     {
@@ -64,6 +65,9 @@ namespace Rock.PayFlowPro
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_BIWEEKLY ) );
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEMONTHLY ) );
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_MONTHLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_QUARTERLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEYEARLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_YEARLY ) );
                 return values;
             }
         }
@@ -946,6 +950,15 @@ namespace Rock.PayFlowPro
                     break;
                 case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_MONTHLY:
                     recurringInfo.PayPeriod = "MONT";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_QUARTERLY:
+                    recurringInfo.PayPeriod = "QTER";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEYEARLY:
+                    recurringInfo.PayPeriod = "SMYR";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_YEARLY:
+                    recurringInfo.PayPeriod = "YEAR";
                     break;
             }
         }
