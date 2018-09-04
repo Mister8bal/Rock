@@ -43,7 +43,6 @@ namespace Rock.PayFlowPro
     [TextField( "PayPal User", "", false, "", "", 2, "User" )]
     [TextField( "PayPal Password", "", true, "", "", 3, "Password", true )]
     [CustomRadioListField( "Mode", "Mode to use for transactions", "Live,Test", true, "Live", "", 4 )]
-    [CustomCheckboxListField( "Frequencies", "Select the frequencies that should be available for recurring transactions", "One-Time,Weekly,Bi-Weekly,Twice a Month,Monthly,Quarterly,Twice a Year,Yearly", true, "", "", 5)]
 
     public class Gateway : GatewayComponent
     {
