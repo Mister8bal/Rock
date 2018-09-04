@@ -64,6 +64,9 @@ namespace Rock.PayFlowPro
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_BIWEEKLY ) );
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEMONTHLY ) );
                 values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_MONTHLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_QUARTERLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEYEARLY ) );
+                values.Add( DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_YEARLY ) );
                 return values;
             }
         }
@@ -946,6 +949,15 @@ namespace Rock.PayFlowPro
                     break;
                 case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_MONTHLY:
                     recurringInfo.PayPeriod = "MONT";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_QUARTERLY:
+                    recurringInfo.PayPeriod = "QTER";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_TWICEYEARLY:
+                    recurringInfo.PayPeriod = "SMYR";
+                    break;
+                case Rock.SystemGuid.DefinedValue.TRANSACTION_FREQUENCY_YEARLY:
+                    recurringInfo.PayPeriod = "YEAR";
                     break;
             }
         }
