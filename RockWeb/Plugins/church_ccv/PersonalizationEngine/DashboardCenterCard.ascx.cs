@@ -53,13 +53,19 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         protected override void OnLoad( EventArgs e )
         {
             base.OnLoad( e );
+
+            Campaign campaignForCard = null;
             
             // first try to get a relevant campaign for this person
-            var campaignForCard = PersonalizationEngineUtil.GetRelevantCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard }, CurrentPerson.Id );
-            if ( campaignForCard == null )
+            var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard }, CurrentPerson.Id );
+            if( campaignList.Count > 0 )
+            {
+                campaignForCard = campaignList[0];
+            }
+            else
             {
                 // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaigns( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard } );
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard } );
                 campaignForCard = defaultCampaigns[ 0 ];
             }
 

@@ -3,7 +3,14 @@
 /// --------------------------------------------------
 
 // Components that persist through postbacks
-function pageLoad() {
+function pageLoad()
+{
+    if (window.navigator.userAgent.indexOf("Edge") > -1)
+    {
+        $('#divTransactionCard').addClass('hidden');
+        $('#divUnsupportedCard').removeClass('hidden');
+    } 
+
     //
     // Transaction Panel
     //
@@ -77,7 +84,6 @@ function pageLoad() {
     // Validate Schedule Frequency
     $('#ddlScheduleFrequency').on('input', function () {
         var frequency = $(this).find(':selected').val();
-
         if ((!frequency || frequency === '-1')) {
             $(this).parents('div.schedule-transaction-wrapper').addClass('has-error');
         } else {

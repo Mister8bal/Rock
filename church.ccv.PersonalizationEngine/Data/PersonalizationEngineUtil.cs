@@ -177,15 +177,18 @@ namespace church.ccv.PersonalizationEngine.Data
         #endregion
 
         #region General
-        public static Campaign GetRelevantCampaign( CampaignType[] campaignTypeList, int personId )
+        public static List<Campaign> GetRelevantCampaign( CampaignType[] campaignTypeList, int personId, int numCampaigns = 1 )
         {
-            //given a person id, simply get a relevant campaign of the given type. If there are more than one, it'll take the first found.
+            //given a person id, get whatever is less - the number of relevant campaigns that exist, or numCampaigns.
+
+            // guard against passing in <= 0 numbers
+            numCampaigns = Math.Max( numCampaigns, 1 );
 
             // get all the campaigns that match the center card
             var campaignList = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, false );
 
             // now go thru their personas, and take the first campaign with a persona that fits
-            Campaign relevantCampaign = null;
+            List<Campaign> relevantCampaigns = new List<Campaign>( );
             foreach( Campaign campaign in campaignList )
             {
                 var personas = GetPersonasForCampaign( campaign.Id );
@@ -194,28 +197,40 @@ namespace church.ccv.PersonalizationEngine.Data
                     // as soon as we find a matching persona, take this campaign and stop searching
                     if( PersonaFits( persona, personId ) )
                     {
-                        relevantCampaign = campaign;
+                        relevantCampaigns.Add( campaign );
+
+                        // subtract off each time we find a campaign, and when this is 0, we're done
+                        numCampaigns--;
                         break;
                     }
                 }
 
-                // if we found a relevant campaign going thru its personas, stop
-                if ( relevantCampaign != null )
+                // once we've found the requested number of relevant campaigns, stop
+                if ( numCampaigns == 0 )
                 {
                     break;
                 }
             }
 
-            return relevantCampaign;
+            return relevantCampaigns;
         }
 
-        public static List<Campaign> GetDefaultCampaigns( CampaignType[] campaignTypeList )
+        public static List<Campaign> GetDefaultCampaign( CampaignType[] campaignTypeList, int numCampaigns = 1 )
         {
+            // guard against passing in <= 0 numbers
+            numCampaigns = Math.Max( numCampaigns, 1 );
+
             // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
             using ( RockContext rockContext = new RockContext( ) )
             {
-                // get all the campaigns that match the center card
+                // get all the default campaigns
                 var defaultCampaigns = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, true );
+
+                // now take only what they asked for (a little less efficient than doing this at the database level, but results in simpler code)
+                
+                // clamp the count to what's actually available
+                numCampaigns = Math.Min( defaultCampaigns.Count, numCampaigns );
+                defaultCampaigns = defaultCampaigns.GetRange( 0, numCampaigns );
 
                 return defaultCampaigns;
             }
