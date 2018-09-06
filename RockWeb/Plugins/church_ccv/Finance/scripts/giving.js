@@ -3,14 +3,7 @@
 /// --------------------------------------------------
 
 // Components that persist through postbacks
-function pageLoad()
-{
-    if (window.navigator.userAgent.indexOf("Edge") > -1)
-    {
-        $('#divTransactionCard').addClass('hidden');
-        $('#divUnsupportedCard').removeClass('hidden');
-    } 
-
+function pageLoad() {
     //
     // Transaction Panel
     //
@@ -55,23 +48,25 @@ function pageLoad()
         // remove non number characters, keep only 7 numbers, and then format with ,
         var formattedAmount = amount[0].replace(/[^0-9.]/g, "").substring(0, 7).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,").trim();
 
+        // Check for decimal amount and if exists add it back to amount
         // if array more than one element, format the second element with 1 or 2 characters and ignore the rest
         if (amount.length > 1) {
             formattedAmount = formattedAmount + '.' + amount[1].replace(/[^0-9]/g, "").substring(0, 2).trim();
         }
 
-        // set the new value
-        this.value = '$' + formattedAmount;
 
-        if (!formattedAmount) {
+        if (!formattedAmount || formattedAmount === '0' || formattedAmount === '0.') {
             $(this).parents('div.amount-wrapper').addClass('has-error');
         } else {
+            // set the new value
+            this.value = '$' + formattedAmount;
+    
             $(this).parents('div.amount-wrapper').removeClass('has-error');
         }
     });
 
     // Validate accounts input
-    $('#ddlAccounts').on('input', function () {
+    $('#ddlAccounts').on('change', function () {
         var fund = $(this).find(':selected').val();
 
         if ((!fund || fund === '-1')) {
@@ -82,8 +77,9 @@ function pageLoad()
     });
 
     // Validate Schedule Frequency
-    $('#ddlScheduleFrequency').on('input', function () {
+    $('#ddlScheduleFrequency').on('change', function () {
         var frequency = $(this).find(':selected').val();
+
         if ((!frequency || frequency === '-1')) {
             $(this).parents('div.schedule-transaction-wrapper').addClass('has-error');
         } else {
@@ -100,13 +96,14 @@ function pageLoad()
         }
     });
 
-    $('#tglScheduledTransaction').on('input', function () {
+    $('#tglScheduledTransaction').on('change', function () {
+        console.log('test');
         if (!$('#tglScheduledTransaction').is(':checked')) {
-            $('#hfIsScheduledTransaction').val('false');
+            $('#hfIsScheduledTransaction').attr('value', 'false');
             $('#dpScheduledTransactionStartDate').parents('div.schedule-date-wrapper').removeClass('has-error');
             $('#ddlScheduleFrequency').parents('div.schedule-transaction-wrapper').removeClass('has-error');
         } else {
-            $('#hfIsScheduledTransaction').val('true');
+            $('#hfIsScheduledTransaction').attr('value', 'true');
         }
     });
 
@@ -129,7 +126,7 @@ function pageLoad()
     });
 
     // Validate saved payment accounts
-    $('#ddlSavedPaymentAccounts').on('input', function () {
+    $('#ddlSavedPaymentAccounts').on('change', function () {
         var account = $(this).find(':selected').val();
 
         if ((!account || account === '-1')) {
@@ -174,7 +171,7 @@ function pageLoad()
     });
 
     // Validate experiation month input
-    $('#monthDropDownList').on('input', function () {
+    $('#monthDropDownList').on('change', function () {
         if (!$(this).find(':selected').val()) {
             $(this).parents('div.form-group').addClass('has-error');
         } else {
@@ -186,7 +183,7 @@ function pageLoad()
     });
 
     // Validate experation year input
-    $('#yearDropDownList_').on('input', function () {
+    $('#yearDropDownList_').on('change', function () {
         if (!$(this).find(':selected').val()) {
             $(this).parents('div.form-group').addClass('has-error');
         } else {
@@ -247,41 +244,82 @@ function pageLoad()
     // Schedule Recurring Transaction Panel
 
     // configure the schedule start for date pickers
-    var currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1);
+    var tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
 
     $('#dpScheduledTransactionStartDate').datepicker({
         format: 'mm/dd/yyyy',
-        startDate: currentDate
-    });
-
-    $('#dpSuccessScheduleStartDate').datepicker({
-        format: 'mm/dd/yyyy',
-        startDate: currentDate
+        startDate: tomorrowDate
     });
 
     // configured default date for date pickers
-    $('#dpScheduledTransactionStartDate').datepicker('update', currentDate);
-    $('#dpSuccessScheduleStartDate').datepicker('update', currentDate);
+    $('#dpScheduledTransactionStartDate').datepicker('update', tomorrowDate);
 
     // Validate schedule drop down list
-    $('#ddlSuccessScheduleFrequency').on('click', function () {
+    $('#ddlSuccessScheduleFrequency').on('change', function () {
         if ($(this).find(':selected').val() && $(this).find(':selected').val() !== '-1') {
+            // Calculate days until next payment
+            var daysUntilNextPayment = null;
+            switch ($(this).find(':selected').val()) {
+                case '35711E44-131B-4534-B0B2-F0A749292362'.toLowerCase(): {
+                    // Weekly
+                    daysUntilNextPayment = 7;
+                    break;
+                }
+                case '72990023-0D43-4554-8D32-28461CAB8920'.toLowerCase(): {
+                    // Bi-Weekly
+                    daysUntilNextPayment = 14;
+                    break;
+                }
+                case '791C863D-2600-445B-98F8-3E5B66A3DEC4'.toLowerCase(): {
+                    // Twice a Month
+                    daysUntilNextPayment = 15;
+                    break;
+                }
+                case '1400753C-A0F9-4A45-8A1D-81C98450BD1F'.toLowerCase(): {
+                    // Monthly
+                    daysUntilNextPayment = 31;
+                    break;
+                }
+                case 'BF08EA03-C52A-4364-B142-12EBCA7CA14A'.toLowerCase(): {
+                    // Quarterly
+                    daysUntilNextPayment = 90;
+                    break;
+                }
+                case '691BB8AB-5F96-4E88-847C-CB970D9E87FA'.toLowerCase(): {
+                    // Twice A Year
+                    daysUntilNextPayment = 180;
+                    break;
+                }
+                case 'AC88C37A-901E-4CBB-947B-11348C208192'.toLowerCase(): {
+                    // Yearly
+                    daysUntilNextPayment = 365;
+                    break;
+                }
+                default: {
+                    // something went wrong, highlight error
+                    $(this).parents('div.form-group').addClass('has-error');
+                    break;
+                }
+            }
+
+            if (daysUntilNextPayment) {
+                // set hidden field so code behind has access to the value
+                $('#hfSuccessScheduleStartDate').attr('value',moment().add(daysUntilNextPayment, 'days').calendar());
+
+                // update schedule start date label
+                $('#lblSuccessScheduleStartDate').html(moment().add(daysUntilNextPayment, 'days').calendar());
+            }
+
+            // Clear errors
             $(this).parents('div.form-group').removeClass('has-error');
         } else {
+            // errors exist
+            if ($(this).find(':selected').val() === '-1') {
+                // if placeholder selected, clear schedule start date label
+                $('#lblSuccessScheduleStartDate').html('');
+            }
             $(this).parents('div.form-group').addClass('has-error');
-        }
-
-        // enable / disable save button
-        setInputSaveButtonState();
-    });
-
-    // Validate schedule start date picker
-    $('#dpSuccessScheduleStartDate').on('change', function () {
-        if (/^02\/(?:[01]\d|2\d)\/(?:0[048]|[13579][26]|[2468][048])|(?:0[13578]|10|12)\/(?:[0-2]\d|3[01])\/\d{2}|(?:0[469]|11)\/(?:[0-2]\d|30)\/\d{2}|02\/(?:[0-1]\d|2[0-8])\/\d{2}$/.test(this.value)) {
-            $('#dpScheduleStartDate').parents('div.input-group').removeClass('has-error');
-        } else {
-            $('#dpScheduleStartDate').parents('div.input-group').addClass('has-error');
         }
 
         // enable / disable save button
@@ -456,7 +494,7 @@ btnCreditCard_OnClick = function () {
     clearErrorFormatting();
 
     // update payment type hidden field
-    $('#hfPaymentType').val('CC');
+    $('#hfPaymentType').attr('value', 'CC');
 
     // hide Bank Account or Saved Payment panel show Credit Card panel and update button selected state
     togglePanel('#pnlBankAccount', false);
@@ -473,7 +511,7 @@ btnBankAccount_OnClick = function () {
     clearErrorFormatting();
 
     // update payment type hidden field
-    $('#hfPaymentType').val('ACH');
+    $('#hfPaymentType').attr('value','ACH');
 
     // hide Credit Card or Saved Payment panel show Bank Account panel and update button class
     togglePanel('#pnlCreditCard', false);
@@ -490,7 +528,7 @@ btnSavedPayment_OnClick = function () {
     clearErrorFormatting();
 
     // update payment type hidden field
-    $('#hfPaymentType').val('REF');
+    $('#hfPaymentType').attr('value','REF');
 
     // hide Credit Card or Bank Account panel show Saved Payment panel and update button class
     togglePanel('#pnlCreditCard', false);
@@ -793,8 +831,7 @@ validateSuccessInputForm = function () {
     // check if schedule input is toggled
     if ($('#tglSuccessScheduleTransaction').is(':checked')) {
         // check if its fields have values
-      if ($('#ddlSuccessScheduleFrequency').find(':selected').val() && $('#ddlSuccessScheduleFrequency').find(':selected').val() !== '-1' && /^02\/(?:[01]\d|2\d)\/(?:0[048]|[13579][26]|[2468][048])|(?:0[13578]|10|12)\/(?:[0-2]\d|3[01])\/\d{2}|(?:0[469]|11)\/(?:[0-2]\d|30)\/\d{2}|02\/(?:[0-1]\d|2[0-8])\/\d{2}$/.test($('#dpSuccessScheduleStartDate').val()))
-      {
+      if ($('#ddlSuccessScheduleFrequency').find(':selected').val() && $('#ddlSuccessScheduleFrequency').find(':selected').val() !== '-1') {
             // ready for save
             ready = true;
         } else {
@@ -833,7 +870,7 @@ getAlertClass = function (alert) {
     switch (alert) {
         case 'primary': {
             return 'alert-primary';
-        };
+        }
         case 'secondary': {
             return 'alert-secondary';
         }

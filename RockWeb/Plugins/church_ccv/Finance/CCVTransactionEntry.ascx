@@ -410,17 +410,6 @@
             </asp:Panel>
 
         </div>
-
-        <div id="divUnsupportedCard" class="hidden">
-            <div class="transaction-alerts">
-                <span style="text-align: center; font-size: 18px;font-weight: bold;">Unsupported web browser.</span><br />
-                This web browser is not supported for online giving at this time.<br />
-                <br />
-                 Please use Google Chrome, Apple Safari, or Mozilla Firefox for online giving.<br />
-                <br />
-                Sorry for any inconveniences this causes.
-            </div>
-        </div>
     </ContentTemplate>
 
 </asp:UpdatePanel>
