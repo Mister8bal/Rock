@@ -96,8 +96,8 @@ function pageLoad() {
         }
     });
 
+    // Enable / Disable recurring transaction
     $('#tglScheduledTransaction').on('change', function () {
-        console.log('test');
         if (!$('#tglScheduledTransaction').is(':checked')) {
             $('#hfIsScheduledTransaction').attr('value', 'false');
             $('#dpScheduledTransactionStartDate').parents('div.schedule-date-wrapper').removeClass('has-error');
@@ -304,7 +304,7 @@ function pageLoad() {
             }
 
             if (daysUntilNextPayment) {
-                // set hidden field so code behind has access to the value
+                // set hidden field so server has access to the value
                 $('#hfSuccessScheduleStartDate').attr('value',moment().add(daysUntilNextPayment, 'days').calendar());
 
                 // update schedule start date label
