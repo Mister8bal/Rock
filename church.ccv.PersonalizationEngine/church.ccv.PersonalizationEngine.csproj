@@ -59,6 +59,7 @@
     <Compile Include="Data\PersonalizationEngineUtil.cs" />
     <Compile Include="Migrations\001_CreateDb.cs" />
     <Compile Include="Model\Campaign.cs" />
+    <Compile Include="Model\CampaignType.cs" />
     <Compile Include="Model\Linkage.cs" />
     <Compile Include="Model\Persona.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

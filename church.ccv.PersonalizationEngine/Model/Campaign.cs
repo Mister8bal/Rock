@@ -9,12 +9,6 @@ namespace church.ccv.PersonalizationEngine.Model
     [DataContract]
     public class Campaign : Model<Campaign>, IRockEntity
     {
-        public enum CampaignType
-        {
-            WebsiteCard,
-            MobileApp,
-        }
-
         [DataMember]
         public bool IsDefault { get; set; }
 
