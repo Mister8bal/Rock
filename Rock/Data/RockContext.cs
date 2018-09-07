@@ -121,15 +121,23 @@ namespace Rock.Data
         /// The analytics dim attendance locations.
         /// </value>
         public DbSet<AnalyticsDimAttendanceLocation> AnalyticsDimAttendanceLocations { get; set; }
-        
+
         /// <summary>
-        /// Gets or sets the analytics dim dates.
+        /// Gets or sets the analytics source dates.
         /// </summary>
         /// <value>
-        /// The analytics dim dates.
+        /// The analytics source dates.
         /// </value>
-        public DbSet<AnalyticsDimDate> AnalyticsDimDates { get; set; }
-        
+        public DbSet<AnalyticsSourceDate> AnalyticsSourceDates { get; set; }
+
+        /// <summary>
+        /// Gets or sets the analytics dim campuses.
+        /// </summary>
+        /// <value>
+        /// The analytics dim campuses.
+        /// </value>
+        public DbSet<AnalyticsDimCampus> AnalyticsDimCampuses { get; set; }
+
         /// <summary>
         /// Gets or sets the analytics dim family currents.
         /// </summary>
@@ -169,14 +177,6 @@ namespace Rock.Data
         /// The analytics dim financial batches.
         /// </value>
         public DbSet<AnalyticsDimFinancialBatch> AnalyticsDimFinancialBatches { get; set; }
-
-        /// <summary>
-        /// Gets or sets the analytics dim financial transaction types.
-        /// </summary>
-        /// <value>
-        /// The analytics dim financial transaction types.
-        /// </value>
-        public DbSet<AnalyticsDimFinancialTransactionType> AnalyticsDimFinancialTransactionTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the analytics dim person currents.
@@ -227,6 +227,14 @@ namespace Rock.Data
         public DbSet<AnalyticsSourceAttendance> AnalyticsSourceAttendances { get; set; }
 
         /// <summary>
+        /// Gets or sets the analytics source campuses.
+        /// </summary>
+        /// <value>
+        /// The analytics source campuses.
+        /// </value>
+        public DbSet<AnalyticsSourceCampus> AnalyticsSourceCampuses { get; set; }
+
+        /// <summary>
         /// Gets or sets the analytics source family historicals.
         /// </summary>
         /// <value>
@@ -257,6 +265,30 @@ namespace Rock.Data
         /// The attendance codes.
         /// </value>
         public DbSet<AttendanceCode> AttendanceCodes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute matrices.
+        /// </summary>
+        /// <value>
+        /// The attribute matrices.
+        /// </value>
+        public DbSet<Rock.Model.AttributeMatrix> AttributeMatrices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute matrix items.
+        /// </summary>
+        /// <value>
+        /// The attribute matrix items.
+        /// </value>
+        public DbSet<Rock.Model.AttributeMatrixItem> AttributeMatrixItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute matrix templates.
+        /// </summary>
+        /// <value>
+        /// The attribute matrix templates.
+        /// </value>
+        public DbSet<Rock.Model.AttributeMatrixTemplate> AttributeMatrixTemplates { get; set; }
 
         /// <summary>
         /// Gets or sets the Attributes.
@@ -395,6 +427,14 @@ namespace Rock.Data
         public DbSet<Category> Categories { get; set; }
 
         /// <summary>
+        /// Gets or sets the communication attachments.
+        /// </summary>
+        /// <value>
+        /// The communication attachments.
+        /// </value>
+        public DbSet<Rock.Model.CommunicationAttachment> CommunicationAttachments { get; set; }
+
+        /// <summary>
         /// Gets or sets the communications.
         /// </summary>
         /// <value>
@@ -411,12 +451,12 @@ namespace Rock.Data
         public DbSet<CommunicationRecipient> CommunicationRecipients { get; set; }
 
         /// <summary>
-        /// Gets or sets the communication recipient activities.
+        /// Gets or sets the communication template attachment.
         /// </summary>
         /// <value>
-        /// The communication recipient activities.
+        /// The communication template attachment.
         /// </value>
-        public DbSet<CommunicationRecipientActivity> CommunicationRecipientActivities { get; set; }
+        public DbSet<Rock.Model.CommunicationTemplateAttachment> CommunicationTemplateAttachment { get; set; }
 
         /// <summary>
         /// Gets or sets the communication templates.
@@ -441,6 +481,14 @@ namespace Rock.Data
         /// The connection opportunities.
         /// </value>
         public DbSet<ConnectionOpportunity> ConnectionOpportunities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the connection opportunity group configs.
+        /// </summary>
+        /// <value>
+        /// The connection opportunity group configs.
+        /// </value>
+        public DbSet<Rock.Model.ConnectionOpportunityGroupConfig> ConnectionOpportunityGroupConfigs { get; set; }
 
         /// <summary>
         /// Gets or sets the connection opportunity campuses.
@@ -907,6 +955,14 @@ namespace Rock.Data
         public DbSet<GroupScheduleExclusion> GroupScheduleExclusions { get; set; }
 
         /// <summary>
+        /// Gets or sets the group type location types.
+        /// </summary>
+        /// <value>
+        /// The group type location types.
+        /// </value>
+        public DbSet<Rock.Model.GroupTypeLocationType> GroupTypeLocationTypes { get; set; }
+
+        /// <summary>
         /// Gets or sets the Group Types.
         /// </summary>
         /// <value>
@@ -979,6 +1035,14 @@ namespace Rock.Data
         public DbSet<InteractionSession> InteractionSessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the lava shortcodes.
+        /// </summary>
+        /// <value>
+        /// The lava shortcodes.
+        /// </value>
+        public DbSet<Rock.Model.LavaShortcode> LavaShortcodes { get; set; }
+
+        /// <summary>
         /// Gets or sets the layouts.
         /// </summary>
         /// <value>
@@ -1001,6 +1065,46 @@ namespace Rock.Data
         /// The merge templates.
         /// </value>
         public DbSet<MergeTemplate> MergeTemplates { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta first name gender lookups.
+        /// </summary>
+        /// <value>
+        /// The meta first name gender lookups.
+        /// </value>
+        public DbSet<Rock.Model.MetaFirstNameGenderLookup> MetaFirstNameGenderLookups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta last name lookups.
+        /// </summary>
+        /// <value>
+        /// The meta last name lookups.
+        /// </value>
+        public DbSet<Rock.Model.MetaLastNameLookup> MetaLastNameLookups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta nick name lookups.
+        /// </summary>
+        /// <value>
+        /// The meta nick name lookups.
+        /// </value>
+        public DbSet<Rock.Model.MetaNickNameLookup> MetaNickNameLookups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta personicx lifestage clusters.
+        /// </summary>
+        /// <value>
+        /// The meta personicx lifestage clusters.
+        /// </value>
+        public DbSet<Rock.Model.MetaPersonicxLifestageCluster> MetaPersonicxLifestageClusters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta personicx lifestage groups.
+        /// </summary>
+        /// <value>
+        /// The meta personicx lifestage groups.
+        /// </value>
+        public DbSet<Rock.Model.MetaPersonicxLifestageGroup> MetaPersonicxLifestageGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the metaphones.
@@ -1049,6 +1153,14 @@ namespace Rock.Data
         /// The metric value partitions.
         /// </value>
         public DbSet<MetricValuePartition> MetricValuePartitions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ncoa history.
+        /// </summary>
+        /// <value>
+        /// The ncoa historys.
+        /// </value>
+        public DbSet<NcoaHistory> NcoaHistorys { get; set; }
 
         /// <summary>
         /// Gets or sets the notes.
@@ -1107,36 +1219,20 @@ namespace Rock.Data
         public DbSet<PageRoute> PageRoutes { get; set; }
 
         /// <summary>
-        /// Gets or sets the page views.
-        /// </summary>
-        /// <value>
-        /// The page views.
-        /// </value>
-        public DbSet<PageView> PageViews { get; set; }
-
-        /// <summary>
-        /// Gets or sets the page view sessions.
-        /// </summary>
-        /// <value>
-        /// The page view sessions.
-        /// </value>
-        public DbSet<PageViewSession> PageViewSessions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the page view user agents.
-        /// </summary>
-        /// <value>
-        /// The page view user agents.
-        /// </value>
-        public DbSet<PageViewUserAgent> PageViewUserAgents { get; set; }
-
-        /// <summary>
         /// Gets or sets the People.
         /// </summary>
         /// <value>
         /// the People.
         /// </value>
         public DbSet<Person> People { get; set; }
+
+        /// <summary>
+        /// Gets or sets the personal devices.
+        /// </summary>
+        /// <value>
+        /// The personal devices.
+        /// </value>
+        public DbSet<Rock.Model.PersonalDevice> PersonalDevices { get; set; }
 
         /// <summary>
         /// Gets or sets the Person Aliases.
@@ -1177,6 +1273,14 @@ namespace Rock.Data
         /// the Person Vieweds.
         /// </value>
         public DbSet<PersonViewed> PersonVieweds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the person tokens.
+        /// </summary>
+        /// <value>
+        /// The person tokens.
+        /// </value>
+        public DbSet<PersonToken> PersonTokens { get; set; }
 
         /// <summary>
         /// Gets or sets the Phone Numbers.
@@ -1307,6 +1411,14 @@ namespace Rock.Data
         public DbSet<RestController> RestControllers { get; set; }
 
         /// <summary>
+        /// Gets or sets the schedule category exclusions.
+        /// </summary>
+        /// <value>
+        /// The schedule category exclusions.
+        /// </value>
+        public DbSet<Rock.Model.ScheduleCategoryExclusion> ScheduleCategoryExclusions { get; set; }
+
+        /// <summary>
         /// Gets or sets the schedules.
         /// </summary>
         /// <value>
@@ -1361,6 +1473,14 @@ namespace Rock.Data
         /// the Site Domains.
         /// </value>
         public DbSet<SiteDomain> SiteDomains { get; set; }
+
+        /// <summary>
+        /// Gets or sets the site URL maps.
+        /// </summary>
+        /// <value>
+        /// The site URL maps.
+        /// </value>
+        public DbSet<PageShortLink> PageShortLinks { get; set; }
 
         /// <summary>
         /// Gets or sets the system emails.
@@ -1477,6 +1597,42 @@ namespace Rock.Data
         #endregion
 
         /// <summary>
+        /// Use SqlBulkInsert to quickly insert a large number records.
+        /// WARNING: This will bypass the Rock and a bunch of the EF Framework, so be careful!
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="records">The records.</param>
+        /// <param name="useSqlBulkCopy">if set to <c>true</c> [use SQL bulk copy].</param>
+        public void BulkInsert<T>( IEnumerable<T> records, bool useSqlBulkCopy = true ) where T : class, IEntity
+        {
+            if ( useSqlBulkCopy )
+            {
+                // ensure CreatedDateTime and ModifiedDateTime is set
+                var currentDateTime = RockDateTime.Now;
+                foreach( var record in records )
+                {
+                    var model = record as IModel;
+                    if ( model != null )
+                    {
+                        model.CreatedDateTime = model.CreatedDateTime ?? currentDateTime;
+                        model.ModifiedDateTime = model.ModifiedDateTime ?? currentDateTime;
+                    }
+                }
+
+                // set timeout to 5 minutes, just in case (the default is 30 seconds)
+                EntityFramework.Utilities.Configuration.BulkCopyTimeout = 300;
+                EntityFramework.Utilities.Configuration.SqlBulkCopyOptions = System.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints;
+                EntityFramework.Utilities.EFBatchOperation.For( this, this.Set<T>() ).InsertAll( records );
+            }
+            else
+            {
+                this.Configuration.ValidateOnSaveEnabled = false;
+                this.Set<T>().AddRange( records );
+                this.SaveChanges( true );
+            }
+        }
+
+        /// <summary>
         /// This method is called when the context has been initialized, but
         /// before the model has been locked down and used to initialize the context. 
         /// </summary>
@@ -1485,14 +1641,22 @@ namespace Rock.Data
         {
             ContextHelper.AddConfigurations( modelBuilder );
 
-            modelBuilder.Conventions.Add( new GetAddressStoreFunctionInjectionConvention() );
-            modelBuilder.Conventions.Add( new GetGeofencingGroupNamesStoreFunctionInjectionConvention() );
-
             try
             {
                 //// dynamically add plugin entities so that queryables can use a mixture of entities from different plugins and core
                 //// from http://romiller.com/2012/03/26/dynamically-building-a-model-with-code-first/, but using the new RegisterEntityType in 6.1.3
-                
+
+                // look for IRockStoreModelConvention classes
+                var modelConventionList = Reflection.FindTypes( typeof( Rock.Data.IRockStoreModelConvention<System.Data.Entity.Core.Metadata.Edm.EdmModel> ) )
+                    .Where( a => !a.Value.IsAbstract )
+                    .OrderBy( a => a.Key ).Select( a => a.Value );
+
+                foreach ( var modelConventionType in modelConventionList )
+                {
+                    var convention = ( IConvention ) Activator.CreateInstance( modelConventionType );
+                    modelBuilder.Conventions.Add( convention );
+                }
+
                 // look for IRockEntity classes
                 var entityTypeList = Reflection.FindTypes( typeof( Rock.Data.IRockEntity ) )
                     .Where( a => !a.Value.IsAbstract && ( a.Value.GetCustomAttribute<NotMappedAttribute>() == null ) && ( a.Value.GetCustomAttribute<System.Runtime.Serialization.DataContractAttribute>() != null ) )

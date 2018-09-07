@@ -216,6 +216,11 @@ namespace Rock.Web.UI.Controls
         /// </summary>
         public HiddenField _hfValue;
 
+        /// <summary>
+        /// The hf disable VRM
+        /// </summary>
+        public HiddenField _hfValueDisableVrm;
+
         #endregion
 
         #region Properties
@@ -232,6 +237,25 @@ namespace Rock.Web.UI.Controls
             set { ViewState["ValuePrompt"] = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to allow HTML content in the value
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [allow HTML value]; otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowHtmlValue
+        {
+            get
+            {
+                EnsureChildControls();
+                return _hfValueDisableVrm.Value.AsBoolean();
+            }
+            set
+            {
+                EnsureChildControls();
+                _hfValueDisableVrm.Value = value.ToTrueFalse();
+            }
+        }
 
         /// <summary>
         /// Gets or sets custom values.  If custom values are used, the value control will
@@ -304,6 +328,10 @@ namespace Rock.Web.UI.Controls
             _hfValue = new HiddenField();
             _hfValue.ID = this.ID + "_hfValue";
             Controls.Add( _hfValue );
+
+            _hfValueDisableVrm = new HiddenField();
+            _hfValueDisableVrm.ID = _hfValue.ID + "_dvrm";
+            Controls.Add( _hfValueDisableVrm );
         }
 
         /// <summary>
@@ -339,17 +367,20 @@ namespace Rock.Web.UI.Controls
             }
 
             writer.AddAttribute( HtmlTextWriterAttribute.Class, "value-list" );
+            writer.AddAttribute( HtmlTextWriterAttribute.Id, this.ClientID );
             writer.RenderBeginTag( HtmlTextWriterTag.Span );
             writer.WriteLine();
 
             _hfValue.RenderControl( writer );
+            _hfValueDisableVrm.RenderControl( writer );
+
             writer.WriteLine();
 
             StringBuilder valueHtml = new StringBuilder();
             valueHtml.Append( @"<div class=""controls controls-row form-control-group"">");
-            if ( definedValues != null )
+            if ( definedValues != null && definedValues.Any() )
             {
-                valueHtml.Append( @"<select class=""form-control input-width-lg js-value-list-input""><option value=""""></option>" );
+                valueHtml.Append( @"<select class=""form-control input-width-lg js-value-list-input"">" );
                 foreach ( var definedValue in definedValues )
                 {
                     valueHtml.AppendFormat( @"<option value=""{0}"">{1}</option>", definedValue.Key, definedValue.Value );
@@ -379,7 +410,7 @@ namespace Rock.Web.UI.Controls
                 writer.RenderBeginTag( HtmlTextWriterTag.Div );
                 writer.WriteLine();
 
-                if ( definedValues != null )
+                if ( definedValues != null && definedValues.Any() )
                 {
                     DropDownList ddl = new DropDownList();
                     ddl.AddCssClass( "form-control input-width-lg js-value-list-input" );
@@ -387,7 +418,6 @@ namespace Rock.Web.UI.Controls
                     ddl.DataValueField = "Key";
                     ddl.DataSource = definedValues;
                     ddl.DataBind();
-                    ddl.Items.Insert( 0, new ListItem( string.Empty, string.Empty ) );
                     ddl.SelectedValue = value;
                     ddl.RenderControl( writer );
                 }
@@ -425,7 +455,14 @@ namespace Rock.Web.UI.Controls
             writer.AddAttribute( HtmlTextWriterAttribute.Class, "actions" );
             writer.RenderBeginTag( HtmlTextWriterTag.Div );
 
-            writer.AddAttribute( HtmlTextWriterAttribute.Class, "btn btn-action btn-xs value-list-add" );
+            var addButtonCssClass = "btn btn-action btn-xs value-list-add";
+            if ( !this.Enabled )
+            {
+                addButtonCssClass += " aspNetDisabled disabled";
+            }
+
+            writer.AddAttribute( HtmlTextWriterAttribute.Class, addButtonCssClass );
+
             writer.AddAttribute( HtmlTextWriterAttribute.Href, "#" );
             writer.RenderBeginTag( HtmlTextWriterTag.A );
             writer.AddAttribute(HtmlTextWriterAttribute.Class, "fa fa-plus-circle");
@@ -438,44 +475,6 @@ namespace Rock.Web.UI.Controls
 
             writer.RenderEndTag();
             writer.WriteLine();
-
-            RegisterClientScript();
         }
-
-        private void RegisterClientScript()
-        {
-            string script = @"
-    function updateKeyValues( e ) {
-        var $span = e.closest('span.value-list');
-        var newValue = '';
-        $span.children('span.value-list-rows:first').children('div.controls-row').each(function( index ) {
-            newValue += $(this).children('.js-value-list-input:first').val() + '|'
-        });
-        $span.children('input:first').val(newValue);            
-    }
-
-    $('a.value-list-add').click(function (e) {
-        e.preventDefault();
-        var $ValueList = $(this).closest('.value-list');
-        $ValueList.find('.value-list-rows').append($ValueList.find('.js-value-list-html').val());
-        Rock.controls.modal.updateSize($(this));
-    });
-
-    $(document).on('click', 'a.value-list-remove', function (e) {
-        e.preventDefault();
-        var $rows = $(this).closest('span.value-list-rows');
-        $(this).closest('div.controls-row').remove();
-        updateKeyValues($rows);            
-        Rock.controls.modal.updateSize($(this));
-    });
-
-    $(document).on('focusout', '.js-value-list-input', function (e) {
-        updateKeyValues($(this));            
-    });
-";
-
-            ScriptManager.RegisterStartupScript( this, this.GetType(), "value-list", script, true );
-        }
-
     }
 }

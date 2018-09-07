@@ -69,7 +69,7 @@ namespace Rock.Workflow.Action
 
             Guid? groupGuid = null;
             Person person = null;
-            DateTime attendanceDateTime = RockDateTime.Now;
+            DateTime attendanceDateTime = DateTime.Now;
             bool addToGroup = true;
            
             // get the group attribute
@@ -210,6 +210,18 @@ namespace Rock.Workflow.Action
                         if ( location != null )
                         {
                             attendance.LocationId = location.Id;
+                        }
+                    }
+
+                    if ( scheduleGuid != Guid.Empty )
+                    {
+                        var schedule = new ScheduleService( rockContext ).Queryable().AsNoTracking()
+                                            .Where( l => l.Guid == scheduleGuid )
+                                            .FirstOrDefault();
+
+                        if ( schedule != null )
+                        {
+                            attendance.ScheduleId = schedule.Id;
                         }
                     }
 

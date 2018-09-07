@@ -127,7 +127,7 @@ namespace RockWeb.Blocks.Examples
         /// <summary>
         /// A random number generator for use when calculating random attendance data.
         /// </summary>
-        private static Random _random = new Random( (int)RockDateTime.Now.Ticks );
+        private static Random _random = new Random( (int)DateTime.Now.Ticks );
 
         /// <summary>
         /// The number of characters (length) that security codes should be.
@@ -1920,7 +1920,6 @@ namespace RockWeb.Blocks.Examples
             PersonService personService = new PersonService( rockContext );
             PhoneNumberService phoneNumberService = new PhoneNumberService( rockContext );
             PersonViewedService personViewedService = new PersonViewedService( rockContext );
-            PageViewService pageViewService = new PageViewService( rockContext );
             BinaryFileService binaryFileService = new BinaryFileService( rockContext );
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
             PersonDuplicateService personDuplicateService = new PersonDuplicateService( rockContext );
@@ -1995,12 +1994,6 @@ namespace RockWeb.Blocks.Examples
                         foreach ( var view in personViewedService.GetByTargetPersonId( person.Id ) )
                         {
                             personViewedService.Delete( view );
-                        }
-
-                        // delete page viewed records
-                        foreach ( var view in pageViewService.GetByPersonId( person.Id ) )
-                        {
-                            pageViewService.Delete( view );
                         }
 
                         // delete notes created by them or on their record.
@@ -3003,7 +2996,9 @@ namespace RockWeb.Blocks.Examples
             var webClient = new WebClient();
             try
             {
-                binaryFile.ContentStream = new MemoryStream( webClient.DownloadData( imageUrl ) );
+                byte[] imageData = webClient.DownloadData( imageUrl );
+                binaryFile.FileSize = imageData.Length;
+                binaryFile.ContentStream = new MemoryStream( imageData );
 
                 if ( webClient.ResponseHeaders != null )
                 {

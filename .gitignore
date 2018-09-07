@@ -13,7 +13,6 @@ _ReSharper.*
 #specific files
 RockJobSchedulerService.Xml
 web.[Cc]onnectionStrings.config
-web.[Cc]ompilation.config
 desktop.ini
 Rock.XML
 pageviews.csv
@@ -27,5 +26,11 @@ RockWeb/Cache/*
 RockWeb/App_Data/PackageStaging
 /scaffolding.config
 *.sln.GhostDoc.xml
+.vs/
+.localhistory/
 
 Packages/*
+
+# javascript deps
+node_modules
+*.map

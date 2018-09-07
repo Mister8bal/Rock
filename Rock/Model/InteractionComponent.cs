@@ -16,6 +16,7 @@
 //
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Runtime.Serialization;
 using Rock.Data;
@@ -25,6 +26,7 @@ namespace Rock.Model
     /// <summary>
     /// Represents Component for <see cref="Rock.Model.Interaction">Interaction</see>
     /// </summary>
+    [RockDomain( "Core" )]
     [NotAudited]
     [Table( "InteractionComponent" )]
     [DataContract]
@@ -53,7 +55,21 @@ namespace Rock.Model
         public string ComponentData { get; set; }
 
         /// <summary>
+        /// Gets or sets the component summary.
+        /// </summary>
+        /// <value>
+        /// The component summary.
+        /// </value>
+        [DataMember]
+        public string ComponentSummary { get; set; }
+
+        /// <summary>
         /// Gets or sets the Id of the entity that this interaction component is related to.
+        /// For example:
+        ///  if this is a Page View:
+        ///     InteractionComponent.EntityId is the SiteId of the page that was viewed
+        ///  if this is a Communication Recipient activity:
+        ///     InteractionComponent.EntityId is the Communication.Id
         /// </summary>
         /// <value>
         /// A <see cref="System.Int32"/> representing the Id of the entity (object) that this interaction component is related to.
@@ -62,10 +78,10 @@ namespace Rock.Model
         public int? EntityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Id of the <see cref="Rock.Model.InteractionChannel"/> service that that is associated with this Component.
+        /// Gets or sets the Id of the <see cref="Rock.Model.InteractionChannel"/> channel that that is associated with this Component.
         /// </summary>
         /// <value>
-        /// An <see cref="System.Int32"/> representing the Id of the <see cref="Rock.Model.InteractionChannel"/> service that this Component is associated with.
+        /// An <see cref="System.Int32"/> representing the Id of the <see cref="Rock.Model.InteractionChannel"/> channel that this Component is associated with.
         /// </value>
         [DataMember( IsRequired = true )]
         [Required]
@@ -74,7 +90,6 @@ namespace Rock.Model
         #endregion
 
         #region Virtual Properties
-
 
         /// <summary>
         /// Gets or sets the channel.
@@ -85,9 +100,51 @@ namespace Rock.Model
         [DataMember]
         public virtual InteractionChannel Channel { get; set; }
 
+        [NotMapped]
+        private System.Data.Entity.EntityState SaveState { get; set; }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Method that will be called on an entity immediately before the item is saved by context
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="entry"></param>
+        public override void PreSaveChanges( DbContext dbContext, DbEntityEntry entry )
+        {
+            this.SaveState = entry.State;
+            base.PreSaveChanges( dbContext, entry );
+        }
+
+        /// <summary>
+        /// Method that will be called on an entity immediately after the item is saved by context
+        /// </summary>
+        /// <param name="dbContext">The database context.</param>
+        public override void PostSaveChanges( Data.DbContext dbContext )
+        {
+            Web.Cache.InteractionComponentCache.Flush( this.Id );
+
+            if ( this.SaveState == System.Data.Entity.EntityState.Added ||
+                this.SaveState == System.Data.Entity.EntityState.Deleted )
+            {
+                var channel = Web.Cache.InteractionChannelCache.Read( this.ChannelId );
+                if ( channel != null )
+                {
+                    if ( this.SaveState == System.Data.Entity.EntityState.Added )
+                    {
+                        channel.AddComponentId( this.Id );
+                    }
+                    else
+                    {
+                        channel.RemoveComponentId( this.Id );
+                    }
+                }
+            }
+
+            base.PostSaveChanges( dbContext );
+        }
 
         #endregion
 

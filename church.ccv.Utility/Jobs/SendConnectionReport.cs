@@ -136,8 +136,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, devEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in devEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -201,8 +211,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, anthemEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in anthemEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -266,8 +286,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, avondaleEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in avondaleEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -331,8 +361,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, eastvalleyEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in eastvalleyEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -396,8 +436,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, midtownEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in midtownEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -461,8 +511,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, peoriaEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in peoriaEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -526,8 +586,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, scottsdaleEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in scottsdaleEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 
@@ -591,8 +661,18 @@ namespace church.ccv.Utility
 
                 if ( requests.Any() )
                 {
-                    var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, surpriseEmailList, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                    var emailMessage = new RockEmailMessage();
+                    foreach ( var email in surpriseEmailList )
+                    {
+                        emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
+                    }
+                    emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                    emailMessage.FromEmail = systemEmail.FromName;
+                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.Subject = systemEmail.Subject;
+                    emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                    emailMessage.CreateCommunicationRecord = true;
+                    emailMessage.Send();
                 }
             }
 

@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Rock.Web
 {
@@ -81,7 +82,9 @@ namespace Rock.Web
                 {
                     string descriptionFormat = "<dt>{0}</dt><dd>{1}</dd>";
 
-                    string result = @"<dl>";
+                    StringBuilder result = new StringBuilder();
+
+                    result.Append(@"<dl>");
 
                     foreach ( var pair in _termDescriptionList )
                     {
@@ -91,17 +94,43 @@ namespace Rock.Web
                             displayValue = Rock.Constants.None.TextHtml;
                         }
 
-                        result += string.Format( descriptionFormat, pair.Key, displayValue );
+                        result.AppendFormat( descriptionFormat, pair.Key, displayValue );
                     }
 
-                    result += @"</dl>";
+                    result.Append( @"</dl>" );
 
-                    return result;
+                    return result.ToString();
                 }
 
                 return string.Empty;
 
             }
+        }
+
+        /// <summary>
+        /// Gets a formatted list of the key/values. 
+        /// </summary>
+        /// <param name="format">The format. (This should contain {0} for the key and {1} for the value)</param>
+        /// <returns></returns>
+        public List<string> GetFormattedList( string format )
+        {
+            var items = new List<string>();
+
+            if ( _termDescriptionList.Any() )
+            {
+                foreach ( var pair in _termDescriptionList )
+                {
+                    string displayValue = pair.Value;
+                    if ( string.IsNullOrWhiteSpace( displayValue ) )
+                    {
+                        displayValue = Rock.Constants.None.TextHtml;
+                    }
+
+                    items.Add( string.Format( format, pair.Key, displayValue ) );
+                }
+            }
+
+            return items;
         }
     }
 }

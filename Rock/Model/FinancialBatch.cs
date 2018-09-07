@@ -31,6 +31,7 @@ namespace Rock.Model
     /// Represents a batch or collection of <see cref="Rock.Model.FinancialTransaction">FinancialTransactions</see> for a specified date-time range, campus (if applicable) and transaction type.  A batch 
     /// has a known total value of all transactions that are included in the batch.
     /// </summary>
+    [RockDomain( "Finance" )]
     [Table( "FinancialBatch" )]
     [DataContract]
     public partial class FinancialBatch : Model<FinancialBatch>
@@ -82,6 +83,16 @@ namespace Rock.Model
         /// </value>
         [DataMember]
         public BatchStatus Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is automated.
+        /// If IsAutomated is True, the UI should not allow the status of Pending to be changed to Open or Closed ( an external process will be in change of changing the status )
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is automated; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember]
+        public bool IsAutomated { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the CampusId of the <see cref="Rock.Model.Campus"/> that this batch is associated with. If the batch is not linked
@@ -161,6 +172,27 @@ namespace Rock.Model
 
         #endregion
 
+        #region ISecured overrides
+
+        /// <summary>
+        /// Gets the supported actions.
+        /// </summary>
+        /// <value>
+        /// The supported actions.
+        /// </value>
+        public override Dictionary<string, string> SupportedActions
+        {
+            get
+            {
+                var supportedActions = base.SupportedActions;
+                supportedActions.AddOrReplace( "Delete", "The roles and/or users that can delete a batch." );
+                supportedActions.AddOrReplace( "ReopenBatch", "The roles and/or users that can reopen a closed batch." );
+                return supportedActions;
+            }
+        }
+
+        #endregion ISecured overrides
+
         #region Public Methods
 
         /// <summary>
@@ -195,6 +227,31 @@ namespace Rock.Model
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Determines whether [is valid batch status change] [the specified original status].
+        /// </summary>
+        /// <param name="origStatus">The original status.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="currentPerson">The current person.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns>
+        ///   <c>true</c> if [is valid batch status change] [the specified original status]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsValidBatchStatusChange(BatchStatus origStatus, BatchStatus newStatus, Person currentPerson, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if ( origStatus == BatchStatus.Closed && newStatus != BatchStatus.Closed )
+            {
+                if ( !this.IsAuthorized( "ReopenBatch", currentPerson ) )
+                {
+                    errorMessage = "User is not authorized to reopen a closed batch";
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

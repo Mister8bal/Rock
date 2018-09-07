@@ -6,6 +6,7 @@
         <Rock:NotificationBox ID="nbWarningMessage" runat="server" NotificationBoxType="Danger" Visible="true" />
 
         <asp:Panel ID="pnlBatchList" runat="server">
+            <asp:HiddenField ID="hfAction" runat="server" />
             <div class="panel panel-block">
                 <div class="panel-heading">
                     <h1 class="panel-title"><i class="fa fa-archive"></i>&nbsp;Batch List</h1>
@@ -21,6 +22,7 @@
                             <Rock:RockTextBox ID="tbTitle" runat="server" Label="Title"></Rock:RockTextBox>
                             <Rock:RockTextBox ID="tbAccountingCode" runat="server" Label="Accounting Code"></Rock:RockTextBox>
                             <Rock:RockDropDownList ID="ddlSourceType" runat="server" Label="Contains Source Type" />
+			    <asp:PlaceHolder ID="phAttributeFilters" runat="server" />
                         </Rock:GridFilter>
 
                         <Rock:ModalAlert ID="mdGridWarning" runat="server" />
@@ -46,7 +48,6 @@
                                     </ItemTemplate>
                                 </Rock:RockTemplateField>
                                 <Rock:RockBoundField DataField="Notes" HeaderText="Note" HtmlEncode="false" ColumnPriority="Desktop" />
-                                <Rock:DeleteField OnClick="gBatchList_Delete" />
                             </Columns>
                         </Rock:Grid>
                     </div>

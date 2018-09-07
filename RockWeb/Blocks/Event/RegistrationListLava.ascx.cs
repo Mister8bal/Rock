@@ -39,7 +39,6 @@ namespace RockWeb.Blocks.Event
     [IntegerField( "Max Results", "The maximum number of results to display.", false, 5, order: 3 )]
     [SlidingDateRangeField( "Date Range", "Date range to limit by.", false, "", enabledSlidingDateRangeTypes: "Previous, Last, Current, Next, Upcoming, DateRange", order: 7 )]
     [BooleanField("Limit to registrations where money is still owed", "", true, "", 8, "LimitToOwed")]
-    [BooleanField( "Enable Debug", "Show merge data to help you see what's available to you.", order: 9 )]
     public partial class RegistrationListLava : Rock.Web.UI.RockBlock
     {
         #region Base Control Methods
@@ -114,25 +113,43 @@ namespace RockWeb.Blocks.Event
             // bring into a list so we can filter on non-database columns
             var registrationList  = qryRegistrations.ToList();
             
-            List<Registration> hasFutureDates = registrationList.Where(a => a.RegistrationInstance.Linkages.Any(x => x.EventItemOccurrenceId.HasValue && x.EventItemOccurrence.NextStartDateTime.HasValue)).ToList();
-            List<Registration> noOrPastDates = registrationList.Where( a => !a.RegistrationInstance.Linkages.Any( x => x.EventItemOccurrenceId.HasValue ) && !hasFutureDates.Any( d => d.Id == a.Id ) ).OrderBy( x => x.RegistrationInstance.Name ).ToList();
-            
-            hasFutureDates = hasFutureDates.OrderBy(a => a.RegistrationInstance.Linkages.OrderBy(b => b.EventItemOccurrence.NextStartDateTime).FirstOrDefault().EventItemOccurrence.NextStartDateTime).ToList();
+            List<Registration> hasDates = registrationList.Where(a => a.RegistrationInstance.Linkages.Any(x => x.EventItemOccurrenceId.HasValue && x.EventItemOccurrence.NextStartDateTime.HasValue)).ToList();
+            List<Registration> noDates = registrationList.Where( a => !hasDates.Any( d => d.Id == a.Id ) ).OrderBy( x => x.RegistrationInstance.Name ).ToList();
+
+            hasDates = hasDates
+                .OrderBy( a => a.RegistrationInstance.Linkages
+                     .Where( x => x.EventItemOccurrenceId.HasValue && x.EventItemOccurrence.NextStartDateTime.HasValue )
+                     .OrderBy( b => b.EventItemOccurrence.NextStartDateTime )
+                     .FirstOrDefault()
+                     .EventItemOccurrence.NextStartDateTime )
+                .ToList();
 
             // filter by date range
             var requestDateRange = SlidingDateRangePicker.CalculateDateRangeFromDelimitedValues( GetAttributeValue( "DateRange" ) ?? "-1||" );
             if ( requestDateRange.Start.HasValue )
             {
-                hasFutureDates = hasFutureDates.Where( a => a.RegistrationInstance.Linkages.OrderBy( b => b.EventItemOccurrence.NextStartDateTime ).FirstOrDefault().EventItemOccurrence.NextStartDateTime >= requestDateRange.Start ).ToList();
+                hasDates = hasDates
+                    .Where( a => a.RegistrationInstance.Linkages
+                        .Where( x => x.EventItemOccurrenceId.HasValue && x.EventItemOccurrence.NextStartDateTime.HasValue )
+                        .OrderBy( b => b.EventItemOccurrence.NextStartDateTime )
+                        .FirstOrDefault()
+                        .EventItemOccurrence.NextStartDateTime >= requestDateRange.Start )
+                    .ToList();
             }
 
             if ( requestDateRange.End.HasValue )
             {
-                hasFutureDates = hasFutureDates.Where( a => a.RegistrationInstance.Linkages.OrderBy( b => b.EventItemOccurrence.NextStartDateTime ).FirstOrDefault().EventItemOccurrence.NextStartDateTime < requestDateRange.End ).ToList();
+                hasDates = hasDates
+                    .Where( a => a.RegistrationInstance.Linkages
+                        .Where( x => x.EventItemOccurrenceId.HasValue && x.EventItemOccurrence.NextStartDateTime.HasValue )
+                        .OrderBy( b => b.EventItemOccurrence.NextStartDateTime )
+                        .FirstOrDefault()
+                        .EventItemOccurrence.NextStartDateTime < requestDateRange.End )
+                    .ToList();
             }
             
-            registrationList = hasFutureDates;
-            registrationList.AddRange(noOrPastDates);
+            registrationList = hasDates;
+            registrationList.AddRange(noDates);
 
             if ( this.GetAttributeValue( "LimitToOwed" ).AsBooleanOrNull() ?? true )
             {
@@ -152,12 +169,6 @@ namespace RockWeb.Blocks.Event
             string template = GetAttributeValue( "LavaTemplate" );
             lContent.Text = template.ResolveMergeFields( mergeFields );
 
-            // show debug info
-            if ( GetAttributeValue( "EnableDebug" ).AsBoolean() && IsUserAuthorized( Authorization.EDIT ) )
-            {
-                lDebug.Visible = true;
-                lDebug.Text = mergeFields.lavaDebugInfo( rockContext );
-            }
         }
 
         #endregion

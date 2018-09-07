@@ -2,7 +2,6 @@
 /bin/*.dll
 /bin/*.pdb
 /bin/*.xml
-/content/
 
 /*.suo
 /*.user

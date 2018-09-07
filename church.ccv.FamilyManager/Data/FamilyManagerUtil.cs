@@ -495,12 +495,12 @@ namespace church.ccv.FamilyManager
     // Common reusable functions for supporting Family Manager
     public static class Util
     {
-        public static void LaunchWorkflow( RockContext rockContext, WorkflowType workflowType, GroupMember groupMember )
+        public static void LaunchWorkflow( RockContext rockContext, WorkflowTypeCache workflowTypeCache, GroupMember groupMember )
         {
             try
             {
                 List<string> workflowErrors;
-                var workflow = Workflow.Activate( workflowType, workflowType.Name );
+                var workflow = Workflow.Activate( workflowTypeCache, workflowTypeCache.Name );
                 new WorkflowService( rockContext ).Process( workflow, groupMember, out workflowErrors );
             }
             catch (Exception ex)

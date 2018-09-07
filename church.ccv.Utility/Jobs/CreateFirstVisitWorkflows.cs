@@ -174,7 +174,8 @@ namespace church.ccv.Utility
                                                 .Where( m => m.GroupRole.Guid == childRoleGuid );
 
                                 // create new workflow
-                                var visitorWorkflow = Rock.Model.Workflow.Activate( workflowType, family.Name );
+                                var workflowTypeCache = WorkflowTypeCache.Read( workflowTypeGuid );
+                                var visitorWorkflow = Rock.Model.Workflow.Activate( workflowTypeCache, family.Name );
                                 visitorWorkflow.InitiatorPersonAliasId = headOfHouse.PrimaryAliasId;
 
                                 // set attribute values

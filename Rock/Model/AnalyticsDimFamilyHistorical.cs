@@ -26,6 +26,7 @@ namespace Rock.Model
     /// AnalyticsDimFamilyHistorical is SQL View based on AnalyticsSourceFamilyHistorical
     /// and represents the historic and current records from AnalyticsSourceFamilyHistorical
     /// </summary>
+    [RockDomain( "Reporting" )]
     [Table( "AnalyticsDimFamilyHistorical" )]
     [DataContract]
     public class AnalyticsDimFamilyHistorical : AnalyticsDimFamilyBase<AnalyticsDimFamilyHistorical>
@@ -38,7 +39,8 @@ namespace Rock.Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="Rock.Model.AnalyticsSourceFamilyBase{T}" />
-    public abstract class AnalyticsDimFamilyBase<T> : AnalyticsSourceFamilyBase<T>
+    [RockDomain( "Reporting" )]
+    public abstract class AnalyticsDimFamilyBase<T> : AnalyticsSourceFamilyBase<T>, IAnalyticsAddresses
         where T : AnalyticsDimFamilyBase<T>, new()
     {
         #region Denormalized Lookup Values
@@ -184,6 +186,15 @@ namespace Rock.Model
         [DataMember]
         public double? MailingAddressLongitude { get; set; }
 
+        /// <summary>
+        /// Gets or sets the full mailing address.
+        /// </summary>
+        /// <value>
+        /// The mailing address full.
+        /// </value>
+        [DataMember]
+        public string MailingAddressFull { get; set; }
+
         #endregion
 
         #region Primary Mailing Address
@@ -306,6 +317,15 @@ namespace Rock.Model
         /// </value>
         [DataMember]
         public double? MappedAddressLongitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full mapped address.
+        /// </summary>
+        /// <value>
+        /// The mapped address full.
+        /// </value>
+        [DataMember]
+        public string MappedAddressFull { get; set; }
 
         #endregion
     }

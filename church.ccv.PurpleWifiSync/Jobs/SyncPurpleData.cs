@@ -313,8 +313,18 @@ namespace church.ccv.CCVPurpleWifiSync
         bool CreateAttendanceRecord(int personId, int? campusId, DateTime startDateTime, AttendanceService attendanceService, PersonAliasService personAliasService, RockContext rockContext)
         {
             // if we already have an attendance record for this start time, don't count it again.
-            Attendance attendance = attendanceService.Get(startDateTime.Date, null, null, AttendanceGroupId, personId);
-            if (attendance == null)
+            DateTime beginDate = startDateTime.Date;
+            DateTime endDate = beginDate.AddDays( 1 );
+
+            Attendance attendance = attendanceService.Queryable( "Group,PersonAlias.Person" )
+                .Where( a =>
+                    a.StartDateTime >= beginDate &&
+                    a.StartDateTime < endDate &&
+                    a.GroupId == AttendanceGroupId &&
+                    a.PersonAlias.PersonId == personId )
+                .FirstOrDefault();
+
+            if ( attendance == null )
             {
                 PersonAlias primaryAlias = personAliasService.GetPrimaryAlias(personId);
                 if (primaryAlias != null)

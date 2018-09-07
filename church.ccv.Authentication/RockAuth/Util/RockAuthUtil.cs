@@ -154,10 +154,12 @@ namespace church.ccv.Authentication.RockAuth
                 mergeObjects.Add( "Person", newPerson );
                 mergeObjects.Add( "User", newLogin );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( newPerson.Email, mergeObjects ) );
-
-                Email.Send( new Guid( personWithLoginModel.AccountCreatedEmailTemplateGuid ), recipients, personWithLoginModel.AppUrl, personWithLoginModel.ThemeUrl, false );
+                var emailMessage = new RockEmailMessage( new Guid( personWithLoginModel.AccountCreatedEmailTemplateGuid ) );
+                emailMessage.AddRecipient( new RecipientData( newPerson.Email, mergeObjects ) );
+                emailMessage.AppRoot = personWithLoginModel.AppUrl;
+                emailMessage.ThemeRoot = personWithLoginModel.ThemeUrl;
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
 
                 success = true;
             }
@@ -251,10 +253,12 @@ namespace church.ccv.Authentication.RockAuth
             mergeFields.Add( "Person", personDictionary );
             mergeFields.Add( "User", userLogin );
 
-            var recipients = new List<RecipientData>();
-            recipients.Add( new RecipientData( userLogin.Person.Email, mergeFields ) );
-
-            Email.Send( new Guid( confirmAccountEmailTemplateGuid ), recipients, appUrl, themeUrl, false );
+            var emailMessage = new RockEmailMessage( new Guid( confirmAccountEmailTemplateGuid ) );
+            emailMessage.AddRecipient( new RecipientData( userLogin.Person.Email, mergeFields ) );
+            emailMessage.AppRoot = appUrl;
+            emailMessage.ThemeRoot = themeUrl;
+            emailMessage.CreateCommunicationRecord = false;
+            emailMessage.Send();
         }
 
         public static void SendForgotPasswordEmail( string personEmail, string confirmAccountUrl, string forgotPasswordEmailTemplateGuid, string appUrl, string themeUrl )
@@ -301,10 +305,13 @@ namespace church.ccv.Authentication.RockAuth
             if ( results.Count > 0 && hasAccountWithPasswordResetAbility )
             {
                 mergeFields.Add( "Results", results.ToArray( ) );
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( personEmail, mergeFields ) );
 
-                Email.Send( new Guid( forgotPasswordEmailTemplateGuid ), recipients, appUrl, themeUrl, false );
+                var emailMessage = new RockEmailMessage( new Guid( forgotPasswordEmailTemplateGuid ) );
+                emailMessage.AddRecipient( new RecipientData( personEmail, mergeFields ) );
+                emailMessage.AppRoot = appUrl;
+                emailMessage.ThemeRoot = themeUrl;
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
             }
         }
     }

@@ -1,0 +1,1 @@
+<span class='label label-{% if ConnectionRequest.ConnectionStatusId == 1 or ConnectionRequest.ConnectionStatusId == 4 %}danger{% elseif ConnectionRequest.ConnectionStatusId == 2 or ConnectionRequest.ConnectionStatusId == 3 %}warning{% elseif ConnectionRequest.ConnectionStatusId == 11 %}success{% else %}other{% endif %}'>{{ ConnectionRequest.ConnectionStatus.Name }}</span>

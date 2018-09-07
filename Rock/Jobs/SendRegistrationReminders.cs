@@ -33,6 +33,7 @@ namespace Rock.Jobs
     /// <summary>
     /// Job to process event registration reminders
     /// </summary>
+    [IntegerField( "Expire Date", "The number of days past the registration reminder to refrain from sending the email. This would only be used if something went wrong and acts like a safety net to prevent sending the reminder after the fact.", true, 1, key: "ExpireDate" )]
     [DisallowConcurrentExecution]
     public class SendRegistrationReminders : IJob
     {
@@ -50,11 +51,15 @@ namespace Rock.Jobs
         public virtual void Execute( IJobExecutionContext context )
         {
             JobDataMap dataMap = context.JobDetail.JobDataMap;
+
+            var expireDays = dataMap.GetString( "ExpireDate" ).AsIntegerOrNull() ?? 1;
+
             int remindersSent = 0;
 
             using ( var rockContext = new RockContext() )
             {
                 DateTime now = RockDateTime.Now;
+                DateTime expireDate = now.AddDays( expireDays * -1 );
 
                 foreach ( var instance in new RegistrationInstanceService( rockContext )
                     .Queryable( "RegistrationTemplate,Registrations" )
@@ -64,7 +69,8 @@ namespace Rock.Jobs
                         i.RegistrationTemplate.ReminderEmailTemplate != "" &&
                         !i.ReminderSent &&
                         i.SendReminderDateTime.HasValue &&
-                        i.SendReminderDateTime <= now )
+                        i.SendReminderDateTime <= now &&
+                        i.SendReminderDateTime >= expireDate)
                     .ToList() )
                 {
                     var template = instance.RegistrationTemplate;
@@ -73,22 +79,20 @@ namespace Rock.Jobs
                         .Where( r =>
                             !r.IsTemporary &&
                             r.ConfirmationEmail != null &&
-                            r.ConfirmationEmail != "" &&
-
-                            // make sure that this registration has at least one person NOT on a wait list.
-                            r.Registrants.Where( rt => rt.OnWaitList == false ).Count( ) > 0 ) )
+                            r.ConfirmationEmail != "" ) )
                     {
                         var mergeFields = new Dictionary<string, object>();
                         mergeFields.Add( "RegistrationInstance", registration.RegistrationInstance );
                         mergeFields.Add( "Registration", registration );
 
-                        string from = template.ReminderFromEmail.ResolveMergeFields( mergeFields );
-                        string fromName = template.ReminderFromName.ResolveMergeFields( mergeFields );
-                        string subject = template.ReminderSubject.ResolveMergeFields( mergeFields );
-                        string message = template.ReminderEmailTemplate.ResolveMergeFields( mergeFields );
-
-                        var recipients = new List<string> { registration.ConfirmationEmail };
-                        Email.Send( from, fromName, subject, recipients, message );
+                        var emailMessage = new RockEmailMessage();
+                        emailMessage.AdditionalMergeFields = mergeFields;
+                        emailMessage.AddRecipient( new RecipientData( registration.ConfirmationEmail, mergeFields ) );
+                        emailMessage.FromEmail = template.ReminderFromEmail;
+                        emailMessage.FromName = template.ReminderFromName;
+                        emailMessage.Subject = template.ReminderSubject;
+                        emailMessage.Message = template.ReminderEmailTemplate;
+                        emailMessage.Send();
                     }
 
                     instance.SendReminderDateTime = now;

@@ -125,10 +125,11 @@ namespace RockWeb.Plugins.church_ccv.ChurchOnlinePlatform
             if ( results.Count > 0 && hasAccountWithPasswordResetAbility )
             {
                 mergeFields.Add( "Results", results.ToArray() );
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( tbEmail.Text, mergeFields ) );
 
-                Email.Send( GetAttributeValue( "EmailTemplate" ).AsGuid(), recipients, ResolveRockUrlIncludeRoot( "~/" ), ResolveRockUrlIncludeRoot( "~~/" ), false );
+                var emailMessage = new RockEmailMessage( GetAttributeValue( "EmailTemplate" ).AsGuid() );
+                emailMessage.AddRecipient( new RecipientData( tbEmail.Text, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
 
                 pnlEntry.Visible = false;
                 pnlSuccess.Visible = true;

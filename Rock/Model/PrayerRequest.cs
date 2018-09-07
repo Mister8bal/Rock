@@ -29,6 +29,7 @@ namespace Rock.Model
     /// <summary>
     /// Represents a prayer request that a person has submitted. The PrayerRequest entity implements ICategorized which means that a prayer request can belong to a category.
     /// </summary>
+    [RockDomain( "Prayer" )]
     [Table( "PrayerRequest" )]
     [DataContract]
     public partial class PrayerRequest : Model<PrayerRequest>, ICategorized
@@ -43,8 +44,9 @@ namespace Rock.Model
         /// A <see cref="System.String" /> containing the first name of the person that this prayer request is about.
         /// </value>
         [Required]
-        [MaxLength ( 50 ) ]
+        [MaxLength( 50 )]
         [DataMember( IsRequired = true )]
+        [Previewable]
         public string FirstName { get; set; }
 
         /// <summary>
@@ -55,6 +57,7 @@ namespace Rock.Model
         /// </value>
         [MaxLength( 50 )]
         [DataMember( IsRequired = false )]
+        [Previewable]
         public string LastName { get; set; }
 
         /// <summary>
@@ -65,7 +68,8 @@ namespace Rock.Model
         /// </value>
         [DataMember]
         [MaxLength( 254 )]
-        [RegularExpression(@"[\w\.\'_%-]+(\+[\w-]*)?@([\w-]+\.)+[\w-]+", ErrorMessage= "The Email address is invalid")]
+        [Previewable]
+        [RegularExpression( @"[\w\.\'_%-]+(\+[\w-]*)?@([\w-]+\.)+[\w-]+", ErrorMessage = "The Email address is invalid" )]
         public string Email { get; set; }
 
         /// <summary>
@@ -208,6 +212,16 @@ namespace Rock.Model
         public int? ApprovedByPersonAliasId { get; set; }
 
         /// <summary>
+        /// Gets or sets the campus identifier.
+        /// </summary>
+        /// <value>
+        /// The campus identifier.
+        /// </value>
+        [HideFromReporting]
+        [DataMember]
+        public int? CampusId { get; set; }
+
+        /// <summary>
         /// Gets or sets the date this prayer request was approved.
         /// </summary>
         /// <value>
@@ -245,6 +259,7 @@ namespace Rock.Model
         /// <value>
         /// The request's group.
         /// </value>
+        [LavaInclude]
         public virtual Group Group { get; set; }
 
         /// <summary>
@@ -256,6 +271,14 @@ namespace Rock.Model
         [DataMember]
         public virtual PersonAlias ApprovedByPersonAlias { get; set; }
 
+        /// <summary>
+        /// Gets or sets the campus.
+        /// </summary>
+        /// <value>
+        /// The campus.
+        /// </value>
+        [LavaInclude]
+        public virtual Campus Campus { get; set; }
 
         /// <summary>
         /// Gets  full name of the person for who the prayer request is about.
@@ -333,6 +356,7 @@ namespace Rock.Model
             this.HasOptional( p => p.Category ).WithMany().HasForeignKey( p => p.CategoryId ).WillCascadeOnDelete( false );
             this.HasOptional( p => p.RequestedByPersonAlias ).WithMany().HasForeignKey( p => p.RequestedByPersonAliasId ).WillCascadeOnDelete( false );
             this.HasOptional( p => p.ApprovedByPersonAlias ).WithMany().HasForeignKey( p => p.ApprovedByPersonAliasId ).WillCascadeOnDelete( false );
+            this.HasOptional( a => a.Campus ).WithMany().HasForeignKey( p => p.CampusId ).WillCascadeOnDelete( true );
         }
     }
 

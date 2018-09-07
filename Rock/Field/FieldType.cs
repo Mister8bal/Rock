@@ -21,7 +21,7 @@ using System.Linq.Expressions;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-
+using Rock.Data;
 using Rock.Model;
 using Rock.Reporting;
 using Rock.Web.UI.Controls;
@@ -115,6 +115,21 @@ namespace Rock.Field
         }
 
         /// <summary>
+        /// Formats the value.
+        /// </summary>
+        /// <param name="parentControl">The parent control.</param>
+        /// <param name="entityTypeId">The entity type identifier.</param>
+        /// <param name="entityId">The entity identifier.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="configurationValues">The configuration values.</param>
+        /// <param name="condensed">if set to <c>true</c> [condensed].</param>
+        /// <returns></returns>
+        public virtual string FormatValue( Control parentControl, int? entityTypeId, int? entityId, string value, Dictionary<string, ConfigurationValue> configurationValues, bool condensed )
+        {
+            return FormatValue( parentControl, value, configurationValues, condensed );
+        }
+
+        /// <summary>
         /// Formats the value as HTML.
         /// </summary>
         /// <param name="parentControl">The parent control.</param>
@@ -126,7 +141,22 @@ namespace Rock.Field
         {
             return FormatValue( parentControl, value, configurationValues, condensed );
         }
-         
+
+        /// <summary>
+        /// Formats the value as HTML.
+        /// </summary>
+        /// <param name="parentControl">The parent control.</param>
+        /// <param name="entityTypeId">The entity type identifier.</param>
+        /// <param name="entityId">The entity identifier.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="configurationValues">The configuration values.</param>
+        /// <param name="condensed">if set to <c>true</c> [condensed].</param>
+        /// <returns></returns>
+        public virtual string FormatValueAsHtml( Control parentControl, int? entityTypeId, int? entityId, string value, Dictionary<string, ConfigurationValue> configurationValues, bool condensed = false )
+        {
+            return FormatValue( parentControl, entityTypeId, entityId, value, configurationValues, condensed );
+        }
+
         /// <summary>
         /// Returns the value using the most appropriate datatype
         /// </summary>
@@ -167,6 +197,14 @@ namespace Rock.Field
         #endregion
 
         #region Edit Control
+
+        /// <summary>
+        /// Gets a value indicating whether this field has a control to configure the default value
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance has default control; otherwise, <c>false</c>.
+        /// </value>
+        public virtual bool HasDefaultControl => true;
 
         /// <summary>
         /// Creates the control(s) necessary for prompting user for a new value
@@ -693,6 +731,21 @@ namespace Rock.Field
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Determines whether the filter is an 'Equal To' comparison and the filtered value is equal to the specified value.
+        /// </summary>
+        /// <param name="filterValues">The filter values.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if [is equal to value] [the specified filter values]; otherwise, <c>false</c>.
+        /// </returns>
+        public virtual bool IsEqualToValue( List<string> filterValues, string value )
+        {
+            if ( filterValues == null || filterValues.Count != 2 ) return false;
+            if ( filterValues[0] != GetEqualToCompareValue() ) return false;
+            return filterValues[1] == value;
         }
 
         /// <summary>

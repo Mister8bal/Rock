@@ -24,6 +24,7 @@ namespace Rock.Model
     /// <summary>
     /// AnalyticsFactAttendance is SQL View based on AnalyticsSourceAttendance
     /// </summary>
+    [RockDomain( "Reporting" )]
     [Table( "AnalyticsFactAttendance" )]
     [DataContract]
     public class AnalyticsFactAttendance : AnalyticsBaseAttendance<AnalyticsFactAttendance>
@@ -50,6 +51,26 @@ namespace Rock.Model
         #endregion
 
         #region Entity Properties
+
+        /// <summary>
+        /// This is the FamilyKey (AnalyticsDimFamilyCurrent.Id) of the family of the Person that attendend
+        /// Note that this is the family that the person was in at the time of the attendance
+        /// </summary>
+        /// <value>
+        /// The authorized family key.
+        /// </value>
+        [DataMember]
+        public int? FamilyKey { get; set; }
+
+        /// <summary>
+        /// This is the FamilyKey (AnalyticsDimFamilyCurrent.Id) of the family of the Person that attendend
+        /// Note that this is the family that the person is in now
+        /// </summary>
+        /// <value>
+        /// The authorized family key.
+        /// </value>
+        [DataMember]
+        public int? CurrentFamilyKey { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the location.
@@ -138,8 +159,8 @@ namespace Rock.Model
         /// </summary>
         public AnalyticsFactAttendanceConfiguration()
         {
-            // NOTE: When creating a migration for this, don't create the actual FK's in the database for this just in case there are outlier TransactionDates that aren't in the AnalyticsDimDate table
-            // and so that the AnalyticsDimDate can be rebuilt from scratch as needed
+            // NOTE: When creating a migration for this, don't create the actual FK's in the database for this just in case there are outlier TransactionDates that aren't in the AnalyticsSourceDate table
+            // and so that the AnalyticsSourceDate can be rebuilt from scratch as needed
             this.HasRequired( t => t.AttendanceDate ).WithMany().HasForeignKey( t => t.AttendanceDateKey ).WillCascadeOnDelete( false );
 
             // NOTE: When creating a migration for this, don't create the actual FK's in the database for any of these since they are views

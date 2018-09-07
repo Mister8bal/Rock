@@ -498,19 +498,32 @@ namespace RockWeb.Blocks.Connection
 
                     connectionOpportunity.SaveAttributeValues( rockContext );
 
-                    if ( orphanedPhotoId.HasValue )
+                    if ( orphanedPhotoId.HasValue || connectionOpportunity.PhotoId.HasValue)
                     {
                         BinaryFileService binaryFileService = new BinaryFileService( rockContext );
-                        var binaryFile = binaryFileService.Get( orphanedPhotoId.Value );
-                        if ( binaryFile != null )
+
+                        if ( orphanedPhotoId.HasValue )
                         {
-                            string errorMessage;
-                            if ( binaryFileService.CanDelete( binaryFile, out errorMessage ) )
+                            var binaryFile = binaryFileService.Get( orphanedPhotoId.Value );
+                            if ( binaryFile != null )
                             {
-                                binaryFileService.Delete( binaryFile );
-                                rockContext.SaveChanges();
+                                string errorMessage;
+                                if ( binaryFileService.CanDelete( binaryFile, out errorMessage ) )
+                                {
+                                    binaryFileService.Delete( binaryFile );
+                                }
                             }
                         }
+
+                        if ( connectionOpportunity.PhotoId.HasValue )
+                        {
+                            var binaryFile = binaryFileService.Get( connectionOpportunity.PhotoId.Value );
+                            if ( binaryFile != null )
+                            {
+                                binaryFile.IsTemporary = false;
+                            }
+                        }
+                        rockContext.SaveChanges();
                     }
                 } );
 
@@ -597,36 +610,45 @@ namespace RockWeb.Blocks.Connection
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void dlgGroupDetails_SaveClick( object sender, EventArgs e )
         {
-            int? groupId = gpOpportunityGroup.SelectedValueAsInt();
-            if ( groupId.HasValue )
+            var groups = new List<Group>();
+
+            foreach ( int groupId in gpOpportunityGroup.SelectedValuesAsInt() )
             {
                 var rockContext = new RockContext();
-                var group = new GroupService( rockContext ).Get( groupId.Value );
+                var group = new GroupService( rockContext ).Get( groupId );
                 if ( group != null )
                 {
-                    if ( !ValidPlacementGroups() )
-                    { 
+                    int? groupTypeId = ddlGroupType.SelectedValueAsInt();
+                    if ( groupTypeId.HasValue && group.GroupTypeId != groupTypeId.Value )
+                    {
+                        string groupTypeName = ddlGroupType.SelectedItem.Text;
+                        nbInvalidGroupType.Text = string.Format( "<p>One or more of the selected groups is not a <strong>{0}</strong> type. Please select groups that have a group type of <strong>{0}</strong>.", groupTypeName );
+                        nbInvalidGroupType.Visible = true;
                         return;
                     }
 
-                    var groupStateObj = GroupsState.Where( g => g.GroupId == group.Id ).FirstOrDefault();
-                    if ( groupStateObj == null )
-                    {
-                        groupStateObj = new GroupStateObj();
-                        groupStateObj.GroupId = group.Id;
-                        groupStateObj.GroupName = group.Name;
-                        groupStateObj.GroupTypeName = group.GroupType != null ? group.GroupType.Name : string.Empty;
-                        groupStateObj.GroupTypeId = group.GroupTypeId;
-                        groupStateObj.CampusId = group.CampusId;
-                        groupStateObj.CampusName = group.Campus != null ? group.Campus.Name : string.Empty;
-                        GroupsState.Add( groupStateObj );
-                    }
-
-                    BindGroupGrid();
-                    HideDialog();
-                   
+                    groups.Add( group );
                 }
             }
+
+            foreach ( var group in groups )
+            {
+                var groupStateObj = GroupsState.Where( g => g.GroupId == group.Id ).FirstOrDefault();
+                if ( groupStateObj == null )
+                {
+                    groupStateObj = new GroupStateObj();
+                    groupStateObj.GroupId = group.Id;
+                    groupStateObj.GroupName = group.Name;
+                    groupStateObj.GroupTypeId = group.GroupTypeId;
+                    groupStateObj.CampusId = group.CampusId;
+                    groupStateObj.CampusName = group.Campus != null ? group.Campus.Name : string.Empty;
+                    groupStateObj.Guid = Guid.NewGuid();
+                    GroupsState.Add( groupStateObj );
+                }
+            }
+
+            BindGroupGrid();
+            HideDialog();
         }
 
         /// <summary>
@@ -1148,20 +1170,20 @@ namespace RockWeb.Blocks.Connection
         /// <param name="connectionOpportunityWorkflowGuid">The connection opportunity workflow unique identifier.</param>
         protected void gConnectionOpportunityWorkflows_ShowEdit( Guid connectionOpportunityWorkflowGuid )
         {
+            ddlWorkflowType.Items.Clear();
+            ddlWorkflowType.Items.Add( new ListItem( string.Empty, string.Empty ) );
+
+            foreach ( var workflowType in new WorkflowTypeService( new RockContext() ).Queryable().OrderBy( w => w.Name ) )
+            {
+                if ( workflowType.IsAuthorized( Authorization.VIEW, CurrentPerson ) )
+                {
+                    ddlWorkflowType.Items.Add( new ListItem( workflowType.Name, workflowType.Id.ToString() ) );
+                }
+            }
+
             var workflowTypeStateObj = WorkflowsState.FirstOrDefault( l => l.Guid.Equals( connectionOpportunityWorkflowGuid ) );
             if ( workflowTypeStateObj != null )
             {
-                ddlWorkflowType.Items.Clear();
-                ddlWorkflowType.Items.Add( new ListItem( string.Empty, string.Empty ) );
-
-                foreach ( var workflowType in new WorkflowTypeService( new RockContext() ).Queryable().OrderBy( w => w.Name ) )
-                {
-                    if ( workflowType.IsAuthorized( Authorization.VIEW, CurrentPerson ) )
-                    {
-                        ddlWorkflowType.Items.Add( new ListItem( workflowType.Name, workflowType.Id.ToString() ) );
-                    }
-                }
-
                 if ( workflowTypeStateObj.WorkflowTypeId == null )
                 {
                     ddlWorkflowType.SelectedValue = "0";
@@ -1172,20 +1194,6 @@ namespace RockWeb.Blocks.Connection
                 }
 
                 ddlTriggerType.SelectedValue = workflowTypeStateObj.TriggerType.ConvertToInt().ToString();
-
-            }
-            else
-            {
-                ddlWorkflowType.Items.Clear();
-                ddlWorkflowType.Items.Add( new ListItem( string.Empty, string.Empty ) );
-
-                foreach ( var workflowType in new WorkflowTypeService( new RockContext() ).Queryable().OrderBy( w => w.Name ) )
-                {
-                    if ( workflowType.IsAuthorized( Authorization.VIEW, CurrentPerson ) )
-                    {
-                        ddlWorkflowType.Items.Add( new ListItem( workflowType.Name, workflowType.Id.ToString() ) );
-                    }
-                }
             }
 
             hfWorkflowGuid.Value = connectionOpportunityWorkflowGuid.ToString();
@@ -1374,11 +1382,9 @@ namespace RockWeb.Blocks.Connection
         /// <param name="parentConnectionOpportunityId">The parent connectionOpportunity identifier.</param>
         public void ShowDetail( int connectionOpportunityId )
         {
-            ConnectionOpportunity connectionOpportunity = null;
-
-            bool editAllowed = UserCanEdit;
-
             RockContext rockContext = new RockContext();
+
+            ConnectionOpportunity connectionOpportunity = null;
 
             if ( !connectionOpportunityId.Equals( 0 ) )
             {
@@ -1388,22 +1394,17 @@ namespace RockWeb.Blocks.Connection
 
             if ( connectionOpportunity == null )
             {
+                int connectionTypeId = PageParameter( "ConnectionTypeId" ).AsInteger();
+
                 connectionOpportunity = new ConnectionOpportunity { Id = 0, IsActive = true, Name = "" };
-                connectionOpportunity.ConnectionType = new ConnectionTypeService( rockContext ).Get( PageParameter( "ConnectionTypeId" ).AsInteger() );
+                connectionOpportunity.ConnectionTypeId = _connectionTypeId;
+                connectionOpportunity.ConnectionType = new ConnectionTypeService( rockContext ).Get( _connectionTypeId );
+
                 // hide the panel drawer that show created and last modified dates
                 pdAuditDetails.Visible = false;
             }
 
-            // Only users that have Edit rights to block, or edit rights to the calendar (from query string) should be able to edit
-            if ( !editAllowed )
-            {
-                var connectionType = new ConnectionTypeService( rockContext ).Get( _connectionTypeId );
-                if ( connectionType != null )
-                {
-                    editAllowed = connectionType.IsAuthorized( Authorization.EDIT, CurrentPerson );
-                }
-            }
-
+            bool editAllowed = UserCanEdit || connectionOpportunity.IsAuthorized( Authorization.VIEW, CurrentPerson );
             bool readOnly = true;
 
             if ( !editAllowed )
@@ -1415,9 +1416,9 @@ namespace RockWeb.Blocks.Connection
             {
                 nbEditModeMessage.Text = string.Empty;
 
-                if ( connectionOpportunity.Id != 0 && !( connectionOpportunity.ConnectionTypeId == _connectionTypeId ) )
+                if ( connectionOpportunity.Id != 0 && connectionOpportunity.ConnectionTypeId != _connectionTypeId )
                 {
-                    // Item does not belong to calendar
+                    // Selected Opportunity does not belong to the selected Connection Type
                     nbIncorrectOpportunity.Visible = true;
                 }
                 else
@@ -1790,7 +1791,7 @@ namespace RockWeb.Blocks.Connection
                 }
                 else
                 {
-                    CampusName = "all";
+                    CampusName = "All";
                 }
             }
         }

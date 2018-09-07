@@ -119,6 +119,25 @@ namespace Rock.Web.UI.Controls
         }
 
         /// <summary>
+        /// Controls whether or not the DatePicker allows for past dates to be selected (default true). If set to false, all past dates will be disabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> (default); otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowPastDateSelection
+        {
+            get
+            {
+                return ViewState["AllowPastDateSelection"] as bool? ?? true;
+            }
+
+            set
+            {
+                ViewState["AllowPastDateSelection"] = value;
+            }
+        }
+
+        /// <summary>
         /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> object that contains the event data.</param>
@@ -168,14 +187,36 @@ namespace Rock.Web.UI.Controls
             dateFormat = dateFormat.Replace( "M", "m" ).Replace( "m", "mm" ).Replace( "mmmm", "mm" );
             dateFormat = dateFormat.Replace( "d", "dd" ).Replace( "dddd", "dd" );
 
-            var script = string.Format( @"Rock.controls.datePicker.initialize({{ id: '{0}', startView: {1}, format: '{2}', todayHighlight: {3}, {4} }});", 
-                this.ClientID,
-                this.StartView.ConvertToInt(),
-                dateFormat,
-                this.HighlightToday.ToString().ToLower(),
-                (this.AllowFutureDateSelection ) ? "" : "endDate: '" + RockDateTime.Today.ToString("o") + "',"
+            var script = string.Format( @"Rock.controls.datePicker.initialize({{ id: '{0}', startView: {1}, showOnFocus: {2}, format: '{3}', todayHighlight: {4}, forceParse: {5}, {6} {7} }});", 
+                this.ClientID,                                  // {0}
+                this.StartView.ConvertToInt(),                  // {1}
+                this.ShowOnFocus.ToString().ToLower(),          // {2}
+                dateFormat,                                     // {3}
+                this.HighlightToday.ToString().ToLower(),       // {4}
+                this.ForceParse.ToString().ToLower(),           // {5}
+                ( this.AllowFutureDateSelection ) ? "" : "endDate: '" + RockDateTime.Today.ToString("o") + "',",  // {6}
+                ( this.AllowPastDateSelection ) ? "" : "startDate: '" + RockDateTime.Today.ToString("o") + "',"  // {7}
             );
             ScriptManager.RegisterStartupScript( this, this.GetType(), "date_picker-" + this.ClientID, script, true );
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating if picker selections (popup) should be shown as soon as control gets focus
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show on focus]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowOnFocus
+        {
+            get
+            {
+                return ViewState["ShowOnFocus"] as bool? ?? true;
+            }
+
+            set
+            {
+                ViewState["ShowOnFocus"] = value;
+            }
         }
 
         /// <summary>
@@ -213,6 +254,25 @@ namespace Rock.Web.UI.Controls
             set
             {
                 ViewState["HighlightToday"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [force parse].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [force parse]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ForceParse
+        {
+            get
+            {
+                return ViewState["ForceParse"] as bool? ?? true;
+            }
+
+            set
+            {
+                ViewState["ForceParse"] = value;
             }
         }
 
@@ -256,7 +316,10 @@ namespace Rock.Web.UI.Controls
                     }
                     else
                     {
-                        ShowErrorMessage( Rock.Constants.WarningMessage.DateTimeFormatInvalid( this.PropertyName ) );
+                        if ( !(this.DisplayCurrentOption && this.IsCurrentDateOffset) )
+                        {
+                            ShowErrorMessage( Rock.Constants.WarningMessage.DateTimeFormatInvalid( this.PropertyName ) );
+                        }
                     }
                 }
 
@@ -315,6 +378,9 @@ namespace Rock.Web.UI.Controls
                 {
                     // set this.Attributes["disabled"] instead of this.Enabled so that our child controls don't get disabled
                     this.Attributes["disabled"] = "true";
+
+                    // set textbox val to something instead of empty string so that validation doesn't complain
+                    this.Text = "current";
                     _nbDayOffset.Style[HtmlTextWriterStyle.Display] = "";
                 }
                 else
