@@ -101,6 +101,11 @@
     white-space: normal;
 }
 
+.person-row-details a {
+    position: relative;
+    top: 25%;
+}
+
 .person-row-summary {
     padding: 0 20px; 
     /* display: flex;  */
@@ -198,16 +203,3 @@
     }
     
 }
-
-/* smaller phones */
-@media screen and (max-width: 400px) {
-    
-}
-
-/* smallest phones...dont hate me... */
-@media screen and (max-width: 320px) {
-    .person-row-details {
-        width: 75%;
-    }
-}
-
