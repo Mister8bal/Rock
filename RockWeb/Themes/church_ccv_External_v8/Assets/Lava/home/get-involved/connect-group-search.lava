@@ -48,8 +48,8 @@
                         <div class="details-container">
                             <div class="person-row-details">
                                 {% assign groupAddr = group.GroupLocations | First %}
-                                <h5>Address</h5>
-                                <p>{{ groupAddr.Location.FormattedHtmlAddress }}</p> 
+                                {% comment %} <h5>Address</h5>
+                                <p>{{ groupAddr.Location.FormattedHtmlAddress }}</p>  {% endcomment %}
                                 {% comment %} <p>Distance: {{ groupAddr.Location.GeoFence }}</p>  {% endcomment %}
                                 {% comment %} <a class="btn btn-primary" href="get-involved/next-steps/connect/group-search/group-registration?GroupId=1202626">Register</a> {% endcomment %}
                                 {% comment %} <a class='btn btn-xs btn-action margin-r-sm' href='{{ LinkedPages.GroupDetailPage }}?GroupId={{ group.Id }}'>View {{ Group.GroupType.GroupTerm }}</a> {% endcomment %}
