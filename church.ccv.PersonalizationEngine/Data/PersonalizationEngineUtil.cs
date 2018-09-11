@@ -85,7 +85,7 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        public static List<Campaign> GetCampaigns( CampaignType[] typeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
+        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
             
@@ -106,12 +106,8 @@ namespace church.ccv.PersonalizationEngine.Data
                 // Then we'll use linq to take each element in the typeListArray, and see if any of those elements are contained
                 // in the Campaign's Type CSV. If they are, then it's a match!
                 
-                // first convert the Enum type array into a string array
-                string[] typesAsString = new string[typeList.Length];
-                for( int i = 0; i < typeList.Length; i++ )
-                {
-                    typesAsString[ i ] = typeList[i].ToString( ).ToLower( );
-                }
+                // convert the string list into an array
+                string[] campaignTypes = campaignTypeList.Split( ',' );
                 
                 var campaigns = peService.Queryable( ).AsNoTracking( )
                                          //The campaign start date must be valid, but if the user passed in null OR the campaign start date is earlier than the date provided
@@ -120,8 +116,8 @@ namespace church.ccv.PersonalizationEngine.Data
                                          // A campaign does NOT need to have an end date--so if it doesn't have one just take it
                                          .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate >= endDate.Value )
 
-                                         // for each Campaign, see if any element of typesAsString is contained in c.Type (the CSV)
-                                         .Where( c => typesAsString.Any( t => c.Type.Contains( t ) ) )
+                                         // for each Campaign, see if any element of campaignTypeIds is contained in c.Type (the CSV)
+                                         .Where( c => campaignTypes.Any( t => c.Type.Contains( t ) ) )
                                          
                                          // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
                                          .Where( c => c.IsDefault == isDefault ) 
@@ -177,7 +173,7 @@ namespace church.ccv.PersonalizationEngine.Data
         #endregion
 
         #region General
-        public static List<Campaign> GetRelevantCampaign( CampaignType[] campaignTypeList, int personId, int numCampaigns = 1 )
+        public static List<Campaign> GetRelevantCampaign( string campaignTypeList, int personId, int numCampaigns = 1 )
         {
             //given a person id, get whatever is less - the number of relevant campaigns that exist, or numCampaigns.
 
@@ -215,7 +211,7 @@ namespace church.ccv.PersonalizationEngine.Data
             return relevantCampaigns;
         }
 
-        public static List<Campaign> GetDefaultCampaign( CampaignType[] campaignTypeList, int numCampaigns = 1 )
+        public static List<Campaign> GetDefaultCampaign( string campaignTypeList, int numCampaigns = 1 )
         {
             // guard against passing in <= 0 numbers
             numCampaigns = Math.Max( numCampaigns, 1 );
