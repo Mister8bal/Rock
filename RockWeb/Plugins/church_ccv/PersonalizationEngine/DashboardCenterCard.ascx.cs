@@ -57,7 +57,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             Campaign campaignForCard = null;
             
             // first try to get a relevant campaign for this person
-            var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard }, CurrentPerson.Id );
+            var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( "WebsiteCard", CurrentPerson.Id );
             if( campaignList.Count > 0 )
             {
                 campaignForCard = campaignList[0];
@@ -65,18 +65,20 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             else
             {
                 // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( new Campaign.CampaignType[] { Campaign.CampaignType.WebsiteCard } );
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
                 campaignForCard = defaultCampaigns[ 0 ];
             }
 
             JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );
+
+            JObject campaignBlob = jsonBlob["WebsiteCard"].ToObject<JObject>( );
                     
-            string campaignImage =  jsonBlob["website-card-img"].ToString( );
-            string campaignTitle = jsonBlob["title"].ToString( );
-            string campaignSubTitle = jsonBlob["sub-title"].ToString( );
-            string campaignBody = jsonBlob["body"].ToString( );
-            string campaignLinkText = jsonBlob["link-text"].ToString( );
-            string campaignLink = jsonBlob["link"].ToString( );
+            string campaignImage =  campaignBlob["img"].ToString( );
+            string campaignTitle = campaignBlob["title"].ToString( );
+            string campaignSubTitle = campaignBlob["sub-title"].ToString( );
+            string campaignBody = campaignBlob["body"].ToString( );
+            string campaignLinkText = campaignBlob["link-text"].ToString( );
+            string campaignLink = campaignBlob["link"].ToString( );
             
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
             mergeFields.Add( "CampaignImage", campaignImage );

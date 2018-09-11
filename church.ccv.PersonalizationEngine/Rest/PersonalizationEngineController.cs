@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Rock.Rest.Filters;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using static church.ccv.PersonalizationEngine.Model.Campaign;
@@ -17,23 +18,39 @@ namespace church.ccv.PersonalizationEngine.Rest
         [Authenticate, Secured]
         public HttpResponseMessage GetCampaign( string campaignTypeList, int personId, int numCampaigns = 1 )
         {
-            // convert the strings to enum
-            CampaignType[] campaignTypeEnumList = StringToEnum( campaignTypeList );
-
             // now request the relevant campaign for the person
-            List<Model.Campaign> campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( campaignTypeEnumList, personId, numCampaigns );
+            List<Model.Campaign> campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( campaignTypeList, personId, numCampaigns );
 
             // and if nothing was found, take a default
             if ( campaignResults.Count == 0 )
             {
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeEnumList );
-                campaignResults.Add( defaultCampaigns[ 0 ] );
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeList );
+
+                if ( defaultCampaigns.Count > 0 )
+                {
+                    campaignResults.Add( defaultCampaigns [ 0 ] );
+                }
             }
 
-            StringContent restContent = new StringContent( JsonConvert.SerializeObject( campaignResults ), Encoding.UTF8, "application/json" );
+
+            // now, if we've got a result, return it. Otherwise throw an error
+            HttpStatusCode statusCode = HttpStatusCode.OK;
+            StringContent responseContent = null;
+
+            if( campaignResults.Count > 0 )
+            {
+                responseContent = new StringContent( JsonConvert.SerializeObject( campaignResults ), Encoding.UTF8, "application/json" );
+            }
+            else
+            {
+                statusCode = HttpStatusCode.NotFound;
+                responseContent = new StringContent( string.Format( "Could not find any campaigns for types of: {0}", campaignTypeList ) );
+            }
+
             return new HttpResponseMessage()
             {
-                Content = restContent
+                StatusCode = statusCode,
+                Content = responseContent
             };
         }
 
@@ -43,31 +60,29 @@ namespace church.ccv.PersonalizationEngine.Rest
         [Authenticate, Secured]
         public HttpResponseMessage GetDefaultCampaign( string campaignTypeList, int numCampaigns = 1 )
         {
-            // convert the strings to enum
-            CampaignType[] campaignTypeEnumList = StringToEnum( campaignTypeList );
-
             // now grab a default campaign
-            var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeEnumList, numCampaigns );
+            var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeList, numCampaigns );
 
-            StringContent restContent = new StringContent( JsonConvert.SerializeObject( defaultCampaigns ), Encoding.UTF8, "application/json" );
-            return new HttpResponseMessage()
+
+            // now, if we've got a result, return it. Otherwise throw an error
+            HttpStatusCode statusCode = HttpStatusCode.OK;
+            StringContent responseContent = null;
+
+            if( defaultCampaigns.Count > 0 )
             {
-                Content = restContent
-            };
-        }
-
-        CampaignType[] StringToEnum( string campaignTypeList )
-        {
-            // convert the string list into an array of enums
-            string[] types = campaignTypeList.Split( ',' );
-
-            CampaignType[] campaignTypeEnumList = new CampaignType[types.Length];
-            for( int i = 0; i < types.Length; i++ )
+                responseContent = new StringContent( JsonConvert.SerializeObject( defaultCampaigns ), Encoding.UTF8, "application/json" );
+            }
+            else
             {
-                campaignTypeEnumList[ i ] = (CampaignType)Enum.Parse( typeof( CampaignType ), types[ i ], true );
+                statusCode = HttpStatusCode.NotFound;
+                responseContent = new StringContent( string.Format( "Could not find any campaigns for types of: {0}", campaignTypeList ) );
             }
 
-            return campaignTypeEnumList;
+            return new HttpResponseMessage()
+            {
+                StatusCode = statusCode,
+                Content = responseContent
+            };
         }
     }
 }
