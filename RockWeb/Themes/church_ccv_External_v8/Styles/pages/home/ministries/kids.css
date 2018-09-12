@@ -105,16 +105,8 @@
     align-items: center;
 }
 
-.kids-service-times .dropdown a:hover {
-    background-color: transparent;
-}
-
 .kids-service-times .dropdown .dropdown-menu {
     width: 100%;
-}
-
-.kids-service-times .dropdown .dropdown-menu a {
-    color: #333;
 }
 
 .kids-service-times {
