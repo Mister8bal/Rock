@@ -57,7 +57,7 @@
                             </span>
 
                             <div class="thumbnail-column-splash">
-                                <div class="savethedate-title-splash">May 38 – May 31 <br /><span> ( Midtown /  Peoria )</span></div>
+                                <div class="savethedate-title-splash">May 28 – May 31 <br /><span> ( Midtown /  Peoria )</span></div>
                             </div>
                         </div>
                     </div>
