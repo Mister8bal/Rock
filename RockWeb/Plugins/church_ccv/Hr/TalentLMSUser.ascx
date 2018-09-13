@@ -5,7 +5,9 @@
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert alert-warning" />
 
     <asp:Panel runat="server" ID="pnlTalentLMSDashboard">
+
         <asp:Label runat="server" ID="lblTemp">Temp</asp:Label>
+
     </asp:Panel>
 
 

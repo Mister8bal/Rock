@@ -6,6 +6,7 @@ using System.Threading;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
 using Rock;
@@ -51,14 +52,19 @@ namespace RockWeb.Plugins.church_ccv.Hr
             coursesClient.ExecuteAsync( coursesRequest, response =>
             {
                 // Check for successful response
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    errorMessage = response.Content;
+                    JArray responseBlob = JArray.Parse( response.Content );
+
+
+
+                    coursesSuccessful = true;
                 }
                 // Process response 
                 else
                 {
-                    coursesSuccessful = true;
+                    errorMessage = response.Content;
+
                 }
 
                 Interlocked.Increment( ref count );
@@ -70,14 +76,18 @@ namespace RockWeb.Plugins.church_ccv.Hr
             var usersRequest = new RestRequest( Method.GET );
             userClient.ExecuteAsync( usersRequest, response =>
              {
-                 if ( response.StatusCode != System.Net.HttpStatusCode.OK )
+                 if ( response.StatusCode == System.Net.HttpStatusCode.OK )
                  {
-                     errorMessage = response.Content;
+                     JObject responseBlob = JObject.Parse( response.Content );
+
+
+                     userSuccessful = true;
                  }
                  // Process response
                  else
                  {
-                     userSuccessful = true;
+                     errorMessage = response.Content;
+
                  }
 
 
