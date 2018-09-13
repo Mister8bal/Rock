@@ -42,16 +42,8 @@
     align-items: center;
 }
 
-.special-needs-service-times .dropdown a:hover {
-    background-color: transparent;
-}
-
 .special-needs-service-times .dropdown .dropdown-menu {
     width: 100%;
-}
-
-.special-needs-service-times .dropdown .dropdown-menu a {
-    color: #333;
 }
 
 .special-needs-service-times {
