@@ -57,12 +57,12 @@
     {% endfor %}
   </div> {% endcomment %}
 
-  <div class='location-of-group'>
+  {% comment %} <div class='location-of-group'>
     {% if Location.FormattedHtmlAddress && Location.FormattedHtmlAddress != '' %}
       <p>{{ Location.FormattedHtmlAddress }}</p>
     {% endif %}
   </div>
-</div>
+</div> {% endcomment %}
 
 {% comment %} {% if LinkedPages.GroupDetailPage and LinkedPages.GroupDetailPage != '' %}
   <a class='btn btn-xs btn-action margin-r-sm' href='{{ LinkedPages.GroupDetailPage }}?GroupId={{ Group.Id }}'>View {{ Group.GroupType.GroupTerm }}</a>
