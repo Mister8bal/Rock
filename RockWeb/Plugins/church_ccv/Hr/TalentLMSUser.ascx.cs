@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -56,7 +57,7 @@ namespace RockWeb.Plugins.church_ccv.Hr
                 {
                     JArray responseBlob = JArray.Parse( response.Content );
 
-
+                    RenderCoursesPanel( responseBlob );
 
                     coursesSuccessful = true;
                 }
@@ -111,6 +112,37 @@ namespace RockWeb.Plugins.church_ccv.Hr
             }
 
             DisplayError( "It worky" );
+
+        }
+
+        private void RenderCoursesPanel( JArray jsonBlob )
+        {
+            pnlAllCourses.Controls.Clear();
+
+            Table coursesTable = new Table();
+            TableHeaderRow headerRow = new TableHeaderRow();
+
+            coursesTable.Rows.Add( headerRow );
+
+            headerRow.Cells.Add( new TableHeaderCell { Text = "Course Name" } );
+            headerRow.Cells.Add( new TableHeaderCell { Text = "Id(button soon)" } );
+
+            coursesTable.Rows.Add( headerRow );
+
+            foreach ( var course in jsonBlob.Children() )
+            {
+                TableRow row = new TableRow();
+
+                row.Cells.Add( new TableCell { Text = (string)course["name"] } );
+                row.Cells.Add( new TableCell { Text = ( string ) course["id"] } );
+
+                coursesTable.Rows.Add( row );
+
+//                pnlAllCourses.Controls.Add( new LiteralControl( ( string ) course["name"] + "<br />" ) );
+
+            }
+
+            pnlAllCourses.Controls.Add( coursesTable );
 
         }
 
