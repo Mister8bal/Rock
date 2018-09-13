@@ -291,7 +291,7 @@ ul.feature-list {
     width: 100%;
 }
 
-.leftsidepicture {
+.leftsidepictureB {
     background-image: var(--section-b-bg-left);
     width: 50%;
     height: 500px;
@@ -302,11 +302,11 @@ ul.feature-list {
     background-size: cover;
 }
 
-.leftsidepicture img {
+.leftsidepictureB img {
     max-width: 250px;
 }
 
-.rightsidepicture {
+.rightsidepictureB {
     background-image: var(--section-b-bg-right);
     width: 50%;
     height: 500px;
@@ -317,7 +317,7 @@ ul.feature-list {
     background-size: cover;
 }
 
-.rightsidepicture img {
+.rightsidepictureB img {
     max-width: 450px;
 }
 
@@ -327,7 +327,7 @@ ul.feature-list {
         flex-direction: column;
     }
 
-    .leftsidepicture, .rightsidepicture {
+    .leftsidepictureB, .rightsidepictureB {
         width: 100%;
         height: var(--section-b-height-mobile-and-desktop); /* 300px; */
     }
@@ -465,7 +465,7 @@ ul.feature-list {
     width: 100%;
 }
 
-.leftsidepicture {
+.leftsidepictureE {
     background-image: var(--section-e-bg-left);
     width: 50%;
     height: 500px;
@@ -476,11 +476,11 @@ ul.feature-list {
     background-size: cover;
 }
 
-.leftsidepicture img {
+.leftsidepictureE img {
     max-width: 250px;
 }
 
-.rightsidepicture {
+.rightsidepictureE {
     background-image: var(--section-e-bg-right);
     width: 50%;
     height: 500px;
@@ -491,7 +491,7 @@ ul.feature-list {
     background-size: cover;
 }
 
-.rightsidepicture img {
+.rightsidepictureE img {
     max-width: 450px;
 }
 
@@ -501,7 +501,7 @@ ul.feature-list {
         flex-direction: column;
     }
 
-    .leftsidepicture, .rightsidepicture {
+    .leftsidepictureE, .rightsidepictureE {
         width: 100%;
         height: var(--section-e-height-mobile-and-desktop); /* 300px; */
     }
@@ -572,7 +572,7 @@ ul.feature-list {
     width: 100%;
 }
 
-.leftsidepicture {
+.leftsidepictureG {
     background-image: var(--section-g-bg-left);
     width: 50%;
     height: 500px;
@@ -583,11 +583,11 @@ ul.feature-list {
     background-size: cover;
 }
 
-.leftsidepicture img {
+.leftsidepictureG img {
     max-width: 250px;
 }
 
-.rightsidepicture {
+.rightsidepictureG {
     background-image: var(--section-g-bg-right);
     width: 50%;
     height: 500px;
@@ -598,7 +598,7 @@ ul.feature-list {
     background-size: cover;
 }
 
-.rightsidepicture img {
+.rightsidepictureG img {
     max-width: 450px;
 }
 
@@ -608,7 +608,7 @@ ul.feature-list {
         flex-direction: column;
     }
 
-    .leftsidepicture, .rightsidepicture {
+    .leftsidepictureG, .rightsidepictureG {
         width: 100%;
         height: var(--section-g-height-mobile-and-desktop); /* 300px; */
     }
