@@ -31,118 +31,134 @@ namespace RockWeb.Plugins.church_ccv.Hr
         {
             base.OnInit( e );
 
-            // Get API key, display error if missing
+            // Get API key and Url, display error if either imissing
             if ( GetAttributeValue( "APIKey" ).IsNullOrWhiteSpace() || GetAttributeValue( "APIUrl" ).IsNullOrWhiteSpace() )
             {
-                DisplayError( "Missing Block Settings" );
+                DisplayError( "Block not configured: Please update block settings." );
                 return;
             }
 
-            // Make API calls
+            // Prep for API calls
             string apiKey = GetAttributeValue( "APIKey" );
             string apiUrl = GetAttributeValue( "APIUrl" ) + "/api/v1/";
             int count = 0;
-            bool coursesSuccessful = false;
-            bool userSuccessful = false;
             string errorMessage = "";
+            JArray coursesBlob = null;
+            JObject userBlob = null;
 
-            // API call for available courses
-            var coursesClient = new RestClient( apiUrl + "courses" );
+        // API call for available courses
+        var coursesClient = new RestClient( apiUrl + "courses" );
             coursesClient.Authenticator = new HttpBasicAuthenticator( apiKey, "" );
             var coursesRequest = new RestRequest( Method.GET );
             coursesClient.ExecuteAsync( coursesRequest, response =>
             {
-                // Check for successful response
+                // check response status
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    JArray responseBlob = JArray.Parse( response.Content );
-
-                    RenderCoursesPanel( responseBlob );
-
-                    coursesSuccessful = true;
+                    // Success - Assign response content to courses field
+                    coursesBlob = JArray.Parse( response.Content );
                 }
-                // Process response 
                 else
                 {
+                    // Failed - pass error message
                     errorMessage = response.Content;
-
                 }
 
                 Interlocked.Increment( ref count );
-            } );
+            });
             
             // API calls for user info
             var userClient = new RestClient( apiUrl + "users/email:" + CurrentUser.Person.Email );
             userClient.Authenticator = new HttpBasicAuthenticator( apiKey, "" );
             var usersRequest = new RestRequest( Method.GET );
             userClient.ExecuteAsync( usersRequest, response =>
-             {
-                 if ( response.StatusCode == System.Net.HttpStatusCode.OK )
-                 {
-                     JObject responseBlob = JObject.Parse( response.Content );
+            {
+                if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+                {
+                    userBlob = JObject.Parse( response.Content );
+                }
+                // Process response
+                else
+                {
+                    errorMessage = response.Content;
+                }
 
 
-                     userSuccessful = true;
-                 }
-                 // Process response
-                 else
-                 {
-                     errorMessage = response.Content;
+                Interlocked.Increment( ref count );
 
-                 }
-
-
-                 Interlocked.Increment( ref count );
-
-             } );
+            } );
 
             while ( count != 2 )
             {
                 Thread.Sleep( 1 );
             }
 
-            if ( !coursesSuccessful || !userSuccessful )
+            // Check that blob content has been set before proceeding
+            if ( coursesBlob == null || userBlob == null )
             {
+                // Missing blob content - if errorMessage doesnt already exist set message
                 if ( errorMessage.IsNullOrWhiteSpace() ) {
-                    errorMessage = "Something failed";
+                    errorMessage = "API Content missing.";
                 }
 
                 DisplayError( errorMessage );
                 return;
             }
 
-            DisplayError( "It worky" );
+            // Render user panel
+            RenderUserPanel( userBlob, coursesBlob );
 
+            // Render courses panel
+            RenderCoursesPanel( coursesBlob, userBlob );
         }
 
-        private void RenderCoursesPanel( JArray jsonBlob )
+        private void RenderUserPanel( JObject userBlob, JArray coursesBlob )
         {
-            pnlAllCourses.Controls.Clear();
+            //course["custom-link"] = "<a href=\"google.com\" target=\"_blank\">Hi</a>";
+        }
 
-            Table coursesTable = new Table();
-            TableHeaderRow headerRow = new TableHeaderRow();
+        private void RenderCoursesPanel( JArray jsonBlob, JObject userBlob )
+        {
+            JArray gridCourses = new JArray();
 
-            coursesTable.Rows.Add( headerRow );
+            // build list of enrolled courses
+            JArray enrolledCourses = (JArray)userBlob["courses"];
 
-            headerRow.Cells.Add( new TableHeaderCell { Text = "Course Name" } );
-            headerRow.Cells.Add( new TableHeaderCell { Text = "Id(button soon)" } );
-
-            coursesTable.Rows.Add( headerRow );
-
-            foreach ( var course in jsonBlob.Children() )
+            foreach ( JObject course in jsonBlob )
             {
-                TableRow row = new TableRow();
+                string customLink = "Enroll";
+                foreach ( var enrolledCourse in enrolledCourses )
+                {
+                    // Check if user enrolled in course
+                    if ( (string)enrolledCourse["id"] == (string)course["id"] )
+                    {
+                        customLink = "Drop";
+                    }
 
-                row.Cells.Add( new TableCell { Text = (string)course["name"] } );
-                row.Cells.Add( new TableCell { Text = ( string ) course["id"] } );
+                    course["custom-link"] = customLink;
+                    gridCourses.Add( course );
 
-                coursesTable.Rows.Add( row );
-
-//                pnlAllCourses.Controls.Add( new LiteralControl( ( string ) course["name"] + "<br />" ) );
-
+                }
             }
 
-            pnlAllCourses.Controls.Add( coursesTable );
+
+
+            var courses = from c in jsonBlob.Children()
+                            select new
+                            {
+                                Name = ( string ) c["name"],
+                                Action = (string)c["custom-link"]
+                            };
+
+
+
+
+
+            gGrid.DataSource = courses.ToList();
+            gGrid.DataBind();
+
+
+
 
         }
 

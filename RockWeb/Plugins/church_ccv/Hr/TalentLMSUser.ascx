@@ -15,7 +15,12 @@
         </div>
         <div id="allCourses">
 
-            <asp:Panel runat="server" ID="pnlAllCourses"></asp:Panel>
+            <Rock:Grid runat="server" ID="gGrid">
+                <Columns>
+                    <Rock:RockBoundField DataField="Name" HeaderText="Name" />
+                    <Rock:RockBoundField DataField="Action" HeaderText="" />
+                </Columns>
+            </Rock:Grid>
 
         </div>
 
