@@ -70,6 +70,36 @@
                             <asp:TextBox ID="nbAmount" runat="server" Placeholder="0.00" ClientIDMode="Static" CssClass="amount form-control" />
 
                         </div>
+
+                        <div class="schedule-wrapper">
+                            <%-- Scheduled Transaction Toggle --%>
+                            <asp:Panel ID="pnlScheduledTransactionToggle" runat="server">
+
+                                <div class="schedule-toggle">
+                                    <asp:CheckBox ID="tglScheduledTransaction" runat="server" ClientIDMode="Static" CssClass="toggle-input-form" Text="<span class='slider'></span>" AutoPostBack="false" />                                          
+
+                                    <span style="margin-left: 10px;">Schedule Recurring Transaction</span>
+                           
+                           
+                                </div>
+
+                            </asp:Panel>
+
+                            <asp:Panel ID="pnlScheduledTransaction" runat="server" CssClass="collapse schedule-transaction" ClientIDMode="Static">
+
+                                <div class="schedule-transaction-wrapper">
+                                    <asp:DropDownList ID="ddlScheduleFrequency" runat="server" CssClass="schedule-frequency form-control" ClientIDMode="Static" />
+                                </div>
+    
+                                <div class="schedule-date-wrapper">
+
+                                    <Rock:DatePicker runat="server" ID="dpScheduledTransactionStartDate" Label="Select a start date for your recurring giving plan" ClientIDMode="Static"></Rock:DatePicker>
+
+                                </div>
+                            
+                            </asp:Panel>
+                        </div>
+
                         <div class="comment-wrapper">
 
                             <Rock:RockTextBox ID="tbCommentEntry" runat="server" Label="Comment" Visible="false" ClientIDMode="Static" />
@@ -77,9 +107,9 @@
                         </div>            
                         <div class="navigation">
                             <%-- Empty div is used to put Next button into correct position --%>
-                            <div>
+                            <div class="navitation-left">
                             </div>
-                            <div>                    
+                            <div class="navigation-right">                    
                         
                                 <asp:Button runat="server" ID="btnAmountNext" ClientIDMode="Static" OnClientClick="btnNext_OnClick('pnlPerson'); return false;" Text="Next" CssClass="btn btn-primary" />
                         
@@ -101,12 +131,12 @@
 
                         </div>
                         <div class="navigation">
-                            <div>
+                            <div class="navigation-left">
 
                                 <asp:Button runat="server" ID="btnPersonBack" ClientIDMode="Static" OnClientClick="btnBack_OnClick('pnlAmount'); return false;" Text="Back" CssClass="btn btn-primary" />
 
                             </div>
-                            <div>                    
+                            <div class="navigation-right">                    
 
                                 <asp:Button runat="server" ID="btnPersonNext" ClientIDMode="Static" OnClientClick="btnNext_OnClick('pnlPayment'); return false;" Text="Next" CssClass="btn btn-primary" />
 
@@ -197,12 +227,12 @@
                         </asp:Panel>
                 
                         <div class="navigation">
-                            <div>
+                            <div class="navigation-left">
 
                                 <asp:Button runat="server" ID="btnPaymentBack" ClientIDMode="Static" OnClientClick="btnBack_OnClick('pnlPerson'); return false;" Text="Back" CssClass="btn btn-primary" />
 
                             </div>
-                            <div>                    
+                            <div class="navigation-right">                    
 
                                 <asp:Button runat="server" ID="btnPaymentNext" ClientIDMode="Static" OnClientClick="btnNext_OnClick('pnlConfirm'); return false;" Text="Next" CssClass="btn btn-primary" />
 
@@ -216,8 +246,9 @@
             
                         <div class="confirm-card">
                             <div class="confirm-card-gift">
-                                <p id="confirmGiftMessage">You are giving a gift today of</p>
+                                <p id="confirmGiftMessage" class="confirm-gift-summary">You are giving a gift today of</p>
                                 <h3 id="confirmGiftAmount">$0</h3>
+                                <p id="confirmScheduleStartMessage" class="confirm-gift-summary">using payment account</p>
                             </div>
                             <div class="confirm-paymenttype-card">
                                 <span id="accountType"></span>
@@ -233,12 +264,12 @@
                             </p>
                         </div>
                         <div class="navigation">
-                            <div>
+                            <div class="navigation-left">
 
                                 <asp:Button runat="server" ID="btnConfirmBack" ClientIDMode="Static" OnClientClick="btnBack_OnClick('pnlPayment'); return false;" Text="Back" CssClass="btn btn-primary" Visible="true" />
 
                             </div>
-                            <div>                    
+                            <div class="navigation-right">                    
 
                                 <asp:Button runat="server" ID="btnConfirmNext" OnClick="btnConfirmNext_Click" Text="Confirm Gift" CssClass="btn btn-primary" />
 
@@ -273,12 +304,12 @@
                     <asp:Label ID="lblSavePaymentResult" runat="server" Visible="false" CssClass="save-success" />
 
                     <%-- Schedule Transaction Toggle --%>
-                    <asp:Panel ID="pnlScheduleTransaction" runat="server" Visible="false">
+                    <asp:Panel ID="pnlSuccessScheduleTransaction" runat="server" Visible="false">
 
                         <div class="schedule-toggle">
                             <span style="margin-right: 10px;">Schedule Recurring Transaction</span>
                            
-                            <asp:CheckBox ID="tglScheduleTransaction" runat="server" ClientIDMode="Static" CssClass="toggle-input-form" Text="<span class='slider'></span>" AutoPostBack="false" />                                          
+                            <asp:CheckBox ID="tglSuccessScheduleTransaction" runat="server" ClientIDMode="Static" CssClass="toggle-input-form" Text="<span class='slider'></span>" AutoPostBack="false" />                                          
 
                         </div>
 
@@ -305,13 +336,13 @@
 
                         </asp:Panel>
 
-                        <asp:Panel ID="pnlScheduleTransactionInput" runat="server" CssClass="collapse schedule-transaction" ClientIDMode="Static">
+                        <asp:Panel ID="pnlSuccessScheduleTransactionInput" runat="server" CssClass="collapse schedule-transaction" ClientIDMode="Static">
 
                             <span class="control-label">Amount</span><br />
 
                             <asp:Label ID="lblScheduleTransactionAmount" runat="server" CssClass="details-item">$0.00</asp:Label>
 
-                            <Rock:RockDropDownList ID="ddlScheduleFrequency" runat="server" ClientIDMode="Static" AutoPostBack="false" DataValueField="Id" DataTextField="Name" Label="Frequency" />
+                            <Rock:RockDropDownList ID="ddlSuccessScheduleFrequency" runat="server" ClientIDMode="Static" AutoPostBack="false" DataValueField="Id" DataTextField="Name" Label="Frequency" />
 
                             <span class="control-label">Next Payment Date</span><br />
 
@@ -383,5 +414,6 @@
 
 </asp:UpdatePanel>
 
-<script type="text/javascript" src="/Themes/church_ccv_External_v8/Scripts/Vendor/moment.min.js"></script>
-<script type="text/javascript" src="/Themes/church_ccv_External_v8/Scripts/pages/giving.js"></script>
+<script src="<%= RockPage.ResolveRockUrl( "~/Plugins/church_ccv/Finance/scripts/vendor/moment.min.js", true ) %>"></script>
+<script src="<%= RockPage.ResolveRockUrl( "~/Plugins/church_ccv/Finance/scripts/giving.js", true ) %>"></script>
+
