@@ -10,7 +10,7 @@
     </div>
     <Rock:GridFilter ID="rCampaignFilter" runat="server" >
         <Rock:RockTextBox ID="filterTbTitle" runat="server" Label="Name" />
-        <Rock:RockCheckBoxList ID="filterCblType" runat="server" Label="Type" DataTextField="Type" DataValueField="Id" RepeatDirection="Horizontal" />
+        <Rock:RockCheckBoxList ID="filterCblType" runat="server" Label="Type" DataTextField="Type" DataValueField="Type" RepeatDirection="Horizontal" />
         <Rock:DateRangePicker ID="filterDrpDates" runat="server" Label="Dates" />
     </Rock:GridFilter>
     <Rock:Grid ID="gCampaignGrid" AllowSorting="true" runat="server" OnRowSelected="CampaignGrid_RowSelected">

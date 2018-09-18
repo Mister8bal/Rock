@@ -156,7 +156,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             filterTbTitle.Text = rCampaignFilter.GetUserPreference( "Title" );
             filterDrpDates.DelimitedValues = rCampaignFilter.GetUserPreference( "Dates" );
-            filterCblType.SetValues( rCampaignFilter.GetUserPreference( "Types" ).SplitDelimitedValues().AsIntegerList() );
+            filterCblType.SetValues( rCampaignFilter.GetUserPreference( "Types" ).SplitDelimitedValues() );
         }
         #endregion
 
@@ -187,6 +187,31 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
         protected void CampaignGrid_Remove( object sender, RowEventArgs e )
         {
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                // first get the campaign selected
+                Service<Campaign> campaignService = new Service<Campaign>( rockContext );
+                Campaign campaignObj = campaignService.Get( e.RowKeyId );
+                if( campaignObj != null )
+                {
+                    // get any linkages attached to it
+                    Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+                    var campaignLinkages = linkageService.Queryable( ).Where( l => l.CampaignId == campaignObj.Id );
+                    
+                    if( campaignLinkages != null )
+                    {
+                        // remove the linkages
+                        linkageService.DeleteRange( campaignLinkages );
+                    }
+
+                    // and delete the campaign
+                    campaignService.Delete( campaignObj );
+
+                    rockContext.SaveChanges( );
+
+                    CampaignGrid_Bind( );
+                }
+            }
         }
 
         protected void CampaignGrid_RowSelected( object sender, RowEventArgs e )
@@ -244,7 +269,11 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 // --Type
                 if ( filterCblType.SelectedValues.Count( ) > 0 )
                 {
-                    // todo: add the filter here
+                    // take the values in the filter, and see if any of them are found in the Campaign Type's comma delimited list.
+                    // Example: Filter has one item checked: "MobileAppNewsFeed"
+                    // The campaign has "MobileAppNewsFeed,WebsiteCard"
+                    // Calling .Any on SelectedValues will take "MobileAppNewsFeed" and see if that string exists within c.Type, which it does.
+                    campaignQuery = campaignQuery.Where( c => filterCblType.SelectedValues.Any( s => c.Type.Contains( s ) ) );
                 }
 
                 // ---- Load Data ----
