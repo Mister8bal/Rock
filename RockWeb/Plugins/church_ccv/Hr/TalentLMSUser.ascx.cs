@@ -114,6 +114,14 @@ namespace RockWeb.Plugins.church_ccv.Hr
 
         private void RenderUserPanel( JObject userBlob, JArray coursesBlob )
         {
+            pnlUserCourses.Controls.Clear();
+
+            JArray enrolledCourses = ( JArray ) userBlob["courses"];
+
+            foreach ( var enrolledCourse in enrolledCourses )
+            {
+                Button btnCourse = new Button();
+            }
             //course["custom-link"] = "<a href=\"google.com\" target=\"_blank\">Hi</a>";
         }
 
