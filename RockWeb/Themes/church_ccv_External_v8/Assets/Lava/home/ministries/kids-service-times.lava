@@ -10,30 +10,25 @@
         <div class="kids-service-detail">
             <p class="kids-service-detail-label">When: </p>
             <div>
-                <div class="service-times">
-               
-                 {% for cachedCampus in Campuses %}
-                    {% if cachedCampus.Id == Context.Campus.Id %}
-                        {% assign campus = cachedCampus %}
-                    {% endif %}
-                {% endfor %}
-
-                 {% assign comingSoonUntil = campus | Attribute: 'ComingSoonUntil' | Date: 'yyyyMMdd' %}
+            <p>{{ Context.Campus.KidsServiceTimes }}</p>
+            {% comment %} {% assign comingSoonUntil = Context.Campus | Attribute: 'ComingSoonUntil' | Date: 'yyyyMMdd' %}
                     {% assign today = 'Now' | Date: 'yyyyMMdd' %}
                     
                     {% if today < comingSoonUntil %}
                         {% assign isComingSoon = true %}
                     {% endif %}
 
-                    {% assign useLightIcon = true %}
-                    {% include '~~/Assets/Lava/service-times/grid-kids-service-times.lava' %}
-                    </div>
+                    <div class="service-times">
+                        {% assign times = Context.Campus.ServiceTimes %}
+                        {% assign useLightIcon = true %}
+                        {% include '~~/Assets/Lava/service-times/grid-kids-service-times.lava' %}
+                    </div> {% endcomment %}
             </div>
         </div>
     </div>
     <div class="kids-service-detail">
         <p class="kids-service-detail-label">Contact: </p>
-        <div> <i class="fa fa-fw fa-phone"></i> {{ campus.PhoneNumber }}<br/> 
+        <div> <i class="fa fa-fw fa-phone"></i> {{ Context.Campus.PhoneNumber }}<br/> 
             <fa class="fa fa-fw fa-envelope"></fa> <a href="mailto:{{ email }}?subject=Kids">{{ email }}</a>
         </div>
     </div>
