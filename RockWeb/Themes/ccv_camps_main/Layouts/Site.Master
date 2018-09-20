@@ -1,0 +1,130 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" Inherits="Rock.Web.UI.RockMasterPage" %>
+
+<%@ Import Namespace="System.Web.Optimization" %>
+<!DOCTYPE html>
+
+<script runat="server">
+
+    // keep code below to call base class init method
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> object that contains the event data.</param>
+    protected override void OnInit(EventArgs e)
+    {
+        base.OnInit(e);
+    }
+
+</script>
+
+<html class="no-js">
+<head runat="server">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <meta charset="utf-8">
+    <title></title>
+
+    <script src="<%# ResolveRockUrl("~/Scripts/modernizr.js") %>"></script>
+    <script src="<%# ResolveRockUrl("~/Scripts/jquery-1.12.4.min.js") %>"></script>
+
+    <!-- Set the viewport width to device width for mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <asp:ContentPlaceHolder ID="css" runat="server" />
+
+    <!-- Included CSS Files -->
+    <link href="https://addtocalendar.com/atc/1.5/atc-base.css" rel="stylesheet" type="text/css">
+    <link href="https://addtocalendar.com/atc/1.5/atc-style-menu-wb.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/Themes/ccv_camps_main/Styles/theme.css" />
+    <link rel="stylesheet" href="<%# ResolveRockUrl(" ~/Styles/developer.css ", true) %>" />
+    <!--<link rel="stylesheet" href="<%# ResolveRockUrl(" ~~/Styles/normalize.css ", true) %>" />-->
+    <link rel="stylesheet" href="/Themes/ccv_camps_main/Styles/webflow.css" />
+    <link rel="stylesheet" href="/Themes/ccv_camps_main/Styles/ccv-student-camp.webflow.css" />
+    <link rel="stylesheet" href="/Themes/ccv_camps_main/Styles/feed.css" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+    <script type="text/javascript">
+        WebFont.load({
+            google: {
+                families: ["Heebo:100,300,regular,500,700,800,900"]
+            }
+        });
+    </script>
+
+    <!-- Icons -->
+    <link rel="shortcut icon" href="<%# ResolveRockUrl("~~/Assets/Icons/favicon.ico", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-ipad-retina.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-iphone-retina.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-ipad.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-iphone.png", true) %>">
+</head>
+<body>
+
+    <script type="text/javascript">
+        (function () {
+            if (window.addtocalendar) if (typeof window.addtocalendar.start == "function") return;
+            if (window.ifaddtocalendar == undefined) {
+                window.ifaddtocalendar = 1;
+                var d = document, s = d.createElement('script'), g = 'getElementsByTagName';
+                s.type = 'text/javascript'; s.charset = 'UTF-8'; s.async = true;
+                s.src = ('https:' == window.location.protocol ? 'https' : 'http') + '://addtocalendar.com/atc/1.5/atc.min.js';
+                var h = d[g]('body')[0]; h.appendChild(s);
+            }
+        })();
+    </script>
+
+    <div class="section-splash">
+
+        <form id="form1" runat="server">
+
+            <!-- Page Header -->
+            <div class="wrapper-splash">
+
+            <img class="logo" src="../themes/ccv_camps_main/assets/Images/logo.png" width="400px" alt="CCV Camps - Christ's Church of the Valley" />
+
+            <%-- Default Rock Header Zones --%>
+            <Rock:Zone Name="Header" runat="server" Visible="false" />
+                <nav role="navigation">
+                    <Rock:Zone Name="Login" runat="server" />
+                    <Rock:Zone Name="Navigation" runat="server" />
+                </nav>
+
+            </div>
+
+            <asp:ContentPlaceHolder ID="feature" runat="server"></asp:ContentPlaceHolder>
+
+            <asp:ContentPlaceHolder ID="main" runat="server"></asp:ContentPlaceHolder>
+
+            <footer>
+                <Rock:Zone Name="Footer" runat="server" />
+            </footer>
+
+            <%-- controls for scriptmanager and update panel --%>
+            <asp:ScriptManager ID="sManager" runat="server" />
+            <asp:UpdateProgress ID="updateProgress" runat="server">
+                    <ProgressTemplate>
+                        <div class="updateprogress-status">
+                            <div class="spinner">
+                                <div class="rect1"></div>
+                                <div class="rect2"></div>
+                                <div class="rect3"></div>
+                                <div class="rect4"></div>
+                                <div class="rect5"></div>
+                            </div>
+                        </div>
+                        <div class="updateprogress-bg modal-backdrop"></div>
+                    </ProgressTemplate>
+                </asp:UpdateProgress>
+
+        </form>
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" type="text/javascript"></script>
+    <script src="/Themes/ccv_camps_main/Scripts/webflow.js"></script>
+
+</body>
+
+</html>
