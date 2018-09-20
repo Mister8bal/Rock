@@ -780,7 +780,9 @@ namespace church.ccv.Podcast.Rest
                             // finally, if the series is not active, or has no public messages, then it should be private.
                             if( isSeriesActive == false || hasPublicMessage == false )
                             {
-                                writer.WriteAttributeString( "Private", "true" );
+                                writer.WriteStartElement( "SeriesPrivate" );
+                                writer.WriteValue( "true" );
+                                writer.WriteEndElement( );
                             }
 
                             // Put each needed XML element
@@ -833,7 +835,9 @@ namespace church.ccv.Podcast.Rest
                                 // if the message doesn't start yet, or hasn't been approved, set it to private.
                                 if( message.Date > RockDateTime.Now || messageActive == false /*message.Approved == false*/ )
                                 {
-                                    writer.WriteAttributeString( "Private", "true" );
+                                    writer.WriteStartElement( "Private" );
+                                    writer.WriteValue( "true" );
+                                    writer.WriteEndElement( );
                                 }
 
                                 // Put required elements
