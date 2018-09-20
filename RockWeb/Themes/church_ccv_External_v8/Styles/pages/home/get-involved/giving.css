@@ -790,6 +790,10 @@
     
 }
 
+#nbAmount {
+    height: 80px;
+}
+
 .panel-bankaccount {
     display: flex;
     flex-direction: column;
