@@ -45,7 +45,8 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
     [TextField( "Auto Discover URL", "The Exchange Auto Discover URL (If left blank, plugin will attempt to find it based on admin's username (email address).", false, "", "", 4 )]
     [SecurityRoleField( "Eligible People", "The security role that contains individuals who are allowed to sync contacts.", true, Rock.SystemGuid.Group.GROUP_STAFF_MEMBERS, "", 5 )]
     [BooleanField("Enable Trace", "Should tracing be enabled for the Exchange Web Service (helpful to debug connection issues).", false, "", 6)]
-    [BooleanField("Sync Business Phone Number", "Should business phone numbers be synced?", true, "", 7, "SyncBusinessPhone")]
+    [CodeEditorField("Business Phone Number Lava", "Lava to use for the Person object to use for formatting the business phone number?", CodeEditorMode.Lava, CodeEditorTheme.Rock, 
+        50, false, "{{ Person | PhoneNumber:'Work' }}", "", 7, "SyncBusinessPhone" )]
     public partial class SyncContacts : Rock.Web.UI.RockBlock
     {
 
@@ -219,9 +220,9 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
             string exchangeVersion = GetAttributeValue( "ExchangeVersion" );
             string autoDiscoverUrl = GetAttributeValue( "AutoDiscoverURL" );
             bool enableTrace = GetAttributeValue( "EnableTrace" ).AsBoolean();
-            bool syncBusinessPhone = GetAttributeValue( "SyncBusinessPhone" ).AsBoolean();
+            string businessPhoneNumberLava = GetAttributeValue( "SyncBusinessPhone" );
 
-            return new com.minecartstudio.ExchangeContactSync.UserData( adminUsername, adminPassword, adminDomain, exchangeVersion, autoDiscoverUrl, enableTrace, syncBusinessPhone );
+            return new com.minecartstudio.ExchangeContactSync.UserData( adminUsername, adminPassword, adminDomain, exchangeVersion, autoDiscoverUrl, enableTrace, businessPhoneNumberLava );
         }
 
         #endregion
