@@ -12,12 +12,15 @@ using System.Linq;
 using System.Data.Entity;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
+using Rock.Attribute;
 
 namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 {
     [DisplayName( "Campaign List" )]
     [Category( "CCV > Personalization Engine" )]
     [Description( "Displays existing campaigns in a list." )]
+
+    [LinkedPage("Detail Page")]
     public partial class CampaignList : RockBlock
     {
         /// <summary>
@@ -175,14 +178,19 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             gCampaignGrid.Actions.ShowMergeTemplate = false;
             
             gCampaignGrid.Actions.ShowAdd = IsUserAuthorized( Authorization.EDIT );
-            gCampaignGrid.Actions.AddClick += CampaignGrid_AddClick; ;
+            gCampaignGrid.Actions.AddClick += CampaignGrid_AddClick;
 
-            gCampaignGrid.GridRebind += CampaignGrid_GridRebind; ;
+            gCampaignGrid.GridRebind += CampaignGrid_GridRebind;
         }
 
         protected void CampaignGrid_AddClick( object sender, EventArgs e )
         {
-            // todo: add stuff
+            NavigateToDetailPage( null );
+        }
+
+        protected void CampaignGrid_RowSelected( object sender, RowEventArgs e )
+        {
+            NavigateToDetailPage( e.RowKeyId );
         }
 
         protected void CampaignGrid_Remove( object sender, RowEventArgs e )
@@ -212,10 +220,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     CampaignGrid_Bind( );
                 }
             }
-        }
-
-        protected void CampaignGrid_RowSelected( object sender, RowEventArgs e )
-        {
         }
 
         protected void CampaignGrid_GridRebind( object sender, GridRebindEventArgs e )
@@ -296,6 +300,17 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 gCampaignGrid.DataSource = dataSource.ToList( );
                 gCampaignGrid.DataBind( );
             }
+        }
+        #endregion
+
+        #region Utility
+        protected void NavigateToDetailPage( int? campaignId )
+        {
+            var qryParams = new Dictionary<string, string>();
+            int campaignQueryId = campaignId.HasValue ? campaignId.Value : 0;
+            qryParams.Add( "CampaignId", campaignQueryId.ToString( ) );
+            
+            NavigateToLinkedPage( "DetailPage", qryParams );
         }
         #endregion
     }
