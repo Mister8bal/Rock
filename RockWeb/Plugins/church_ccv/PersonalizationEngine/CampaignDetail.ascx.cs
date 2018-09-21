@@ -33,7 +33,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         protected override void OnInit( EventArgs e )
         {
             base.OnInit( e );
-
+            
             // first build the UI necessary for editing all the campaign types
             CreateCampaignTypeUI( );
         }
@@ -48,16 +48,17 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
             if ( !Page.IsPostBack )
             {
-                int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
-                BindCampaign( campaignId );
+                BindCampaign( );
             }
         }
         
-        protected void BindCampaign( int? campaignId )
+        protected void BindCampaign( )
         {
             // populates the page with the details of the campaign
+            int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
 
             // get the campaign
+            // if there was no campaign id sent, we'll just create a new one on Save, and we can leave all values blank
             if( campaignId.HasValue && campaignId.Value > 0 )
             {
                 using ( RockContext rockContext = new RockContext( ) )
@@ -66,8 +67,9 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
                     tbCampaignName.Text = campaign.Name;
                     tbCampaignDesc.Text = campaign.Description;
-                    dtpStartDate.SelectedDateTime = campaign.StartDate;
-                    dtpEndDate.SelectedDateTime = campaign.EndDate;
+                    dtpStartDate.SelectedDate = campaign.StartDate;
+                    dtpEndDate.SelectedDate = campaign.EndDate;
+                    tbPriorty.Text = campaign.Priority.ToString( );
 
                     // get the content as a parseable jObject. this has all the values for all the supported types
                     JObject contentJson = JObject.Parse( campaign.ContentJson );
@@ -108,8 +110,88 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     }
                 }
             }
+        }
 
-            // if there was no campaign id sent, we'll just create a new one on Save, and we can leave all values blank
+        protected void btnSave_Click( object sender, EventArgs e )
+        {
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                // first see if this is an existing or new campaign
+                int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
+
+                Service<Campaign> campaignService = new Service<Campaign>( rockContext );
+                Campaign campaign = null;
+                if ( campaignId.HasValue )
+                {
+                    campaign = campaignService.Get( campaignId.Value );
+                }
+                else
+                {
+                    campaign = new Campaign( );
+                    campaignService.Add( campaign );
+                }
+                
+                // set the static stuff
+                campaign.Name = tbCampaignName.Text;
+                campaign.Description = tbCampaignDesc.Text;
+                campaign.StartDate = dtpStartDate.SelectedDate.Value;
+                campaign.EndDate = dtpEndDate.SelectedDate;
+                campaign.Priority = int.Parse( tbPriorty.Text );
+
+                // now get the types this campaign is using, along with the actual values for each type
+                string campaignTypes = string.Empty;
+                
+                // this will store the full hierarchy with all templdate data for the campaign, and its only use is for converting to json.
+                Dictionary<string, Dictionary<string, string>> templateData = new Dictionary<string, Dictionary<string, string>>( );
+                
+
+                // get all text boxes, as these store the campaign type values
+                var textBoxes = phContentJson.Controls.OfType<TextBox>( ).ToList( );
+
+                // start by getting the checkbox controls, which will dictate the types this campaign uses
+                var checkBoxes = phContentJson.Controls.OfType<CheckBox>( ).ToList( );
+                
+                foreach( CheckBox checkBox in checkBoxes )
+                {
+                    // obviously only take types for checkboxes that are checked
+                    if( checkBox.Checked )
+                    {
+                        // split this checkbox's ID so we know the campaign type its for. (the campaign type is always the first piece)
+                        string campaignType = checkBox.ID.Split( '^' )[0];
+
+                        campaignTypes += campaignType + ",";
+
+                        // now collect all the fields associated with this campaign type
+
+                        // take all text boxes, which have an ID format of "campaign-type^label^tbControl" and take only those for this campaign type
+                        var campaignTypeValues = textBoxes.Where( tb => tb.ID.Split('^')[0] == campaignType ).ToList( );
+
+                        // now we'll go thru each control and copy its label and value into our dictionary
+                        Dictionary<string, string> typeValues = new Dictionary<string, string>( );
+                        foreach( TextBox campaignTypeValue in campaignTypeValues )
+                        {
+                            string[] idChunks = campaignTypeValue.ID.Split('^');
+                            
+                            // the second value is the label for the type value
+                            typeValues.Add( idChunks[1], campaignTypeValue.Text );
+                        }
+                        templateData.Add( campaignType, typeValues );
+                    }
+                }
+                
+                // make sure there was at least one campaign type picked
+                // (it's possible they created a campaign)
+                if ( string.IsNullOrWhiteSpace( campaignTypes ) == false )
+                {
+                    // strip off the ending campaign type comma
+                    campaignTypes = campaignTypes.TrimEnd(',');
+
+                    // now convert the data into a json blob
+                    string jsonBlob = JsonConvert.SerializeObject( templateData );
+                    campaign.ContentJson = jsonBlob;
+                    campaign.Type = campaignTypes;
+                }
+            }
         }
 
         #region Utility
@@ -147,18 +229,18 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             using ( RockContext rockContext = new RockContext( ) )
             {
                 // get each campaign type with its json template
-                var campaignTypes = new Service<CampaignType>( rockContext ).Queryable( ).Select( ct => new { Name = ct.Name, ct.JsonTemplate } ).ToList( );
+                var campaignTypes = new Service<CampaignType>( rockContext ).Queryable( ).Select( ct => new { Name = ct.Name, Desc = ct.Description, ct.JsonTemplate } ).ToList( );
 
                 phContentJson.Controls.Clear( );
 
                 foreach ( var campaignType in campaignTypes )
                 {
-                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.JsonTemplate );
+                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.Desc, campaignType.JsonTemplate );
                 }
             }
         }
         
-        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string jsonTemplate )
+        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string campaignTypeDesc, string jsonTemplate )
         {
             // Builds the UI representing an individual campaign type
 
@@ -173,8 +255,9 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             
                 // Render a "campaign-type-entry-header" that will wrap the campaign type name and its enabled check box
                 phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-header\">" ) );
-                    LiteralControl typeHeader = new LiteralControl( "<h4>" + campaignTypeName + "</h4>" );
-                    phContentJson.Controls.Add( typeHeader );
+                    phContentJson.Controls.Add( new LiteralControl( "<h4>" + campaignTypeName + "</h4>" ) );
+                    phContentJson.Controls.Add( new LiteralControl( "<h5>" + campaignTypeDesc + "</h5>" ) );
+                    
 
                     // create the checkbox controlling whether this campaign type should be used.
                     RockCheckBox cbCampaignTypeEnabled = new RockCheckBox( );
