@@ -334,6 +334,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         valueBox.Enabled = false;
                         valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
                         valueBox.ClientIDMode = ClientIDMode.Static;
+                        valueBox.Rows = 3;
+                        valueBox.TextMode = TextBoxMode.MultiLine;
                         phContentJson.Controls.Add( valueBox );
                 
                     phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-template-item"
@@ -432,7 +434,10 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
         protected void PersonasGrid_RowSelected( object sender, RowEventArgs e )
         {
-            // todo: redirect to the persona details page
+            // take them to the persona details page for the persona they clicked on
+            int personaId = e.RowKeyId;
+
+            NavigateToLinkedPage( "PersonaDetailPage", "PersonaId", personaId );
         }
         #endregion
 

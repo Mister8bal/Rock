@@ -69,6 +69,34 @@ namespace church.ccv.PersonalizationEngine.Data
                 return personaList;
             }
         }
+
+        public static void DeletePersona( int personaId )
+        {
+            // remove the persona and all linkages
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                PersonalizationEngineService<Persona> peService = new PersonalizationEngineService<Persona>( rockContext );
+
+                var personaObj = peService.Get( personaId );
+                if( personaObj != null )
+                {
+                    // get any linkages attached to it
+                    Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+                    var personaLinkages = linkageService.Queryable( ).Where( l => l.PersonaId == personaObj.Id );
+
+                    if ( personaLinkages != null )
+                    {
+                        // remove the linkages
+                        linkageService.DeleteRange( personaLinkages );
+                    }
+
+                    // and delete the persona
+                    peService.Delete( personaObj );
+
+                    rockContext.SaveChanges( );
+                }
+            }
+        }
         #endregion
 
         #region CAMPAIGN
