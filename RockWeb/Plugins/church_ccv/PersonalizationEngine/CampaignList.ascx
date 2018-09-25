@@ -21,6 +21,7 @@
                 <Rock:RockBoundField DataField="EndDate" HeaderText="End Date" SortExpression="EndDate" DataFormatString="{0:M/dd/yy}"/>
                 <Rock:RockBoundField DataField="Type" HeaderText="Locations" SortExpression="Type" />
                 <Rock:RockBoundField DataField="Priority" HeaderText="Priority" SortExpression="Priority" />
+                <Rock:RockBoundField DataField="IsSystem" HeaderText="Default" SortExpression="IsSystem" />
                 <Rock:DeleteField HeaderText="Remove" OnClick="CampaignGrid_Remove" />
             </Columns>
         </Rock:Grid>

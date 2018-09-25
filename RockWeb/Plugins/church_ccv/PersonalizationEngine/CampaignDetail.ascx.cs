@@ -16,6 +16,7 @@ using Rock.Attribute;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Web.UI;
+using church.ccv.PersonalizationEngine.Data;
 
 namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 {
@@ -36,6 +37,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             
             // first build the UI necessary for editing all the campaign types
             CreateCampaignTypeUI( );
+
+            PersonasGrid_Init( );
         }
 
         /// <summary>
@@ -56,27 +59,28 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             // populates the page with the details of the campaign
             int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
-
+            
             // get the campaign
             // if there was no campaign id sent, we'll just create a new one on Save, and we can leave all values blank
-            if( campaignId.HasValue && campaignId.Value > 0 )
+            if( campaignId > 0 )
             {
-                using ( RockContext rockContext = new RockContext( ) )
+                Campaign campaign = PersonalizationEngineUtil.GetCampaign( campaignId.Value );
+                
+                tbCampaignName.Text = campaign.Name;
+                tbCampaignDesc.Text = campaign.Description;
+                dtpStartDate.SelectedDate = campaign.StartDate;
+                dtpEndDate.SelectedDate = campaign.EndDate;
+                tbPriorty.Text = campaign.Priority.ToString( );
+
+                // it's possible that if this campaign is a work in progress, it might not have types setup yet.
+                if( string.IsNullOrWhiteSpace( campaign.ContentJson ) == false )
                 {
-                    Campaign campaign = new Service<Campaign>( rockContext ).Get( campaignId.Value );
-
-                    tbCampaignName.Text = campaign.Name;
-                    tbCampaignDesc.Text = campaign.Description;
-                    dtpStartDate.SelectedDate = campaign.StartDate;
-                    dtpEndDate.SelectedDate = campaign.EndDate;
-                    tbPriorty.Text = campaign.Priority.ToString( );
-
                     // get the content as a parseable jObject. this has all the values for all the supported types
                     JObject contentJson = JObject.Parse( campaign.ContentJson );
                     
                     // now see which types this campaign supports, and populate all those fields
                     string[] types = campaign.Type.Split( ',' );
-                    foreach( string type in types )
+                    foreach ( string type in types )
                     {
                         // contentJson is a dictionary where the Key is the Campaign Type, and the value is a dictionary with
                         // the key/values for the type
@@ -86,10 +90,10 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         Dictionary<string,string> typeValues = JsonConvert.DeserializeObject<Dictionary<string, string>>( typeContent );
 
                         // find all the controls associated with this type and fill them in
-                        foreach( WebControl control in phContentJson.Controls.OfType<WebControl>( ) )
+                        foreach ( WebControl control in phContentJson.Controls.OfType<WebControl>( ) )
                         {
                             // only take controls that begin with this campaign type
-                            if( control.ID.StartsWith( type ) )
+                            if ( control.ID.StartsWith( type ) )
                             {
                                 // if it's the check box, obviousyl check it
                                 if ( control as CheckBox != null )
@@ -109,6 +113,37 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         }
                     }
                 }
+
+                //setup the personas area
+                upnlPersonas.Visible = true;
+
+                // if its not a default campaign, personas are allowed
+                if( campaign.IsDefault == false )
+                {
+                    // hide the "no personas" literal
+                    lNoPersonaReason.Visible = false;
+
+                    // show the personas grid
+                    var personas = PersonalizationEngineUtil.GetPersonasForCampaign( campaignId.Value );
+                    
+                    gPersonas.Visible = true;
+                    gPersonas.DataSource = personas;
+                    gPersonas.DataBind( );
+                }
+                // since it IS a default campaign, we don't allow personas to be attached
+                else
+                {
+                    // show the "no personas" literal
+                    lNoPersonaReason.Visible = true;
+
+                    // hide the personas grid
+                    gPersonas.Visible = false;
+                }
+            }
+            // for new campaigns, hide the persona panel entirely so they can't edit them before putting the campaign into the db
+            else
+            {
+                upnlPersonas.Visible = false;
             }
         }
 
@@ -121,7 +156,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
                 Service<Campaign> campaignService = new Service<Campaign>( rockContext );
                 Campaign campaign = null;
-                if ( campaignId.HasValue )
+                if ( campaignId > 0 )
                 {
                     campaign = campaignService.Get( campaignId.Value );
                 }
@@ -145,12 +180,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 Dictionary<string, Dictionary<string, string>> templateData = new Dictionary<string, Dictionary<string, string>>( );
                 
 
-                // get all text boxes, as these store the campaign type values
-                var textBoxes = phContentJson.Controls.OfType<TextBox>( ).ToList( );
-
                 // start by getting the checkbox controls, which will dictate the types this campaign uses
                 var checkBoxes = phContentJson.Controls.OfType<CheckBox>( ).ToList( );
-                
+
+                // get all text boxes, as these store the campaign type values
+                var textBoxes = phContentJson.Controls.OfType<TextBox>( ).ToList( );
+                                
                 foreach( CheckBox checkBox in checkBoxes )
                 {
                     // obviously only take types for checkboxes that are checked
@@ -180,7 +215,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 }
                 
                 // make sure there was at least one campaign type picked
-                // (it's possible they created a campaign)
                 if ( string.IsNullOrWhiteSpace( campaignTypes ) == false )
                 {
                     // strip off the ending campaign type comma
@@ -191,12 +225,26 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     campaign.ContentJson = jsonBlob;
                     campaign.Type = campaignTypes;
                 }
+                else
+                {
+                    // if they really want a blank campaign, they can do it
+                    campaign.ContentJson = string.Empty;
+                    campaign.Type = string.Empty;
+                }
+
+                rockContext.SaveChanges( );
+
+                RefreshCurrentPage( campaign.Id );
             }
         }
 
         #region Utility
-        protected void NavigateToDetailPage( int? campaignId )
+        void RefreshCurrentPage( int campaignId )
         {
+            // refresh the current page
+            var queryParams = new Dictionary<string, string>( );
+            queryParams.Add( "CampaignId", campaignId.ToString( ) );
+            NavigateToCurrentPage( queryParams );
         }
 
         protected string GetValueForTextBox( string textBoxId, Dictionary<string, string> typeValues )
@@ -284,6 +332,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         valueBox.ID = campaignTypeName + "^" + templateItem.Key + "^" + "tbValue";
                         valueBox.Label = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(templateItem.Key);
                         valueBox.Enabled = false;
+                        valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
                         valueBox.ClientIDMode = ClientIDMode.Static;
                         phContentJson.Controls.Add( valueBox );
                 
@@ -317,6 +366,92 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Personas Grid
+        protected void PersonasGrid_Init( )
+        {
+            gPersonas.Visible = true;
+            gPersonas.DataKeyNames = new string[] { "Id" };
+            gPersonas.Actions.ShowAdd = true;
+            gPersonas.Actions.AddClick += gPersonasGrid_AddClick;
+        }
+
+        protected void gPersonasGrid_AddClick( object sender, EventArgs e )
+        {
+            //setup the persona modal dialog
+
+            // first populate it with whatever personas are not already tied to this campaign
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                // note - we won't allow doing this if they're editing a new, unsaved campaign
+                int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
+
+                // take all the personas that are NOT tied to this campaign. 
+                // To do that, first get all the IDs for personas that ARE linked to this campaign
+                var linkedPersonas = new Service<Linkage>( rockContext ).Queryable( ).Where( l => l.CampaignId == campaignId.Value )
+                                                                                     .Select( l => l.PersonaId );
+
+                // and now take any persona that is not in that list.
+                var personas = new Service<Persona>( rockContext ).Queryable( ).Where( p => linkedPersonas.Contains( p.Id ) == false )
+                                                                               .Select( p => new { p.Id, p.Name }  )
+                                                                               .ToList( );
+
+                if( personas.Count( ) > 0 )
+                {
+                    ddlPersona.Items.Clear( );
+                    ddlPersona.AutoPostBack = false;
+
+                    foreach( var persona in personas )
+                    {
+                        ddlPersona.Items.Add( new ListItem( persona.Name, persona.Id.ToString( ) ) );
+                    }
+
+                    mdAddPersona.Show( );
+                }
+                else
+                {
+                    // if there are somehow no personas available, notify them via an alert rather than showing the add dialog
+                    maNoPersonasWarning.Show("There are no personas available for this campaign.", ModalAlertType.Information );
+                }
+            }
+        }
+
+        protected void PersonasGrid_Delete( object sender, RowEventArgs e )
+        {
+            int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
+
+            int personaId = e.RowKeyId;
+
+            // remove the link between the campaign and persona
+            PersonalizationEngineUtil.UnlinkCampaignFromPersona( campaignId.Value, personaId );
+
+            RefreshCurrentPage( campaignId.Value );
+        }
+
+        protected void PersonasGrid_RowSelected( object sender, RowEventArgs e )
+        {
+            // todo: redirect to the persona details page
+        }
+        #endregion
+
+        #region Add Persona Modal
+        protected void mdAddPersona_AddClick( object sender, EventArgs e )
+        {
+            // get the ID of the persona selected
+            int personaId = int.Parse( ddlPersona.SelectedValue );
+
+            // get the campaign id
+            int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
+
+            // create a linkage in the table
+            PersonalizationEngineUtil.LinkCampaignToPersona( campaignId.Value, personaId );
+                
+            mdAddPersona.Hide( );
+
+            // refresh the current page
+            RefreshCurrentPage( campaignId.Value );
         }
         #endregion
     }

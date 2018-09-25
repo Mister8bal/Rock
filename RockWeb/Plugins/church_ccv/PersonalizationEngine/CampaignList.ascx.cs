@@ -13,6 +13,7 @@ using System.Data.Entity;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using Rock.Attribute;
+using church.ccv.PersonalizationEngine.Data;
 
 namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 {
@@ -195,31 +196,9 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
         protected void CampaignGrid_Remove( object sender, RowEventArgs e )
         {
-            using ( RockContext rockContext = new RockContext( ) )
-            {
-                // first get the campaign selected
-                Service<Campaign> campaignService = new Service<Campaign>( rockContext );
-                Campaign campaignObj = campaignService.Get( e.RowKeyId );
-                if( campaignObj != null )
-                {
-                    // get any linkages attached to it
-                    Service<Linkage> linkageService = new Service<Linkage>( rockContext );
-                    var campaignLinkages = linkageService.Queryable( ).Where( l => l.CampaignId == campaignObj.Id );
-                    
-                    if( campaignLinkages != null )
-                    {
-                        // remove the linkages
-                        linkageService.DeleteRange( campaignLinkages );
-                    }
+            PersonalizationEngineUtil.DeleteCampaign( e.RowKeyId );
 
-                    // and delete the campaign
-                    campaignService.Delete( campaignObj );
-
-                    rockContext.SaveChanges( );
-
-                    CampaignGrid_Bind( );
-                }
-            }
+            CampaignGrid_Bind( );
         }
 
         protected void CampaignGrid_GridRebind( object sender, GridRebindEventArgs e )
@@ -288,7 +267,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         Type = c.Type,
                         StartDate = c.StartDate,
                         EndDate = c.EndDate,
-                        Priority = c.Priority
+                        Priority = c.Priority,
+                        IsSystem = c.IsDefault //The delete field reads the IsSystem property on objects to determine whether deleting is allowed or not.
                     });
 
                 // --- Sorting ---

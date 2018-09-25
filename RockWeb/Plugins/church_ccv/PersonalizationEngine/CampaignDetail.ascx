@@ -1,50 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CampaignDetail.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PersonalizationEngine.CampaignDetail" %>
 
-<%--Temp! Move this to a style file --%>
-<style>
-    .campaign-editable-item{
-        display: flex;
-        justify-content: flex-start;
-    }
-    
-    .campaign-editable-item .title {
-        min-width: 150px;
-    }
-
-    .campaign-types {
-        margin-top: 100px;
-    }
-
-    .campaign-type {
-        display: flex;
-        flex-direction: column;
-        margin-top: 25px;
-
-        border-width: 1px;
-        border-color: black;
-        border-style: solid;
-    }
-
-    .campaign-type-header {
-    }
-
-    .campaign-type-template-item {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .form-control {
-        width: 500px;
-    }
-
-    .error {
-        border-width: 3px;
-        border-color: #9d3f3d;
-        border-style: solid;
-    }
-
-</style>
-
 <asp:UpdatePanel ID="upnlSettings" runat="server">
     <ContentTemplate>
         <div ID="error-panel" class="alert alert-danger" style="visibility: hidden; position: fixed; z-index:9999; left: 50%; top: 50%; transform: translate( -50%, -50%);">
@@ -87,13 +42,86 @@
                 <div class="campaign-types">
                     <asp:PlaceHolder runat="server" ID="phContentJson"></asp:PlaceHolder>
                 </div>
-
                 <br/>
                 <asp:LinkButton ID="btnSave" ClientIDMode="Static" runat="server" Text="Save" CssClass="btn btn-primary" OnClientClick="return validateFields();" OnClick="btnSave_Click" />
             </div>
         </div>
     </ContentTemplate>
 </asp:UpdatePanel>
+
+<asp:UpdatePanel ID="upnlPersonas" runat="server">
+    <ContentTemplate>
+        <div class ="panel panel-block">
+            <div class="panel-heading">
+                <div class="row col-sm-4">
+                    <h4 class="panel-title">Personas</h4>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <asp:Literal ID="lNoPersonaReason" Visible="false" runat="server">Personas are not supported for default campaigns.</asp:Literal>
+                <Rock:Grid ID="gPersonas" Title="Attached Personas" runat="server" DisplayType="Light" AllowSorting="true" RowItemText="Persona" AllowPaging="false" OnRowSelected="PersonasGrid_RowSelected">
+                    <Columns>
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" SortExpression="Description" />
+                        <Rock:DeleteField OnClick="PersonasGrid_Delete" />
+                    </Columns>
+                </Rock:Grid>
+            </div>
+        </div>
+
+        <Rock:ModalAlert ID="maNoPersonasWarning" runat="server" />
+        <Rock:ModalDialog ID="mdAddPersona" runat="server" ScrollbarEnabled="true" SaveButtonText="Add" OnSaveClick="mdAddPersona_AddClick"  Title="Select Persona">
+            <Content>
+                <Rock:RockDropDownList ID="ddlPersona" runat="server" Label="Select Persona" />
+            </Content>
+        </Rock:ModalDialog>
+    </ContentTemplate>
+</asp:UpdatePanel>
+
+<style>
+    .campaign-editable-item{
+        display: flex;
+        justify-content: flex-start;
+    }
+    
+    .campaign-editable-item .title {
+        min-width: 150px;
+    }
+
+    .campaign-types {
+    }
+
+    .campaign-type {
+        display: flex;
+        flex-direction: column;
+        margin-top: 25px;
+
+        border-width: 1px;
+        border-color: #b8b2aa;
+        border-style: solid;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+    .campaign-type-header {
+    }
+
+    .campaign-type-template-item {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .form-control {
+        width: 500px;
+    }
+
+    .error {
+        border-width: 3px;
+        border-color: #9d3f3d;
+        border-style: solid;
+    }
+</style>
 
 <script>
     function pageLoad() {
