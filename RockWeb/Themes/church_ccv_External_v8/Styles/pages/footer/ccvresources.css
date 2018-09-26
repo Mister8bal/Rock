@@ -25,6 +25,7 @@
 
 .event-card .header {
     font-family: heebo;
+    padding: 17px 16px;
 }
 
 /* use the expanded main feature only for tablet and larger */
@@ -52,7 +53,6 @@
     /* padding-bottom: 25px; */
     height: 250px;
     margin-bottom: 25px;
-    margin: unset;
 }
 
 .image {
