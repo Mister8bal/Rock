@@ -56,6 +56,9 @@ namespace RockWeb.Plugins.church_ccv.Hr
             if ( GetAttributeValue( "APIKey" ).IsNullOrWhiteSpace() || GetAttributeValue( "TalentLMSUrl" ).IsNullOrWhiteSpace() )
             {
                 DisplayError( "Block not configured: Please update block settings." );
+
+                // hide the talentLMS dashboard
+                pnlTalentLMSDashboard.Visible = false;
                 return;
             }
 
@@ -145,14 +148,23 @@ namespace RockWeb.Plugins.church_ccv.Hr
             // Check that blob content has been set before proceeding
             if ( _coursesBlob == null || _userBlob == null )
             {
-                // Missing blob content - if errorMessage doesnt already exist set message
-                if ( errorMessage.IsNullOrWhiteSpace() ) {
-                    errorMessage = "API Content failed to load";
+                // Missing blob content
+                // check if error was user does not exist and hide talentLMS panel
+                if ( errorMessage.IsNotNullOrWhitespace() && errorMessage.Contains("The requested user does not exist") ) {
+                    pnlTalentLMS.Visible = false;
+                    return;
+                } else
+                {
+                    // Something else failed and no error was returned - set default message.
+                    errorMessage = "Failed to load TalentLMS.  Please contact your administrator.";
                 }
 
                 DisplayError( errorMessage );
+
+                // hide talentLMS dashboard
+                pnlTalentLMSDashboard.Visible = false;
                 return;
-            }
+            } 
 
             // Render user panel
             RenderUserPanel();
