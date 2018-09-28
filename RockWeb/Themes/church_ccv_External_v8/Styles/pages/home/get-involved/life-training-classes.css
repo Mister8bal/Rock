@@ -169,7 +169,7 @@
     display: flex;
 }
 
-.classDurationDiv {
+.resistrationStartsDiv {
     padding-left: 30px;
 }
 
@@ -208,18 +208,11 @@
         margin-right: -15px;
     
     }
-    
-}
+    .divDescription {
+        display: none;
+    }
 
-/* smaller phones */
-@media screen and (max-width: 400px) {
-    
-}
-
-/* smallest phones...dont hate me... */
-@media screen and (max-width: 320px) {
-    .person-row-details {
-        /* width: 100%; */
+    h5 {
+        font-size: 16px;
     }
 }
-
