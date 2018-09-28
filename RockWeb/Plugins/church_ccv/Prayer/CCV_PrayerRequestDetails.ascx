@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCV_PrayerRequestDetail.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Prayer.CCV_PrayerRequestDetail" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCV_PrayerRequestDetails.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Prayer.CCV_PrayerRequestDetail" %>
 
 <asp:UpdatePanel ID="upPrayerRequests" runat="server">
     <ContentTemplate>
