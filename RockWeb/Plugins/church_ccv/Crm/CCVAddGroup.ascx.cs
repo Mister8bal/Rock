@@ -1352,17 +1352,20 @@ namespace RockWeb.Plugins.church_ccv.Crm
             }
 
             // since addresses are one per family, only show the head of household
-            var dups = othersAtAddress.HeadOfHouseholds().ToList();
-
-            foreach ( var person in GroupMembers
-                .Where( m =>
-                    m.Person != null &&
-                    m.Person.FirstName != "" )
-                .Select( m => m.Person ) )
+            if ( othersAtAddress != null )
             {
-                if ( othersAtAddress.Any() )
+                var dups = othersAtAddress.HeadOfHouseholds().ToList();
+
+                foreach ( var person in GroupMembers
+                    .Where( m =>
+                        m.Person != null &&
+                        m.Person.FirstName != "" )
+                    .Select( m => m.Person ) )
                 {
-                    MatchingAddresses.Add( person.Guid, dups );
+                    if ( othersAtAddress.Any() )
+                    {
+                        MatchingAddresses.Add( person.Guid, dups );
+                    }
                 }
             }
 
