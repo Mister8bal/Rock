@@ -136,6 +136,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         #region Utility
         protected bool ValidateSql( string sql )
         {
+            //todo: fix the issue where things like "\n\nDROP" become a sqlWord, and the illegal command isn't contained in that.
+
             // make sure we're comparing all upper case
             string[] sqlWords = sql.ToUpper( ).Split( ' ' );
 

@@ -8,16 +8,18 @@
                     <h4 class="panel-title">Personas</h4>
                 </div>
             </div>        
+            <div class="panel-body">
+                <Rock:GridFilter ID="rPersonaFilter" runat="server" >
+                    <Rock:RockTextBox ID="filterTbTitle" runat="server" Label="Name" />
+                </Rock:GridFilter>
+                <Rock:Grid ID="gPersonaGrid" AllowSorting="true" runat="server" OnRowSelected="PersonaGrid_RowSelected">
+                    <Columns>
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" SortExpression="Description" />
+                        <Rock:DeleteField HeaderText="Remove" OnClick="PersonaGrid_Remove" />
+                    </Columns>
+                </Rock:Grid>
+            </div>
         </div>
-        <Rock:GridFilter ID="rPersonaFilter" runat="server" >
-            <Rock:RockTextBox ID="filterTbTitle" runat="server" Label="Name" />
-        </Rock:GridFilter>
-        <Rock:Grid ID="gPersonaGrid" AllowSorting="true" runat="server" OnRowSelected="PersonaGrid_RowSelected">
-            <Columns>
-                <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
-                <Rock:RockBoundField DataField="Description" HeaderText="Description" SortExpression="Description" />
-                <Rock:DeleteField HeaderText="Remove" OnClick="PersonaGrid_Remove" />
-            </Columns>
-        </Rock:Grid>
     </ContentTemplate>
 </asp:UpdatePanel>
