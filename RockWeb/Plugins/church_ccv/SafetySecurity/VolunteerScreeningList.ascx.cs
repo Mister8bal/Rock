@@ -153,12 +153,13 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                        .Select( a => a.VolunteerScreening )
                                        .AsQueryable( );
 
-            var instanceQuery = vsForPersonQuery.Join( wfQuery, vs => vs.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreening = vs, WorkflowStatus = wf.Status } ).AsQueryable( );
-            
+            var instanceQuery = vsForPersonQuery.Join( wfQuery, vs => vs.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreening = vs, WorkflowStatus = wf.Status, InitiatedBy = wf.InitiatorPersonAliasId  } ).AsQueryable( );
+
             if ( instanceQuery.Count( ) > 0 )
             {
                 var instances = instanceQuery.Select( vs => new { Id = vs.VolunteerScreening.Id,
                                                                   SentDate = vs.VolunteerScreening.CreatedDateTime.Value,
+                                                                  InitiatedBy = vs.InitiatedBy,
                                                                   CompletedDate = vs.VolunteerScreening.ModifiedDateTime.Value,
                                                                   vs.WorkflowStatus } ).ToList( );
 
@@ -166,12 +167,30 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     new {
                             Id = vs.Id,
                             SentDate = vs.SentDate.ToShortDateString( ),
+                            InitiatedBy = GetInitiator(vs.InitiatedBy),
                             CompletedDate = ParseCompletedDate( vs.SentDate, vs.CompletedDate ),
                             State = VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.WorkflowStatus ),
                         } ).ToList( );
             }
             
             gGrid.DataBind();
+        }
+
+        string GetInitiator( int? initiator )
+        {
+            if ( initiator.HasValue )
+            {
+                using ( RockContext rockContext = new RockContext() )
+                {
+                    PersonAlias personAlias = new PersonAliasService( rockContext ).Get( initiator.Value );
+
+                    if ( personAlias != null && personAlias.Person != null )
+                    {
+                        return personAlias.Person.FullName;
+                    }
+                }
+            }
+            return "";
         }
 
         string ParseCompletedDate( DateTime sentDate, DateTime completedDate )
