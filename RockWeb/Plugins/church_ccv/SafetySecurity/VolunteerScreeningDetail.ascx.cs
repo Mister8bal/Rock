@@ -256,7 +256,14 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         lDateApplicationCompleted.Text = "Application has not yet been returned.";
                     }
                 }
-                
+
+                PersonAlias personAlias = new PersonAliasService( rockContext ).Get( applicationWorkflow.InitiatorPersonAliasId.Value );
+
+                if ( personAlias != null && personAlias.Person != null )
+                {
+                    linitiatedBy.Text = "<a href=/Person/" + personAlias.Person.Id + ">" + personAlias.Person.FullName + "</a>";
+                }
+
                 // to know if we should show character references, see if any character reference workflows tied to this Screening Instance exist.
                 List<Workflow> charRefWorkflows = new List<Workflow>( );
                 List<int?> attribIds = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( ).Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == vsInstance.Id ).Select( av => av.EntityId ).ToList( );
