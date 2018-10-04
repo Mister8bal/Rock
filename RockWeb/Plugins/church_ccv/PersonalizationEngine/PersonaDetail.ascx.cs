@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Web.UI;
 using church.ccv.PersonalizationEngine.Data;
+using System.Text.RegularExpressions;
 
 namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 {
@@ -136,12 +137,13 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         #region Utility
         protected bool ValidateSql( string sql )
         {
-            //todo: fix the issue where things like "\n\nDROP" become a sqlWord, and the illegal command isn't contained in that.
+            // strip out any escape sequence characters
+            sql = Regex.Replace( sql, "[\a\b\f\n\r\t\v]", " " );
 
             // make sure we're comparing all upper case
             string[] sqlWords = sql.ToUpper( ).Split( ' ' );
 
-            foreach( string illegalCommand in SqlBlackList )
+            foreach ( string illegalCommand in SqlBlackList )
             {
                 // see if the sql words contain any of our blacklisted commands
                 if ( sqlWords.Contains( illegalCommand ) )
