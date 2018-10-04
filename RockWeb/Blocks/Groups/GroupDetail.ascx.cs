@@ -1574,11 +1574,12 @@ namespace RockWeb.Blocks.Groups
             {
                 mapStyleValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.MAP_STYLE_ROCK );
             }
+            var googleAPIKey = GlobalAttributesCache.Read().GetValue( "GoogleAPIKey" );
 
             if ( mapStyleValue != null )
             {
                 string mapStyle = mapStyleValue.GetAttributeValue( "StaticMapStyle" );
-                if ( !string.IsNullOrWhiteSpace( mapStyle ) )
+                if ( !string.IsNullOrWhiteSpace( mapStyle ) && string.IsNullOrWhiteSpace( googleAPIKey ) == false )
                 {
                     foreach ( GroupLocation groupLocation in group.GroupLocations.OrderBy( gl => ( gl.GroupLocationTypeValue != null ) ? gl.GroupLocationTypeValue.Order : int.MaxValue ) )
                     {
@@ -1589,7 +1590,7 @@ namespace RockWeb.Blocks.Groups
                                 string markerPoints = string.Format( "{0},{1}", groupLocation.Location.GeoPoint.Latitude, groupLocation.Location.GeoPoint.Longitude );
                                 string mapLink = System.Text.RegularExpressions.Regex.Replace( mapStyle, @"\{\s*MarkerPoints\s*\}", markerPoints );
                                 mapLink = System.Text.RegularExpressions.Regex.Replace( mapLink, @"\{\s*PolygonPoints\s*\}", string.Empty );
-                                mapLink += "&sensor=false&size=450x250&zoom=13&format=png";
+                                mapLink += "&sensor=false&size=450x250&zoom=13&format=png&key=" + googleAPIKey;
                                 var literalcontrol = new Literal()
                                 {
                                     Text = string.Format(
@@ -1606,7 +1607,7 @@ namespace RockWeb.Blocks.Groups
                                 string polygonPoints = "enc:" + groupLocation.Location.EncodeGooglePolygon();
                                 string mapLink = System.Text.RegularExpressions.Regex.Replace( mapStyle, @"\{\s*MarkerPoints\s*\}", string.Empty );
                                 mapLink = System.Text.RegularExpressions.Regex.Replace( mapLink, @"\{\s*PolygonPoints\s*\}", polygonPoints );
-                                mapLink += "&sensor=false&size=350x200&format=png";
+                                mapLink += "&sensor=false&size=350x200&format=png&key=" + googleAPIKey;
                                 phMaps.Controls.Add(
                                     new LiteralControl( string.Format(
                                         "<div class='group-location-map'>{0}<a href='{1}'><img class='img-thumbnail' src='{2}'/></a></div>",
