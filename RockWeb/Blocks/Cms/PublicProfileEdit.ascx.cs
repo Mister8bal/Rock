@@ -678,6 +678,19 @@ namespace RockWeb.Blocks.Cms
                                                         History.EvaluateChange( changes, dvHomeAddressType.Value + " Location", familyAddress.Location != null ? familyAddress.Location.ToString() : string.Empty, updatedHomeAddress.ToString() );
 
                                                         familyAddress.Location = updatedHomeAddress;
+
+                                                        // since there can only be one mapped location, set the other locations to not mapped
+                                                        if ( familyAddress.IsMappedLocation )
+                                                        {
+                                                            var groupLocations = groupLocationService.Queryable()
+                                                                .Where( l => l.GroupId == familyGroup.Id && l.Id != familyAddress.Id ).ToList();
+
+                                                            foreach ( var grouplocation in groupLocations )
+                                                            {
+                                                                grouplocation.IsMappedLocation = false;
+                                                            }
+                                                        }
+
                                                         rockContext.SaveChanges();
                                                     }
                                                 }
