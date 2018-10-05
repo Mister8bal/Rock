@@ -149,34 +149,49 @@
     }
 
     function GenerateTwitter() {
-        var twitterShareLink = "https://twitter.com/intent/tweet?";
+        var twitterShareLink = "https://twitter.com/intent/tweet";
 
-        var url = $("#share-url").val();
-        if( url != '' ) {
-            var encodedUrl = encodeURIComponent( url );
-            twitterShareLink += "&url=" + encodedUrl;
+        // assume things will work out great
+        var resultType = "success";
+        var resultMessage = "Link copied to clipboard!";
+
+        try {
+            var url = $("#share-url").val();
+            if( url != '' ) {
+                var encodedUrl = encodeURIComponent( url );
+                twitterShareLink += "?url=" + encodedUrl;
+            }
+            // no url means error, and we can't continue 
+            else {
+                resultType = "error";
+                resultMessage = "URL is required";
+                throw "Failed";
+            }
+
+            var message = $("#share-msg").val();
+            if( message != '' ) {
+                var encodedMessage = encodeURIComponent( message );
+                twitterShareLink += "&text=" + encodedMessage;
+            }
+
+            var hashTags = $("#share-hash-tags").val();
+            if( hashTags != '' ) {
+                // twitter does NOT want hashtags.
+                hashTags = hashTags.replace( /#/g, '' );
+                twitterShareLink += "&hashtags=" + hashTags;
+            }
+
+            $("#copy-field").attr( "value", twitterShareLink );
+
+            var copyText = document.getElementById("copy-field");
+            copyText.select();
+            document.execCommand("copy");
         }
-
-        var message = $("#share-msg").val();
-        if( message != '' ) {
-            var encodedMessage = encodeURIComponent( message );
-            twitterShareLink += "&text=" + encodedMessage;
+        catch {
         }
-
-        var hashTags = $("#share-hash-tags").val();
-        if( hashTags != '' ) {
-            // twitter does NOT want hashtags.
-            hashTags = hashTags.replace( /#/g, '' );
-            twitterShareLink += "&hashtags=" + hashTags;
+        finally {
+            showAlert(resultType, resultMessage );
         }
-
-        $("#copy-field").attr( "value", twitterShareLink );
-
-        var copyText = document.getElementById("copy-field");
-        copyText.select();
-        document.execCommand("copy");
-
-        showAlert("success", "Link copied to clipboard!" );
     }
 
     function showAlert( type, alertText ) {
