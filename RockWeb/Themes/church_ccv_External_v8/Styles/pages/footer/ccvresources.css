@@ -1,5 +1,5 @@
 .page-background { 
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/hero-messages.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-ccv-resources.jpg");
     background-color: white;
 }
 
@@ -25,6 +25,7 @@
 
 .event-card .header {
     font-family: heebo;
+    padding: 17px 16px;
 }
 
 /* use the expanded main feature only for tablet and larger */
@@ -52,7 +53,6 @@
     /* padding-bottom: 25px; */
     height: 250px;
     margin-bottom: 25px;
-    margin: unset;
 }
 
 .image {

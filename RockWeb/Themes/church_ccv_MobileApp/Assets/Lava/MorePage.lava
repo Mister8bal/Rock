@@ -66,7 +66,8 @@
       <h4>Students</h4>
         <p>Jr High and High School students meet for separate weekend experiences.</p>
         <p>
-        <strong>7th-8th Grade</strong> {{ campus | Attribute: 'JrHighTime' }}<br>
+        <strong>7th Grade</strong> {{ campus | Attribute: '7thGradeServiceTime' }}<br>
+        <strong>8th Grade</strong> {{ campus | Attribute: '8thGradeServiceTime' }}<br><br>
         <strong>9th-12th Grade</strong> {{ campus | Attribute: 'HighSchoolTime' }}
       </p>
 		  <p><a href="external:http://my.ccv.church/students" class="btn btn-sm btn-default">Learn More</a>
