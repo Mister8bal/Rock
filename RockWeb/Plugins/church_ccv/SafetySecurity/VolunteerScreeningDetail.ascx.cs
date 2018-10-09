@@ -257,11 +257,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     }
                 }
 
+                // Get the initiator person alias id from workflow
                 PersonAlias personAlias = new PersonAliasService( rockContext ).Get( applicationWorkflow.InitiatorPersonAliasId.Value );
 
                 if ( personAlias != null && personAlias.Person != null )
                 {
-                    linitiatedBy.Text = "<a href=/Person/" + personAlias.Person.Id + ">" + personAlias.Person.FullName + "</a>";
+                    lInitiatedBy.Text = "<a href=/Person/" + personAlias.Person.Id + ">" + personAlias.Person.FullName + "</a>";
                 }
 
                 // to know if we should show character references, see if any character reference workflows tied to this Screening Instance exist.

@@ -50,7 +50,7 @@
                 
                 <div class="row">
                     <div class="col-md-6">
-                        <asp:Literal ID="linitiatedBy" runat="server"></asp:Literal>
+                        <asp:Literal ID="lInitiatedBy" runat="server"></asp:Literal>
                     </div>
                 </div>
             </div>
