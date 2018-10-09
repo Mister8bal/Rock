@@ -1,12 +1,10 @@
 .page-background {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-connect.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-find-a-class.jpg");
 }
 
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-connect.jpg");
-    }
+.main-feature {
+    height: 475px;
+    padding-top: 175px;
 }
 
 .neighborhood-groups-card { /* .dashboard-card */
@@ -172,9 +170,17 @@
 .resistrationStartsDiv {
     padding-left: 30px;
 }
-
-/* Phone */
+/* Mobile Background Image */
 @media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-find-a-class-mobile.jpg");
+    }
+
+    .main-feature {
+        height: 220px;
+        padding-top: 70px;
+    }
+
     .person-row-summary {
         padding: 0 10px;
     }

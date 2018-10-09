@@ -12,6 +12,15 @@
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-giving.jpg");
     }
+
+    .btn-row {
+        text-align: center;
+        padding-top: 20px;
+    }
+    
+    .btn-row .right {
+        margin-left: 20px;
+    }
 }
 
 #ternavbar-bg {
@@ -851,6 +860,10 @@
     .panel-bankaccount .form-control, .panel-creditcard .form-control {
         padding: unset;
         height: unset;
+    }
+    
+    .btn-row .right {
+        margin-left: 0px;
     }
 }
 
