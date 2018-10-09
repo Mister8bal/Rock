@@ -1,0 +1,327 @@
+<style>
+    .text-input {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .text-input h5 {
+        min-width: 125px;
+    }
+
+    .text-input input {
+        min-width: 400px;
+    }
+
+    #copy-field,#email-copy-field {
+        min-width: 400px;
+        min-height: 30px;
+        background-color: #eee;
+    }
+
+    .buttons {
+        margin-top: 25px;
+    }
+
+    .icon.icon-facebook {
+        color: #fff;
+        background-color: #44619d;
+        border-radius: 4px;
+    }
+
+    .icon.icon-twitter {
+        color: #fff;
+        background-color: #55acee;
+        border-radius: 4px;
+    }
+
+    .fa-fw {
+        min-width: 25px;
+    }
+    @media screen and (max-width: 600px) {
+        .text-input input {
+            min-width: 180px;
+        }
+
+        #copy-field,#email-copy-field {
+            min-width: 180px;
+        }
+    }
+
+    @media screen and (max-width: 320px) {
+        .text-input input {
+            min-width: 100px;
+        }
+
+        #copy-field,#email-copy-field {
+            min-width: 100px;
+        }
+    }
+</style>
+
+<div class ="panel panel-block">
+    <div class="panel-heading">
+        <h4 class="panel-title">Social Media Shareable Links</h4>
+    </div> 
+    <div class="panel-body">
+        <div class="explanation">
+            <p>Generate links that can be pasted into communications, allowing recipients to share on Social Media.</p>
+            <br/>
+        </div>
+        <div class="text-input">
+            <h5>URL</h5>
+            <input id="share-url" type="text" name="URL">
+        </div>
+
+        <div class="text-input">
+            <h5>Message</h5>
+            <input id="share-msg" type="text" name="Message">
+        </div>
+
+        <div class="text-input">
+            <h5>Hashtags</h5>
+            <input id="share-hash-tags" type="text" name="HashTags">
+        </div>
+
+        <br/>
+        <div class="text-input">
+            <h5>Social Media Link</h5>
+            <input id="copy-field" type="text" readonly>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-default" onclick="GenerateFacebook(); return false;"><span class="icon icon-facebook"><i class="fa fa-fw fa-facebook"></i></span> Generate Facebook</button>
+            <button class="btn btn-default" onclick="GenerateTwitter(); return false;"><span class="icon icon-twitter"><i class="fa fa-fw fa-twitter"></i></span> Generate Twitter</button>
+        </div>
+
+        <div class="fb-debug-info">
+            <br/>
+            <p>Trouble with Facebook? <a target="_blank" href="https://developers.facebook.com/tools/debug/sharing/">Click Here</a></p>
+        </div>
+
+        <div ID="result-panel" class="" style="visibility: hidden; position: fixed; z-index:9999; left: 50%; top: 50%; transform: translate( -50%, -50%);">
+            <p ID="result-panel-text"></p>
+        </div>
+    </div>
+</div>
+
+<div class ="panel panel-block">
+    <div class="panel-heading">
+        <h4 class="panel-title">Email Shareable Link</h4>
+    </div> 
+    <div class="panel-body">
+        <div class="explanation">
+            <p>Generate links that can be pasted into communications, allowing recipients to share via Email.</p>
+            <br/>
+        </div>
+        <div class="text-input">
+            <h5>Subject</h5>
+            <input id="email-subject" type="text" name="URL">
+        </div>
+
+        <div class="text-input">
+            <h5>Message</h5>
+            <textarea id="email-msg" type="text" cols="54" rows="5" name="Message"></textarea>
+        </div>
+
+        <div class="text-input">
+            <h5>Email Link</h5>
+            <input id="email-copy-field" type="text" readonly>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-default" onclick="GenerateEmail(); return false;"><span class="icon"><i class="fa fa-fw fa-envelope"></i></span> Generate Email</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GenerateFacebook() {
+        var facebookShareLink = "https://www.facebook.com/dialog/share?app_id=495461873811179&display=page";
+
+        // assume things will work out great
+        var resultType = "success";
+        var resultMessage = "Link copied to clipboard!";
+
+        try {
+            var url = $("#share-url").val();
+            if( url != '' ) {
+                var encodedUrl = encodeURIComponent( url );
+                facebookShareLink += "&href=" + encodedUrl;
+            }
+            // no url means error, and we can't continue 
+            else {
+                resultType = "error";
+                resultMessage = "URL is required";
+                throw "Failed";
+            }
+            
+
+            var message = $("#share-msg").val();
+            if( message != '' ) {
+                var encodedMessage = encodeURIComponent( message );
+                facebookShareLink += "&quote=" + encodedMessage;
+            }
+
+            var hashTags = $("#share-hash-tags").val();
+            if( hashTags != '' ) {
+
+                var hashTagList = hashTags.split(',');
+                if ( hashTagList.length > 1 ) {
+                    // we can keep going, but we need to flag that there was a problem.
+                    resultType = "warning";
+                    resultMessage = "Link copied, but Facebook only allows one Hashtag."
+                }
+
+                // for facebook, it only accepts one hash tag
+                var firstHashTag = hashTagList[0];
+
+                // and it wants the '#', so make sure it has one.
+                if ( firstHashTag[0] != '#' ) {
+                    firstHashTag = '#' + firstHashTag;
+                }
+
+                var encodedHashTag = encodeURIComponent( firstHashTag );
+                facebookShareLink += "&hashtag=" + encodedHashTag;
+            }
+
+            $("#copy-field").attr( "value", facebookShareLink );
+
+            var copyText = document.getElementById("copy-field");
+            copyText.select();
+            document.execCommand("copy");
+        }
+        catch {
+        }
+        finally {
+            showAlert(resultType, resultMessage );
+        }
+    }
+
+    function GenerateTwitter() {
+        var twitterShareLink = "https://twitter.com/intent/tweet";
+
+        // assume things will work out great
+        var resultType = "success";
+        var resultMessage = "Link copied to clipboard!";
+
+        try {
+            var url = $("#share-url").val();
+            if( url != '' ) {
+                var encodedUrl = encodeURIComponent( url );
+                twitterShareLink += "?url=" + encodedUrl;
+            }
+            // no url means error, and we can't continue 
+            else {
+                resultType = "error";
+                resultMessage = "URL is required";
+                throw "Failed";
+            }
+
+            var message = $("#share-msg").val();
+            if( message != '' ) {
+                var encodedMessage = encodeURIComponent( message );
+                twitterShareLink += "&text=" + encodedMessage;
+            }
+
+            var hashTags = $("#share-hash-tags").val();
+            if( hashTags != '' ) {
+                // twitter does NOT want hashtags.
+                hashTags = hashTags.replace( /#/g, '' );
+                twitterShareLink += "&hashtags=" + hashTags;
+            }
+
+            $("#copy-field").attr( "value", twitterShareLink );
+
+            var copyText = document.getElementById("copy-field");
+            copyText.select();
+            document.execCommand("copy");
+        }
+        catch {
+        }
+        finally {
+            showAlert(resultType, resultMessage );
+        }
+    }
+
+    function GenerateEmail() {
+        var emailLink = "mailto:";
+
+        var resultType = "success";
+        var resultMessage = "Link copied to clipboard!";
+
+        try {
+            // grab the subject
+            var subject = $("#email-subject").val();
+            if( subject != '' ) {
+                var encodedSubject = encodeURIComponent( subject );
+                emailLink += "?subject=" + encodedSubject;
+            }
+            else {
+                resultType = "error";
+                resultMessage = "Subject is required.";
+                throw "Failed";
+            }
+
+            // the body (which we tell the user is the 'message')
+            var message = $("#email-msg").val();
+            if ( message != '' ) {
+                var encodedMessage = encodeURIComponent( message );
+                emailLink += "&body=" + encodedMessage;
+            } else {
+                resultType = "error";
+                resultMessage = "Message is required";
+                throw "Failed";
+            }
+
+            // put it in the copy field and select it
+            $("#email-copy-field").attr( "value", emailLink );
+
+            var copyText = document.getElementById("email-copy-field");
+            copyText.select();
+            document.execCommand("copy");
+        }
+        catch {
+        }
+        finally {
+            showAlert(resultType, resultMessage );
+        }
+    }
+
+    function showAlert( type, alertText ) {
+        $("#result-panel").css("visibility", "visible" );
+
+        var innerHtml = "";
+        var classType = "";
+        switch( type )
+        {
+            case "success": {
+                classType = "alert alert-success";
+                innerHtml = "<i class=\"fa fa-check\"></i>";
+                break;
+            }
+
+            case "warning": {
+                classType = "alert alert-warning";
+                innerHtml = "<i class=\"fa fa-ellipsis-h\"></i>";
+                break;
+            }
+
+            case "error": {
+                classType = "alert alert-danger";
+                innerHtml = "<i class=\"fa fa-times-circle\"></i>";
+                break;
+            }
+        }
+
+        // hack - jquery has a bug where .removeClass() doesn't work...
+        document.getElementById("result-panel").removeAttribute("class");
+        $("#result-panel").addClass( classType );
+        $("#result-panel-text").html( innerHtml + " " + alertText );
+
+        setTimeout(hideAlert, 5000);
+    }
+
+    function hideAlert() {
+        $("#result-panel").css("visibility", "hidden" );
+    }
+</script>
