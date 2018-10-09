@@ -12,7 +12,7 @@
         min-width: 400px;
     }
 
-    #copy-field {
+    #copy-field,#email-copy-field {
         min-width: 400px;
         min-height: 30px;
         background-color: #eee;
@@ -37,6 +37,25 @@
     .fa-fw {
         min-width: 25px;
     }
+    @media screen and (max-width: 600px) {
+        .text-input input {
+            min-width: 180px;
+        }
+
+        #copy-field,#email-copy-field {
+            min-width: 180px;
+        }
+    }
+
+    @media screen and (max-width: 320px) {
+        .text-input input {
+            min-width: 100px;
+        }
+
+        #copy-field,#email-copy-field {
+            min-width: 100px;
+        }
+    }
 </style>
 
 <div class ="panel panel-block">
@@ -45,7 +64,7 @@
     </div> 
     <div class="panel-body">
         <div class="explanation">
-            <p>Use this page to generate links that can be pasted into communications, allowing recipients to share on Social Media.</p>
+            <p>Generate links that can be pasted into communications, allowing recipients to share on Social Media.</p>
             <br/>
         </div>
         <div class="text-input">
@@ -81,6 +100,36 @@
 
         <div ID="result-panel" class="" style="visibility: hidden; position: fixed; z-index:9999; left: 50%; top: 50%; transform: translate( -50%, -50%);">
             <p ID="result-panel-text"></p>
+        </div>
+    </div>
+</div>
+
+<div class ="panel panel-block">
+    <div class="panel-heading">
+        <h4 class="panel-title">Email Shareable Link</h4>
+    </div> 
+    <div class="panel-body">
+        <div class="explanation">
+            <p>Generate links that can be pasted into communications, allowing recipients to share via Email.</p>
+            <br/>
+        </div>
+        <div class="text-input">
+            <h5>Subject</h5>
+            <input id="email-subject" type="text" name="URL">
+        </div>
+
+        <div class="text-input">
+            <h5>Message</h5>
+            <textarea id="email-msg" type="text" cols="54" rows="5" name="Message"></textarea>
+        </div>
+
+        <div class="text-input">
+            <h5>Email Link</h5>
+            <input id="email-copy-field" type="text" readonly>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-default" onclick="GenerateEmail(); return false;"><span class="icon"><i class="fa fa-fw fa-envelope"></i></span> Generate Email</button>
         </div>
     </div>
 </div>
@@ -184,6 +233,50 @@
             $("#copy-field").attr( "value", twitterShareLink );
 
             var copyText = document.getElementById("copy-field");
+            copyText.select();
+            document.execCommand("copy");
+        }
+        catch {
+        }
+        finally {
+            showAlert(resultType, resultMessage );
+        }
+    }
+
+    function GenerateEmail() {
+        var emailLink = "mailto:";
+
+        var resultType = "success";
+        var resultMessage = "Link copied to clipboard!";
+
+        try {
+            // grab the subject
+            var subject = $("#email-subject").val();
+            if( subject != '' ) {
+                var encodedSubject = encodeURIComponent( subject );
+                emailLink += "?subject=" + encodedSubject;
+            }
+            else {
+                resultType = "error";
+                resultMessage = "Subject is required.";
+                throw "Failed";
+            }
+
+            // the body (which we tell the user is the 'message')
+            var message = $("#email-msg").val();
+            if ( message != '' ) {
+                var encodedMessage = encodeURIComponent( message );
+                emailLink += "&body=" + encodedMessage;
+            } else {
+                resultType = "error";
+                resultMessage = "Message is required";
+                throw "Failed";
+            }
+
+            // put it in the copy field and select it
+            $("#email-copy-field").attr( "value", emailLink );
+
+            var copyText = document.getElementById("email-copy-field");
             copyText.select();
             document.execCommand("copy");
         }
