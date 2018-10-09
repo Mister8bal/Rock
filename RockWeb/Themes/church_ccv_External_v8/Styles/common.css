@@ -592,7 +592,12 @@
         display: flex;
         justify-content: center;
         padding: 10px 0;
+        font-size: 15px;
     }
+
+    .navigation-secondary-mobile-item {
+    font-size: 15px;
+}
 
     .navigation-secondary-mobile-dropdown {
         color: #FFFFFF;
@@ -659,6 +664,7 @@
 .navigation-tertiary-items-slick {
     width: 590px;
     margin-bottom: 0;
+    font-size: 15px;
 }
 
 .prev {
