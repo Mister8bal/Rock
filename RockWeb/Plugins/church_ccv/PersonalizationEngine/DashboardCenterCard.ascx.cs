@@ -32,7 +32,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
     [DisplayName( "Dashboard Center Card" )]
     [Category( "CCV > Personalization Engine" )]
     [Description( "Displays personalized data on the dashboard's center card." )]
-    [CodeEditorField( "Lava Template", "The lava template to use to format the group list.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupListSidebar.lava' %}", "", 6 )]
+    [CodeEditorField( "Lava Template", "The lava template to use to for rendering the dashboard card.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "", "", 6 )]
     public partial class DashboardCenterCard : RockBlock
     {
         #region Properties
@@ -55,41 +55,56 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             base.OnLoad( e );
 
             Campaign campaignForCard = null;
-            
-            // first try to get a relevant campaign for this person
-            var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( "WebsiteCard", CurrentPerson.Id );
-            if( campaignList.Count > 0 )
+
+            // first see if there's a parameter forcing an override of the campaign to display
+            int? debugCampaignId = PageParameter( "DebugCampaignId" ).AsIntegerOrNull( );
+            if ( debugCampaignId.HasValue )
             {
-                campaignForCard = campaignList[0];
+                campaignForCard = PersonalizationEngineUtil.GetCampaign( debugCampaignId.Value );
             }
             else
             {
-                // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
-                campaignForCard = defaultCampaigns[ 0 ];
+                // otherwise try to get a relevant campaign for this person
+                var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( "WebsiteCard", CurrentPerson.Id );
+                if ( campaignList.Count > 0 )
+                {
+                    campaignForCard = campaignList [ 0 ];
+                }
+                else
+                {
+                    // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
+                    var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
+                    campaignForCard = defaultCampaigns [ 0 ];
+                }
             }
 
-            JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );
+            try
+            {
+                JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );
 
-            JObject campaignBlob = jsonBlob["WebsiteCard"].ToObject<JObject>( );
+                JObject campaignBlob = jsonBlob["WebsiteCard"].ToObject<JObject>( );
                     
-            string campaignImage =  campaignBlob["img"].ToString( );
-            string campaignTitle = campaignBlob["title"].ToString( );
-            string campaignSubTitle = campaignBlob["sub-title"].ToString( );
-            string campaignBody = campaignBlob["body"].ToString( );
-            string campaignLinkText = campaignBlob["link-text"].ToString( );
-            string campaignLink = campaignBlob["link"].ToString( );
+                string campaignImage =  campaignBlob["img"].ToString( );
+                string campaignTitle = campaignBlob["title"].ToString( );
+                string campaignSubTitle = campaignBlob["sub-title"].ToString( );
+                string campaignBody = campaignBlob["body"].ToString( );
+                string campaignLinkText = campaignBlob["link-text"].ToString( );
+                string campaignLink = campaignBlob["link"].ToString( );
             
-            var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
-            mergeFields.Add( "CampaignImage", campaignImage );
-            mergeFields.Add( "CampaignTitle", campaignTitle );
-            mergeFields.Add( "CampaignSubTitle", campaignSubTitle );
-            mergeFields.Add( "CampaignBody", campaignBody );
-            mergeFields.Add( "CampaignLinkText", campaignLinkText );
-            mergeFields.Add( "CampaignLink", campaignLink );
+                var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
+                mergeFields.Add( "CampaignImage", campaignImage );
+                mergeFields.Add( "CampaignTitle", campaignTitle );
+                mergeFields.Add( "CampaignSubTitle", campaignSubTitle );
+                mergeFields.Add( "CampaignBody", campaignBody );
+                mergeFields.Add( "CampaignLinkText", campaignLinkText );
+                mergeFields.Add( "CampaignLink", campaignLink );
 
-            string template = GetAttributeValue( "LavaTemplate" );
-            lContent.Text = template.ResolveMergeFields( mergeFields );
+                string template = GetAttributeValue( "LavaTemplate" );
+                lContent.Text = template.ResolveMergeFields( mergeFields );
+            }
+            catch
+            {
+            }
         }
         
         #endregion

@@ -100,7 +100,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                                 {
                                     ( control as CheckBox ).Checked = true;
                                 }
-                                else
+                                // make sure it's otherwise a text box, and not the debug button
+                                else if ( control as TextBox != null )
                                 {
                                     // otherwise, see which text box it is and populate it with the right value.
                                     RockTextBox textBox = control as RockTextBox;
@@ -277,18 +278,18 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             using ( RockContext rockContext = new RockContext( ) )
             {
                 // get each campaign type with its json template
-                var campaignTypes = new Service<CampaignType>( rockContext ).Queryable( ).Select( ct => new { Name = ct.Name, Desc = ct.Description, ct.JsonTemplate } ).ToList( );
+                var campaignTypes = new Service<CampaignType>( rockContext ).Queryable( ).Select( ct => new { Name = ct.Name, Desc = ct.Description, ct.JsonTemplate, ct.DebugUrl } ).ToList( );
 
                 phContentJson.Controls.Clear( );
 
                 foreach ( var campaignType in campaignTypes )
                 {
-                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.Desc, campaignType.JsonTemplate );
+                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.Desc, campaignType.JsonTemplate, campaignType.DebugUrl );
                 }
             }
         }
         
-        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string campaignTypeDesc, string jsonTemplate )
+        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string campaignTypeDesc, string jsonTemplate, string debugUrl )
         {
             // Builds the UI representing an individual campaign type
 
@@ -297,16 +298,14 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             // The template defines the fields that the campaign type supports.
 
             // For easy lookup, elements that need to be referenced are given an ID with a prefix of the campaign type name.
-            
-            // Render a "campaign-type-entry" wrapping div around the entire thing
-            phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type\">" ) );
-            
-                // Render a "campaign-type-entry-header" that will wrap the campaign type name and its enabled check box
-                phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-header\">" ) );
-                    phContentJson.Controls.Add( new LiteralControl( "<h4>" + campaignTypeName + "</h4>" ) );
-                    phContentJson.Controls.Add( new LiteralControl( "<h5>" + campaignTypeDesc + "</h5>" ) );
-                    
 
+            phContentJson.Controls.Add( new LiteralControl( "<div class =\"panel panel-block\">" ) );
+                phContentJson.Controls.Add( new LiteralControl( "<div class=\"panel-heading\">" ) );
+                    phContentJson.Controls.Add( new LiteralControl( "<div class=\"row col-sm-4\">" ) );
+                        phContentJson.Controls.Add( new LiteralControl( "<h4 class=\"panel-title\">" + campaignTypeName + "</h4><br/>" ) );
+
+                        phContentJson.Controls.Add( new LiteralControl( "<h5>" + campaignTypeDesc + "</h5>" ) );
+            
                     // create the checkbox controlling whether this campaign type should be used.
                     RockCheckBox cbCampaignTypeEnabled = new RockCheckBox( );
                     cbCampaignTypeEnabled.ID = campaignTypeName + "^" + "cbEnabled";
@@ -315,33 +314,50 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     cbCampaignTypeEnabled.ClientIDMode = ClientIDMode.Static;
                     cbCampaignTypeEnabled.AutoPostBack = true;
                     phContentJson.Controls.Add( cbCampaignTypeEnabled );
-                phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-entry-header"
-            
-                // now render the fields as editable controls
 
-                // deserialize the json template into a dictionary we can iterate over
-                var templateItems = JsonConvert.DeserializeObject<Dictionary<string, string>>( jsonTemplate );
+                    phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "row col-sm-4"
+                phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "panel-heading"
+
+                    
+                
             
-                foreach( KeyValuePair<string, string> templateItem in templateItems )
-                {
-                    // render a wrapper around the item
-                    phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-template-item\">" ) );
+                phContentJson.Controls.Add( new LiteralControl( "<div class=\"panel-body\">" ) );
+
+                    // now render the fields as editable controls
                 
-                        // render the actual editable field for this template item
-                        RockTextBox valueBox = new RockTextBox( );
-                        valueBox.ID = campaignTypeName + "^" + templateItem.Key + "^" + "tbValue";
-                        valueBox.Label = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(templateItem.Key);
-                        valueBox.Enabled = false;
-                        valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
-                        valueBox.ClientIDMode = ClientIDMode.Static;
-                        valueBox.Rows = 3;
-                        valueBox.TextMode = TextBoxMode.MultiLine;
-                        phContentJson.Controls.Add( valueBox );
+                    // deserialize the json template into a dictionary we can iterate over
+                    var templateItems = JsonConvert.DeserializeObject<Dictionary<string, string>>( jsonTemplate );
+            
+                    foreach( KeyValuePair<string, string> templateItem in templateItems )
+                    {
+                        // render a wrapper around the item
+                        phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-template-item\">" ) );
                 
-                    phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-template-item"
-                }
+                            // render the actual editable field for this template item
+                            RockTextBox valueBox = new RockTextBox( );
+                            valueBox.ID = campaignTypeName + "^" + templateItem.Key + "^" + "tbValue";
+                            valueBox.Label = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(templateItem.Key);
+                            valueBox.Enabled = false;
+                            valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
+                            valueBox.ClientIDMode = ClientIDMode.Static;
+                            valueBox.Rows = 3;
+                            valueBox.TextMode = TextBoxMode.MultiLine;
+                            phContentJson.Controls.Add( valueBox );
                 
-            phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); //end "template-entry" div wrapper
+                        phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-template-item"
+                    }
+
+                    // if there's an actual campaign and the type has a debug URL set, render a button to take the user to a debug page for this campaign
+                    int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
+
+                    if ( campaignId > 0 && string.IsNullOrWhiteSpace( debugUrl ) == false )
+                    {
+                        phContentJson.Controls.Add( new LiteralControl( "<a class=\"btn btn-default\" target=\"_blank\" href=\"" + debugUrl + "?DebugCampaignId=" + campaignId.Value.ToString( ) + "\">Preview" + "</a>" ) );
+                    }
+
+                phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); //end "panel-body" div wrapper        
+                
+            phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); //end "panel panel-block" div wrapper
         }
 
         protected void CbTemplateTypeEnabled_CheckedChanged( object sender, EventArgs e )

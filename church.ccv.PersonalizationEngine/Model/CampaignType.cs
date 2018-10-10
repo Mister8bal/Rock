@@ -16,6 +16,9 @@ namespace church.ccv.PersonalizationEngine.Model
         public string Description { get; set; }
 
         [DataMember]
+        public string DebugUrl { get; set; }
+
+        [DataMember]
         public string JsonTemplate { get; set; }
     }
 }

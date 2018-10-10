@@ -9,7 +9,7 @@
         <div class ="panel panel-block">
             <div class="panel-heading">
                 <div class="row col-sm-4">
-                    <h4 class="panel-title">Campaign</h4>
+                    <h4 class="panel-title">Campaign Details</h4>
                 </div>
             </div>
 
@@ -39,22 +39,21 @@
                     <Rock:RockTextBox ID="tbPriorty" ClientIDMode="Static" runat="server" type="number"/>
                 </div>
                 <br/>
-                <div class="campaign-types">
-                    <asp:PlaceHolder runat="server" ID="phContentJson"></asp:PlaceHolder>
-                </div>
-                <br/>
-                <asp:LinkButton ID="btnSave" ClientIDMode="Static" runat="server" Text="Save" CssClass="btn btn-primary" OnClientClick="return validateFields();" OnClick="btnSave_Click" />
             </div>
         </div>
+                
+        <asp:PlaceHolder runat="server" ID="phContentJson"></asp:PlaceHolder>
+        <asp:LinkButton ID="btnSave" ClientIDMode="Static" runat="server" Text="Save" CssClass="btn btn-primary" OnClientClick="return validateFields();" OnClick="btnSave_Click" />
     </ContentTemplate>
 </asp:UpdatePanel>
 
 <asp:UpdatePanel ID="upnlPersonas" runat="server">
     <ContentTemplate>
+        <br/>
         <div class ="panel panel-block">
             <div class="panel-heading">
                 <div class="row col-sm-4">
-                    <h4 class="panel-title">Personas</h4>
+                    <h4 class="panel-title">Attached Personas</h4>
                 </div>
             </div>
 
@@ -89,22 +88,10 @@
         min-width: 150px;
     }
 
-    .campaign-types {
-    }
-
-    .campaign-type {
+    .form-group.rock-check-box {
         display: flex;
-        flex-direction: column;
-        margin-top: 25px;
-
-        border-width: 1px;
-        border-color: #b8b2aa;
-        border-style: solid;
-        border-radius: 4px;
-        padding: 5px;
-    }
-
-    .campaign-type-header {
+        justify-content: space-between;
+        max-width: 100px;
     }
 
     .campaign-type-template-item {
