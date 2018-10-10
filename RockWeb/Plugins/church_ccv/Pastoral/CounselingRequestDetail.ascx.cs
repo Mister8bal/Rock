@@ -435,7 +435,6 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                         document.BinaryFile = binaryFile;
                         document.BinaryFile.IsTemporary = false;
 
-                        document.BinaryFileId = binaryFileId;
                         document.Order = documentOrder;
                         documentOrder++;
                     }
