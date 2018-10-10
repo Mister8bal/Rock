@@ -417,6 +417,7 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                     }
 
                     // save documents
+                    var binaryFileService = new BinaryFileService( rockContext );
                     int documentOrder = 0;
                     foreach ( var binaryFileId in DocumentsState )
                     {
@@ -428,6 +429,12 @@ namespace RockWeb.Plugins.church_ccv.Pastoral
                             document.CareRequestId = counselingRequest.Id;
                             counselingRequest.Documents.Add( document );
                         }
+
+                        // Need to mark the binary file not temporary so it doesn't get deleted by the Rock clean up job. 
+                        var binaryFile = binaryFileService.Get( binaryFileId );
+                        document.BinaryFile = binaryFile;
+                        document.BinaryFile.IsTemporary = false;
+
                         document.BinaryFileId = binaryFileId;
                         document.Order = documentOrder;
                         documentOrder++;
