@@ -14,6 +14,10 @@
     display: flex;
 }
 
+#section-a-bg {
+    background-color: #FFFFFF;
+}
+
 .life-training-container {
     display: flex;
     flex-direction: column;
@@ -23,14 +27,6 @@
     border-radius: 5px;
     margin-bottom: 20px;
     background-color: #ffffff;
-}
-
-#zone-tertiarynavbar {
-    margin: 0;  
-}
-
-.navigation-tertiary-items {
-    padding-left: 150px;
 }
 
 .navigation-tertiary-items-slick {
