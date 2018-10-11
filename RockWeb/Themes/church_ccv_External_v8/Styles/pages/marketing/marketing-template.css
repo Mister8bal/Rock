@@ -175,20 +175,24 @@ p {
 }
 
 .divContainForm h1 {
-    font-size: 44px;
     padding-bottom: 0px;
     font-weight: bolder;
     color: #7A1315;
-    font-family: sans-serif;
+
 }
 
 .divContainForm h4 {
-    color: rgb(189, 77, 79);
+    color: #7A1315;
     padding: 0px 0px 20px 0px;
 }
 
 .divContainForm p {
     color: #7c7c7c;
+}
+
+.divContainForm img{
+    height: 50px;
+    width: 50px;
 }
 
 .actions {
@@ -211,9 +215,9 @@ p {
     display: block;
 }
 
-.footer-social i {
+.footersocial  i {
     color: #7A1315;
-    font-size: 30px;
+    font-size: 40px;
     margin: 10px 0;
     padding: 0 20px;
 }

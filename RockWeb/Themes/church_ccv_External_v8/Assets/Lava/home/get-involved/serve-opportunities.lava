@@ -87,6 +87,18 @@
                 <a class="btn btn-primary" href="//ccvstars.com/stars-serve">Learn More</a>
             </div>
         </div>
+
+        <div class="serve-card">
+            <div class="image">
+                <img src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-next-steps-serve-special-needs.jpg">
+            </div>
+            <div class="header">
+                <h4>Special Needs Ministry</h4>
+            </div>
+            <div class="content">
+                <p>The CCV Special Needs areas are designed to be a fun and high-energy environment where kids, students and adults learn bible essentials and receive a foundation of love for Christ. There are many volunteer opportunities that range from up-front teaching to behind-the-scenes production to provide the best environment to learn and grow their foundation in Christ. Weekend opportunities available during all services.</p>
+            </div>
+        </div>
     </div>
 </div>
 

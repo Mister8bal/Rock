@@ -476,9 +476,9 @@
     padding: 0;
 }
 
-.active {
+/* .active {
     background-color: #7A1315;
-}
+} */
 
 .complete {
     background: linear-gradient(rgb(208, 221, 41), rgb(139, 179, 63));
