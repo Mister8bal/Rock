@@ -1,0 +1,37 @@
+<div class="mobile-app-wrapper">
+    <div class="mobile-app-news-feed">
+        <div class="mobile-app-header">
+            <img src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/ma-primary-nav.jpg"/>
+        </div>
+        <img src="{{CampaignImage}}"/>
+        <img src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/middle-news.jpg"/>
+        <img src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/bottom-news.jpg"/>
+    </div>
+    
+    <div class="spacer"></div>
+    
+    {% if CampaignSkipDetailsPage == 'false' %}
+        <div class="mobile-app-news-detail">
+            <div class="mobile-app-header">
+                <img class="mobile-app-image" src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/ma-primary-nav.jpg"/>
+            </div>
+            <img class="mobile-app-image" src="{{CampaignImage}}"/>
+            <h4>{{CampaignTitle}}</h4>
+            <p>{{CampaignBody}}</p>
+            {% if CampaignLinkUrl != '' %}
+                <div class="mobile-app-learn-more">
+                    <a href="{{CampaignLinkUrl}}">
+                        Learn More
+                    </a>
+                </div>
+            {% endif %}
+            <div class="mobile-app-footer">
+                <img src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/ma-footer.jpg"/>
+            </div>
+        </div>
+    {% else %}
+    <div class="mobile-app-skip-details">
+        <h4>Details Page Skipped</h4>
+    </div>
+    {% endif %}
+</div>
