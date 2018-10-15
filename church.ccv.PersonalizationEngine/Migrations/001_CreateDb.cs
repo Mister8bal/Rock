@@ -36,6 +36,7 @@ namespace church.ccv.PersonalizationEngine.Migrations
                         [Id] [int] NOT NULL IDENTITY,
                         [Name] [nvarchar](MAX) NOT NULL,
                         [Description] [nvarchar](MAX) NOT NULL,
+                        [DebugUrl] [nvarchar](MAX),
                         [JsonTemplate] [nvarchar](MAX) NOT NULL,
 
                         [CreatedDateTime] [datetime],
