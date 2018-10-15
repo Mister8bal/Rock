@@ -49,17 +49,6 @@
     display: flex;
 }
 
-#zone-tertiarynavbar {
-    margin: 0;
-}
-/* .infoSection-mobile {
-    display: none;
-} */
-
-.navigation-tertiary-items {
-    padding-left: 150px;
-}
-
 @media screen and (max-width: 927px) {
 
     .single-container {

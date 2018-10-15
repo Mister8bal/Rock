@@ -13,12 +13,29 @@
             </p>
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Marriage_and_Relationships_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
-                <a href="life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
             </div>
         </div>
     </div>
 
     <div class="life-training-container">
+        <div class="ls-image">
+            <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-sex-and-sexuality.jpg"/>
+        </div>
+        <div class="ls-section-desc">
+            <div class="ls-header">
+               
+                <h2>Sex & Sexuality</h2>
+            </div>
+            <p>Sex can easily become distorted and far from the way God intended it to be. Through Christ, we believe that you can find lasting freedom, integrity and purity.</p>
+            <div class="btn-row">
+                <a href="https://s3.amazonaws.com/media.ccvonline.com/2018/ADM/Sex_and_Sexuality_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="life-training-container">
         <div class="ls-image">
             <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-finance.jpg"/>
         </div>
@@ -29,7 +46,7 @@
             </div>
             <p>We want you to experience God's best in regards to your finances. We have practical programs to help you eliminate debt, develop a financial plan and live a life of generosity.</p>
             <div class="btn-row">
-                <a href="life-training/financial-resources" class="btn btn-default">Learn More</a>
+                <a href="/finance" class="btn btn-default">Learn More</a>
             </div>
         </div>
     </div>
@@ -47,7 +64,7 @@
             </p>
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Family_and_Parenting_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
-                <a href="life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
             </div>
         </div>
     </div>
@@ -65,7 +82,7 @@
                 Life can be overwhelming when faced with death, loss, and suffering, but we know there is hope through Christ. We want to provide you with the support and resources you need to find hope and healing.            </p>
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Pain_and_Grief_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
-                <a href="life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
             </div>
         </div>
     </div>
@@ -82,7 +99,7 @@
             <p>If you've experienced a traumatic event or crisis, it can be difficult to know where to turn for healing and restoration. We can direct you to find the support you need to move past the pain and find healing in Christ.</p>
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Trauma_and_Abuse_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
-                <a href="life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
             </div>
         </div>
     </div>
@@ -100,7 +117,7 @@
                 We believe you can find victory over sin and find restoration in areas once marked by failure and defeat.  We want to provide you with the support and resources you need to find lasting freedom in Christ.            </p>
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Addiction_and_Recovery_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
-                <a href="life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
+                <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
             </div>
         </div>
     </div>

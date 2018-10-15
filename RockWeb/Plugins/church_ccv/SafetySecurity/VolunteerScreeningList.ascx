@@ -17,6 +17,7 @@
                     <Rock:Grid ID="gGrid" runat="server" OnRowSelected="gGrid_Edit">
                         <Columns>
                             <Rock:RockBoundField DataField="State" HeaderText="Status" SortExpression="State" />
+                             <Rock:RockBoundField DataField="InitiatedBy" HeaderText="Initiated By" SortExpression="InitiatedBy" />
                             <Rock:RockBoundField DataField="SentDate" HeaderText="Application Sent" SortExpression="SentDate" />
                             <Rock:RockBoundField DataField="CompletedDate" HeaderText="Application Completed" SortExpression="CompletedDate" />
                         </Columns>

@@ -131,8 +131,8 @@
                         {% assign locationString = '' %}
 
                         {% if eventOccurrenceSummary.EventItemOccurrence.Campus != null  %}
-                            {% assign locationString = {{eventOccurrenceSummary.EventItemOccurrence.Campus.Name}} %}
-                            {% assign locationString = locationString | Append:  ' Campus<br/>' %}
+                            {% comment %} {% assign locationString = {{eventOccurrenceSummary.EventItemOccurrence.Campus.Name}} %}
+                            {% assign locationString = locationString | Append:  ' Campus<br/>' %} {% endcomment %}
                         {% endif %}
 
                         {% if eventOccurrenceSummary.EventItemOccurrence.Location != '' %}

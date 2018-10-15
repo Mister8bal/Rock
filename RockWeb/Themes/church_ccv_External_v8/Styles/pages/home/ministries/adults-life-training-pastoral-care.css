@@ -19,14 +19,6 @@
     display: flex;
 }
 
-#zone-tertiarynavbar {
-    margin: 0;  
-}
-
-.navigation-tertiary-items {
-    padding-left: 150px;
-}
-
 .control-wrapper textarea {
     background-color: #eeeeee;
     border-bottom: unset;
