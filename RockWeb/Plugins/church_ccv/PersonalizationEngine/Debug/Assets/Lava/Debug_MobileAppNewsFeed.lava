@@ -29,5 +29,9 @@
                 <img src="../Plugins/church_ccv/PersonalizationEngine/Debug/Assets/Images/ma-footer.jpg"/>
             </div>
         </div>
+    {% else %}
+    <div class="mobile-app-skip-details">
+        <h4>Details Page Skipped</h4>
+    </div>
     {% endif %}
 </div>

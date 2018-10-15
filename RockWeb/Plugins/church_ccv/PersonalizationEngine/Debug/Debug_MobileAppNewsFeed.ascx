@@ -113,6 +113,27 @@
         text-decoration: none;
     }
 
+    .mobile-app-skip-details {
+        color: #CCCCCC;
+        font-family: OpenSans;
+        font-weight: 100;
+
+        align-self: center;
+        
+        min-width: 288px;
+        max-width: 288px;
+
+        min-height: 68px;
+        max-height: 68px;
+
+        border-radius: 4px;
+        background-color: #7e7e7e;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .mobile-app-footer {
         align-self: flex-end;
     }
