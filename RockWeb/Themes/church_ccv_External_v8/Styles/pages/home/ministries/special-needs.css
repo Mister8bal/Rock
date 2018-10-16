@@ -3,10 +3,18 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-special-needs.jpg");
 }
 
+.btn-row-sn-event {
+    margin-top: 10px;
+}
+
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-special-needs.jpg");
+    }
+
+    .btn-row-sn-event {
+        margin-top: 0px;
     }
 }
 
