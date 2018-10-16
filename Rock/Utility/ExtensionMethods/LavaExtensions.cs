@@ -22,7 +22,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using DotLiquid;
+
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
@@ -54,7 +56,21 @@ namespace Rock
 
             lavaDebugPanel.Append( "<p>Below is a listing of available merge fields for this block. Find out more on Lava at <a href='http://www.rockrms.com/lava' target='_blank'>rockrms.com/lava</a>." );
 
-            lavaDebugPanel.Append( formatLavaDebugInfo( lavaObject.LiquidizeChildren( 0, rockContext ) ) );
+
+            int maxWaitMS = 10000;
+            System.Web.HttpContext taskContext = System.Web.HttpContext.Current; 
+            var formatLavaTask = new Task( () =>
+            {
+                System.Web.HttpContext.Current = taskContext;
+                lavaDebugPanel.Append( formatLavaDebugInfo( lavaObject.LiquidizeChildren( 0, rockContext ) ) );
+            } );
+
+            formatLavaTask.Start();
+
+            if ( !formatLavaTask.Wait( maxWaitMS ) )
+            {
+                return "<div class='alert alert-warning lava-debug'>Warning: Timeout generating Lava Help</div>";
+            }
 
             // Add a 'GlobalAttribute' entry if it wasn't part of the LavaObject
             if ( !( lavaObject is IDictionary<string, object> ) || !( (IDictionary<string, object>)lavaObject ).Keys.Contains( "GlobalAttribute" ) )
@@ -149,13 +165,11 @@ namespace Rock
             if ( myObject is Drop )
             {
                 var result = new Dictionary<string, object>();
+                Type baseDrop = typeof( DropBase );
 
-                foreach ( var propInfo in entityType.GetProperties(
-                          BindingFlags.Public |
-                          BindingFlags.Instance |
-                          BindingFlags.DeclaredOnly ) )
+                foreach ( var propInfo in entityType.GetProperties( BindingFlags.Public | BindingFlags.Instance ) )
                 {
-                    if ( propInfo != null )
+                    if ( propInfo != null && propInfo.DeclaringType != baseDrop )
                     {
                         try
                         {
@@ -216,7 +230,60 @@ namespace Rock
                     {
                         try
                         {
-                            object propValue = liquidObject[key];
+                            object propValue = null;
+
+                            var propType = entityType.GetProperty( key )?.PropertyType;
+                            if ( propType?.Name == "ICollection`1" )
+                            {
+                                // if the property type is an ICollection, get the underlying query and just fetch one for an example (just in case there are 1000s of records)
+                                var entityDbContext = GetDbContextFromEntity( myObject );
+                                if ( entityDbContext != null )
+                                {
+                                    var entryCollection = entityDbContext.Entry( myObject )?.Collection( key );
+                                    if ( entryCollection.EntityEntry.State == System.Data.Entity.EntityState.Detached )
+                                    {
+                                        // create a sample since we can't fetch real data
+                                        Type listOfType = propType.GenericTypeArguments[0];
+                                        var sampleListType = typeof( List<> ).MakeGenericType( listOfType );
+                                        var sampleList = Activator.CreateInstance(sampleListType) as IList;
+                                        var sampleItem = Activator.CreateInstance( listOfType );
+                                        sampleList.Add( sampleItem );
+                                        propValue = sampleList;
+                                    }
+                                    else
+                                    {
+                                        if ( entryCollection.IsLoaded )
+                                        {
+                                            propValue = liquidObject[key];
+                                        }
+                                        else
+                                        {
+                                            try
+                                            {
+                                                var propQry = entryCollection.Query().Provider.CreateQuery<Rock.Data.IEntity>( entryCollection.Query().Expression );
+                                                int propCollectionCount = propQry.Count();
+                                                List<object> listSample = propQry.Take( 1 ).ToList().Cast<object>().ToList();
+                                                if ( propCollectionCount > 1 )
+                                                {
+                                                    listSample.Add( $"({propCollectionCount - 1} more...)" );
+                                                }
+
+                                                propValue = listSample;
+                                            }
+                                            catch
+                                            {
+                                                // The Collection might be a database model that isn't an IEntity, so just do it the regular way
+                                                propValue = liquidObject[key];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                propValue = liquidObject[key];
+                            }
+
                             if ( propValue != null )
                             {
                                 result.Add( key, propValue.LiquidizeChildren( levelsDeep, rockContext, entityHistory, parentElement + "." + key ) );
@@ -247,7 +314,7 @@ namespace Rock
                     foreach ( var objAttr in objWithAttrs.Attributes )
                     {
                         var attributeCache = objAttr.Value;
-                        string value = attributeCache.FieldType.Field.FormatValue( null, objWithAttrs.GetAttributeValue( attributeCache.Key ), attributeCache.QualifierValues, false );
+                        string value = attributeCache.FieldType.Field.FormatValue( null, attributeCache.EntityTypeId, objWithAttrs.Id, objWithAttrs.GetAttributeValue( attributeCache.Key ), attributeCache.QualifierValues, false );
                         objAttrs.Add( attributeCache.Key, value.Truncate( 50 ).EncodeHtml() );
                     }
 
@@ -268,7 +335,8 @@ namespace Rock
                 {
                     try
                     {
-                        result.Add( keyValue.Key, keyValue.Value.LiquidizeChildren( levelsDeep, rockContext, entityHistory, keyValue.Key ) );
+                        var parentVariable = ( keyValue.Value?.GetType().GetInterface( "IList" ) != null ) ? keyValue.Key.ToLower().Singularize() : keyValue.Key;
+                        result.Add( keyValue.Key, keyValue.Value?.LiquidizeChildren( levelsDeep, rockContext, entityHistory, parentVariable ) );
                     }
                     catch ( Exception ex )
                     {
@@ -370,12 +438,11 @@ namespace Rock
                         else
                         {
                             // item is a root level object
-
                             string panelId = Guid.NewGuid().ToString();
 
                             sb.Append( "<div class='panel panel-default panel-lavadebug'>" );
 
-                            sb.Append( string.Format( "<div class='panel-heading clearfix collapsed' data-toggle='collapse' data-target='#collapse-{0}'>", panelId ) );
+                            sb.Append( string.Format( "<div class='panel-heading clearfix collapsed' data-toggle='collapse' data-target='#collapse-{0}' onclick='$(\"#collapse-{0}\").collapse(\"toggle\"); event.stopPropagation();'>", panelId ) );
                             sb.Append( string.Format( "<h5 class='panel-title pull-left'>{0}</h5> <div class='pull-right'><i class='fa fa-chevron-up'></i></div>", keyVal.Key.SplitCase() ) );
                             sb.Append( "</div>" );
 
@@ -444,6 +511,27 @@ namespace Rock
         }
 
         /// <summary>
+        /// Uses reflection to figure out the DbContext associated with the entity
+        /// NOTE: the entity needs to be a DynamicProxy
+        /// from https://stackoverflow.com/a/43667414/1755417
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
+        private static DbContext GetDbContextFromEntity( object entity )
+        {
+            FieldInfo entityWrapperField = entity.GetType().GetField( "_entityWrapper" );
+
+            if ( entityWrapperField == null )
+                return null;
+
+            var entityWrapper = entityWrapperField.GetValue( entity );
+            PropertyInfo entityWrapperContextProperty = entityWrapper.GetType().GetProperty( "Context" );
+            var context = ( System.Data.Entity.Core.Objects.ObjectContext ) entityWrapperContextProperty.GetValue( entityWrapper, null );
+
+            return context?.TransactionHandler?.DbContext as DbContext;
+        }
+
+        /// <summary>
         /// Use DotLiquid to resolve any merge codes within the content using the values
         /// in the mergeObjects.
         /// </summary>
@@ -458,13 +546,13 @@ namespace Rock
         }
 
         /// <summary>
-        /// Resolves the merge fields.
+        /// Checks for merge fields and then resolves them.
         /// </summary>
         /// <param name="content">The content.</param>
         /// <param name="mergeObjects">The merge objects.</param>
         /// <param name="currentPersonOverride">The current person override.</param>
         /// <param name="enabledLavaCommands">The enabled lava commands.</param>
-        /// <returns></returns>
+        /// <returns>If lava present returns merged string, if no lava returns original string, if null returns empty string</returns>
         public static string ResolveMergeFields( this string content, IDictionary<string, object> mergeObjects, Person currentPersonOverride, string enabledLavaCommands )
         {
             try
@@ -474,9 +562,15 @@ namespace Rock
                     return content ?? string.Empty;
                 }
 
-                Template template = Template.Parse( content );
-                template.InstanceAssigns.Add( "EnabledCommands", enabledLavaCommands );
-                template.InstanceAssigns.Add( "CurrentPerson", currentPersonOverride );
+                // If there have not been any EnabledLavaCommands explicitely set, then use the global defaults.
+                if ( enabledLavaCommands == null )
+                {
+                    enabledLavaCommands = GlobalAttributesCache.Read().GetValue( "DefaultEnabledLavaCommands" );
+                }
+
+                Template template = GetTemplate( content );
+                template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+                template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
                 return template.Render( Hash.FromDictionary( mergeObjects ) );
             }
             catch ( Exception ex )
@@ -545,8 +639,10 @@ namespace Rock
                     }
                 }
 
-                Template template = Template.Parse( content );
-                template.InstanceAssigns.Add( "EnabledCommands", enabledLavaCommands );
+                Template template = GetTemplate( content );
+                template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+
+                string result;
 
                 if ( encodeStrings )
                 {
@@ -555,13 +651,26 @@ namespace Rock
                     renderParameters.LocalVariables = Hash.FromDictionary( mergeObjects );
                     renderParameters.ValueTypeTransformers = new Dictionary<Type, Func<object, object>>();
                     renderParameters.ValueTypeTransformers[typeof( string )] = EncodeStringTransformer;
-                    return template.Render( renderParameters );
+                    result = template.Render( renderParameters );
                 }
                 else
                 {
-                    return template.Render( Hash.FromDictionary( mergeObjects ) );
+                    result = template.Render( Hash.FromDictionary( mergeObjects ) );
                 }
 
+                if ( throwExceptionOnErrors && template.Errors.Any() )
+                {
+                    if ( template.Errors.Count == 1 )
+                    {
+                        throw template.Errors[0];
+                    }
+                    else
+                    {
+                        throw new AggregateException( template.Errors );
+                    }
+                }
+
+                return result;
             }
             catch ( Exception ex )
             {
@@ -574,6 +683,28 @@ namespace Rock
                     return "Error resolving Lava merge fields: " + ex.Message;
                 }
             }
+        }
+
+        /// <summary>
+        /// Looks for a parsed template in cache (if the content is 100 characters or less).
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <returns></returns>
+        private static Template GetTemplate(string content)
+        {
+            // Do not cache any content over 100 characters in length
+            if ( content.Length > 100 )
+            {
+                return Template.Parse( content );
+            }
+
+            // Get template from cache
+            var template = LavaTemplateCache.Read( content ).Template;
+
+            // Clear any previous errors
+            template.Errors.Clear();
+
+            return template;
         }
 
         /// <summary>
@@ -596,6 +727,11 @@ namespace Rock
         private static Regex hasLavaMergeFields = new Regex( @"(?<=\{).+(?<=\})", RegexOptions.Compiled );
 
         /// <summary>
+        /// Compiled RegEx for detecting if a string has Lava {% %} command fields
+        /// </summary>
+        private static Regex hasLavaCommandFields = new Regex( @"(?<=\{%).+(?<=%\})", RegexOptions.Compiled );
+
+        /// <summary>
         /// Compiled RegEx for detecting if a string uses the Legacy "GlobalAttribute." syntax
         /// </summary>
         private static Regex hasLegacyGlobalAttributeLavaMergeFields = new Regex( @"(?<=\{).+GlobalAttribute.+(?<=\})", RegexOptions.Compiled );
@@ -609,11 +745,36 @@ namespace Rock
         public static bool HasMergeFields( this string content )
         {
             if ( content == null )
+            {
                 return false;
+            }
 
-            // If there's no merge codes, just return the content
-            if (!hasLavaMergeFields.IsMatch( content ))
+            // If there are no lava codes, return false
+            if ( !hasLavaMergeFields.IsMatch( content ) )
+            {
                 return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether the string potentially has lava command {% %} fields in it.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <returns></returns>
+        public static bool HasLavaCommandFields( this string content )
+        {
+            if ( content == null )
+            {
+                return false;
+            }
+
+            // If there are no lava command fields, return false
+            if ( !hasLavaCommandFields.IsMatch( content ) )
+            {
+                return false;
+            }
 
             return true;
         }

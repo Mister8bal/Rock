@@ -71,10 +71,11 @@ namespace Rock.Workflow.Action
                     if ( groupGuid.HasValue )
                     {
                         group = new GroupService( rockContext ).Get( groupGuid.Value );
+
                         if ( group != null )
                         {
                             // use the group's grouptype's default group role if a group role wasn't specified
-                            groupRoleId = group.GroupType.DefaultGroupRoleId;
+                            groupRoleId = GroupTypeCache.Read( group.GroupTypeId ).DefaultGroupRoleId;
                         }
                     }
                 }
@@ -137,7 +138,7 @@ namespace Rock.Workflow.Action
                 groupMember.GroupId = group.Id;
                 groupMember.GroupRoleId = groupRoleId.Value;
                 groupMember.GroupMemberStatus = GroupMemberStatus.Active;
-                if ( groupMember.IsValid )
+                if ( groupMember.IsValidGroupMember( rockContext ) )
                 {
                     groupMemberService.Add( groupMember );
                     rockContext.SaveChanges();

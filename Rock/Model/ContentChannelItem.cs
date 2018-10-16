@@ -32,6 +32,7 @@ namespace Rock.Model
     /// <summary>
     /// 
     /// </summary>
+    [RockDomain( "CMS" )]
     [Table( "ContentChannelItem")]
     [DataContract]
     public partial class ContentChannelItem : Model<ContentChannelItem>, IOrdered, IRockIndexable
@@ -181,6 +182,7 @@ namespace Rock.Model
         /// <value>
         /// The approved by person alias.
         /// </value>
+        [LavaInclude]
         public virtual PersonAlias ApprovedByPersonAlias { get; set; }
 
         /// <summary>
@@ -288,7 +290,7 @@ namespace Rock.Model
             var contentChannelItems = new ContentChannelItemService( rockContext ).Queryable()
                                             .Where( i =>
                                                 i.ContentChannel.IsIndexEnabled
-                                                && (i.ContentChannel.RequiresApproval == false || i.Status == ContentChannelItemStatus.Approved) );
+                                                && (i.ContentChannel.RequiresApproval == false || i.ContentChannel.ContentChannelType.DisableStatus || i.Status == ContentChannelItemStatus.Approved) );
 
             int recordCounter = 0;
 
@@ -319,10 +321,10 @@ namespace Rock.Model
             var itemEntity = new ContentChannelItemService( new RockContext() ).Get( id );
 
             // only index if the content channel is set to be indexed
-            if ( itemEntity.ContentChannel.IsIndexEnabled )
+            if ( itemEntity.ContentChannel != null && itemEntity.ContentChannel.IsIndexEnabled )
             {
                 // ensure it's meant to be indexed
-                if ( itemEntity.ContentChannel.IsIndexEnabled && (itemEntity.ContentChannel.RequiresApproval == false || itemEntity.Status == ContentChannelItemStatus.Approved) )
+                if ( itemEntity.ContentChannel.IsIndexEnabled && (itemEntity.ContentChannel.RequiresApproval == false || itemEntity.ContentChannel.ContentChannelType.DisableStatus || itemEntity.Status == ContentChannelItemStatus.Approved) )
                 {
                     var indexItem = ContentChannelItemIndex.LoadByModel( itemEntity );
                     IndexContainer.IndexDocument( indexItem );
@@ -388,12 +390,28 @@ namespace Rock.Model
         /// <param name="state">The state.</param>
         public override void PreSaveChanges( Data.DbContext dbContext, System.Data.Entity.EntityState state )
         {
+            var channel = this.ContentChannel;
+
             if ( state == System.Data.Entity.EntityState.Deleted )
             {
                 ChildItems.Clear();
                 ParentItems.Clear();
             }
+
+            base.PreSaveChanges( dbContext, state );
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.Title;
+        }
+
         #endregion
     }
 

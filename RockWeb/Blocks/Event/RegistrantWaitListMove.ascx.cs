@@ -128,11 +128,7 @@ namespace RockWeb.Blocks.Event
                             registrant.GroupMemberId = groupMemberId.Value;
                         }
 
-                        // set the registrant to no longer be on the Wait List, and make sure their registration's last reminder sent is now,
-                        // since they'll receive a communication that they've been moved to a full roster from the wait list.
                         registrant.OnWaitList = false;
-
-                        // specifically NOT testing for null Registration, as we should not be here if we have a registrant with no parent Registration object
                         registrant.Registration.LastPaymentReminderDateTime = RockDateTime.Now;
 
                         _rockContext.SaveChanges();
@@ -150,6 +146,9 @@ namespace RockWeb.Blocks.Event
                         tbFromEmail.Text = _template.WaitListTransitionFromEmail.ResolveMergeFields( mergeObjects );
                         ceEmailMessage.Text = _template.WaitListTransitionEmailTemplate;
                         ifEmailPreview.Attributes["srcdoc"] = ceEmailMessage.Text.ResolveMergeFields( mergeObjects );
+
+                        // needed to work in IE
+                        ifEmailPreview.Src = "javascript: window.frameElement.getAttribute('srcdoc');";
                     }
                 }
                 else
@@ -189,6 +188,9 @@ namespace RockWeb.Blocks.Event
                 {
                     Dictionary<string, object> mergeObjects = GetMergeObjects( _firstRegistration );
                     ifEmailPreview.Attributes["srcdoc"] = ceEmailMessage.Text.ResolveMergeFields( mergeObjects );
+
+                    // needed to work in IE
+                    ifEmailPreview.Src = "javascript: window.frameElement.getAttribute('srcdoc');";
                 }
             }
             else
@@ -241,7 +243,6 @@ namespace RockWeb.Blocks.Event
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnSendEmail_Click( object sender, EventArgs e )
         {
-            var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read().GetValue( "PublicApplicationRoot" );
             int sendCount = 0;
 
             foreach ( RepeaterItem repeaterItem in rptRecipients.Items )
@@ -253,15 +254,18 @@ namespace RockWeb.Blocks.Event
                     if ( registrationId.HasValue )
                     {
                         var registration = _registrants.Where( r => r.RegistrationId == registrationId ).Select( r => r.Registration ).FirstOrDefault();
-
                         var mergeObjects = GetMergeObjects( registration );
 
-                        var recipients = new List<string>();
-                        recipients.Add( registration.ConfirmationEmail );
-
-                        string message = ceEmailMessage.Text.ResolveMergeFields( mergeObjects );
-
-                        Email.Send( tbFromEmail.Text, tbFromName.Text, tbFromSubject.Text, recipients, message, appRoot );
+                        var emailMessage = new RockEmailMessage();
+                        emailMessage.AdditionalMergeFields = mergeObjects;
+                        emailMessage.FromEmail = tbFromEmail.Text;
+                        emailMessage.FromName = tbFromName.Text;
+                        emailMessage.Subject = tbFromSubject.Text;
+                        emailMessage.AddRecipient( new RecipientData( registration.ConfirmationEmail, mergeObjects ) );
+                        emailMessage.Message = ceEmailMessage.Text;
+                        emailMessage.AppRoot = ResolveRockUrl( "~/" );
+                        emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
+                        emailMessage.Send();
 
                         sendCount++;
                     }
@@ -319,7 +323,7 @@ namespace RockWeb.Blocks.Event
                     }
                 }
 
-                groupMember.GroupMemberStatus = GroupMemberStatus.Active;
+                groupMember.GroupMemberStatus = _template.GroupMemberStatus;
 
                 _rockContext.SaveChanges();
 

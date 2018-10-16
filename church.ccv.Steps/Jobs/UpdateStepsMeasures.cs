@@ -189,12 +189,12 @@ namespace church.ccv.Steps
                         var mergeObjects = new Dictionary<string, object>();
                         mergeObjects.Add( "SundayDate", sundayDate );
 
+                        var emailMessage = new RockEmailMessage( _warningEmailTemplate );
                         foreach ( var email in emails )
                         {
-                            recipients.Add( new RecipientData( email, mergeObjects ) );
+                            emailMessage.AddRecipient( new RecipientData( email, mergeObjects ) );
                         }
-
-                        Email.Send( _warningEmailTemplate, recipients );
+                        emailMessage.Send();
 
                         message = string.Format( "Could not process {0} due to missing metric values.", sundayDate.ToShortDateString( ) );
                     }

@@ -164,7 +164,7 @@ namespace Rock.Web.UI.Controls
                 _cbIncludeActions.Checked = true;
                 _ceHeaderText.Text = string.Empty;
                 _ceFooterText.Text = string.Empty;
-                _falActions.Value = "Submit^^^Your information has been submitted successfully.^false";
+                _falActions.Value = "Submit^^^Your information has been submitted successfully.";
                 _ddlNotificationSystemEmail.SelectedIndex = 0;
                 _cbAllowNotes.Checked = false;
             }
@@ -253,7 +253,7 @@ namespace Rock.Web.UI.Controls
             _cbIncludeActions = new RockCheckBox();
             _cbIncludeActions.Label = "Include Actions in Email";
             _cbIncludeActions.Text = "Yes";
-            _cbIncludeActions.Help = "Should the email include the option for recipient to select an action directly from within the email? Note: This only applies if none of the the form fields are required.";
+            _cbIncludeActions.Help = "Should the email include the option for recipient to select an action directly from within the email? Note: This only applies if none of the the form fields are required. The workflow will be persisted immediately prior to sending the email.";
             _cbIncludeActions.ID = this.ID + "_cbIncludeActions";
             Controls.Add( _cbIncludeActions );
 

@@ -310,13 +310,10 @@ namespace church.ccv.MobileApp
                     spouseGroupMember = PersonToGroupMember(rockContext, spouse, requestedGroup);
                 }
 
-                // prep the workflow service
-                var workflowTypeService = new WorkflowTypeService(rockContext);
-
                 bool addToGroup = true;
 
                 // First, check to see if an alert re-route workflow should be launched
-                WorkflowType alertRerouteWorkflowType = workflowTypeService.Get(AlertNoteReReouteWorkflowId);
+                WorkflowTypeCache alertRerouteWorkflowType = WorkflowTypeCache.Read(AlertNoteReReouteWorkflowId);
 
                 // do either of the people registering have alert notes?
                 int alertNoteCount = new NoteService(rockContext).Queryable().Where(n => n.EntityId == person.Id && n.IsAlert == true).Count();
@@ -659,12 +656,12 @@ namespace church.ccv.MobileApp
             return statusCode;
         }
 
-        public static void LaunchWorkflow( RockContext rockContext, WorkflowType workflowType, GroupMember groupMember )
+        public static void LaunchWorkflow( RockContext rockContext, WorkflowTypeCache workflowTypeCache, GroupMember groupMember )
         {
             try
             {
                 List<string> workflowErrors;
-                var workflow = Workflow.Activate( workflowType, workflowType.Name );
+                var workflow = Workflow.Activate( workflowTypeCache, workflowTypeCache.Name );
                 new WorkflowService( rockContext ).Process( workflow, groupMember, out workflowErrors );
             }
             catch (Exception ex)

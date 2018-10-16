@@ -77,11 +77,8 @@ namespace Rock.Field.Types
         {
             var eventCalendarPicker = new EventCalendarPicker { ID = id };
 
-            var eventCalendarList = EventCalendarCache.All();
-
-            if ( eventCalendarList.Any() )
+            if ( EventCalendarCache.All().Any() )
             {
-                eventCalendarPicker.EventCalendars = eventCalendarList;
                 return eventCalendarPicker;
             }
 
@@ -285,7 +282,7 @@ namespace Rock.Field.Types
                 }
             }
 
-            return null;
+            return base.AttributeFilterExpression( configurationValues, filterValues, parameterExpression );
         }
 
         #endregion

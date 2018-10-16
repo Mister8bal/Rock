@@ -25,10 +25,6 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI.Controls;
 
-//----
-//CCV CORE
-// 1-31 - JHM - Fixed an issue causing geo fencing to not work.
-//----
 namespace Rock.Reporting.DataFilter.Group
 {
     /// <summary>
@@ -217,7 +213,7 @@ function() {
 
                 var locationPicker = controls[1] as LocationPicker;
                 var selectedLocation = new LocationService( new RockContext() ).Get( selectionValues[1].AsGuid() );
-                locationPicker.CurrentPickerMode = locationPicker.GetBestPickerModeForLocation( selectedLocation );
+                locationPicker.SetBestPickerModeForLocation( selectedLocation );
                 locationPicker.Location = selectedLocation;
                 
                 var numberBox = controls[2] as NumberBox;

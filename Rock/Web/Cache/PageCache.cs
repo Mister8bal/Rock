@@ -306,6 +306,21 @@ namespace Rock.Web.Cache
         }
 
         /// <summary>
+        /// Gets the site identifier of the Page's Layout
+        /// NOTE: This is needed so that Page Attributes qualified by SiteId work
+        /// </summary>
+        /// <value>
+        /// The site identifier.
+        /// </value>
+        public virtual int SiteId
+        {
+            get
+            {
+                return this.Layout?.SiteId ?? 0;
+            }
+        }
+
+        /// <summary>
         /// Gets a List of child <see cref="PageCache" /> objects.
         /// </summary>
         /// <returns></returns>
@@ -354,6 +369,12 @@ namespace Rock.Web.Cache
                         {
                             BlockService blockService = new BlockService( rockContext );
 
+                            // Load Site Blocks (blocks that should be shown on all pages of a site)
+                            var siteBlockIds = blockService
+                                .GetBySite( this.SiteId )
+                                .Select( b => b.Id )
+                                .ToList();
+
                             // Load Layout Blocks
                             var layoutBlockIds = blockService
                                 .GetByLayout( this.LayoutId )
@@ -366,7 +387,8 @@ namespace Rock.Web.Cache
                                 .Select( b => b.Id )
                                 .ToList();
 
-                            blockIds = layoutBlockIds.Union( pageBlockIds ).ToList();
+                            // NOTE: starting from the top of zone, starts with all Site Blocks, then Layout Blocks, then any page specific blocks
+                            blockIds = siteBlockIds.Union(layoutBlockIds).Union( pageBlockIds ).ToList();
                         }
                     }
                 }
@@ -466,6 +488,55 @@ namespace Rock.Web.Cache
                 }
 
                 return bcName;
+            }
+        }
+
+        #endregion
+
+        #region Additional Properties 
+
+        /// <summary>
+        /// Gets the site name 
+        /// NOTE: This is mainly for backwards compatibility for how HtmlContentDetail did Lava for CurrentPage
+        /// </summary>
+        /// <value>
+        /// The site.
+        /// </value>
+        public string Site
+        {
+            get
+            {
+                return this.Layout?.Site?.Name;
+            }
+        }
+
+        /// <summary>
+        /// Gets the site theme.
+        /// NOTE: This is mainly for backwards compatibility for how HtmlContentDetail did Lava for CurrentPage
+        /// </summary>
+        /// <value>
+        /// The site theme.
+        /// </value>
+        public string SiteTheme
+        {
+            get
+            {
+                return this.Layout?.Site?.Theme;
+            }
+        }
+
+        /// <summary>
+        /// Gets the page icon.
+        /// NOTE: This is mainly for backwards compatibility for how HtmlContentDetail did Lava for CurrentPage
+        /// </summary>
+        /// <value>
+        /// The page icon.
+        /// </value>
+        public string PageIcon
+        {
+            get
+            {
+                return this.IconCssClass;
             }
         }
 
@@ -937,6 +1008,25 @@ namespace Rock.Web.Cache
                 {
                     var page = cache[item.Key] as PageCache;
                     if ( page != null && page.LayoutId == layoutId )
+                    {
+                        page.FlushBlocks();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Flushes the block instances for all the pages that use a specific site.
+        /// </summary>
+        public static void FlushSiteBlocks( int siteId )
+        {
+            RockMemoryCache cache = RockMemoryCache.Default;
+            foreach ( var item in cache )
+            {
+                if ( item.Key.StartsWith( "Rock:Page:" ) )
+                {
+                    var page = cache[item.Key] as PageCache;
+                    if ( page != null && page.SiteId == siteId )
                     {
                         page.FlushBlocks();
                     }

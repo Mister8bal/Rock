@@ -1,11 +1,8 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PublicProfileEdit.ascx.cs" Inherits="RockWeb.Blocks.Cms.PublicProfileEdit" %>
 
-<%--CCV CORE --%>
-<%--JHM - Added fix from Spark. Wrapping the entire page in an asp:UpdatePanel to preserve ViewState and fix image editing exceptions.
-<%-- --%>
-
 <asp:UpdatePanel ID="upContent" runat="server">
     <ContentTemplate>
+
         <script>
             $(function () {
                 $(".photo a").fluidbox();
@@ -14,7 +11,7 @@
 
         <div class="panel panel-block">
             <div class="panel-heading">
-                <h1 class="panel-title"><i class="fa fa-user"></i> My Account</h1>
+                <h1 class="panel-title"><i class="fa fa-user"></i>&nbsp;My Account</h1>
             </div>
             <div class="panel-body">
                 <asp:HiddenField ID="hfPersonId" runat="server" />
@@ -145,7 +142,7 @@
                             <br />
                         </ItemTemplate>
                     </asp:Repeater>
-                    <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click" Visible="false"> Add New Family Member</asp:LinkButton>
+                    <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click"> Add New Family Member</asp:LinkButton>
 
                     <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
                 </asp:Panel>
@@ -191,7 +188,7 @@
                             <h4 class="panel-title pull-left">Additional Information</h4>
                         </div>
                         <div class="panel-body">
-                            <asp:PlaceHolder ID="phPersonAttributes" runat="server" EnableViewState="false"></asp:PlaceHolder>
+                            <Rock:DynamicPlaceHolder ID="phPersonAttributes" runat="server" />
                         </div>
                         <hr />
                     </asp:Panel>
@@ -201,7 +198,7 @@
                             <h4 class="panel-title pull-left">Family Information</h4>
                         </div>
                         <div class="panel-body">
-                            <asp:PlaceHolder ID="phFamilyAttributes" runat="server" EnableViewState="false"></asp:PlaceHolder>
+                            <Rock:DynamicPlaceHolder ID="phFamilyAttributes" runat="server" />
                         </div>
                         <hr />
                     </asp:Panel>
@@ -248,6 +245,11 @@
                                     <asp:ListItem Text="No Mass Emails" Value="NoMassEmails" />
                                     <asp:ListItem Text="Do Not Email" Value="DoNotEmail" />
                                 </Rock:RockRadioButtonList>
+                                
+                                <Rock:RockRadioButtonList ID="rblCommunicationPreference" runat="server" RepeatDirection="Horizontal" Label="Communication Preference" >
+                                    <asp:ListItem Text="Email" Value="1" />
+                                    <asp:ListItem Text="SMS" Value="2" />
+                                </Rock:RockRadioButtonList>
                             </div>
                         </div>
                     </div>
@@ -283,8 +285,8 @@
                     </asp:Panel>
 
                     <div class="actions">
-                        <asp:LinkButton ID="btnSave" runat="server" AccessKey="s" Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" />
-                        <asp:LinkButton ID="btnCancel" runat="server" AccessKey="c" Text="Cancel" CssClass="btn btn-link" CausesValidation="false" OnClick="btnCancel_Click" />
+                        <asp:LinkButton ID="btnSave" runat="server" AccessKey="s" ToolTip="Alt+s" Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" />
+                        <asp:LinkButton ID="btnCancel" runat="server" AccessKey="c" ToolTip="Alt+c" Text="Cancel" CssClass="btn btn-link" CausesValidation="false" OnClick="btnCancel_Click" />
                     </div>
 
                 </asp:Panel>

@@ -31,16 +31,12 @@ using Humanizer;
 
 namespace Rock.PersonProfile.Badge
 {
-    // TODO: Update to return actual data
-
     /// <summary>
-    /// FamilyAttendance Badge
+    /// Attending Duration Badge
     /// </summary>
     [Description( "Badge that summarizes how long someone has been attending." )]
     [Export( typeof( BadgeComponent ) )]
     [ExportMetadata( "ComponentName", "Attending Duration" )]
-    
-    
     
     public class AttendingDuration : BadgeComponent
     {
@@ -59,7 +55,7 @@ namespace Rock.PersonProfile.Badge
             DateTime? firstVisit = Person.GetAttributeValue( "FirstVisit" ).AsDateTime();
             if (firstVisit.HasValue)
             {
-                TimeSpan attendanceDuration = RockDateTime.Now - firstVisit.Value;
+                TimeSpan attendanceDuration = DateTime.Now - firstVisit.Value;
 
                 string spanValue = string.Empty;
                 string spanUnit = string.Empty;
@@ -94,11 +90,11 @@ namespace Rock.PersonProfile.Badge
 
                 if (spanValue == "New")
                 {
-                    writer.Write(String.Format( "<div class='badge badge-attendingduration' data-toggle='tooltip' data-original-title='{0} is new this week.'>", Person.NickName.EncodeHtml()));
+                    writer.Write(String.Format( "<div class='badge badge-attendingduration' data-toggle='tooltip' data-original-title='{0} is new this week.'>", Person.NickName));
                 }
                 else
                 {
-                    writer.Write(String.Format( "<div class='badge badge-attendingduration' data-toggle='tooltip' data-original-title='{0} first visited {1} ago.'>", Person.NickName.EncodeHtml(), spanUnit.ToQuantity(spanValue.AsInteger())));
+                    writer.Write(String.Format( "<div class='badge badge-attendingduration' data-toggle='tooltip' data-original-title='{0} first visited {1} ago.'>", Person.NickName, spanUnit.ToQuantity(spanValue.AsInteger())));
                 }
 
                 writer.Write(String.Format("<div class='duration-metric {0}'>", cssClass));

@@ -25,6 +25,7 @@ namespace Rock.Model
     /// <summary>
     /// AnalyticsDimFinancialBatch is a SQL View off of the FinancialBatch table
     /// </summary>
+    [RockDomain( "Reporting" )]
     [Table( "AnalyticsDimFinancialBatch" )]
     [DataContract]
     [HideFromReporting]
@@ -39,7 +40,7 @@ namespace Rock.Model
         /// The batch identifier.
         /// </value>
         public int BatchId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the name of the batch.
         /// </summary>
@@ -113,6 +114,20 @@ namespace Rock.Model
         /// </value>
         [DataMember]
         public decimal ControlAmount { get; set; }
+
+        #endregion
+
+        #region Entity Properties specific to Analytics
+
+        /// <summary>
+        /// Gets or sets the count.
+        /// NOTE: this always has a hardcoded value of 1. It is stored in the table because it is supposed to help do certain types of things in analytics
+        /// </summary>
+        /// <value>
+        /// The count.
+        /// </value>
+        [DataMember]
+        public int Count { get; set; }
 
         #endregion
     }

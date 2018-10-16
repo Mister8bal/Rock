@@ -36,6 +36,7 @@ namespace Rock.Model
     /// Pages are hierarchical, and are used to create the structure of the site.  Each page can have one parent Page and zero or more children pages, and the 
     /// page hierarchy is used to create the SiteMap.
     /// </summary>
+    [RockDomain( "CMS" )]
     [Table( "Page" )]
     [DataContract]
     public partial class Page : Model<Page>, IOrdered
@@ -223,7 +224,7 @@ namespace Rock.Model
         /// </value>
         [Required]
         [DataMember( IsRequired = true )]
-        public bool MenuDisplayChildPages { get; set; }
+        public bool MenuDisplayChildPages { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the Page Name is displayed in the breadcrumb.
@@ -355,6 +356,7 @@ namespace Rock.Model
         /// <value>
         /// The <see cref="Rock.Model.Page"/> entity for the parent Page
         /// </value>
+        [LavaInclude]
         public virtual Page ParentPage { get; set; }
 
         /// <summary>
@@ -380,7 +382,25 @@ namespace Rock.Model
         /// <value>
         /// The <see cref="Rock.Model.Layout"/> entity that the Page is using
         /// </value>
+        [LavaInclude]
         public virtual Layout Layout { get; set; }
+
+        /// <summary>
+        /// Gets the site identifier of the Page's Layout
+        /// NOTE: This is needed so that Page Attributes qualified by SiteId work
+        /// </summary>
+        /// <value>
+        /// The site identifier.
+        /// </value>
+        public virtual int SiteId
+        {
+            get
+            {
+                var layout = Web.Cache.LayoutCache.Read( this.LayoutId );
+                return layout != null ? layout.SiteId : 0;
+            }
+        }
+
         
         /// <summary>
         /// Gets or sets the collection of <see cref="Rock.Model.Block">Blocks</see> that are used on the page.
@@ -479,7 +499,6 @@ namespace Rock.Model
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add( "PageId", this.Id );
-                Rock.Data.DbService.ExecuteCommand( "spCore_PageViewNullPageId", System.Data.CommandType.StoredProcedure, parameters );
 
                 // since routes have a cascade delete relationship (their presave won't get called), delete routes from route table
                 var routes = RouteTable.Routes;
@@ -500,6 +519,8 @@ namespace Rock.Model
                     }
                 }
             }
+
+            base.PreSaveChanges( dbContext, state );
         }
 
         /// <summary>

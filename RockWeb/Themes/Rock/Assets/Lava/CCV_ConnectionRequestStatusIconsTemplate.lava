@@ -1,0 +1,32 @@
+<div class='status-list'>
+    {% if ConnectionRequest.ConnectionStatusId == 1 %}
+        <span class='badge badge-danger js-legend-badge' data-toggle='tooltip' data-original-title='No Contact'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 2 %}
+        <span class='badge badge-warning js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Placement'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 8 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 9 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 10 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+	{% if ConnectionRequest.ConnectionStatusId == 4 %}
+        <span class='badge badge-danger js-legend-badge' data-toggle='tooltip' data-original-title='No Contact'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 3 %}
+        <span class='badge badge-warning js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Placement'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 14 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 16 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+    {% if ConnectionRequest.ConnectionStatusId == 17 %}
+        <span class='badge badge-other js-legend-badge' data-toggle='tooltip' data-original-title='In Progress Other'>&nbsp;</span>
+    {% endif %}
+</div>

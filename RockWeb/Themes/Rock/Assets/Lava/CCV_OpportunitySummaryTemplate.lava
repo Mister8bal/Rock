@@ -1,0 +1,58 @@
+<span class="item-count" title="There are {{ 'active connection' | ToQuantity:OpportunitySummary.TotalRequests }} in this opportunity.">{{ OpportunitySummary.TotalRequests | Format:'#,###,##0' }}</span>
+
+{% comment %} Serving Statuses {% endcomment %}
+{% assign NoContactCount = 0 %}
+{% assign InProgressPlacementCount = 0 %}
+{% assign InProgressOtherCount = 0 %}
+{% assign StarsNoContactCount = 0 %}
+{% assign StarsInProgressPlacementCount = 0 %}
+{% assign StarsInProgressOtherCount = 0 %}
+
+{% for connectionRequest in ConnectionRequests %}
+    {% if connectionRequest.ConnectionState == 'Active' or connectionRequest.ConnectionState == 'Future Follow Up' %}
+        {% if SelectedCampusId == '' or connectionRequest.CampusId == SelectedCampusId %}
+            {% if connectionRequest.ConnectionStatusId == 1 %}
+                {% assign NoContactCount = NoContactCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 2 %}
+                {% assign InProgressPlacementCount = InProgressPlacementCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 8 %}
+                {% assign InProgressOtherCount = InProgressOtherCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 9 %}
+                {% assign InProgressOtherCount = InProgressOtherCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 10 %}
+                {% assign InProgressOtherCount = InProgressOtherCount | Plus:1 %}
+            {% endif %}
+    		{% if connectionRequest.ConnectionStatusId == 4 %}
+                {% assign StarsNoContactCount = StarsNoContactCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 3 %}
+                {% assign StarsInProgressPlacementCount = StarsInProgressPlacementCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 14 %}
+                {% assign StarsInProgressOtherCount = StarsInProgressOtherCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 16 %}
+                {% assign StarsInProgressOtherCount = StarsInProgressOtherCount | Plus:1 %}
+            {% endif %}
+            {% if connectionRequest.ConnectionStatusId == 17 %}
+                {% assign StarsInProgressOtherCount = StarsInProgressOtherCount | Plus:1 %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+<i class='{{ OpportunitySummary.IconCssClass }}'></i>
+<h3>{{ OpportunitySummary.Name }}</h3>
+<div class='status-list'>
+    <span class='badge badge-danger'>{{ NoContactCount | Format:'#,###,###' }}</span>
+    <span class='badge badge-warning'>{{ InProgressPlacementCount | Format:'#,###,###' }}</span>
+    <span class='badge badge-other'>{{ InProgressOtherCount | Format:'#,###,###' }}</span>
+    
+    <span class='badge badge-danger'>{{ StarsNoContactCount | Format:'#,###,###' }}</span>
+    <span class='badge badge-warning'>{{ StarsInProgressPlacementCount | Format:'#,###,###' }}</span>
+    <span class='badge badge-other'>{{ StarsInProgressOtherTotal | Format:'#,###,###' }}</span>
+</div>

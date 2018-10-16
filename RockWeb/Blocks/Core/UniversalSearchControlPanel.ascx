@@ -25,8 +25,10 @@
                 </div>
 
                 <div class="actions">
+                    <!--
                     <asp:LinkButton ID="lbClearIndex" runat="server" CssClass="btn btn-default"><i class="fa fa-refresh"></i> Clear Index</asp:LinkButton>
                     <asp:LinkButton ID="lbBulkLoad" runat="server" CssClass="btn btn-default"><i class="fa fa-download"></i> Bulk Load Entities</asp:LinkButton>
+                    -->
                 </div>
             </div>
         
@@ -88,7 +90,6 @@
                         <Columns>
                             <Rock:RockBoundField DataField="Name" HeaderText="Entity Name" SortExpression="Name" />
                             <Rock:BoolField DataField="IsIndexingEnabled" HeaderText="Indexing Enabled" SortExpression="IsIndexingEnabled" />
-                            <Rock:LinkButtonField CssClass="btn btn-default" HeaderText="Delete All Documents" HeaderStyle-HorizontalAlign="Center" Text="<i class='fa fa-eraser'></i>" OnClick="gClearIndex_Click" />    
                             <Rock:LinkButtonField CssClass="btn btn-default" HeaderText="Bulk Load Documents" HeaderStyle-HorizontalAlign="Center" Text="<i class='fa fa-download'></i>" OnClick="gBulkLoad_Click" /> 
                             <Rock:LinkButtonField CssClass="btn btn-default" HeaderText="Recreate Index" HeaderStyle-HorizontalAlign="Center" Text="<i class='fa fa-refresh'></i>" OnClick="gRefresh_Click" />                 
                         </Columns>

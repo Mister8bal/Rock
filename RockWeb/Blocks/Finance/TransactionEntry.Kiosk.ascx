@@ -35,7 +35,7 @@
                             $('#hfSwipe').val(keyboardBuffer);
                             keyboardBuffer = '';
                             swipeProcessing = true;
-                            __doPostBack('hfSwipe', 'Swipe_Complete');
+                            window.location = "javascript:__doPostBack('hfSwipe', 'Swipe_Complete')";
                         }
                     }
 
@@ -195,7 +195,6 @@
 
             <footer>
                 <div class="container">
-                    <br />
                     <div class="row">
                         <div class="col-md-8">
                             <asp:LinkButton ID="lbGivingUnitSelectBack" runat="server" OnClick="lbGivingUnitSelectBack_Click" CssClass="btn btn-default btn-kiosk">Back</asp:LinkButton>

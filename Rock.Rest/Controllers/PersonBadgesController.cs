@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Data;
 using System;
 using Rock.Web.Cache;
+using Rock.Web.UI.Controls;
 
 namespace Rock.Rest.Controllers
 {
@@ -36,9 +37,10 @@ namespace Rock.Rest.Controllers
     public partial class PersonBadgesController
     {
         /// <summary>
-        /// Gets the attendance summary data for the 24 month attenance badge 
+        /// Gets the attendance summary data for the 24 month attendance badge
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="groupTypeGuid">The group type unique identifier.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -94,9 +96,10 @@ namespace Rock.Rest.Controllers
         }
 
         /// <summary>
-        /// Gets the attendance summary data for the 24 month attenance badge 
+        /// Gets the attendance summary data for the 24 month attendance badge
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="definedValueGuid">The defined value unique identifier.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -148,6 +151,7 @@ namespace Rock.Rest.Controllers
         /// Returns groups that are a specified type and geofence a given person
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="groupTypeGuid">The group type unique identifier.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -179,9 +183,10 @@ namespace Rock.Rest.Controllers
         }
 
         /// <summary>
-        /// Gets the attendance summary data for the 24 month attenance badge 
+        /// Gets the attendance summary data for the 24 month attendance badge
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="weekCount">The week count.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -202,9 +207,10 @@ namespace Rock.Rest.Controllers
         }
 
         /// <summary>
-        /// Gets the attendance summary data for the 24 month attenance badge 
+        /// Gets the attendance summary data for the 24 month attendance badge
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="siteId">The site identifier.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -237,9 +243,10 @@ namespace Rock.Rest.Controllers
         }
 
         /// <summary>
-        /// Gets the attendance summary data for the 24 month attenance badge 
+        /// Gets the attendance summary data for the 24 month attendance badge
         /// </summary>
         /// <param name="personId">The person id.</param>
+        /// <param name="monthCount">The month count.</param>
         /// <returns></returns>
         [Authenticate, Secured]
         [HttpGet]
@@ -269,6 +276,38 @@ namespace Rock.Rest.Controllers
             }
 
             return attendanceSummary.AsQueryable();
+        }
+
+        /// <summary>
+        /// Gets the the number of interactions in a given date range
+        /// </summary>
+        /// <param name="personId">The person id.</param>
+        /// <param name="interactionChannelId">The interaction channel identifier.</param>
+        /// <param name="delimitedDateRange">The delimited date range value.</param>
+        /// <returns></returns>
+        [Authenticate, Secured]
+        [HttpGet]
+        [System.Web.Http.Route( "api/PersonBadges/InteractionsInRange/{personId}/{interactionChannelId}/{delimitedDateRange}" )]
+        public int InteractionsInRange( int personId, int interactionChannelId, string delimitedDateRange )
+        {
+            var interactionQry = new InteractionService( ( Rock.Data.RockContext ) Service.Context ).Queryable()
+                                                .Where( a => a.PersonAlias.PersonId == personId && a.InteractionComponent.ChannelId == interactionChannelId );
+
+            if ( !string.IsNullOrEmpty( delimitedDateRange ) )
+            {
+                var dateRange = SlidingDateRangePicker.CalculateDateRangeFromDelimitedValues( delimitedDateRange );
+                if ( dateRange.Start.HasValue )
+                {
+                    interactionQry = interactionQry.Where( a => a.InteractionDateTime >= dateRange.Start.Value );
+                }
+
+                if ( dateRange.End.HasValue )
+                {
+                    interactionQry = interactionQry.Where( a => a.InteractionDateTime <= dateRange.End.Value );
+                }
+            }
+
+            return interactionQry.Count();
         }
 
         /// <summary>

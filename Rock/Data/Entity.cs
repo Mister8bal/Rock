@@ -24,8 +24,6 @@ using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
 
-using Rock.Model;
-
 namespace Rock.Data
 {
     /// <summary>
@@ -236,6 +234,22 @@ namespace Rock.Data
             private set { }
         }
 
+        /// <summary>
+        /// Gets the entity string value.
+        /// </summary>
+        /// <value>
+        /// The entity string value.
+        /// </value>
+        [NotMapped]
+        [LavaInclude]
+        public virtual string EntityStringValue
+        {
+            get
+            {
+                return this.ToStringSafe();
+            }
+        }
+
         #endregion
 
         #region Static Properties
@@ -281,10 +295,24 @@ namespace Rock.Data
         public virtual Dictionary<string, object> ToDictionary()
         {
             var dictionary = new Dictionary<string, object>();
+            HashSet<string> virtualPropsWhiteList = new HashSet<string>
+            {
+                "Id",
+                "Guid",
+                "ForeignId",
+                "ForeignKey",
+                "ForeignGuid",
+                "Order",
+                "IsActive",
+                "CreatedByPersonAliasId",
+                "CreatedDateTime",
+                "ModifiedByPersonAliasId",
+                "ModifiedDateTime"
+            };
 
             foreach ( var propInfo in this.GetType().GetProperties() )
             {
-                if ( !propInfo.GetGetMethod().IsVirtual || propInfo.Name == "Id" || propInfo.Name == "Guid" || propInfo.Name == "Order" )
+                if ( !propInfo.GetGetMethod().IsVirtual || virtualPropsWhiteList.Contains(propInfo.Name) )
                 {
                     dictionary.Add( propInfo.Name, propInfo.GetValue( this, null ) );
                 }
@@ -532,6 +560,17 @@ namespace Rock.Data
         public static List<T> FromJsonAsList( string json )
         {
             return JsonConvert.DeserializeObject<List<T>>( json ); ;
+        }
+
+        /// <summary>
+        /// Gets the index result template.
+        /// </summary>
+        /// <value>
+        /// The index result template.
+        /// </value>
+        public static string GetIndexResultTemplate()
+        {
+            return Rock.Web.Cache.EntityTypeCache.Read( typeof( T ) ).IndexResultTemplate;
         }
 
         #endregion

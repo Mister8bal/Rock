@@ -23,6 +23,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI.Controls;
 using Rock.Attribute;
+using Rock.Web.UI;
 
 namespace RockWeb.Blocks.Event
 {
@@ -34,7 +35,7 @@ namespace RockWeb.Blocks.Event
     [Description( "Block to display active Registration Instances." )]
 
     [LinkedPage( "Detail Page" )]
-    public partial class RegistrationInstanceActiveList : Rock.Web.UI.RockBlock
+    public partial class RegistrationInstanceActiveList : RockBlock, ICustomGridColumns
     {
 
         #region Base Control Methods
@@ -49,6 +50,12 @@ namespace RockWeb.Blocks.Event
 
             gRegInstances.DataKeyNames = new string[] { "Id" };
             gRegInstances.GridRebind += gRegInstances_GridRebind;
+
+            // hide this block if it determines it's on the event detail page
+            if ( RockPage.PageParameter( "RegistrationTemplateId" ).IsNotNullOrWhitespace() || RockPage.PageParameter( "CategoryId" ).IsNotNullOrWhitespace() )
+            {
+                this.Visible = false;
+            }
         }
 
         /// <summary>
@@ -101,8 +108,8 @@ namespace RockWeb.Blocks.Event
                 RegistrationInstanceService instanceService = new RegistrationInstanceService( rockContext );
                 var qry = instanceService.Queryable()
                     .Where( i =>
-                        i.StartDateTime <= RockDateTime.Now &&
-                        i.EndDateTime > RockDateTime.Now &&
+                        (i.StartDateTime <= RockDateTime.Now || !i.StartDateTime.HasValue) &&
+                        (i.EndDateTime > RockDateTime.Now || !i.EndDateTime.HasValue) &&
                         i.IsActive )
                     .OrderBy( i => i.StartDateTime );
 

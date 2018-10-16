@@ -101,10 +101,17 @@ namespace Rock.Web.UI.Adapters
                         }
                         writer.AddAttribute( "class", cssClass );
                         writer.RenderBeginTag( HtmlTextWriterTag.Div );
+
+                        // use the muted text class on the label if the CBL is disabled
+                        if ( !cbl.Enabled )
+                        {
+                            writer.AddAttribute( "class", "text-muted" );
+                        }
                     }
                     else
                     {
-                        writer.AddAttribute( "class", "checkbox-inline" );
+                        // use the muted text class on the label if the CBL is disabled along with the checkbox-inline class
+                        writer.AddAttribute( "class", ( !cbl.Enabled ) ? "text-muted checkbox-inline" : "checkbox-inline" );
                     }
 
                     writer.RenderBeginTag(HtmlTextWriterTag.Label);
@@ -112,11 +119,17 @@ namespace Rock.Web.UI.Adapters
                     string itemId = string.Format("{0}_{1}", cbl.ClientID, i);
                     writer.AddAttribute("id", itemId);
                     writer.AddAttribute("type", "checkbox");
-                    writer.AddAttribute("name", string.Format("{0}${1}", cbl.UniqueID, i++));
+                    var checkboxInputName = string.Format( "{0}${1}", cbl.UniqueID, i++ );
+                    writer.AddAttribute("name", checkboxInputName);
                     writer.AddAttribute("value", li.Value);
                     if (li.Selected)
                     {
                         writer.AddAttribute("checked", "checked");
+                    }
+
+                    if ( !cbl.Enabled )
+                    {
+                        writer.AddAttribute( "disabled", "" );
                     }
 
                     foreach (var attributeKey in li.Attributes.Keys)
@@ -127,7 +140,9 @@ namespace Rock.Web.UI.Adapters
 
                     if (postBackOption != null)
                     {
-                        writer.AddAttribute(HtmlTextWriterAttribute.Onclick, Page.ClientScript.GetPostBackEventReference(postBackOption, true));
+                        var postBackReference = Page.ClientScript.GetPostBackEventReference( postBackOption, true );
+                        postBackReference = postBackReference.Replace( cbl.UniqueID, checkboxInputName );
+                        writer.AddAttribute(HtmlTextWriterAttribute.Onclick, postBackReference );
                     }
 
                     writer.RenderBeginTag(HtmlTextWriterTag.Input);

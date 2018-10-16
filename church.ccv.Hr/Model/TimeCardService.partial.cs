@@ -56,9 +56,10 @@ namespace church.ccv.Hr.Model
                 mergeFields.Add( "Person", timeCard.PersonAlias.Person );
                 mergeFields.Add( "ApprovedByPerson", rockPage.CurrentPerson );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( timeCard.PersonAlias.Person.Email, mergeFields ) );
-                Email.Send( approvedEmailTemplateGuid.Value, recipients, rockPage.ResolveRockUrl( "~/" ), rockPage.ResolveRockUrl( "~~/" ) );
+                var emailMessage = new RockEmailMessage( approvedEmailTemplateGuid.Value );
+                emailMessage.AddRecipient( new RecipientData( timeCard.PersonAlias.Person.Email, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = true;
+                emailMessage.Send();
             }
 
             return true;
@@ -106,9 +107,10 @@ namespace church.ccv.Hr.Model
                 mergeFields.Add( "Person", timeCard.PersonAlias.Person );
                 mergeFields.Add( "UnApprovedByPerson", rockPage.CurrentPerson );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( timeCard.PersonAlias.Person.Email, mergeFields ) );
-                Email.Send( unapprovedEmailTemplateGuid.Value, recipients, rockPage.ResolveRockUrl( "~/" ), rockPage.ResolveRockUrl( "~~/" ) );
+                var emailMessage = new RockEmailMessage( unapprovedEmailTemplateGuid.Value );
+                emailMessage.AddRecipient( new RecipientData( timeCard.PersonAlias.Person.Email, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = true;
+                emailMessage.Send();
             }
 
             return true;

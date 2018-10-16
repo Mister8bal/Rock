@@ -1,5 +1,4 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="TransactionReport.ascx.cs" Inherits="RockWeb.Blocks.Finance.TransactionReport" %>
-<!-- 05172018 - CFU - Changed grid ID to static for mobile styling -->
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
@@ -31,11 +30,12 @@
                 </asp:Panel>
 
                 <div class="grid">
-                    <Rock:Grid ID="gTransactions" runat="server" ClientIdMode="Static" >
+                    <Rock:Grid ID="gTransactions" runat="server" >
                         <Columns>
                             <Rock:RockBoundField DataField="TransactionDateTime" DataFormatString="{0:d}" HeaderText="Date" />
                             <Rock:RockBoundField DataField="CurrencyType" HeaderText="Currency Type" HtmlEncode="false" />
                             <Rock:RockBoundField DataField="TransactionCode" HeaderText="Transaction Code" HtmlEncode="false" />
+                            <Rock:RockBoundField DataField="ForeignKey" HeaderText="Foreign Key" HtmlEncode="false" />
                             <Rock:RockBoundField DataField="Summary" HeaderText="Summary" HtmlEncode="false" />
                             <Rock:CurrencyField DataField="TotalAmount" HeaderText="Amount" />
                         </Columns>

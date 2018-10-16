@@ -204,9 +204,6 @@ namespace RockWeb.Plugins.church_ccv.CommandCenter
         /// </summary>
         private void SendMessage()
         {
-            var recipients = new List<RecipientData>();
-            var orgFrom = GlobalAttributesCache.Read().GetValue( "OrganizationEmail" );
-
             Guid? commandCenterEmailTemplateGuid = new Guid( "1F88430F-D1B6-4819-BFC1-57E13B4B2098" );
                 
             if ( commandCenterEmailTemplateGuid.HasValue )
@@ -216,8 +213,10 @@ namespace RockWeb.Plugins.church_ccv.CommandCenter
                 mergeFields.Add( "RecordingUrl", tbLink.Text );
                 mergeFields.Add( "RecordingMessage", tbEmailMessage.Text );
 
-                recipients.Add( new RecipientData( tbEmailTo.Text, mergeFields ) );
-                Email.Send( commandCenterEmailTemplateGuid.Value, recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ) );
+                var emailMessage = new RockEmailMessage( commandCenterEmailTemplateGuid.Value );
+                emailMessage.AddRecipient( new RecipientData( tbEmailTo.Text, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
             }
         }
 

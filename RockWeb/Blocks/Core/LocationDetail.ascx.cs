@@ -648,13 +648,16 @@ namespace RockWeb.Blocks.Core
 
             phMaps.Controls.Clear();
             var mapStyleValue = DefinedValueCache.Read( GetAttributeValue( "MapStyle" ) );
+            var googleAPIKey = GlobalAttributesCache.Read().GetValue( "GoogleAPIKey" );
+
             if ( mapStyleValue == null )
             {
                 mapStyleValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.MAP_STYLE_ROCK );
             }
             var googleAPIKey = GlobalAttributesCache.Read().GetValue( "GoogleAPIKey" );
 
-            if ( mapStyleValue != null && string.IsNullOrWhiteSpace( googleAPIKey ) == false )
+
+            if ( mapStyleValue != null && ! string.IsNullOrWhiteSpace( googleAPIKey ) )
             {
                 string mapStyle = mapStyleValue.GetAttributeValue( "StaticMapStyle" );
 

@@ -1,5 +1,11 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="GroupMemberList.ascx.cs" Inherits="RockWeb.Blocks.Groups.GroupMemberList" %>
 
+<script type="text/javascript">
+    Sys.Application.add_load(function () {
+        $('.js-group-member-note').tooltip();
+    });
+</script>
+
 <asp:UpdatePanel ID="upList" runat="server">
     <ContentTemplate>
 
@@ -25,7 +31,7 @@
                         <Rock:ModalAlert ID="mdGridWarning" runat="server" />
 
                         <div class="grid grid-panel">
-                            <Rock:GridFilter ID="rFilter" runat="server" OnDisplayFilterValue="rFilter_DisplayFilterValue">
+                            <Rock:GridFilter ID="rFilter" runat="server" OnDisplayFilterValue="rFilter_DisplayFilterValue" OnClearFilterClick="rFilter_ClearFilterClick">
                                 <Rock:RockTextBox ID="tbFirstName" runat="server" Label="First Name" />
                                 <Rock:RockTextBox ID="tbLastName" runat="server" Label="Last Name" />
                                 <Rock:RockCheckBoxList ID="cblRole" runat="server" Label="Role" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
@@ -48,6 +54,7 @@
                                 <Columns>
                                     <Rock:SelectField></Rock:SelectField>
                                     <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Person.LastName,Person.NickName" HtmlEncode="false" />
+                                    <Rock:DefinedValueField DataField="MaritalStatusValueId" HeaderText="Marital Status" SortExpression="Person.MaritalStatusValue.Value"/>
                                     <Rock:DefinedValueField DataField="ConnectionStatusValueId" HeaderText="Connection Status" SortExpression="Person.ConnectionStatusValue.Value"/>
                                     <Rock:RockTemplateFieldUnselected HeaderText="Registration">
                                         <ItemTemplate>
@@ -59,6 +66,7 @@
                                     <Rock:DateField DataField="DateTimeAdded" HeaderText="Date Added" SortExpression="DateTimeAdded" />
                                     <Rock:DateField DataField="FirstAttended" HeaderText="First Attended" SortExpression="FirstAttended" />
                                     <Rock:DateField DataField="LastAttended" HeaderText="Last Attended" SortExpression="LastAttended" />
+                                    <Rock:RockBoundField DataField="Note" HeaderText="Note" SortExpression="Note" ItemStyle-CssClass="small" />
                                 </Columns>
                             </Rock:Grid>
                         </div>

@@ -32,12 +32,11 @@ namespace church.ccv.MarketingSite.Rest
             var errorRedirectUrl = formData["error-redirect"];
 
             var rockContext = new Rock.Data.RockContext();
-            var workflowTypeService = new WorkflowTypeService( rockContext );
-            var workflowType = workflowTypeService.Get( workflowTypeGuid ?? Guid.Empty );
-
-            if ( workflowType != null )
+            
+            if ( workflowTypeGuid != null )
             {
-                var workflow = Rock.Model.Workflow.Activate( workflowType, "Workflow From REST" );
+                var workflowTypeCache = WorkflowTypeCache.Read( workflowTypeGuid.Value );
+                var workflow = Rock.Model.Workflow.Activate( workflowTypeCache, "Workflow From REST" );
 
                 // set workflow attributes from querystring
                 foreach ( var parm in formData )

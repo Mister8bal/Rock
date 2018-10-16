@@ -1,11 +1,11 @@
 ﻿// <copyright>
 // Copyright by the Spark Development Network
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Rock Community License (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// http://www.rockrms.com/license
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +37,15 @@ namespace Rock.Jobs
     /// </summary>
     [DisallowConcurrentExecution]
 
-    [SiteField("Site", "The site that will be indexed", true, order: 0)]
+    [SiteField( "Site", "The site that will be indexed", true, order: 0 )]
+    [TextField( "Login Id", "The login to impersonate when navigating to secured pages. Leave blank if secured pages should not be indexed.", false, "", "", 1, "LoginId" )]
+    [TextField( "Password", "The password associated with the Login Id.", false, "", "", 2, "Password", true )]
+
     public class IndexRockSite : IJob
     {
         private int _indexedPageCount = 0;
         private Site _site;
-        
+
         /// <summary> 
         /// Empty constructor for job initialization
         /// <para>
@@ -65,26 +68,28 @@ namespace Rock.Jobs
         {
             JobDataMap dataMap = context.JobDetail.JobDataMap;
             var siteId = dataMap.GetString( "Site" ).AsIntegerOrNull();
-            
+            string loginId = dataMap.GetString( "LoginId" );
+            string password = dataMap.GetString( "Password" );
+
             Uri startingUri;
 
             if ( siteId.HasValue )
             {
-                _site = new SiteService( new RockContext()).Get( siteId.Value );
+                _site = new SiteService( new RockContext() ).Get( siteId.Value );
 
                 if ( _site != null )
                 {
                     var startingUrl = _site.IndexStartingLocation;
 
-                    if ( Uri.TryCreate( startingUrl, UriKind.Absolute, out startingUri ) && (startingUri.Scheme == Uri.UriSchemeHttp || startingUri.Scheme == Uri.UriSchemeHttps) )
+                    if ( Uri.TryCreate( startingUrl, UriKind.Absolute, out startingUri ) && ( startingUri.Scheme == Uri.UriSchemeHttp || startingUri.Scheme == Uri.UriSchemeHttps ) )
                     {
                         // ensure that an index is configured for site pages, if not create it
                         IndexContainer.CreateIndex( typeof( SitePageIndex ), false );
 
                         // release the crawler, like the kraken... but not...
-                        var pages = new Crawler().CrawlSite( _site );
+                        var pages = new Crawler().CrawlSite( _site, loginId, password );
 
-                        context.Result = string.Format( "Crawler found {0} pages, {1} pages sent to be indexed.", pages, _indexedPageCount );
+                        context.Result = string.Format( "Crawler indexed {0} pages.", pages, _indexedPageCount );
                     }
                     else
                     {
@@ -101,37 +106,7 @@ namespace Rock.Jobs
                 context.Result = "An invalid site was provided.";
             }
 
-            
-        }
 
-        /// <summary>
-        /// This method will be called each time a page is found by the crawler.
-        /// </summary>
-        /// <param name="page">The page.</param>
-        /// <returns></returns>
-        public bool PageCallback( CrawledPage page)
-        {
-            if ( page.AllowsIndex )
-            {
-                // clean up the page title a bit by removing  the site name off it
-                var pageTitle = page.Title.Substring( 0, (page.Title.IndexOf( '|' ) - 1) ).Trim();
-
-                SitePageIndex sitePage = new SitePageIndex();
-                sitePage.Id = page.Url.MakeInt64HashCode();
-                sitePage.Content = page.Text;
-                sitePage.PageTitle = pageTitle;
-                sitePage.SiteName = _site.Name;
-                sitePage.SiteId = _site.Id;
-                sitePage.Url = page.Url;
-                sitePage.LastIndexedDateTime = RockDateTime.Now;
-
-                IndexContainer.IndexDocument( sitePage );
-
-                _indexedPageCount++;
-                return true;
-            }
-
-            return false;
         }
     }
 }

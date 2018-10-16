@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
@@ -23,11 +39,12 @@ namespace Rock.UniversalSearch.IndexComponents
     /// Elastic Search Index Provider
     /// </summary>
     /// <seealso cref="Rock.UniversalSearch.IndexComponent" />
-    [Description( "Elasticsearch Universal Search Index" )]
+    [Description( "Elasticsearch Universal Search Index (v2.x)" )]
     [Export( typeof( IndexComponent ) )]
-    [ExportMetadata( "ComponentName", "Elasticsearch" )]
+    [ExportMetadata( "ComponentName", "Elasticsearch 2.x" )]
 
     [TextField( "Node URL", "The URL of the ElasticSearch node (http://myserver:9200)", true, key: "NodeUrl" )]
+    [IntegerField("Shard Count", "The number of shards to use for each index. More shards support larger databases, but can make the results less accurate. We recommend using 1 unless your database get's very large (> 50GB).", true, 1)]
     public class Elasticsearch : IndexComponent
     {
         /// <summary>
@@ -50,16 +67,7 @@ namespace Rock.UniversalSearch.IndexComponents
                     ConnectToServer();
                 }
 
-                if ( _client != null )
-                {
-                    var results = _client.ClusterState();
-
-                    if ( results != null )
-                    {
-                        return results.IsValid;
-                    }
-                }
-                return false;
+                return (_client.Ping().IsValid);
             }
         }
 
@@ -100,16 +108,35 @@ namespace Rock.UniversalSearch.IndexComponents
         }
 
         /// <summary>
+        /// Method that is called when attribute values are updated. Components can
+        /// override this to perform any needed setup/validation based on current attribute
+        /// values.
+        /// </summary>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns></returns>
+        public override bool ValidateAttributeValues( out string errorMessage )
+        {
+            // reset the connection when the component settings are changed
+            ConnectToServer();
+
+            return base.ValidateAttributeValues( out errorMessage );
+        }
+
+        /// <summary>
         /// Connects to server.
         /// </summary>
         protected virtual void ConnectToServer()
         {
             if ( !string.IsNullOrWhiteSpace( GetAttributeValue( "NodeUrl" ) ) )
             {
-                var node = new Uri( GetAttributeValue( "NodeUrl" ) );
-                var config = new ConnectionSettings( node );
-                config.DisableDirectStreaming();
-                _client = new ElasticClient( config );
+                try
+                {
+                    var node = new Uri( GetAttributeValue( "NodeUrl" ) );
+                    var config = new ConnectionSettings( node );
+                    config.DisableDirectStreaming();
+                    _client = new ElasticClient( config );
+                }
+                catch {}
             }
         }
 
@@ -199,10 +226,13 @@ namespace Rock.UniversalSearch.IndexComponents
                 // create a new index request
                 var createIndexRequest = new CreateIndexRequest( indexName );
                 createIndexRequest.Mappings = new Mappings();
+                createIndexRequest.Settings = new IndexSettings();
+                createIndexRequest.Settings.NumberOfShards = GetAttributeValue( "ShardCount" ).AsInteger();
 
                 var typeMapping = new TypeMapping();
+                typeMapping.Dynamic = DynamicMapping.Allow;
                 typeMapping.Properties = new Properties();
-
+                
                 createIndexRequest.Mappings.Add( indexName, typeMapping );
 
                 var model = (IndexModelBase)instance;
@@ -217,8 +247,6 @@ namespace Rock.UniversalSearch.IndexComponents
                     if ( indexAttribute.Length > 0 )
                     {
                         var attribute = (RockIndexField)indexAttribute[0];
-
-                        
 
                         var propertyName = Char.ToLowerInvariant( property.Name[0] ) + property.Name.Substring( 1 );
 
@@ -356,6 +384,13 @@ namespace Rock.UniversalSearch.IndexComponents
                         // get entities search model name
                         var entityType = new EntityTypeService( new RockContext() ).Get( entityId );
                         entityTypes.Add( entityType.IndexModelType.Name.ToLower() );
+
+                        // check if this is a person model, if so we need to add two model types one for person and the other for businesses
+                        // wish there was a cleaner way to do this
+                        if ( entityType.Guid == SystemGuid.EntityType.PERSON.AsGuid() )
+                        {
+                            entityTypes.Add( "businessindex" );
+                        }
                     }
 
                     searchDescriptor = searchDescriptor.Type( string.Join( ",", entityTypes ) ); // todo: consider adding indexmodeltype to the entity cache
@@ -372,7 +407,7 @@ namespace Rock.UniversalSearch.IndexComponents
                         }
                         else
                         {
-                            matchQuery &= new MatchQuery { Field = match.Field, Query = match.Value, Boost = match.Boost };
+                            matchQuery &= new MatchQuery { Field = match.Field, Query = match.Value };
                         }
                     }
                 }
@@ -395,8 +430,11 @@ namespace Rock.UniversalSearch.IndexComponents
                             // special logic to support phone search
                             if ( query.IsDigitsOnly() )
                             {
-                                queryContainer |= new QueryStringQuery { Query = "phoneNumbers:*" + query + "*", AnalyzeWildcard = true };
+                                queryContainer |= new QueryStringQuery { Query = "phone:*" + query + "*", AnalyzeWildcard = true };
                             }
+
+                            // add a search for all the words as one single search term
+                            queryContainer |= new QueryStringQuery { Query = query, AnalyzeWildcard = true, PhraseSlop = 0 };
 
                             if ( matchQuery != null )
                             {
@@ -431,6 +469,8 @@ namespace Rock.UniversalSearch.IndexComponents
                         }
                     case SearchType.Wildcard:
                         {
+                            bool enablePhraseSearch = true;
+
                             if ( !string.IsNullOrWhiteSpace( query ) )
                             {
                                 QueryContainer wildcardQuery = null;
@@ -438,27 +478,45 @@ namespace Rock.UniversalSearch.IndexComponents
                                 // break each search term into a separate query and add the * to the end of each
                                 var queryTerms = query.Split( ' ' ).Select( p => p.Trim() ).ToList();
 
-                                foreach ( var queryTerm in queryTerms )
-                                {
-                                    if ( !string.IsNullOrWhiteSpace( queryTerm ) )
-                                    {
-                                        wildcardQuery &= new QueryStringQuery { Query = queryTerm + "*", Analyzer = "whitespace", Rewrite = RewriteMultiTerm.ScoringBoolean }; // without the rewrite all results come back with the score of 1; analyzer of whitespaces says don't fancy parse things like check-in to 'check' and 'in'
-                                    }
-                                }
-
                                 // special logic to support emails
                                 if ( queryTerms.Count == 1 && query.Contains( "@" ) )
                                 {
                                     wildcardQuery |= new QueryStringQuery { Query = "email:*" + query + "*", Analyzer = "whitespace" };
+                                    enablePhraseSearch = false;
                                 }
-
-                                // special logic to support phone search
-                                if ( query.IsDigitsOnly() )
+                                else
                                 {
-                                    wildcardQuery |= new QueryStringQuery { Query = "phoneNumbers:*" + query, Analyzer = "whitespace" };
+                                    foreach ( var queryTerm in queryTerms )
+                                    {
+                                        if ( !string.IsNullOrWhiteSpace( queryTerm ) )
+                                        {
+                                            wildcardQuery &= new QueryStringQuery { Query = queryTerm + "*", Analyzer = "whitespace", Rewrite = RewriteMultiTerm.ScoringBoolean }; // without the rewrite all results come back with the score of 1; analyzer of whitespaces says don't fancy parse things like check-in to 'check' and 'in'
+                                        }
+                                    }
+
+                                    // add special logic to help boost last names
+                                    if (queryTerms.Count > 1 )
+                                    {
+                                        QueryContainer nameQuery = null;
+                                        nameQuery &= new QueryStringQuery { Query = "lastName:" + queryTerms.Last() + "*", Analyzer = "whitespace", Boost = 30 };
+                                        nameQuery &= new QueryStringQuery { Query = "firstName:" + queryTerms.First() + "*", Analyzer = "whitespace" };
+                                        wildcardQuery |= nameQuery;
+                                    }
+
+                                    // special logic to support phone search
+                                    if ( query.IsDigitsOnly() )
+                                    {
+                                        wildcardQuery |= new QueryStringQuery { Query = "phoneNumbers:*" + query, Analyzer = "whitespace" };
+                                    }
                                 }
 
                                 queryContainer &= wildcardQuery;
+                            }
+
+                            // add a search for all the words as one single search term
+                            if ( enablePhraseSearch )
+                            {
+                                queryContainer |= new QueryStringQuery { Query = query, AnalyzeWildcard = true, PhraseSlop = 0 };
                             }
 
                             if ( matchQuery != null )
@@ -477,6 +535,24 @@ namespace Rock.UniversalSearch.IndexComponents
                             }
 
                             searchDescriptor.Query( q => queryContainer );
+
+                            var indexBoost = GlobalAttributesCache.Value( "UniversalSearchIndexBoost" );
+
+                            if ( indexBoost.IsNotNullOrWhitespace() )
+                            {
+                                var boostItems = indexBoost.Split( new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries );
+                                foreach (var boostItem in boostItems )
+                                {
+                                    var boostParms = boostItem.Split( new char[] { '^' } );
+
+                                    if ( boostParms.Length == 2 )
+                                    {
+                                        int boost = 1;
+                                        Int32.TryParse( boostParms[1], out boost );
+                                        searchDescriptor.IndicesBoost( b => b.Add( boostParms[0], boost ) );
+                                    }
+                                }
+                            }
 
                             results = _client.Search<dynamic>( searchDescriptor );
                             break;
@@ -497,7 +573,7 @@ namespace Rock.UniversalSearch.IndexComponents
                             if ( hit.Source != null )
                             {
 
-                                Type indexModelType = Type.GetType( (string)((JObject)hit.Source)["indexModelType"] );
+                                Type indexModelType = Type.GetType( $"{ ((string)((JObject)hit.Source)["indexModelType"])}, { ((string)((JObject)hit.Source)["indexModelAssembly"])}" );
 
                                 if ( indexModelType != null )
                                 {
@@ -556,7 +632,6 @@ namespace Rock.UniversalSearch.IndexComponents
             this.DeleteDocumentByProperty( documentType, "id", id );
         }
 
-
         /// <summary>
         /// Gets the document by identifier.
         /// </summary>
@@ -565,9 +640,20 @@ namespace Rock.UniversalSearch.IndexComponents
         /// <returns></returns>
         public override IndexModelBase GetDocumentById( Type documentType, int id )
         {
+            return GetDocumentById( documentType, id.ToString() );
+        }
+
+        /// <summary>
+        /// Gets the document by identifier.
+        /// </summary>
+        /// <param name="documentType">Type of the document.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public override IndexModelBase GetDocumentById( Type documentType, string id )
+        {
             var indexName = documentType.Name.ToLower();
 
-            var request = new GetRequest( indexName, indexName, id.ToString() ) { };
+            var request = new GetRequest( indexName, indexName, id ) { };
 
             var result = _client.Get<dynamic>( request );
 

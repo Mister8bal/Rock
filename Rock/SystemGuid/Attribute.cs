@@ -24,6 +24,11 @@ namespace Rock.SystemGuid
     public class Attribute
     {
         /// <summary>
+        /// The binaryfiletype filestorage rootpath attribute
+        /// </summary>
+        public const string BINARYFILETYPE_FILESTORAGE_ROOTPATH = "3CAFA34D-9208-439B-A046-CB727FB729DE";
+
+        /// <summary>
         /// The global email link preference
         /// </summary>
         public const string GLOBAL_EMAIL_LINK_PREFERENCE = "F1BECEF9-1047-E89F-4CC8-8F856750E5D0";
@@ -32,6 +37,16 @@ namespace Rock.SystemGuid
         /// The global enabled lava commands
         /// </summary>
         public const string GLOBAL_ENABLED_LAVA_COMMANDS = "933CFB7D-C9E1-BDAE-40AD-231002A91626";
+
+        /// <summary>
+        /// The global enable giving envelope feature
+        /// </summary>
+        public const string GLOBAL_ENABLE_GIVING_ENVELOPE = "805698B0-BED7-4183-8FC6-3BDBF9E49EF1";
+
+        /// <summary>
+        /// The default short link site
+        /// </summary>
+        public const string GLOBAL_DEFAULT_SHORT_LINK_SITE = "DD0E0757-2A01-47BB-A74A-F6E69B0399C8";
 
         /// <summary>
         /// The Facebook link attribute
@@ -53,7 +68,18 @@ namespace Rock.SystemGuid
         /// </summary>
         public const string PERSON_ALLERGY = "DBD192C9-0AA1-46EC-92AB-A3DA8E056D31";
 
+        /// <summary>
+        /// The person attribute for the the person's giving envelope number
+        /// </summary>
+        public const string PERSON_GIVING_ENVELOPE_NUMBER = "76C33FBC-8799-4DF1-B2FE-A6C41AC3DD49";
+
+        /// <summary>
+        /// The family attribute for storing a family's checkin identifiers
+        /// </summary>
+        public const string FAMILY_CHECKIN_IDENTIFIERS = "8F528431-A438-4488-8DC3-CA42E66C1B37";
+
         #region eRA Attributes
+
         /// <summary>
         /// The eRA Currently an eRA attribute
         /// </summary>
@@ -116,6 +142,38 @@ namespace Rock.SystemGuid
         /// Group attribute to store the birthdate range of the group
         /// </summary>
         public const string GROUP_BIRTHDATE_RANGE = "F1A43EAB-D682-403F-A05E-CCFFBF879F32";
+
+        #endregion
+
+        #region Communication List (group) attributes
+
+        /// <summary>
+        /// Group attribute for groups of GroupType CommunicationList to defined additional dataviews that can be used as communication segments
+        /// </summary>
+        public const string GROUP_COMMUNICATION_LIST_SEGMENTS = "73A53BC1-2178-46A1-8413-C7A4DD49F0B4";
+
+        /// <summary>
+        /// Group attribute for groups of GroupType CommunicationList to define category
+        /// </summary>
+        public const string GROUP_COMMUNICATION_LIST_CATEGORY = "E3810936-182E-2585-4F8E-030A0E18B27A";
+
+        #endregion
+
+        #region Communication List (group member) attributes
+
+        /// <summary>
+        /// The groupmember (of a communication list) preferred communication medium
+        /// </summary>
+        public const string GROUPMEMBER_COMMUNICATION_LIST_PREFERRED_COMMUNICATION_MEDIUM = "D7941908-1F65-CC9B-416C-CCFABE4221B9";
+
+        #endregion
+
+        #region Fundraising Attributes
+
+        /// <summary>
+        /// The defined value attribute for storing a fundraising opporunity type's donation button text.
+        /// </summary>
+        public const string DEFINED_VALUE_FUNDRAISING_DONATE_BUTTON_TEXT = "7ACD6580-0E5B-4407-BC8B-1BBBAF443B1E";
 
         #endregion
     }

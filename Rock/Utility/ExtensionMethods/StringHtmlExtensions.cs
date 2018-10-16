@@ -149,6 +149,28 @@ namespace Rock
         }
 
         /// <summary>
+        /// Scrubs the HTML but retains "&lt;br/&gt;",changes "&lt;/p&gt;" to "&lt;br/>&lt;br/&gt;", and "\r\n" to "&lt;br/&gt;".
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns></returns>
+        public static string ScrubHtmlForGridDisplay( this string str )
+        {
+            if ( string.IsNullOrWhiteSpace(str) )
+            {
+                return string.Empty;
+            }
+
+            // Note: \u00A7 is the section symbol, \u00A6 is the broken bar symbol
+            // First convert HTML breaks to a character that can pass through the Sanitizer.
+            str = str.Replace( "<br/>", "\u00A7" ).Replace( "<br />", "\u00A7" );
+            str = str.Replace( "</p>", "\u00A6" );
+
+            // Now sanitize and convert the symbols to breaks
+            str = str.SanitizeHtml().Replace( "\u00A7", "<br/>" ).Replace( "\u00A6", "<br/><br/>" ).Replace( "\r\n", "<br/>" );
+            return str;
+        }
+
+        /// <summary>
         /// Returns true if the given string is a valid email address.
         /// </summary>
         /// <param name="email">The string to validate</param>
@@ -191,6 +213,24 @@ namespace Rock
             settings.RenderSoftLineBreaksAsLineBreaks = renderSoftLineBreaksAsLineBreaks;
 
             return CommonMark.CommonMarkConverter.Convert( markdown, settings );
+        }
+
+        /// <summary>
+        /// Moves the CSS inline using PreMailer.Net, which moves any stylesheets to inline style attributes, for maximum compatibility with E-mail clients
+        /// </summary>
+        /// <param name="html">The HTML.</param>
+        /// <returns></returns>
+        public static string ConvertHtmlStylesToInlineAttributes( this string html )
+        {
+            try
+            {
+                var result = PreMailer.Net.PreMailer.MoveCssInline( html, false, ".ignore" );
+                return result.Html;
+            }
+            catch
+            {
+                return html;
+            }
         }
     }
 }

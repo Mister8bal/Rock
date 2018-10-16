@@ -37,12 +37,22 @@ namespace Rock.Field.Types
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumFieldType{T}"/> class.
         /// </summary>
-        public EnumFieldType()
+        public EnumFieldType() : this( null )
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumFieldType{T}"/> class.
+        /// </summary>
+        public EnumFieldType( T[] includedEnums )
         {
             EnumValues = new Dictionary<int, string>();
-            foreach ( var value in Enum.GetValues( typeof(T) ) )
+            foreach ( var value in Enum.GetValues( typeof( T ) ) )
             {
-                EnumValues.Add( (int)value, value.ToString().SplitCase() );
+                if ( includedEnums == null || includedEnums.Contains( ( T ) value ) )
+                {
+                    EnumValues.Add( ( int ) value, value.ToString().SplitCase() );
+                }
             }
         }
 
@@ -121,8 +131,11 @@ namespace Rock.Field.Types
         /// <returns></returns>
         public override string GetEditValue( Control control, Dictionary<string, ConfigurationValue> configurationValues )
         {
-            if ( control != null && control is ListControl )
-                return ( (ListControl)control ).SelectedValue;
+            var editControl = control as ListControl;
+            if ( editControl != null )
+            {
+                return editControl.SelectedValue;
+            }
 
             return null;
         }
@@ -135,10 +148,10 @@ namespace Rock.Field.Types
         /// <param name="value">The value.</param>
         public override void SetEditValue( Control control, Dictionary<string, ConfigurationValue> configurationValues, string value )
         {
-            if ( value != null )
+            var editControl = control as ListControl;
+            if ( editControl != null )
             {
-                if ( control != null && control is ListControl )
-                    ( (ListControl)control ).SelectedValue = value;
+                editControl.SetValue( value );
             }
         }
 
@@ -177,22 +190,19 @@ namespace Rock.Field.Types
         /// <returns></returns>
         public override Control FilterValueControl( Dictionary<string, ConfigurationValue> configurationValues, string id, bool required, FilterMode filterMode )
         {
-            if ( configurationValues != null && configurationValues.ContainsKey( "values" ) )
+            var cbList = new RockCheckBoxList();
+            cbList.ID = string.Format( "{0}_cbList", id );
+            cbList.AddCssClass( "js-filter-control" );
+            cbList.RepeatDirection = RepeatDirection.Horizontal;
+
+            foreach ( var keyVal in EnumValues )
             {
-                var cbList = new RockCheckBoxList();
-                cbList.ID = string.Format( "{0}_cbList", id );
-                cbList.AddCssClass( "js-filter-control" );
-                cbList.RepeatDirection = RepeatDirection.Horizontal;
+                cbList.Items.Add( new ListItem( keyVal.Value, keyVal.Key.ToString() ) );
+            }
 
-                foreach ( var keyVal in EnumValues )
-                {
-                    cbList.Items.Add( new ListItem( keyVal.Value, keyVal.Key.ToString() ) );
-                }
-
-                if ( cbList.Items.Count > 0 )
-                {
-                    return cbList;
-                }
+            if ( cbList.Items.Count > 0 )
+            {
+                return cbList;
             }
 
             return null;
@@ -378,7 +388,7 @@ namespace Rock.Field.Types
                 }
             }
 
-            return null;
+            return base.AttributeFilterExpression( configurationValues, filterValues, parameterExpression );
         }
 
         #endregion

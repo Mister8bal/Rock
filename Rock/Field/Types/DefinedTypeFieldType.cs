@@ -100,6 +100,7 @@ namespace Rock.Field.Types
         public override Control EditControl( Dictionary<string, ConfigurationValue> configurationValues, string id )
         {
             var editControl = new RockDropDownList { ID = id };
+            editControl.EnhanceForLongLists = true;
             editControl.Items.Add( new ListItem() );
 
             var definedTypes = new DefinedTypeService( new RockContext() ).Queryable().OrderBy( d => d.Name );
@@ -142,10 +143,10 @@ namespace Rock.Field.Types
         /// <param name="value">The value.</param>
         public override void SetEditValue( Control control, Dictionary<string, ConfigurationValue> configurationValues, string value )
         {
-            var picker = control as DropDownList;
-            if ( picker != null )
+            var editControl = control as ListControl;
+            if ( editControl != null )
             {
-                picker.SelectedValue = value.ToUpper();
+                editControl.SetValue( value );
             }
         }
 

@@ -44,6 +44,7 @@ namespace Rock.Jobs
     [IntegerField( "Minimum Index Page Count", "The minimum size in pages that an index must be before it's considered for being re-built. Default value is 100.", false, 100, category: "Advanced", order: 5 )]
     [IntegerField( "Minimum Fragmentation Percentage", "The minimum fragmentation percentage for an index to be considered for re-indexing. If the fragmentation is below is amount nothing will be done. Default value is 10%.", false, 10, category: "Advanced", order: 6 )]
     [IntegerField( "Rebuild Threshold Percentage", "The threshold percentage where a REBUILD will be completed instead of a REORGANIZE. Default value is 30%.", false, 30, category: "Advanced", order: 7 )]
+    [BooleanField( "Use ONLINE Index Rebuild", "Use the ONLINE option when rebuilding indexes. NOTE: This is only supported on SQL Enterprise and Azure SQL Database.", false, category: "Advanced", order: 8 )]
     [DisallowConcurrentExecution]
     public class DatabaseMaintenance : IJob
     {
@@ -78,6 +79,7 @@ namespace Rock.Jobs
             int minimumIndexPageCount = dataMap.GetString( "MinimumIndexPageCount" ).AsInteger();
             int minimunFragmentationPercentage = dataMap.GetString( "MinimumFragmentationPercentage" ).AsInteger();
             int rebuildThresholdPercentage = dataMap.GetString( "RebuildThresholdPercentage" ).AsInteger();
+            bool useONLINEIndexRebuild = dataMap.GetString( "UseONLINEIndexRebuild" ).AsBoolean();
 
             string alertEmail = dataMap.GetString( "AlertEmail" );
 
@@ -108,15 +110,15 @@ namespace Rock.Jobs
                     if ( alertEmail.IsNotNullOrWhitespace() )
                     {
                         var globalAttributes = GlobalAttributesCache.Read();
-                        string globalFrom = globalAttributes.GetValue( "OrganizationEmail" );
                         string emailHeader = globalAttributes.GetValue( "EmailHeader" );
                         string emailFooter = globalAttributes.GetValue( "EmailFooter" );
+                        string messageBody = $"{emailHeader} {errorMessage} <p><small>This message was generated from the Rock Database Maintenance Job</small></p>{emailFooter}";
 
-                        List<string> recipients = alertEmail.Split( ',' ).ToList();
-
-                        string messageBody = $"{emailHeader} {errorMessage} <p><small>This message was generated from the Rock Database Maintenance Job</small></p>s {emailFooter}";
-
-                        Email.Send( globalFrom, "Rock: Database Integrity Check Error", recipients, messageBody );
+                        var emailMessage = new RockEmailMessage();
+                        emailMessage.SetRecipients( alertEmail.Split( ',' ).ToList() );
+                        emailMessage.Subject = "Rock: Database Integrity Check Error";
+                        emailMessage.Message = messageBody;
+                        emailMessage.Send();
                     }
                 }
             }
@@ -130,6 +132,7 @@ namespace Rock.Jobs
                     parms.Add( "@PageCountLimit", minimumIndexPageCount );
                     parms.Add( "@MinFragmentation", minimunFragmentationPercentage );
                     parms.Add( "@MinFragmentationRebuild", rebuildThresholdPercentage );
+                    parms.Add( "@UseONLINEIndexRebuild", useONLINEIndexRebuild );
 
                     stopwatch = Stopwatch.StartNew();
                     DbService.ExecuteCommand( "spDbaRebuildIndexes", System.Data.CommandType.StoredProcedure, parms, commandTimeout );
@@ -141,7 +144,42 @@ namespace Rock.Jobs
                 // update statistics
                 if ( runStatisticsUpdate )
                 {
-                    string statisticsQuery = "EXEC sp_MSForEachtable 'UPDATE STATISTICS ?'";
+                    // derived from http://www.sqlservercentral.com/scripts/Indexing/31823/
+                    // NOTE: Can't use sp_MSForEachtable because it isn't supported on AZURE (and it is undocumented)
+                    // NOTE: Can't use sp_updatestats because it requires membership in the sysadmin fixed server role, or ownership of the database (dbo)
+                    string statisticsQuery = @"
+DECLARE updatestats CURSOR
+FOR
+SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_TYPE = 'BASE TABLE'
+ORDER BY TABLE_NAME
+
+OPEN updatestats
+
+DECLARE @tablename NVARCHAR(max)
+DECLARE @Statement NVARCHAR(max)
+
+FETCH NEXT
+FROM updatestats
+INTO @tablename
+
+WHILE (@@FETCH_STATUS = 0)
+BEGIN
+	PRINT N'UPDATING STATISTICS [' + @tablename + ']'
+	SET @Statement = 'UPDATE STATISTICS [' + @tablename + ']'
+
+	EXEC sp_executesql @Statement
+
+	FETCH NEXT
+	FROM updatestats
+	INTO @tablename
+END
+
+CLOSE updatestats
+
+DEALLOCATE updatestats
+";
 
                     stopwatch = Stopwatch.StartNew();
                     DbService.ExecuteCommand( statisticsQuery, System.Data.CommandType.Text, null, commandTimeout );

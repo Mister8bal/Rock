@@ -108,6 +108,8 @@ namespace RockWeb.Blocks.Security.BackgroundCheck
 
                     rockContext.SaveChanges();
 
+                    BackgroundCheckContainer.Instance.Refresh();
+
                     ShowView( settings );
                 }
             }
@@ -149,6 +151,8 @@ namespace RockWeb.Blocks.Security.BackgroundCheck
                     SetSettingValue( rockContext, settings, "TestMode", cbTestMode.Checked.ToString() );
                     SetSettingValue( rockContext, settings, "Active", cbActive.Checked.ToString() );
                     rockContext.SaveChanges();
+
+                    BackgroundCheckContainer.Instance.Refresh();
 
                     ShowView( settings );
                 }
@@ -413,6 +417,9 @@ namespace RockWeb.Blocks.Security.BackgroundCheck
                     .ToList();
                 lPackages.Text = packages.AsDelimited( "<br/>" );
             }
+
+            nbSSLWarning.Visible = !GetSettingValue( settings, "ReturnURL" ).StartsWith( "https://" );
+            nbSSLWarning.NotificationBoxType = GetSettingValue( settings, "TestMode" ).AsBoolean() ? NotificationBoxType.Warning : NotificationBoxType.Danger;
 
             pnlNew.Visible = false;
             pnlViewDetails.Visible = true;
@@ -680,5 +687,5 @@ namespace RockWeb.Blocks.Security.BackgroundCheck
 
         #endregion
 
-}
+    }
 }

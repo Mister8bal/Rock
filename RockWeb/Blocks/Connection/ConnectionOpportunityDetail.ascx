@@ -83,7 +83,7 @@
                         </div>
 
                         <Rock:PanelWidget ID="wpAttributes" runat="server" Title="Opportunity Attributes">
-                            <asp:PlaceHolder ID="phAttributes" runat="server" EnableViewState="false"></asp:PlaceHolder>
+                            <Rock:DynamicPlaceHolder ID="phAttributes" runat="server" />
                         </Rock:PanelWidget>
 
                         <Rock:PanelWidget ID="wpConnectionOpportunityGroups" runat="server" Title="Placement Groups">
@@ -153,8 +153,8 @@
                         </Rock:PanelWidget>
 
                         <div class="actions">
-                            <asp:LinkButton ID="btnSave" runat="server" AccessKey="s" Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" />
-                            <asp:LinkButton ID="btnCancel" runat="server" AccessKey="c" Text="Cancel" CssClass="btn btn-link" CausesValidation="false" OnClick="btnCancel_Click" />
+                            <asp:LinkButton ID="btnSave" runat="server" AccessKey="s" ToolTip="Alt+s"  Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" />
+                            <asp:LinkButton ID="btnCancel" runat="server" AccessKey="c" ToolTip="Alt+c" Text="Cancel" CssClass="btn btn-link" CausesValidation="false" OnClick="btnCancel_Click" />
                         </div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                     </div>
                     <div class="col-md-6">
                         <Rock:RockDropDownList ID="ddlWorkflowType" runat="server" Label="Workflow Type" DataTextField="Name" DataValueField="Id" 
-                            Required="true" ValidationGroup="WorkflowDetails" />
+                            Required="true" ValidationGroup="WorkflowDetails" EnhanceForLongLists="true" />
                     </div>
                 </div>
 
@@ -208,7 +208,7 @@
             <Content>
                 <asp:ValidationSummary ID="valGroupDetails" runat="server" HeaderText="Please Correct the Following" CssClass="alert alert-danger" ValidationGroup="GroupDetails" />
                 <Rock:NotificationBox ID="nbInvalidGroupType" runat="server" NotificationBoxType="Danger" Visible="false" Heading="Group Type" />
-                <Rock:GroupPicker ID="gpOpportunityGroup" runat="server" Label="Select Group" ValidationGroup="GroupDetails" />
+                <Rock:GroupPicker ID="gpOpportunityGroup" runat="server" Label="Select Group" AllowMultiSelect="true" ValidationGroup="GroupDetails" />
             </Content>
         </Rock:ModalDialog>
 

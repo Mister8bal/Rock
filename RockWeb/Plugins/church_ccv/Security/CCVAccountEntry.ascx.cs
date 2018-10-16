@@ -473,10 +473,10 @@ namespace RockWeb.Plugins.church_ccv.Security
 
                 mergeObjects.Add( "Results", results.ToArray() );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( person.Email, mergeObjects ) );
-
-                Email.Send( GetAttributeValue( "ForgotUsernameTemplate" ).AsGuid(), recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ), false );
+                var emailMessage = new RockEmailMessage( GetAttributeValue( "ForgotUsernameTemplate" ).AsGuid() );
+                emailMessage.AddRecipient( new RecipientData( person.Email, mergeObjects ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
             }
             else
             {
@@ -510,10 +510,10 @@ namespace RockWeb.Plugins.church_ccv.Security
                 mergeObjects.Add( "Person", person );
                 mergeObjects.Add( "User", user );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( person.Email, mergeObjects ) );
-
-                Email.Send( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid(), recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ), false );
+                var emailMessage = new RockEmailMessage( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid() );
+                emailMessage.AddRecipient( new RecipientData( person.Email, mergeObjects ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
 
                 ShowPanel( 4 );
             }
@@ -552,10 +552,10 @@ namespace RockWeb.Plugins.church_ccv.Security
                         mergeObjects.Add( "Person", person );
                         mergeObjects.Add( "User", user );
 
-                        var recipients = new List<RecipientData>();
-                        recipients.Add( new RecipientData( person.Email, mergeObjects ) );
-
-                        Email.Send( GetAttributeValue( "AccountCreatedTemplate" ).AsGuid(), recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ), false );
+                        var emailMessage = new RockEmailMessage( GetAttributeValue( "AccountCreatedTemplate" ).AsGuid() );
+                        emailMessage.AddRecipient( new RecipientData( person.Email, mergeObjects ) );
+                        emailMessage.CreateCommunicationRecord = false;
+                        emailMessage.Send();
                     }
                     catch ( SystemException ex )
                     {
