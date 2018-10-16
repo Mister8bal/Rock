@@ -654,7 +654,6 @@ namespace RockWeb.Blocks.Core
             {
                 mapStyleValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.MAP_STYLE_ROCK );
             }
-            var googleAPIKey = GlobalAttributesCache.Read().GetValue( "GoogleAPIKey" );
 
 
             if ( mapStyleValue != null && ! string.IsNullOrWhiteSpace( googleAPIKey ) )
