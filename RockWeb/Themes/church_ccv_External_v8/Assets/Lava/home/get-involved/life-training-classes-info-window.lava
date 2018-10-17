@@ -14,27 +14,6 @@
   {% endif %}
 {% endfor %}
 
-{% for attribute in Group.AttributeValues %}
-		{% if attribute.Value != empty %}
-				{% if attribute.AttributeName == "Class Description" %}
-						<h5>Description</h5>
-						{{ attribute.ValueFormatted }}
-						<div class="moreInfoContainer">  
-						{% elseif attribute.AttributeName == "Registration Start Date" %}
-							<div class="registrationDiv">  
-								<h5>Registration Starts: </h5>
-								<p>{{ attribute.ValueFormatted }}</p>
-							</div>  
-							<div class="classDurationDiv">     
-						{% elseif attribute.AttributeName == "Class Duration" %}
-								<h5>Class Duration: </h5>
-								<p> {{ attribute.ValueFormatted }}</p>
-						</div>     
-				</div>  
-				{% endif %}
-		{% endif %}
-{% endfor %}
-                        
 {% if LinkedPages.GroupDetailPage and LinkedPages.GroupDetailPage != '' %}
   <a class='btn btn-xs btn-action margin-r-sm' href='{{ LinkedPages.GroupDetailPage }}?GroupId={{ Group.Id }}'>View {{ Group.GroupType.GroupTerm }}</a>
 {% endif %}

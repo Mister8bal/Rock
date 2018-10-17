@@ -66,12 +66,12 @@
                                                 <h5>Registration Starts: </h5>
                                                 <p>{{ attribute.ValueFormatted }}</p>
                                              </div>  
-                                              <div class="classDurationDiv">     
                                             {% elseif attribute.AttributeName == "Class Duration" %}
+                                            <div class="classDurationDiv">     
                                                 <h5>Class Duration: </h5>
                                                <p> {{ attribute.ValueFormatted }}</p>
                                             </div>     
-                                        </div>  
+                                        
                                         {% endif %}
                                     {% endif %}
                                 {% endfor %}

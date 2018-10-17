@@ -22,6 +22,11 @@
     display: none;    
 }
 
+.main-feature {
+    height: 475px;
+    padding-top: 175px;
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px){
     /* .page-background {
@@ -37,6 +42,7 @@
 
     .main-feature {
         padding-top: 60px;
+        height: 240px;
     }
     
     .series-header-image {
