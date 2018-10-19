@@ -79,6 +79,24 @@
 </asp:UpdatePanel>
 
 <style>
+    .control-and-preview-wrapper {
+        display: flex;
+    }
+    
+    .controls {
+        margin-right: 25px;
+    }
+
+    @media screen and (max-width: 1399px) {
+        .control-and-preview-wrapper {
+            flex-direction: column;
+        }
+
+        .controls {
+            margin-bottom: 25px;
+        }
+    }
+
     .campaign-editable-item{
         display: flex;
         justify-content: flex-start;
