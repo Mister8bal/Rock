@@ -95,12 +95,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                             // only take controls that begin with this campaign type
                             if ( control.ID.StartsWith( type ) )
                             {
-                                // if it's the check box, obviousyl check it
+                                // if it's the check box, obviously check it
                                 if ( control as CheckBox != null )
                                 {
                                     ( control as CheckBox ).Checked = true;
                                 }
-                                // make sure it's otherwise a text box, and not the debug button
+                                // make sure it's otherwise a text box, and not the preview button
                                 else if ( control as TextBox != null )
                                 {
                                     // otherwise, see which text box it is and populate it with the right value.
@@ -109,6 +109,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
                                     string value = GetValueForTextBox( textBox.ID, typeValues );
                                     textBox.Text = value;
+                                }
+                                // if it IS the preview button, we know there's preview html for the type, so enable the button
+                                else if ( control as Button != null )
+                                {
+                                    Button previewButton = control as Button;
+                                    previewButton.Enabled = true;
                                 }
                             }
                         }
@@ -284,12 +290,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
                 foreach ( var campaignType in campaignTypes )
                 {
-                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.Desc, campaignType.JsonTemplate, campaignType.DebugUrl );
+                    CreateCampaignTypeTemplateUI( campaignType.Name, campaignType.Desc, campaignType.JsonTemplate, campaignType.DebugUrl, rockContext );
                 }
             }
         }
         
-        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string campaignTypeDesc, string jsonTemplate, string debugUrl )
+        protected void CreateCampaignTypeTemplateUI( string campaignTypeName, string campaignTypeDesc, string jsonTemplate, string previewHtml, RockContext rockContext )
         {
             // Builds the UI representing an individual campaign type
 
@@ -321,38 +327,65 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     
                 
             
-                phContentJson.Controls.Add( new LiteralControl( "<div class=\"panel-body\">" ) );
+                phContentJson.Controls.Add( new LiteralControl( "<div class=\"panel-body control-and-preview-wrapper\">" ) );
 
-                    // now render the fields as editable controls
+                    phContentJson.Controls.Add( new LiteralControl( "<div class=\"controls\">" ) );
+                        // now render the fields as editable controls
                 
-                    // deserialize the json template into a dictionary we can iterate over
-                    var templateItems = JsonConvert.DeserializeObject<Dictionary<string, string>>( jsonTemplate );
+                        // deserialize the json template into a dictionary we can iterate over
+                        var templateItems = JsonConvert.DeserializeObject<Dictionary<string, string>>( jsonTemplate );
             
-                    foreach( KeyValuePair<string, string> templateItem in templateItems )
-                    {
-                        // render a wrapper around the item
-                        phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-template-item\">" ) );
+                        foreach( KeyValuePair<string, string> templateItem in templateItems )
+                        {
+                            // render a wrapper around the item
+                            phContentJson.Controls.Add( new LiteralControl( "<div class=\"campaign-type-template-item\">" ) );
                 
-                            // render the actual editable field for this template item
-                            RockTextBox valueBox = new RockTextBox( );
-                            valueBox.ID = campaignTypeName + "^" + templateItem.Key + "^" + "tbValue";
-                            valueBox.Label = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(templateItem.Key);
-                            valueBox.Enabled = false;
-                            valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
-                            valueBox.ClientIDMode = ClientIDMode.Static;
-                            valueBox.Rows = 3;
-                            valueBox.TextMode = TextBoxMode.MultiLine;
-                            phContentJson.Controls.Add( valueBox );
+                                // render the actual editable field for this template item
+                                RockTextBox valueBox = new RockTextBox( );
+                                valueBox.ID = campaignTypeName + "^" + templateItem.Key + "^" + "tbValue";
+                                valueBox.Label = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(templateItem.Key);
+                                valueBox.Enabled = false;
+                                valueBox.ValidateRequestMode = ValidateRequestMode.Disabled;
+                                valueBox.ClientIDMode = ClientIDMode.Static;
+                                valueBox.Rows = 3;
+                                valueBox.TextMode = TextBoxMode.MultiLine;
+                                phContentJson.Controls.Add( valueBox );
                 
-                        phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-template-item"
-                    }
+                            phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "campaign-type-template-item"
+                        }
+                    
+                        // if previewing is enabled for this campaign type
+                        if ( string.IsNullOrWhiteSpace( previewHtml ) == false )
+                        {
+                            // build a preview button tied to this campaign type
+                            string updatePreviewFunc = "updatePreview_" + campaignTypeName + "();";
 
-                    // if there's an actual campaign and the type has a debug URL set, render a button to take the user to a debug page for this campaign
-                    int? campaignId = PageParameter( "CampaignId" ).AsIntegerOrNull( );
-
-                    if ( campaignId > 0 && string.IsNullOrWhiteSpace( debugUrl ) == false )
+                            Button previewButton = new Button( );
+                            previewButton.ClientIDMode = ClientIDMode.Static;
+                            previewButton.ID = campaignTypeName + "^" + "btnPreview";
+                            previewButton.Enabled = false;
+                            previewButton.Text = "Preview";
+                            previewButton.CssClass = "btn btn-default";
+                            previewButton.OnClientClick = updatePreviewFunc + " return false;";
+                            phContentJson.Controls.Add( previewButton );
+                        }
+                    phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); // end "controls"
+                    
+                    // if there's preview html to use, render it now!
+                    if ( string.IsNullOrWhiteSpace( previewHtml ) == false )
                     {
-                        phContentJson.Controls.Add( new LiteralControl( "<a class=\"btn btn-default\" target=\"_blank\" href=\"" + debugUrl + "?DebugCampaignId=" + campaignId.Value.ToString( ) + "\">Preview" + "</a>" ) );
+                        phContentJson.Controls.Add( new LiteralControl( "<div class=\"preview\">" ) );
+                            LiteralControl previewHtmlControl = new LiteralControl( );
+                            phContentJson.Controls.Add( previewHtmlControl );
+
+                            var htmlContentService = new HtmlContentService( rockContext );
+                            HtmlContent content = new HtmlContent( );
+                            content.Content = previewHtml;
+                            
+                            var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
+                            previewHtmlControl.Text = content.Content.ResolveMergeFields( mergeFields );
+
+                        phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); //end "preview" div wrapper        
                     }
 
                 phContentJson.Controls.Add( new LiteralControl( "</div>" ) ); //end "panel-body" div wrapper        
