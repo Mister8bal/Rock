@@ -1,4 +1,15 @@
-<span class="item-count" title="There are {{ 'active connection' | ToQuantity:OpportunitySummary.TotalRequests }} in this opportunity.">{{ OpportunitySummary.TotalRequests | Format:'#,###,##0' }}</span>
+{% assign currentPersonCampusIdsStr = '' %}
+
+{% assign groupMembers = CurrentPerson | Groups:'76','All' %}
+    {% for gm in groupMembers %}
+        {% assign campusIdStr = gm.Group.CampusId | AsString %}
+        {% if campusIdStr != '0' %}
+            {% assign currentPersonCampusIdsStr = currentPersonCampusIdsStr | Append:campusIdStr %}
+            {% assign currentPersonCampusIdsStr = currentPersonCampusIdsStr | Append:', ' %}
+        {% endif %}
+    {% endfor %}
+    
+{% assign isConnectionAdministrator = CurrentPerson | Group:'1552759', 'All' | Size %}
 
 {% comment %} Serving Statuses {% endcomment %}
 {% assign NoContactCount = 0 %}
@@ -7,10 +18,16 @@
 {% assign StarsNoContactCount = 0 %}
 {% assign StarsInProgressPlacementCount = 0 %}
 {% assign StarsInProgressOtherCount = 0 %}
-
 {% for connectionRequest in ConnectionRequests %}
-    {% if connectionRequest.ConnectionState == 'Active' or connectionRequest.ConnectionState == 'Future Follow Up' %}
-        {% if SelectedCampusId == '' or connectionRequest.CampusId == SelectedCampusId %}
+    {% if connectionRequest.ConnectionState == 'Active' or connectionRequest.ConnectionState == 'FutureFollowUp' %}
+        {% assign connectionReqCampusIdStr = connectionRequest.CampusId | AsString %}
+        {% assign regexFilter = '\b' %}
+        {% assign regexFilter = regexFilter | Append:connectionReqCampusIdStr %}
+        {% assign regexFilter = regexFilter | Append:'\b' %}
+        
+        {% assign campusMatches = currentPersonCampusIdsStr | RegExMatch:regexFilter %}
+        
+        {% if campusMatches == true or isConnectionAdministrator > 0 %}
             {% if connectionRequest.ConnectionStatusId == 1 %}
                 {% assign NoContactCount = NoContactCount | Plus:1 %}
             {% endif %}
