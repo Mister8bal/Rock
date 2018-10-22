@@ -17,13 +17,7 @@
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
-        <div class="row">
-            <div class="pull-right">
-                <div class="form-horizontal label-md margin-r-lg">
-                    <Rock:CampusPicker ID="cpCampusFilterForPage" runat="server" CssClass="input-width-lg" AutoPostBack="true" OnSelectedIndexChanged="cpCampusPickerForPage_SelectedIndexChanged" />
-                </div>
-            </div>
-        </div>
+
         <div class="panel panel-block">
             <div class="panel-heading">
                 <h1 class="panel-title">
@@ -32,24 +26,23 @@
 
                 <div class="pull-right">
                     <asp:Literal ID="lStatusBarContent" runat="server" />
-                    <Rock:Toggle ID="tglMyOpportunities" CssClass="margin-r-sm pull-left" runat="server" OnText="My Requests" ActiveButtonCssClass="btn-info" ButtonSizeCssClass="btn-xs" OffText="All Requests" AutoPostBack="true" OnCheckedChanged="tglMyOpportunities_CheckedChanged" Checked="true" />
-                    <asp:Label ID="lTotal" runat="server" CssClass="margin-r-sm pull-left label label-info" Style="line-height:1.6" />
+                   
+                    <Rock:Toggle ID="tglMyOpportunities" CssClass="margin-r-md pull-left" runat="server" OnText="My Requests" ActiveButtonCssClass="btn-info" ButtonSizeCssClass="btn-xs" OffText="All Requests" AutoPostBack="true" OnCheckedChanged="tglMyOpportunities_CheckedChanged" Checked="true" />
                     <asp:LinkButton ID="lbConnectionTypes" runat="server" CssClass=" pull-right" OnClick="lbConnectionTypes_Click" CausesValidation="false"><i class="fa fa-gear"></i></asp:LinkButton>
                 </div>
 
             </div>
-
             <div class="panel-body">
-                <Rock:NotificationBox ID="nbNoOpportunities" runat="server" NotificationBoxType="Info" Text="There are no current connection requests." />
+                <Rock:NotificationBox ID="nbNoOpportunities" runat="server" NotificationBoxType="Info" Text="There are no current connection requests." Visible="" />
 
                 <asp:Repeater ID="rptConnnectionTypes" runat="server" OnItemDataBound="rptConnnectionTypes_ItemDataBound">
                     <ItemTemplate>
                         <asp:Literal ID="lConnectionTypeName" runat="server" />
-                        <div class="list-as-blocks has-count clearfix">    
+                        <div class="list-as-blocks clearfix">    
                             <ul>
                                 <asp:Repeater ID="rptConnectionOpportunities" runat="server" OnItemCommand="rptConnectionOpportunities_ItemCommand">
                                     <ItemTemplate>
-                                        <li class='<%# SelectedOpportunityId.HasValue && (int)Eval("Id") == SelectedOpportunityId.Value ? "selected" : "" %> block-status <%# (bool)Eval("IsActive") ? "" : "inactive-item"  %>' title='<%# (bool)Eval("IsActive") ? "" : "This opportunity is inactive."  %>' >
+                                        <li class='<%# SelectedOpportunityId.HasValue && (int)Eval("Id") == SelectedOpportunityId.Value ? "active" : "" %> block-status'>
                                             <asp:LinkButton ID="lbConnectionOpportunity" runat="server" CommandArgument='<%# Eval("Id") %>' CommandName="Display">
                                                 <%# this.GetOpportunitySummaryHtml( Container.DataItem as OpportunitySummary ) %>
                                             </asp:LinkButton>
@@ -81,21 +74,16 @@
                             <asp:ListItem Text="Future Follow Up (Past Due)" Value="-2" />
                             <asp:ListItem Text="Connected" Value="3" />
                         </Rock:RockCheckBoxList>
-                        <Rock:CampusesPicker ID="cblCampusGridFilter" runat="server" Label="Campus" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
+                        <Rock:RockCheckBoxList ID="cblCampus" runat="server" Label="Campus" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                         <Rock:RockCheckBoxList ID="cblLastActivity" runat="server" Label="Last Activity" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                     </Rock:GridFilter>
-                    <Rock:Grid ID="gRequests" runat="server" OnRowSelected="gRequests_Edit" CssClass="js-grid-requests" AllowSorting="true" OnRowDataBound="gRequests_RowDataBound" >
+                    <Rock:Grid ID="gRequests" runat="server" OnRowSelected="gRequests_Edit" CssClass="js-grid-requests" AllowSorting="true" >
                         <Columns>
                             <Rock:SelectField />
-                             <Rock:RockLiteralField ID="lStatusIcons" HeaderText="" ItemStyle-HorizontalAlign="Left" />
-                            <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="PersonAlias.Person.LastName,PersonAlias.Person.NickName" />
-                            <Rock:RockBoundField DataField="Campus" HeaderText="Campus" SortExpression="Campus.Name" />
-                            <Rock:RockTemplateField HeaderText="Group" SortExpression="AssignedGroup.Name">
-                                <ItemTemplate>
-                                    <%# FormatGroupName( Eval("Group"), Eval("GroupRole"), Eval("GroupStatus") )  %>
-                                </ItemTemplate>
-                            </Rock:RockTemplateField>
-                            <Rock:RockBoundField DataField="Connector" HeaderText="Connector" SortExpression="Connector.PersonAlias.Person.LastName,Connector.PersonAlias.Person.NickName" />
+                            <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
+                            <Rock:RockBoundField DataField="Campus" HeaderText="Campus" SortExpression="Campus" />
+                            <Rock:RockBoundField DataField="Group" HeaderText="Group" SortExpression="Group" />
+                            <Rock:RockBoundField DataField="Connector" HeaderText="Connector" SortExpression="ConnectorNameSortable" />
                             <Rock:RockBoundField DataField="CreatedDate" HeaderText="Created" SortExpression="CreatedDateSortable" />
                             <Rock:RockBoundField DataField="LastActivity" HeaderText="Last Activity" HtmlEncode="false" SortExpression="LastActivitySortable" />
                             <Rock:RockBoundField DataField="LastActivityNote" HeaderText="Last Activity Note" HtmlEncode="false" />
@@ -104,7 +92,7 @@
                                     <%# Eval("StateLabel") %>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Status" SortExpression="ConnectionStatus.Name">
+                            <asp:TemplateField HeaderText="Status" SortExpression="Status">
                                 <ItemTemplate>
                                     <%# this.GetConnectionStatusHtml( Eval("ConnectionRequest") as Rock.Model.ConnectionRequest) %>
                                 </ItemTemplate>
