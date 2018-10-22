@@ -167,9 +167,10 @@
     display: flex;
 }
 
-.resistrationStartsDiv {
+.registrationDiv {
     padding-left: 30px;
 }
+
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {

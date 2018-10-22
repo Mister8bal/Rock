@@ -21,7 +21,7 @@ Service Times - Grid style (like our-campuses page)
 {% comment %}
 Is this campus coming soon?
 {% endcomment %}
-{% assign isComingSoon = false %}
+
 {% assign numTimes = campus.ServiceTimes | Size %}
 {% if numTimes == 1 %}
     {% assign firstItem = campus.ServiceTimes | First %}
@@ -69,3 +69,4 @@ Is this campus coming soon?
         {% endif %}
     </ul>
 {% endif %} 
+{% assign isComingSoon = false %}
