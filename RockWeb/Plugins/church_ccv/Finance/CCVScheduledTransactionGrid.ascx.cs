@@ -24,7 +24,10 @@ namespace RockWeb.Plugins.church_ccv.Finance
     [DisplayName( "CCV Grid of Scheduled Transactions" )]
     [Category( "CCV > Finance" )]
     [Description( "Grid of a person's scheduled transactions." )]
-    [TextField( "Transaction Label", "The label to use to describe the transaction (e.g. 'Gift', 'Donation', etc.)", true, "Gift", "", 5 )]
+    [TextField( "Transaction Label", "The label to use to describe the transaction (e.g. 'Gift', 'Donation', etc.)", true, "Gift", "", 1 )]
+    [BooleanField( "Redirect", "Should user be redirected to a URL if no schedules exist (used for changing giving platforms)", false, "", 2 )]
+    [TextField( "RedirectUrl", "The path to redirect to", false, "", "", 3 )]
+
 
     #endregion
     public partial class CCVScheduledTransactionGrid : RockBlock
@@ -173,9 +176,39 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 // Bind to grid
                 gScheduledTransactions.DataBind();
 
-                // Hide the GatewayScheduleId - We dont want this showing client side
-                // This is used by the deletion process
-                gScheduledTransactions.Columns[0].Visible = false;
+                if ( gScheduledTransactions.Rows.Count != 0 )
+                {
+                    // Hide the GatewayScheduleId and FinancialGatewayId - We dont want this showing client side
+                    // This is used by the deletion process
+                    gScheduledTransactions.Columns[0].Visible = false;
+                    gScheduledTransactions.Columns[1].Visible = false;
+
+                }
+                else
+                {
+                    // No Schedules exist, redirect to URL if enabled
+                    if ( GetAttributeValue( "Redirect" ).ToLower() == "true" )
+                    {
+                        string url = GetAttributeValue( "RedirectUrl" );
+
+                        if ( url.IsNotNullOrWhitespace() )
+                        {
+                            if ( IsUserAuthorized( Rock.Security.Authorization.ADMINISTRATE ) )
+                            {
+                                // User can administrate, display redirect message with URL but dont redirect
+                                nbMessage.Text = string.Format( "If you did not have Administrate permissions on this block, you would have been redirected to here: <a href='{0}'>{0}</a>.", Page.ResolveUrl( url ) );
+                                nbMessage.Visible = true;
+                            }
+                            else
+                            {
+                                // Redirect user to url
+                                Response.Redirect( url, false );
+                                Context.ApplicationInstance.CompleteRequest();
+                                return;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
