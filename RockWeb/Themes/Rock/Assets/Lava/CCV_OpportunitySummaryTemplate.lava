@@ -19,7 +19,17 @@
 {% assign StarsInProgressPlacementCount = 0 %}
 {% assign StarsInProgressOtherCount = 0 %}
 {% for connectionRequest in ConnectionRequests %}
-    {% if connectionRequest.ConnectionState == 'Active' or connectionRequest.ConnectionState == 'FutureFollowUp' %}
+	
+	{% comment %} Check to see if the connection request is future follow up (past due). {% endcomment %}
+	{% assign followupPastDue = 'false' %}
+	{% if connectionRequest.ConnectionState == 'FutureFollowUp' %}
+		{% assign now = 'Now' | Date:'M/d/yyyy' | AsDate %}
+		{% if connectionRequest.FollowupDate <= now %}
+			{% assign followupPastDue = 'true' %}
+		{% endif %}
+	{% endif %}
+			
+    {% if connectionRequest.ConnectionState == 'Active' or followupPastDue == 'true' %}
 		{% assign connectionReqCampusIdStr = connectionRequest.CampusId | AsString %}
 		{% unless connectionRequest.CampusId > 0 %}{% assign connectionReqCampusIdStr = 'null' %}{% endunless %}{% comment %}This line fixes an issue where requests without a campus would test true.{% endcomment %}	
         {% assign regexFilter = '\b' %}
