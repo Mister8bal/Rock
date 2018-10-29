@@ -14,12 +14,14 @@
             <div class="right">
                 <h3>{{ item.Title }} </h3> 
                 <p>{{ item.Content }} </p> 
-            <h4>Download</h4>
-            <ol class="messages">
-                <li><a class="downloadLink" href="{{ downloadLink }}" download="{{ item.Title }}">{{ item.Title }}</a></li>
-            </ol>
-            <div style="height:7px;font-size:1px;">&nbsp;</div>
-            <a class="btn btn-primary" href="{{ downloadLink }}" download="{{ item.Title }}">Download</a>
+
+            {% if downloadLink != '' %}
+                <ol class="messages">
+                    {% comment %} <li><a class="downloadLink" href="{{ downloadLink }}" download="{{ item.Title }}">{{ item.Title }}</a></li> {% endcomment %}
+                </ol>
+                <div style="height:7px;font-size:1px;">&nbsp;</div>
+                <a class="btn btn-primary" href="{{ downloadLink }}" download="{{ item.Title }}">Download</a>
+            {% endif %}
         </div>
     </div>
 </div>
