@@ -1,0 +1,133 @@
+/* Kids Page */
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-kids.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-kids.jpg");
+    }
+}
+#section-a-bg {
+	background-color: #f3f3f3;
+	padding-bottom:48px;
+}
+#section-b-bg {
+    background-color:#f9f9f9;
+}
+
+#section-c-bg {
+    background-color: #f3f3f3;
+}
+
+#section-d-bg {
+    background-color: #f9f9f9;
+    padding-bottom: 48px;
+} 
+
+#section-e-bg {
+   display: none;
+}
+
+.title img {
+    margin-bottom: 25px;
+}
+
+/* Helps keep the four graphics in a 2x2 layout */
+.img-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.kid-image {
+    padding: 5px;
+}
+
+/*Styling for the bottom icon section with kid bullet points*/
+.kid-features {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+@media screen and (min-width: 768px) {
+    .kid-features {
+        margin-top: unset;
+        margin-bottom: unset;
+        flex-direction: row;
+    }
+}
+
+.kid-point {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.kid-point h4 {
+    text-align: center;
+}
+
+.kid-icon {
+    margin-bottom: 25px;
+}
+.camps-btn-row .btn-primary {
+	min-width: 0;
+}
+.camp-dates {
+    padding: 0 2rem;
+}
+.camp-row {
+    display:flex;
+    justify-content: center;
+}
+.camp {
+    text-align:center;
+    width: 20%;
+    margin-right: 2rem;
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+}
+.camp .btn-default {
+	min-width: 0;
+}
+.camp h3{
+    font-size: 2rem;
+}
+.camps-social {
+	text-align:center;
+	margin-top: 2rem;
+}
+.camps-social small {
+	font-size: 1em;
+}
+.camps-social-icons {
+	width: 225px;
+	margin: 0 auto;
+}
+.social {
+	background-color:#D82E2F;
+	margin: 1rem;
+	border-radius:50%;	
+	display:inline-block;
+}
+.social a {
+	color:white;
+	display:table-cell;
+	vertical-align: middle;
+	text-align:center;
+	text-decoration: none;
+	width: 50px;
+	height:50px;
+	font-size:2em;
+}
+
