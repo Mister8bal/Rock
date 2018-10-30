@@ -1353,11 +1353,11 @@ h2 {
     }
 
     /* hide columns we dont want in mobile */
-    #gScheduledTransactions th:nth-child(2), #gScheduledTransactions th:nth-child(4), #gScheduledTransactions th:nth-child(5), #gScheduledTransactions th:nth-child(6) {
+    #gScheduledTransactions th:nth-child(2), #gScheduledTransactions th:nth-child(4), #gScheduledTransactions th:nth-child(5), #gScheduledTransactions th:nth-child(7) {
         display: none;
     }
 
-    #gScheduledTransactions td:nth-child(2), #gScheduledTransactions td:nth-child(4), #gScheduledTransactions td:nth-child(5), #gScheduledTransactions td:nth-child(6) {
+    #gScheduledTransactions td:nth-child(2), #gScheduledTransactions td:nth-child(4), #gScheduledTransactions td:nth-child(5), #gScheduledTransactions td:nth-child(7) {
         display: none;
     }
 

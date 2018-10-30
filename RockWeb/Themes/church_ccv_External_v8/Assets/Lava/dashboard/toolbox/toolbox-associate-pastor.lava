@@ -19,7 +19,7 @@
 
     {% for item in results %}
         {% if item.Id != null and item.Id != 0 %}
-            {% assign associatePastor = item.id | PersonById %}
+            {% assign associatePastor = item.Id | PersonById %}
             {% assign associatePastorCampus = associatePastor | Campus %}
         {% endif %}
     {% endfor %}
@@ -52,5 +52,3 @@
         </div>
     </div>
 </div>
-
-
