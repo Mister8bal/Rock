@@ -222,9 +222,11 @@ namespace RockWeb.Blocks.Cms
             if ( contentType != null )
             {
                 contentType.Name = tbName.Text;
-                contentType.DateRangeType = (ContentChannelDateType)int.Parse( ddlDateRangeType.SelectedValue );
+                contentType.DateRangeType = ddlDateRangeType.SelectedValue.ConvertToEnum<ContentChannelDateType>();
                 contentType.IncludeTime = cbIncludeTime.Checked;
                 contentType.DisablePriority = cbDisablePriority.Checked;
+                contentType.DisableContentField = cbDisableContentField.Checked;
+                contentType.DisableStatus = cbDisableStatus.Checked;
 
                 if ( !Page.IsValid || !contentType.IsValid )
                 {
@@ -371,22 +373,9 @@ namespace RockWeb.Blocks.Cms
         protected void gChannelAttributes_Delete( object sender, RowEventArgs e )
         {
             Guid attributeGuid = (Guid)e.RowKeyValue;
+            ChannelAttributesState.RemoveEntity( attributeGuid );
 
-            // before removing the attribute, adjust the sort order for all attributes remaining
-            var channelAttribToDelete = ChannelAttributesState.Where( a => a.Guid == attributeGuid ).SingleOrDefault( );
-
-            if( channelAttribToDelete != null )
-            {
-                // get all attribs that are ordered AFTER this one, and adjust their Order
-                var orderedChannelAttribs = ChannelAttributesState.Where( a => a.Order > channelAttribToDelete.Order );
-                foreach ( var channelAttrib in orderedChannelAttribs )
-                {
-                    channelAttrib.Order = channelAttrib.Order - 1;
-                }
-
-                ChannelAttributesState.RemoveEntity( attributeGuid );
-                BindChannelAttributesGrid( );
-            }
+            BindChannelAttributesGrid();
         }
 
         /// <summary>
@@ -540,22 +529,9 @@ namespace RockWeb.Blocks.Cms
         protected void gItemAttributes_Delete( object sender, RowEventArgs e )
         {
             Guid attributeGuid = (Guid)e.RowKeyValue;
+            ItemAttributesState.RemoveEntity( attributeGuid );
 
-            // before removing the item, adjust the sort order for all items remaining
-            var itemAttribToDelete = ItemAttributesState.Where( a => a.Guid == attributeGuid ).SingleOrDefault( );
-
-            if( itemAttribToDelete != null )
-            {
-                // get all items that are ordered AFTER this one, and adjust their Order
-                var orderedItemAttribs = ItemAttributesState.Where( a => a.Order > itemAttribToDelete.Order );
-                foreach ( var itemAttrib in orderedItemAttribs )
-                {
-                    itemAttrib.Order = itemAttrib.Order - 1;
-                }
-
-                ItemAttributesState.RemoveEntity( attributeGuid );
-                BindItemAttributesGrid();
-            }
+            BindItemAttributesGrid();
         }
 
         /// <summary>
@@ -665,8 +641,12 @@ namespace RockWeb.Blocks.Cms
             tbName.Text = contentType.Name;
             ddlDateRangeType.BindToEnum<ContentChannelDateType>();
             ddlDateRangeType.SetValue( (int)contentType.DateRangeType );
+            ddlDateRangeType_SelectedIndexChanged( null, null );
+
             cbIncludeTime.Checked = contentType.IncludeTime;
             cbDisablePriority.Checked = contentType.DisablePriority;
+            cbDisableContentField.Checked = contentType.DisableContentField;
+            cbDisableStatus.Checked = contentType.DisableStatus;
 
             // load attribute data 
             ChannelAttributesState = new List<Attribute>();
@@ -676,16 +656,19 @@ namespace RockWeb.Blocks.Cms
 
             string qualifierValue = contentType.Id.ToString();
 
-            // Load Channel Attribs
             attributeService.GetByEntityTypeId( new ContentChannel().TypeId ).AsQueryable()
                 .Where( a =>
                     a.EntityTypeQualifierColumn.Equals( "ContentChannelTypeId", StringComparison.OrdinalIgnoreCase ) &&
                     a.EntityTypeQualifierValue.Equals( qualifierValue ) )
                 .ToList()
                 .ForEach( a => ChannelAttributesState.Add( a ) );
-            
 
-            // Load Items Attribs
+            // Set order 
+            int newOrder = 0;
+            ChannelAttributesState.ForEach( a => a.Order = newOrder++ );
+
+            BindChannelAttributesGrid();
+
             attributeService.GetByEntityTypeId( new ContentChannelItem().TypeId ).AsQueryable()
                 .Where( a =>
                     a.EntityTypeQualifierColumn.Equals( "ContentChannelTypeId", StringComparison.OrdinalIgnoreCase ) &&
@@ -693,40 +676,11 @@ namespace RockWeb.Blocks.Cms
                 .ToList()
                 .ForEach( a => ItemAttributesState.Add( a ) );
 
+            // Set order 
+            newOrder = 0;
+            ItemAttributesState.ForEach( a => a.Order = newOrder++ );
 
-
-            // JHM 1-17-17: Before binding, update the Order property of each attrib to be contigous.
-            // There was a bug in Delete causing "gaps" in the item order, which broke sorting.
-            // That has been fixed, but doesn't address things edited prior to that fix.
-            // ----
-            // Fix ordering for Channel Attribs
-            var orderedChannelAttribs = ChannelAttributesState
-                                .OrderBy( a => a.Order )
-                                .ThenBy( a => a.Name );
-
-            int channelAttribOrderIndex = 0;
-            foreach( var channelAttrib in orderedChannelAttribs )
-            {
-                channelAttrib.Order = channelAttribOrderIndex;
-
-                channelAttribOrderIndex++;
-            }
-            
-            // Fix ordering for Item Attribs
-            var orderedItemAttribs  = ItemAttributesState
-                                .OrderBy( a => a.Order )
-                                .ThenBy( a => a.Name );
-            int itemAttribOrderIndex = 0;
-            foreach( var itemAttrib in orderedItemAttribs)
-            {
-                itemAttrib.Order = itemAttribOrderIndex;
-
-                itemAttribOrderIndex++;
-            }
-
-            BindChannelAttributesGrid();
             BindItemAttributesGrid();
-            // ----
         }
 
         /// <summary>
@@ -821,5 +775,14 @@ namespace RockWeb.Blocks.Cms
 
         #endregion
 
-}
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the ddlDateRangeType control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void ddlDateRangeType_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            cbIncludeTime.Visible = ddlDateRangeType.SelectedValueAsEnum<ContentChannelDateType>() != ContentChannelDateType.NoDates;
+        }
+    }
 }

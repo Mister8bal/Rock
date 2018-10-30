@@ -16,56 +16,74 @@ namespace church.ccv.PersonalizationEngine.Migrations
         public override void Up()
         {
             Sql( @"
-CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Persona] (
-    [Id] [int] NOT NULL IDENTITY,
-    [Name] [nvarchar](MAX) NOT NULL,
-    [Description] [nvarchar](MAX) NOT NULL,
-    [RockSQL] [nvarchar](MAX) NOT NULL,
+                    CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Persona] (
+                        [Id] [int] NOT NULL IDENTITY,
+                        [Name] [nvarchar](MAX) NOT NULL,
+                        [Description] [nvarchar](MAX) NOT NULL,
+                        [RockSQL] [nvarchar](MAX) NOT NULL,
 
-    [CreatedDateTime] [datetime],
-    [ModifiedDateTime] [datetime],
-    [CreatedByPersonAliasId] [int],
-    [ModifiedByPersonAliasId] [int],
-    [Guid] [uniqueidentifier] NOT NULL,
-    [ForeignId] [int] NULL,
-    [ForeignGuid] [uniqueidentifier] NULL,
-    [ForeignKey] [nvarchar](100) NULL   
-)
+                        [CreatedDateTime] [datetime],
+                        [ModifiedDateTime] [datetime],
+                        [CreatedByPersonAliasId] [int],
+                        [ModifiedByPersonAliasId] [int],
+                        [Guid] [uniqueidentifier] NOT NULL,
+                        [ForeignId] [int] NULL,
+                        [ForeignGuid] [uniqueidentifier] NULL,
+                        [ForeignKey] [nvarchar](100) NULL   
+                    )
 
-CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Campaign] (
-    [Id] [int] NOT NULL IDENTITY,
-    [Name] [nvarchar](MAX) NOT NULL,
-    [Description] [nvarchar](MAX) NOT NULL,
-    [StartDate] [datetime] NOT NULL,
-    [EndDate] [datetime],
-    [Type] [nvarchar](MAX) NOT NULL,
-    [Priority] [int] NOT NULL,
-    [ContentJson] [nvarchar](MAX),
+                    CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_CampaignType] (
+                        [Id] [int] NOT NULL IDENTITY,
+                        [Name] [nvarchar](MAX) NOT NULL,
+                        [Description] [nvarchar](MAX) NOT NULL,
+                        [DebugUrl] [nvarchar](MAX),
+                        [JsonTemplate] [nvarchar](MAX) NOT NULL,
 
-    [CreatedDateTime] [datetime],
-    [ModifiedDateTime] [datetime],
-    [CreatedByPersonAliasId] [int],
-    [ModifiedByPersonAliasId] [int],
-    [Guid] [uniqueidentifier] NOT NULL,
-    [ForeignId] [int] NULL,
-    [ForeignGuid] [uniqueidentifier] NULL,
-    [ForeignKey] [nvarchar](100) NULL   
-)
+                        [CreatedDateTime] [datetime],
+                        [ModifiedDateTime] [datetime],
+                        [CreatedByPersonAliasId] [int],
+                        [ModifiedByPersonAliasId] [int],
+                        [Guid] [uniqueidentifier] NOT NULL,
+                        [ForeignId] [int] NULL,
+                        [ForeignGuid] [uniqueidentifier] NULL,
+                        [ForeignKey] [nvarchar](100) NULL   
+                    )
 
-CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Linkage] (
-    [Id] [int] NOT NULL IDENTITY,
-    [PersonaId] [int] NOT NULL,
-    [CampaignId] [int] NOT NULL,
+                    CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Campaign] (
+                        [Id] [int] NOT NULL IDENTITY,
+                        [IsDefault] [bit] NOT NULL,
+                        [Name] [nvarchar](MAX) NOT NULL,
+                        [Description] [nvarchar](MAX) NOT NULL,
+                        [StartDate] [datetime] NOT NULL,
+                        [EndDate] [datetime],
+                        [Type] [nvarchar](MAX) NOT NULL,
+                        [Priority] [int] NOT NULL,
+                        [ContentJson] [nvarchar](MAX),
 
-    [CreatedDateTime] [datetime],
-    [ModifiedDateTime] [datetime],
-    [CreatedByPersonAliasId] [int],
-    [ModifiedByPersonAliasId] [int],
-    [Guid] [uniqueidentifier] NOT NULL,
-    [ForeignId] [int] NULL,
-    [ForeignGuid] [uniqueidentifier] NULL,
-    [ForeignKey] [nvarchar](100) NULL   
-)" );
+                        [CreatedDateTime] [datetime],
+                        [ModifiedDateTime] [datetime],
+                        [CreatedByPersonAliasId] [int],
+                        [ModifiedByPersonAliasId] [int],
+                        [Guid] [uniqueidentifier] NOT NULL,
+                        [ForeignId] [int] NULL,
+                        [ForeignGuid] [uniqueidentifier] NULL,
+                        [ForeignKey] [nvarchar](100) NULL   
+                    )
+
+                    CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Linkage] (
+                        [Id] [int] NOT NULL IDENTITY,
+                        [PersonaId] [int] NOT NULL,
+                        [CampaignId] [int] NOT NULL,
+
+                        [CreatedDateTime] [datetime],
+                        [ModifiedDateTime] [datetime],
+                        [CreatedByPersonAliasId] [int],
+                        [ModifiedByPersonAliasId] [int],
+                        [Guid] [uniqueidentifier] NOT NULL,
+                        [ForeignId] [int] NULL,
+                        [ForeignGuid] [uniqueidentifier] NULL,
+                        [ForeignKey] [nvarchar](100) NULL   
+                    )" );
         }
 
         /// <summary>
@@ -73,7 +91,11 @@ CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Linkage] (
         /// </summary>
         public override void Down()
         {
-
+            Sql( @"
+                   DROP TABLE [dbo].[_church_ccv_PersonalizationEngine_Persona]
+                   DROP TABLE [dbo].[_church_ccv_PersonalizationEngine_CampaignType]
+                   DROP TABLE [dbo].[_church_ccv_PersonalizationEngine_Campaign]
+                   DROP TABLE [dbo].[_church_ccv_PersonalizationEngine_Linkage]" );
         }
     }
 }

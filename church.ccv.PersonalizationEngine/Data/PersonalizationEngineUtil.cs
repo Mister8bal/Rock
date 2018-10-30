@@ -69,6 +69,34 @@ namespace church.ccv.PersonalizationEngine.Data
                 return personaList;
             }
         }
+
+        public static void DeletePersona( int personaId )
+        {
+            // remove the persona and all linkages
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                PersonalizationEngineService<Persona> peService = new PersonalizationEngineService<Persona>( rockContext );
+
+                var personaObj = peService.Get( personaId );
+                if( personaObj != null )
+                {
+                    // get any linkages attached to it
+                    Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+                    var personaLinkages = linkageService.Queryable( ).Where( l => l.PersonaId == personaObj.Id );
+
+                    if ( personaLinkages != null )
+                    {
+                        // remove the linkages
+                        linkageService.DeleteRange( personaLinkages );
+                    }
+
+                    // and delete the persona
+                    peService.Delete( personaObj );
+
+                    rockContext.SaveChanges( );
+                }
+            }
+        }
         #endregion
 
         #region CAMPAIGN
@@ -127,6 +155,36 @@ namespace church.ccv.PersonalizationEngine.Data
                 return campaigns;
             }
         }
+
+        public static void DeleteCampaign( int campaignId )
+        {
+            // Deletes a campaign and all associated linkages
+
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                // first get the campaign selected
+                Service<Campaign> campaignService = new Service<Campaign>( rockContext );
+
+                Campaign campaignObj = campaignService.Get( campaignId );
+                if ( campaignObj != null )
+                {
+                    // get any linkages attached to it
+                    Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+                    var campaignLinkages = linkageService.Queryable( ).Where( l => l.CampaignId == campaignObj.Id );
+
+                    if ( campaignLinkages != null )
+                    {
+                        // remove the linkages
+                        linkageService.DeleteRange( campaignLinkages );
+                    }
+
+                    // and delete the campaign
+                    campaignService.Delete( campaignObj );
+
+                    rockContext.SaveChanges( );
+                }
+            }
+        }
         #endregion
 
         #region Linkages
@@ -168,6 +226,44 @@ namespace church.ccv.PersonalizationEngine.Data
                                             .ToList( );
 
                 return campaigns;
+            }
+        }
+
+        public static void LinkCampaignToPersona( int campaignId, int personaId )
+        {
+            // ties a campaign and perona together by adding an entry in the Linkage table
+
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                Linkage linkage = new Linkage( )
+                {
+                    CampaignId = campaignId,
+                    PersonaId = personaId
+                };
+
+                Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+                linkageService.Add( linkage );
+
+                rockContext.SaveChanges( );
+            }
+        }
+
+        public static void UnlinkCampaignFromPersona( int campaignId, int personaId )
+        {
+            // deletes the linkage that ties the campaign to the persona
+
+            using ( RockContext rockContext = new RockContext( ) )
+            {
+                Service<Linkage> linkageService = new Service<Linkage>( rockContext );
+
+                // note that we expect there to be exactly ONE linkage with the matching campaign and persona ids
+                Linkage linkage = linkageService.Queryable( ).Where( l => l.CampaignId == campaignId && 
+                                                                          l.PersonaId == personaId )
+                                                             .Single( );
+
+                linkageService.Delete( linkage );
+
+                rockContext.SaveChanges( );
             }
         }
         #endregion

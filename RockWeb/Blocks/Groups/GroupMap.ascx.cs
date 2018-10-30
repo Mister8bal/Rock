@@ -575,7 +575,6 @@ namespace RockWeb.Blocks.Groups
                                 familyItems[statusId].push(items[i]);
                             }}
                         }});
-                        adjustOverlappedMarkers();
                     }});
                 }}
             }} else {{

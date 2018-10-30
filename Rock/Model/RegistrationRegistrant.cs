@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -27,12 +28,14 @@ using Newtonsoft.Json;
 
 using Rock.Data;
 using Rock.Security;
+using Rock.Web.Cache;
 
 namespace Rock.Model
 {
     /// <summary>
     /// 
     /// </summary>
+    [RockDomain( "Event" )]
     [Table( "RegistrationRegistrant" )]
     [DataContract]
     public partial class RegistrationRegistrant : Model<RegistrationRegistrant>
@@ -110,6 +113,7 @@ namespace Rock.Model
         /// <value>
         /// The registration instance.
         /// </value>
+        [LavaInclude]
         public virtual Registration Registration { get; set; }
 
         /// <summary>
@@ -310,6 +314,56 @@ namespace Rock.Model
             discountedCost = discountedCost - ( DiscountApplies ? discountAmount : 0.0M );
 
             return discountedCost > 0.0m ? discountedCost : 0.0m;
+        }
+
+        /// <summary>
+        /// Get a list of all inherited Attributes that should be applied to this entity.
+        /// </summary>
+        /// <returns>A list of all inherited AttributeCache objects.</returns>
+        public override List<AttributeCache> GetInheritedAttributes( Rock.Data.RockContext rockContext )
+        {
+            var entityTypeCache = EntityTypeCache.Read( TypeId );
+
+            // Get the registration
+            var registration = this.Registration;
+            if ( registration == null && this.RegistrationId > 0 )
+            {
+                registration = new RegistrationService( rockContext )
+                    .Queryable().AsNoTracking()
+                    .FirstOrDefault( r => r.Id == this.RegistrationId );
+            }
+            if ( entityTypeCache == null || registration == null )
+            {
+                return null;
+            }
+
+            // Get the instance
+            var registrationInstance = registration.RegistrationInstance;
+            if ( registrationInstance == null && registration.RegistrationInstanceId > 0 )
+            {
+                registrationInstance = new RegistrationInstanceService( rockContext )
+                    .Queryable().AsNoTracking()
+                    .FirstOrDefault( r => r.Id == registration.RegistrationInstanceId );
+            }
+            if ( registrationInstance == null )
+            {
+                return null;
+            }
+
+            // Get all attributes there were defined for instance's template.
+            var attributes = new List<Rock.Web.Cache.AttributeCache>();
+            foreach( var entityAttributes in AttributeCache.GetByEntity( entityTypeCache.Id )
+                .Where( e => 
+                    e.EntityTypeQualifierColumn == "RegistrationTemplateId" &&
+                    e.EntityTypeQualifierValue.AsInteger() == registrationInstance.RegistrationTemplateId ) )
+            {
+                foreach ( int attributeId in entityAttributes.AttributeIds )
+                {
+                    attributes.Add( Rock.Web.Cache.AttributeCache.Read( attributeId ) );
+                }
+            }
+
+            return attributes;
         }
 
         /// <summary>

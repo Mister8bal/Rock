@@ -1,11 +1,11 @@
 ﻿// <copyright>
 // Copyright by the Spark Development Network
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Rock Community License (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// http://www.rockrms.com/license
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,17 +48,21 @@ namespace Rock.Transactions
         public void Execute()
         {
             var entityType = EntityTypeCache.Read( EntityTypeId );
-            Type type = entityType.GetEntityType();
 
-            if ( type != null )
+            if ( entityType != null )
             {
-                object classInstance = Activator.CreateInstance( type, null );
-                MethodInfo indexItemMethod = type.GetMethod( "IndexDocument" );
+                Type type = entityType.GetEntityType();
 
-                if ( classInstance != null && indexItemMethod != null )
+                if ( type != null )
                 {
-                    object[] parameters = { EntityId };
-                    indexItemMethod.Invoke( classInstance, parameters );
+                    object classInstance = Activator.CreateInstance( type, null );
+                    MethodInfo indexItemMethod = type.GetMethod( "IndexDocument" );
+
+                    if ( classInstance != null && indexItemMethod != null )
+                    {
+                        object[] parameters = { EntityId };
+                        indexItemMethod.Invoke( classInstance, parameters );
+                    }
                 }
             }
         }

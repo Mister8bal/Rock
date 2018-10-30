@@ -187,7 +187,7 @@ namespace church.ccv.Actions
         public override System.Linq.Expressions.Expression GetExpression( Rock.Data.RockContext context, System.Linq.Expressions.MemberExpression entityIdProperty, string selection )
         {
             var ahAdultPersonService = new Service<ActionsHistory_Adult_Person>( context );
-            var qryAhAdultPersonQuery = ahAdultPersonService.Queryable();
+            var qryAhAdultPerson = ahAdultPersonService.Queryable();
 
             var personAliasService = new PersonAliasService( context );
             var qryPersonAlias = personAliasService.Queryable();
@@ -195,7 +195,10 @@ namespace church.ccv.Actions
             var personService = new PersonService( context );
             var qryPerson = personService.Queryable();
 
-            var qryHistory = qryAhAdultPersonQuery.Join( qryPersonAlias, ah => ah.PersonAliasId, pa => pa.Id, ( ah, pa ) => new { AH = ah, PersonAlias = pa } ).AsQueryable( );
+            var qryHistory = qryAhAdultPerson.Join( qryPersonAlias, ah => ah.PersonAliasId, pa => pa.Id, ( ah, pa ) => new { AH = ah, PersonAlias = pa } ).AsQueryable( );
+
+            // since the actions history is a snapshot of actions over time, we want to sort by newest date first so that we get their most recent (and current) actions history for the report.
+            qryHistory = qryHistory.OrderByDescending( ah => ah.AH.Date ).AsQueryable( );
             
             string fieldName = selection;
             if ( string.IsNullOrWhiteSpace( fieldName ) )

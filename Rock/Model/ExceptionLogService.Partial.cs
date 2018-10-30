@@ -29,6 +29,15 @@ namespace Rock.Model
     /// </summary>
     public partial class ExceptionLogService 
     {
+        #region Fields
+
+        /// <summary>
+        /// When true, indicates that exceptions should always be logged to file in addition to the database.
+        /// </summary>
+        public static bool AlwaysLogToFile = false;
+
+        #endregion
+
         /// <summary>
         /// Gets a collection of <see cref="Rock.Model.ExceptionLog"/> entities by the Id of their Parent exceptionId. 
         /// Under most instances, only one child <see cref="Rock.Model.ExceptionLog"/> entity will be returned in the collection.
@@ -83,6 +92,25 @@ namespace Rock.Model
         }
 
         /// <summary>
+        /// Logs the exception.
+        /// </summary>
+        /// <param name="ex">The ex.</param>
+        public static void LogException( Exception ex )
+        {
+            // create a new exception model
+            var exceptionLog = new ExceptionLog();
+            exceptionLog.HasInnerException = ex.InnerException != null;
+            exceptionLog.ExceptionType = ex.GetType().ToString();
+            exceptionLog.Description = ex.Message;
+            exceptionLog.Source = ex.Source;
+            exceptionLog.StackTrace = ex.StackTrace;
+
+            // Spin off a new thread to handle the real logging work so the UI is not blocked whilst
+            // recursively writing to the database.
+            Task.Run( () => LogExceptions( ex, exceptionLog, true ) );
+        }
+
+        /// <summary>
         /// Recursively logs exception and any children.
         /// </summary>
         /// <param name="ex">The <see cref="System.Exception"/> to log.</param>
@@ -92,6 +120,8 @@ namespace Rock.Model
         /// </param>
         private static void LogExceptions( Exception ex, ExceptionLog log, bool isParent )
         {
+            bool logToFile = AlwaysLogToFile;
+
             // First, attempt to log exception to the database.
             try
             {
@@ -132,10 +162,14 @@ namespace Rock.Model
                 }
 
                 // Write ExceptionLog record to database.
-                var rockContext = new Rock.Data.RockContext();
-                var exceptionLogService = new ExceptionLogService( rockContext );
-                exceptionLogService.Add( exceptionLog );
-                rockContext.SaveChanges();
+                using ( var rockContext = new Rock.Data.RockContext() )
+                {
+                    var exceptionLogService = new ExceptionLogService( rockContext );
+                    exceptionLogService.Add( exceptionLog );
+
+                    // make sure to call the regular SaveChanges so that CreatedBy,CreatedByDateTime, etc get set properly. If any of the post processing happens to also create an excpetion, we can just log to the exception file instead
+                    rockContext.SaveChanges();
+                }
 
                 // Recurse if inner exception is found
                 if ( exceptionLog.HasInnerException.GetValueOrDefault( false ) )
@@ -143,7 +177,7 @@ namespace Rock.Model
                     LogExceptions( ex.InnerException, exceptionLog, false );
                 }
 
-                if (ex is AggregateException)
+                if ( ex is AggregateException )
                 {
                     // if an AggregateException occurs, log the exceptions individually
                     var aggregateException = ( ex as AggregateException );
@@ -152,10 +186,16 @@ namespace Rock.Model
                         LogExceptions( innerException, exceptionLog, false );
                     }
                 }
+
             }
             catch ( Exception )
             {
                 // If logging the exception fails, write the exceptions to a file
+                logToFile = true;
+            }
+
+            if ( logToFile )
+            {
                 try
                 {
                     string directory = AppDomain.CurrentDomain.BaseDirectory;
@@ -170,7 +210,7 @@ namespace Rock.Model
                     string when = RockDateTime.Now.ToString();
                     while ( ex != null )
                     {
-                        File.AppendAllText( filePath, string.Format( "{0},{1},\"{2}\"\r\n", when, ex.GetType(), ex.Message ) );
+                        File.AppendAllText( filePath, string.Format( "{0},{1},\"{2}\",\"{3}\"\r\n", when, ex.GetType(), ex.Message, ex.StackTrace ) );
                         ex = ex.InnerException;
                     }
                 }
@@ -285,12 +325,25 @@ namespace Rock.Model
                 if ( formList.Count > 0 )
                 {
                     formItems.Append( "<table class=\"form-items exception-table\">" );
-
                     foreach ( string formItem in formList )
                     {
-                        formItems.Append( "<tr><td><b>" + formItem + "</b></td><td>" + formList[formItem].EncodeHtml() + "</td></tr>" );
+                        if ( formItem.IsNotNullOrWhitespace() )
+                        {
+                            string formValue = formList[formItem].EncodeHtml();
+                            string lc = formItem.ToLower();
+                            if ( lc.Contains( "nolog" ) ||
+                                lc.Contains( "creditcard" ) ||
+                                lc.Contains( "cc-number" ) ||
+                                lc.Contains( "cvv" ) ||
+                                lc.Contains( "ssn" ) ||
+                                lc.Contains( "accountnumber" ) ||
+                                lc.Contains( "account-number" ) )
+                            {
+                                formValue = "***obfuscated***";
+                            }
+                            formItems.Append( "<tr><td><b>" + formItem + "</b></td><td>" + formValue + "</td></tr>" );
+                        }
                     }
-
                     formItems.Append( "</table>" );
                 }
 

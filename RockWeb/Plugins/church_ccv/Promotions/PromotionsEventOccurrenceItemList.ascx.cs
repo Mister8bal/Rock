@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 
 using Rock;
 using Rock.Attribute;
+using Rock.Communication;
 using Rock.Data;
 using Rock.Model;
 using Rock.Security;
@@ -189,13 +190,10 @@ namespace RockWeb.Plugins.church_ccv.Promotions
                         SystemEmailService emailService = new SystemEmailService( rockContext );
                         SystemEmail reassignEmail = emailService.Get( eventChangedEmailTemplateGuid.Value );
 
-                        // build a recipient list using the "To" from the system email
-                        var recipients = new List<Rock.Communication.RecipientData>();
-
-                        // add person and the mergeObjects (same mergeobjects as receipt)
-                        recipients.Add( new Rock.Communication.RecipientData( reassignEmail.To, mergeFields ) );
-
-                        Rock.Communication.Email.Send( eventChangedEmailTemplateGuid.Value, recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ) );
+                        var emailMessage = new RockEmailMessage( eventChangedEmailTemplateGuid.Value );
+                        emailMessage.AddRecipient( new RecipientData( reassignEmail.To, mergeFields ) );
+                        emailMessage.CreateCommunicationRecord = false;
+                        emailMessage.Send();
                     }
                 }
             }

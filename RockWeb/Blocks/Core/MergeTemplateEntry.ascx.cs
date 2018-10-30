@@ -202,11 +202,8 @@ namespace RockWeb.Blocks.Core
                     }
                 }
 
-                var uri = new UriBuilder( outputBinaryFileDoc.Url );
-                var qry = System.Web.HttpUtility.ParseQueryString( uri.Query );
-                qry["attachment"] = true.ToTrueFalse();
-                uri.Query = qry.ToString();
-                Response.Redirect( uri.ToString(), false );
+                string getFileUrl = string.Format( "{0}?Guid={1}&attachment=true", ResolveRockUrl( "~/GetFile.ashx" ), outputBinaryFileDoc.Guid );
+                Response.Redirect( getFileUrl, false );
                 Context.ApplicationInstance.CompleteRequest();
             }
             catch ( Exception ex )
@@ -284,7 +281,7 @@ namespace RockWeb.Blocks.Core
                     }
 
                     Guid familyGroupType = Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY.AsGuid();
-                    var qryFamilyGroupMembers = new GroupMemberService( rockContext ).Queryable()
+                    var qryFamilyGroupMembers = new GroupMemberService( rockContext ).Queryable( "GroupRole,Person" ).AsNoTracking()
                         .Where( a => a.Group.GroupType.Guid == familyGroupType )
                         .Where( a => qryPersons.Any( aa => aa.Id == a.PersonId ) );
 
@@ -297,7 +294,17 @@ namespace RockWeb.Blocks.Core
                         .Select( x => new
                         {
                             GroupId = x.Key,
-                            Persons = x.Select( xx => xx.Person ).Distinct()
+                            // Order People to match ordering in the GroupMembers.ascx block.
+                            Persons =
+                                    // Adult Male 
+                                    x.Where( xx => xx.GroupMember.GroupRole.Guid.Equals( new Guid( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT ) ) &&
+                                    xx.GroupMember.Person.Gender == Gender.Male ).OrderByDescending( xx => xx.GroupMember.Person.BirthDate ).Select( xx => xx.Person )
+                                    // Adult Female
+                                    .Concat( x.Where( xx => xx.GroupMember.GroupRole.Guid.Equals( new Guid( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT ) ) &&
+                                    xx.GroupMember.Person.Gender != Gender.Male ).OrderByDescending( xx => xx.GroupMember.Person.BirthDate ).Select( xx => xx.Person ) )
+                                    // non-adults
+                                    .Concat( x.Where( xx => !xx.GroupMember.GroupRole.Guid.Equals( new Guid( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT ) ) )
+                                    .OrderByDescending( xx => xx.GroupMember.Person.BirthDate ).Select( xx => xx.Person ) )
                         } );
 
                     foreach ( var combinedFamilyItem in qryCombined )
@@ -361,6 +368,10 @@ namespace RockWeb.Blocks.Core
                     foreach ( var groupMember in qryEntity.AsNoTracking().OfType<GroupMember>() )
                     {
                         var person = groupMember.Person;
+
+                        // Attach the person record to rockContext so that navigation properties can be still lazy-loaded if needed (if the lava template needs it)
+                        rockContext.People.Attach( person );
+
                         person.AdditionalLavaFields = new Dictionary<string, object>();
                         person.AdditionalLavaFields.Add( "GroupMember", groupMember );
                         mergeObjectsDictionary.AddOrIgnore( groupMember.PersonId, person );

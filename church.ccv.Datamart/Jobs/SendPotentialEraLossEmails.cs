@@ -99,18 +99,21 @@ namespace church.ccv.Utility
 
                     if ( neighborhoodPastor != null )
                     {
-                        var recipients = new List<string>();
-
                         var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
                         mergeFields.Add( "Person", headOfHouse );
                         mergeFields.Add( "Pastor", neighborhoodPastor );
                         mergeFields.Add( "Campus", campus );
                         mergeFields.Add( "CampusPastor", campusPastor );
 
-                        recipients.Add( headOfHouse.Email );
-
-                        var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                        Email.Send( neighborhoodPastor.Email, campusPastor, systemEmail.Subject, recipients, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                        var emailMessage = new RockEmailMessage();
+                        emailMessage.AddRecipient( new RecipientData( headOfHouse.Email, mergeFields ) );
+                        emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                        emailMessage.FromEmail = neighborhoodPastor.Email;
+                        emailMessage.FromName = campusPastor;
+                        emailMessage.Subject = systemEmail.Subject;
+                        emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                        emailMessage.CreateCommunicationRecord = true;
+                        emailMessage.Send();
                         emailsSent++;
                     }
                 }

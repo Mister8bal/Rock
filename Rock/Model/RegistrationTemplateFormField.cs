@@ -31,6 +31,7 @@ namespace Rock.Model
     /// <summary>
     /// 
     /// </summary>
+    [RockDomain( "Event" )]
     [Table( "RegistrationTemplateFormField" )]
     [DataContract]
     public partial class RegistrationTemplateFormField : Model<RegistrationTemplateFormField>, IOrdered
@@ -165,6 +166,7 @@ namespace Rock.Model
         /// <value>
         /// The registration template form.
         /// </value>
+        [LavaInclude]
         public virtual RegistrationTemplateForm RegistrationTemplateForm { get; set; }
 
         /// <summary>
@@ -316,6 +318,11 @@ namespace Rock.Model
         /// The grade
         /// </summary>
         Grade = 11,
+
+        /// <summary>
+        /// The connection status
+        /// </summary>
+        ConnectionStatus = 12,
     }
 
     #endregion

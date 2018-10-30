@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using Rock.Communication;
 using Rock.Field;
 using Rock.Model;
 using Rock.Web.Cache;
@@ -37,36 +37,76 @@ namespace Rock.Web.UI.Controls.Communication
         private RockDropDownList ddlFrom;
         private RockControlWrapper rcwMessage;
         private MergeFieldPicker mfpMessage;
+        private Label lblCount;
         private RockTextBox tbMessage;
 
         #endregion
 
+        #region Base Control Methods
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> object that contains the event data.</param>
+        protected override void OnInit( EventArgs e )
+        {
+            base.OnInit( e );
+
+            // add the bootstrap-limit so that we can have a countdown of characters when entering SMS text
+            int charLimit = this.CharacterLimit;
+            if ( charLimit > 0 )
+            {
+                string script = $"$('#{tbMessage.ClientID}').limit({{maxChars: {charLimit}, counter:'#{lblCount.ClientID}', normalClass:'badge', warningClass:'badge-warning', overLimitClass: 'badge-danger'}})";
+                ScriptManager.RegisterStartupScript( this, this.GetType(), $"limit-{this.ClientID}", script, true );
+            }
+        }
+
+        #endregion Base Control Methods
+
         #region Properties
 
         /// <summary>
-        /// Gets or sets the medium data.
+        /// Gets or sets the character limit.
         /// </summary>
         /// <value>
-        /// The medium data.
+        /// The character limit.
         /// </value>
-        public override Dictionary<string, string> MediumData
-        {
-            get
-            {
-                EnsureChildControls();
-                var data = new Dictionary<string, string>();
-                data.Add( "FromValue", ddlFrom.SelectedValue );
-                data.Add( "Subject", ddlFrom.SelectedItem != null ? ( "From: " + ddlFrom.SelectedItem.Text ) : string.Empty );
-                data.Add( "Message", tbMessage.Text );
-                return data;
-            }
+        public int CharacterLimit { get; set; }
 
-            set
+        /// <summary>
+        /// Gets or sets the selected numbers to display.
+        /// </summary>
+        /// <value>
+        /// A guid list of numbers from the defined type to filter the dropdown list down.
+        /// </value>
+        public List<Guid> SelectedNumbers { get; set; }
+
+        /// <summary>
+        /// Sets control values from a communication record.
+        /// </summary>
+        /// <param name="communication">The communication.</param>
+        public override void SetFromCommunication( CommunicationDetails communication )
+        {
+            EnsureChildControls();
+            var valueItem = ddlFrom.Items.FindByValue( communication.SMSFromDefinedValueId.ToString() );
+            if ( valueItem == null && communication.SMSFromDefinedValueId != null )
             {
-                EnsureChildControls();
-                ddlFrom.SelectedValue = GetDataValue( value, "FromValue" );
-                tbMessage.Text = GetDataValue( value, "Message" );
+                var lookupDefinedValue = DefinedValueCache.Read( communication.SMSFromDefinedValueId.GetValueOrDefault() );
+                ddlFrom.Items.Add( new ListItem( lookupDefinedValue.Description, lookupDefinedValue.Id.ToString() ) );
             }
+            ddlFrom.SetValue( communication.SMSFromDefinedValueId );
+            tbMessage.Text = communication.SMSMessage;
+        }
+
+        /// <summary>
+        /// Updates the a communication record from control values.
+        /// </summary>
+        /// <param name="communication">The communication.</param>
+        public override void UpdateCommunication( CommunicationDetails communication )
+        {
+            EnsureChildControls();
+            communication.SMSFromDefinedValueId = ddlFrom.SelectedValueAsId();
+            communication.SMSMessage = tbMessage.Text;
         }
 
         #endregion
@@ -81,11 +121,30 @@ namespace Rock.Web.UI.Controls.Communication
             base.CreateChildControls();
             Controls.Clear();
 
+            var selectedNumberGuids = SelectedNumbers; //GetAttributeValue( "FilterCategories" ).SplitDelimitedValues( true ).AsGuidList();
+            var definedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.COMMUNICATION_SMS_FROM ) );
+
+
             ddlFrom = new RockDropDownList();
             ddlFrom.ID = string.Format( "ddlFrom_{0}", this.ID );
             ddlFrom.Label = "From";
             ddlFrom.Help = "The number to originate message from (configured under Admin Tools > General Settings > Defined Types > SMS From Values).";
-            ddlFrom.BindToDefinedType( DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.COMMUNICATION_SMS_FROM ) ), false, true );
+            if ( selectedNumberGuids.Any() )
+            {
+                ddlFrom.SelectedIndex = -1;
+                ddlFrom.DataSource = definedType.DefinedValues.Where( v => selectedNumberGuids.Contains( v.Guid ) ).Select( v => new
+                {
+                    v.Description,
+                    v.Id
+                } );
+                ddlFrom.DataTextField = "Description";
+                ddlFrom.DataValueField = "Id";
+                ddlFrom.DataBind();
+            }
+            else
+            {
+                ddlFrom.BindToDefinedType( definedType, false, true );
+            }
             ddlFrom.Required = true;
             Controls.Add( ddlFrom );
 
@@ -100,9 +159,15 @@ namespace Rock.Web.UI.Controls.Communication
             mfpMessage.MergeFields.Clear();
             mfpMessage.MergeFields.Add( "GlobalAttribute" );
             mfpMessage.MergeFields.Add( "Rock.Model.Person" );
-            mfpMessage.CssClass += " pull-right margin-b-sm"; 
+            mfpMessage.CssClass += " margin-b-sm pull-right"; 
             mfpMessage.SelectItem += mfpMergeFields_SelectItem;
             rcwMessage.Controls.Add( mfpMessage );
+
+            lblCount = new Label();
+            lblCount.CssClass = "badge margin-all-sm pull-right";
+            lblCount.ID = string.Format( "lblCount_{0}", this.ID );
+            lblCount.Visible = this.CharacterLimit > 0;
+            rcwMessage.Controls.Add( lblCount );
 
             tbMessage = new RockTextBox();
             tbMessage.ID = string.Format( "tbTextMessage_{0}", this.ID );

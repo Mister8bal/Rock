@@ -96,16 +96,20 @@ namespace church.ccv.Utility.Jobs
                     // send email
                     if ( coach != null )
                     {
-                        var recipients = new List<string>();
-                        recipients.Add( coach.Email );
-
                         var mergeFields = new Dictionary<string, object>();
                         mergeFields.Add( "Person", groupMember.Person );
                         mergeFields.Add( "Group", groupMember.Group );
                         mergeFields.Add( "GroupMember", groupMember );
 
-                        var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                        Email.Send( systemEmail.From, systemEmail.FromName, systemEmail.Subject, recipients, systemEmail.Body.ResolveMergeFields( mergeFields ), appRoot );
+                        var emailMessage = new RockEmailMessage();
+                        emailMessage.AddRecipient( new RecipientData( coach.Email, mergeFields ) );
+                        emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                        emailMessage.FromEmail = systemEmail.FromName;
+                        emailMessage.FromName = systemEmail.From;
+                        emailMessage.Subject = systemEmail.Subject;
+                        emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                        emailMessage.CreateCommunicationRecord = true;
+                        emailMessage.Send();
                     }
                 }
 

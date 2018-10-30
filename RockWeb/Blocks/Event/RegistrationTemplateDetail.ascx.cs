@@ -39,8 +39,7 @@ namespace RockWeb.Blocks.Event
     [DisplayName( "Registration Template Detail" )]
     [Category( "Event" )]
     [Description( "Displays the details of the given registration template." )]
-    [BooleanField( "Add Staff Edit Rights", "When a new template is created, Staff & Staff Like Workers security role will be given edit rights", true)]
-    
+
     [CodeEditorField( "Default Confirmation Email", "The default Confirmation Email Template value to use for a new template", CodeEditorMode.Lava, CodeEditorTheme.Rock, 300, false, @"{{ 'Global' | Attribute:'EmailHeader' }}
 {% capture currencySymbol %}{{ 'Global' | Attribute:'CurrencySymbol' }}{% endcapture %}
 
@@ -178,7 +177,7 @@ namespace RockWeb.Blocks.Event
     This {{ RegistrationInstance.RegistrationTemplate.RegistrationTerm | Downcase  }} has a remaining balance 
     of {{ currencySymbol }}{{ Registration.BalanceDue | Format:'#,##0.00' }}.
     You can complete the payment for this {{ RegistrationInstance.RegistrationTemplate.RegistrationTerm | Downcase }}
-    using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person.UrlEncodedKey }}'>
+    using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person | PersonTokenCreate }}'>
     online registration page</a>.
 </p>
 {% endif %}
@@ -290,6 +289,7 @@ namespace RockWeb.Blocks.Event
 		<li>{{ registrant.PersonAlias.Person.FullName }}</li>
 	{% endfor %}
 	</ul>
+{% endif %}
 
 {% assign waitlist = Registration.Registrants | Where:'OnWaitList', true %}
 {% assign waitListCount = waitlist | Size %}
@@ -310,7 +310,7 @@ namespace RockWeb.Blocks.Event
 
 <p>
     You can complete the payment for this {{ RegistrationInstance.RegistrationTemplate.RegistrationTerm | Downcase }}
-    using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person.UrlEncodedKey }}'>
+    using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person | PersonTokenCreate }}'>
     online registration page</a>.
 </p>
 
@@ -340,7 +340,7 @@ namespace RockWeb.Blocks.Event
 {% if AdditionalFieldsNeeded %}
     <p>
         <strong>Addition information is needed in order to process this registration. Please visit the 
-        <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person.UrlEncodedKey }}&StartAtBeginning=True'>
+        <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person | PersonTokenCreate }}&StartAtBeginning=True'>
         online registration page</a> to complete the registration.</strong>
     </p>
 {% endif %}
@@ -348,8 +348,8 @@ namespace RockWeb.Blocks.Event
 
 {% if Registration.BalanceDue > 0 %}
     <p>
-        A balance of {{ currencySymbol }}{{ Registration.BalanceDue | Format:'#,##0.00' }} remains on this registration. You can complete the payment for this {{ RegistrationInstance.RegistrationTemplate.RegistrationTerm | Downcase }}
-        using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person.UrlEncodedKey }}'>
+        A balance of {{ currencySymbol }}{{ Registration.BalanceDue | Format:'#,##0.00' }} remains on this regsitration. You can complete the payment for this {{ RegistrationInstance.RegistrationTemplate.RegistrationTerm | Downcase }}
+        using our <a href='{{ externalSite }}/Registration?RegistrationId={{ Registration.Id }}&rckipid={{ Registration.PersonAlias.Person | PersonTokenCreate }}'>
         online registration page</a>.
     </p>
 {% endif %}
@@ -472,7 +472,7 @@ namespace RockWeb.Blocks.Event
         Rock.dialogs.confirm('Are you sure you want to delete this registration template? All of the instances, and the registrations and registrants from each instance will also be deleted!', function (result) {
             if (result) {
                 if ( $('input.js-has-registrations').val() == 'True' ) {
-                    Rock.dialogs.confirm('This template has existing instances with existing registrations. Are you really sure that you want to delete the template?<br/><small>(Payments will not be deleted, but they will no longer be associated with a registration.)</small>', function (result) {
+                    Rock.dialogs.confirm('This template has existing instances with existing registrations. Are you sure that you want to delete the template?<br/><small>(Payments will not be deleted, but they will no longer be associated with a registration.)</small>', function (result) {
                         if (result) {
                             window.location = e.target.href ? e.target.href : e.target.parentElement.href;
                         }
@@ -1126,7 +1126,7 @@ namespace RockWeb.Blocks.Event
                 AttributeCache.FlushEntityAttributes();
 
                 // If this is a new template, give the current user and the Registration Administrators role administrative 
-                // rights to this template.  
+                // rights to this template, and staff, and staff like roles edit rights
                 if ( newTemplate )
                 {
                     RegistrationTemplate.AllowPerson( Authorization.ADMINISTRATE, CurrentPerson, rockContext );
@@ -1134,16 +1134,11 @@ namespace RockWeb.Blocks.Event
                     var registrationAdmins = groupService.Get( Rock.SystemGuid.Group.GROUP_EVENT_REGISTRATION_ADMINISTRATORS.AsGuid() );
                     RegistrationTemplate.AllowSecurityRole( Authorization.ADMINISTRATE, registrationAdmins, rockContext );
 
-                    // Give staff and staff like workers edit rights if attribute value is set to true
-                    if ( GetAttributeValue( "AddStaffEditRights" ).AsBoolean() )
-                    {
-                        var staffLikeUsers = groupService.Get( Rock.SystemGuid.Group.GROUP_STAFF_LIKE_MEMBERS.AsGuid() );
-                        RegistrationTemplate.AllowSecurityRole( Authorization.EDIT, staffLikeUsers, rockContext );
+                    var staffLikeUsers = groupService.Get( Rock.SystemGuid.Group.GROUP_STAFF_LIKE_MEMBERS.AsGuid() );
+                    RegistrationTemplate.AllowSecurityRole( Authorization.EDIT, staffLikeUsers, rockContext );
 
-                        var staffUsers = groupService.Get( Rock.SystemGuid.Group.GROUP_STAFF_MEMBERS.AsGuid() );
-                        RegistrationTemplate.AllowSecurityRole( Authorization.EDIT, staffUsers, rockContext );
-                    }
-
+                    var staffUsers = groupService.Get( Rock.SystemGuid.Group.GROUP_STAFF_MEMBERS.AsGuid() );
+                    RegistrationTemplate.AllowSecurityRole( Authorization.EDIT, staffUsers, rockContext );
                 }
 
                 var qryParams = new Dictionary<string, string>();
@@ -1861,11 +1856,11 @@ namespace RockWeb.Blocks.Event
             fee.FeeType = rblFeeType.SelectedValueAsEnum<RegistrationFeeType>();
             if ( fee.FeeType == RegistrationFeeType.Single )
             {
-                fee.CostValue = cCost.Text;
+                fee.CostValue = cCost.Text.Replace("$", "");
             }
             else
             {
-                fee.CostValue = kvlMultipleFees.Value;
+                fee.CostValue = kvlMultipleFees.Value.Replace("$", "");
             }
             fee.AllowMultiple = cbAllowMultiple.Checked;
             fee.DiscountApplies = cbDiscountApplies.Checked;
@@ -2243,6 +2238,7 @@ namespace RockWeb.Blocks.Event
             lWorkflowType.Visible = !string.IsNullOrWhiteSpace( lWorkflowType.Text );
 
             rcwForms.Label = string.Format( "<strong>Forms</strong> ({0}) <i class='fa fa-caret-down'></i>", RegistrationTemplate.Forms.Count() );
+            lFormsReadonly.Text = string.Empty;
             if ( RegistrationTemplate.Forms.Any() )
             {
                 foreach ( var form in RegistrationTemplate.Forms.OrderBy( a => a.Order ) )
@@ -2478,9 +2474,17 @@ namespace RockWeb.Blocks.Event
                 RegistrationTemplateFormField formField = fieldList.FirstOrDefault( a => a.Guid.Equals( formFieldGuid ) );
                 if ( formField == null )
                 {
+                    lFieldSource.Visible = false;
+                    ddlFieldSource.Visible = true;
                     formField = new RegistrationTemplateFormField();
                     formField.Guid = formFieldGuid;
                     formField.FieldSource = RegistrationFieldSource.PersonAttribute;
+                }
+                else
+                {
+                    lFieldSource.Text = formField.FieldSource.ConvertToString();
+                    lFieldSource.Visible = true;
+                    ddlFieldSource.Visible = false;
                 }
 
                 ceAttributePreText.Text = formField.PreText;
@@ -2498,7 +2502,9 @@ namespace RockWeb.Blocks.Event
                 {
                     if ( attr.IsAuthorized( Authorization.VIEW, CurrentPerson ) )
                     {
-                        ddlPersonAttributes.Items.Add( new ListItem( attr.Name, attr.Id.ToString() ) );
+                        var listItem = new ListItem( attr.Name, attr.Id.ToString() );
+                        listItem.Attributes.Add( "title", string.Format( "{0} - {1}", attr.Id.ToString(), attr.Key ) );
+                        ddlPersonAttributes.Items.Add( listItem );
                     }
                 }
 

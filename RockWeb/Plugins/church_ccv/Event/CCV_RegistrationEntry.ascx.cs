@@ -31,6 +31,7 @@ using Newtonsoft.Json;
 
 using Rock;
 using Rock.Attribute;
+using Rock.Communication;
 using Rock.Data;
 using Rock.Financial;
 using Rock.Model;
@@ -1039,12 +1040,12 @@ namespace RockWeb.Plugins.church_ccv.Event
 
                                 mergeFields.Add( "User", user );
 
-                                var recipients = new List<Rock.Communication.RecipientData>();
-                                recipients.Add( new Rock.Communication.RecipientData( authorizedPersonAlias.Person.Email, mergeFields ) );
-
                                 try
                                 {
-                                    Rock.Communication.Email.Send( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid(), recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ), false );
+                                    var emailMessage = new RockEmailMessage( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid() );
+                                    emailMessage.AddRecipient( new RecipientData( authorizedPersonAlias.Person.Email, mergeFields ) );
+                                    emailMessage.CreateCommunicationRecord = false;
+                                    emailMessage.Send();
                                 }
                                 catch ( Exception ex )
                                 {

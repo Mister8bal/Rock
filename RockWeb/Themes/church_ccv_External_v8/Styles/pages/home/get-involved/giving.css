@@ -11,15 +11,20 @@
 @media screen and (max-width: 500px) {
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-giving.jpg");
-    }
+    } 
 }
 
 #ternavbar-bg {
     display: flex;
 }
 
-.navigation-tertiary-items {
-    width: 1150px;
+.btn-row {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.btn-row .right {
+    margin-left: 20px;
 }
 
 #section-b-bg, #section-d-bg {
@@ -49,13 +54,6 @@
 }
 
 /* Mobile Styling */
-@media screen and (max-width: 1100px) {
-    .navigation-tertiary-items {
-        width: unset;
-        padding-right: 35px;
-    }
-}
-
 @media screen and (max-width: 500px) {
     .main-feature {
         height: unset;
@@ -366,7 +364,6 @@
     flex-direction: column;
     margin: 0 auto;
     width: 50%;
-    min-width: 530px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
     border-radius: 5px;
@@ -388,7 +385,6 @@
 @media screen and (max-width: 768px) {
     .transaction-card {
         width: 100%;
-        min-width: unset;
         margin: 0;
     }
 }
@@ -467,9 +463,9 @@
     padding: 0;
 }
 
-.active {
+/* .active {
     background-color: #7A1315;
-}
+} */
 
 .complete {
     background: linear-gradient(rgb(208, 221, 41), rgb(139, 179, 63));
@@ -537,8 +533,8 @@
 }
 
 .amount {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 40px;
+    margin-bottom: 80px;
     width: 100%;
     font-size: 65px;
     font-family: Akrobat;
@@ -546,8 +542,7 @@
     line-height: 80px;
     color: #7A1315;
     text-align: center;
-    height: unset;
-    padding: unset;   
+
 }
 
 
@@ -560,19 +555,10 @@
     border-bottom: 2px solid lightgrey !important;
 }
 
-.schedule-date-wrapper .control-label {
-    font-family: Heebo;
-    font-size: 12px;
-    color: #010001;
-}
-
-.schedule-date-wrapper .form-control {
-    color: #7A1315;
-}
-
 .comment-wrapper {
     width: 100%;
     margin-bottom: 40px;
+    margin-top: -40px;
 }
 
 /* Give */
@@ -652,7 +638,7 @@
     align-items: center;
     margin-top: 15px;
     min-height: 325px;
-    width: 65%;
+    width: 60%;
 }
 
 .payment-type {
@@ -760,6 +746,10 @@
 .form-control.input-width-sm {
     width: 55px;
     padding: 0;
+}
+
+#nbAmount {
+    height: 80px;
 }
 
 .creditcard-expdate-cvv, .creditcard-state-country-zip {
@@ -873,19 +863,22 @@
 
 .confirm-card-gift {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 10px;
+    margin: 5px 0;
 }
 
-.confirm-gift-summary {
+.confirm-card-gift p {
+    margin-right: 10px;
+}
+
+#confirmGiftMessage {
     font-family: Akrobat;
     font-size: 20px;
     font-weight: bold;
     line-height: 24px;
     color: #000000;
     text-align: center;
-    margin: 0;
 }
 
 #confirmGiftAmount {
@@ -895,7 +888,7 @@
     line-height: 43px;
     color: #7A1315;
     text-align: center;
-    padding: 0;
+    margin-top: -10px;
 }
 
 .confirm-paymenttype-card {
@@ -982,8 +975,9 @@
         width: 100%;
     }
 
-    .confirm-gift-summary {
-        font-size: 18px;
+    #confirmGiftMessage {
+        margin-top: unset;
+        margin-bottom: 5px;
     }
 
     #confirmGiftAmount {
@@ -1033,14 +1027,6 @@
     width: 100%;
 }
 
-.navigation-right {
-    margin-right: -20%;
-}
-
-.navigation-left {
-    margin-left: -20%;
-}
-
 .navigation .btn {
     border-radius: 25px;
     margin-left: 5px;
@@ -1057,12 +1043,8 @@
         padding-bottom: 5px;
     }
 
-    .navigation-right {
-        margin-right: unset;
-    }
-
-    .navigation-left {
-        margin-left: unset;
+    .btn-row .right {
+        margin-left: 0px;
     }
 }
 
@@ -1174,10 +1156,6 @@
 }
 
 /* Schedule Transaction */
-.schedule-wrapper {
-    width: 100%;
-}
-
 .schedule-transaction .collapse {
     transition: all 1s;
 }
@@ -1263,15 +1241,9 @@ input:checked + .slider:before {
 
 .schedule-frequency {
     margin-top: 20px;
-    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid lightgrey;
-    font-size: 20px;
-    color: #7A1315;
-    padding: unset;
-    padding-left: 10px;
 }
 
  .schedule-frequency label {
@@ -1505,10 +1477,5 @@ input:checked + .slider:before {
 }
 
 /* End Transaction Entry Block */
-
-/* Override common */
-.prev, .next {
-    display: table-cell;
-}
 
 /* End Give Now */

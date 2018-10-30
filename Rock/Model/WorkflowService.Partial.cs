@@ -20,6 +20,7 @@ using System.Linq;
 using System.Web.Compilation;
 
 using Rock.Data;
+using Rock.Web.Cache;
 
 namespace Rock.Model
 {
@@ -48,51 +49,60 @@ namespace Rock.Model
         /// <returns></returns>
         public bool Process( Workflow workflow, object entity, out List<string> errorMessages )
         {
-            var rockContext = (RockContext)this.Context;
-
-            if ( workflow.IsPersisted )
+            var workflowType = WorkflowTypeCache.Read( workflow.WorkflowTypeId );
+            if ( workflowType != null && ( workflowType.IsActive ?? true ) )
             {
-                workflow.IsProcessing = true;
-                rockContext.SaveChanges();
-            }
+                var rockContext = (RockContext)this.Context;
 
-            bool result = workflow.ProcessActivities( rockContext, entity, out errorMessages );
-
-            if ( workflow.Status == "DeleteWorkflowNow")
-            {
-                if ( workflow.Id > 0 )
+                if ( workflow.IsPersisted )
                 {
-                    rockContext.SaveChanges();
-                    Delete( workflow );
+                    workflow.IsProcessing = true;
                     rockContext.SaveChanges();
                 }
-                result = true;
-            }
-            else
-            {
-                if ( workflow.IsPersisted || workflow.WorkflowType.IsPersisted )
-                {
-                    if ( workflow.Id == 0 )
-                    {
-                        Add( workflow );
-                    }
 
-                    rockContext.WrapTransaction( () =>
+                bool result = workflow.ProcessActivities( rockContext, entity, out errorMessages );
+
+                if ( workflow.Status == "DeleteWorkflowNow" )
+                {
+                    if ( workflow.Id > 0 )
                     {
                         rockContext.SaveChanges();
+                        Delete( workflow );
+                        rockContext.SaveChanges();
+                    }
+                    result = true;
+                }
+                else
+                {
+                    if ( workflow.IsPersisted || workflowType.IsPersisted )
+                    {
+                        if ( workflow.Id == 0 )
+                        {
+                            Add( workflow );
+                        }
+
+                        rockContext.SaveChanges();
+
                         workflow.SaveAttributeValues( rockContext );
                         foreach ( var activity in workflow.Activities )
                         {
                             activity.SaveAttributeValues( rockContext );
                         }
-                    } );
 
-                    workflow.IsProcessing = false;
-                    rockContext.SaveChanges();
+                        workflow.IsProcessing = false;
+                        rockContext.SaveChanges();
+                    }
                 }
+
+                return result;
             }
 
-            return result;
+            else
+            {
+                errorMessages = new List<string> { "Workflow Type is invalid or not active!" };
+                return false;
+            }
+
         }
 
         /// <summary>
@@ -108,5 +118,34 @@ namespace Rock.Model
                 .OrderBy( w => w.LastProcessedDateTime );
         }
 
+        /// <summary>
+        /// Persists the workflow immediately. Do this if the next actions need a persisted workflow with Ids.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        public void PersistImmediately( WorkflowAction action )
+        {
+            var rockContext = ( RockContext ) this.Context;
+
+            var workflow = action.Activity.Workflow;
+            workflow.IsPersisted = true;
+            workflow.IsProcessing = true;
+
+            if ( workflow.Id == 0 )
+            {
+                Add( workflow );
+            }
+
+            rockContext.WrapTransaction( () =>
+            {
+                rockContext.SaveChanges();
+                workflow.SaveAttributeValues( rockContext );
+                foreach ( var activity in workflow.Activities )
+                {
+                    activity.SaveAttributeValues( rockContext );
+                }
+            } );
+
+            action.AddLogEntry( "Workflow has been persisted!" );
+        }
     }
 }

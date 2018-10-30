@@ -762,9 +762,10 @@ namespace RockWeb.Plugins.church_ccv.Hr
                 mergeFields.Add( "Person", this.CurrentPerson );
                 mergeFields.Add( "SubmitToPerson", submitToPersonAlias.Person );
 
-                var recipients = new List<RecipientData>();
-                recipients.Add( new RecipientData( submitToPersonAlias.Person.Email, mergeFields ) );
-                Email.Send( submittedEmailTemplateGuid.Value, recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ) );
+                var emailMessage = new RockEmailMessage( submittedEmailTemplateGuid.Value );
+                emailMessage.AddRecipient( new RecipientData( submitToPersonAlias.Person.Email, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
             }
 
             nbSubmittedSuccessMessage.Text = string.Format( "Successfully submitted to {0}", submitToPersonAlias );

@@ -21,13 +21,6 @@
     width: 350px;
 }
 
-.navigation-tertiary-items {
-    padding-left: 150px;
-}
-
-#zone-tertiarynavbar {
-    margin: 0;  
-}
 
 @media screen and (max-width: 927px) { 
     .navigation-tertiary-items-slick {

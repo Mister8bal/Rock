@@ -167,10 +167,72 @@ p {
  */
 
 /*  
- *  Page Background Section
+ *  Form Section (if any)
  */
 
+.divContainForm {
+    text-align: center;
+}
 
+.divContainForm h1 {
+    padding-bottom: 0px;
+    font-weight: bolder;
+    color: #7A1315;
+
+}
+
+.divContainForm h4 {
+    color: #7A1315;
+    padding: 0px 0px 20px 0px;
+}
+
+.divContainForm p {
+    color: #7c7c7c;
+}
+
+.divContainForm img{
+    height: 50px;
+    width: 50px;
+}
+
+.actions {
+    padding-bottom: 20px;
+    text-align: right;
+}
+
+.name-fields, .info-fields {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.first-name, .last-name, .email-address, .phone-number {
+    width: 45%;
+}
+
+.footer-social {
+    display: block;
+}
+
+.footersocial  i {
+    color: #7A1315;
+    font-size: 40px;
+    margin: 10px 0;
+    padding: 0 20px;
+}
+
+.btn-row {
+    padding-bottom: 30px;
+}
+
+/*  
+ *  End Form Section
+ */
+
+/*  
+ *  Page Background Section
+ */
 
 #feature-image-desktop {
     padding-top: var(--section-feature-padding-top-desktop); /* 300px; */

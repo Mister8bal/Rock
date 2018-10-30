@@ -32,11 +32,6 @@ using Rock.Web.UI.Controls;
 using Rock.Lava;
 using System.Runtime.Caching;
 
-//----
-//CCV CORE
-// 2-20-18 - JHM - Added "CanEdit" and "CanView" group role permissions to lava. 
-// This allows us to remember checks by group role name from our Dashboards, since group role names change all the time.
-//----
 namespace RockWeb.Blocks.Groups
 {
     [DisplayName( "Group List Personalized Lava" )]
@@ -49,9 +44,17 @@ namespace RockWeb.Blocks.Groups
     [GroupTypesField( "Include Group Types", "The group types to display in the list.  If none are selected, all group types will be included.", false, "", "", 4 )]
     [GroupTypesField( "Exclude Group Types", "The group types to exclude from the list (only valid if including all groups).", false, "", "", 5 )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group list.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupListSidebar.lava' %}", "", 6 )]
-    [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 7 )]
+    [BooleanField( "Display Inactive Groups", "Include inactive groups in the lava results", false )]
+    [CustomDropdownListField( "Initial Active Setting", "Select whether to initially show all or just active groups in the lava", "0^All,1^Active", false, "1", "", 8 )]
+    [TextField( "Inactive Parameter Name", "The page parameter name to toggle inactive groups", false, "showinactivegroups" )]
     public partial class GroupListPersonalizedLava : RockBlock
     {
+
+        #region Fields
+
+        private bool _hideInactive = true;
+
+        #endregion
 
         #region Control Methods
 
@@ -64,6 +67,17 @@ namespace RockWeb.Blocks.Groups
             base.OnInit( e );
 
             this.BlockUpdated += Block_BlockUpdated;
+
+            if ( this.GetAttributeValue( "DisplayInactiveGroups" ).AsBoolean() )
+            {
+                var hideInactiveGroups = this.GetUserPreference( "HideInactiveGroups" ).AsBooleanOrNull();
+                if ( !hideInactiveGroups.HasValue )
+                {
+                    hideInactiveGroups = this.GetAttributeValue( "InitialActiveSetting" ) == "1";
+                }
+
+                _hideInactive = hideInactiveGroups ?? true;
+            }
         }
 
         /// <summary>
@@ -74,6 +88,11 @@ namespace RockWeb.Blocks.Groups
         {
             if ( !Page.IsPostBack )
             {
+                var inactiveGroups = PageParameter( GetAttributeValue( "InactiveParameterName" ) ).AsBooleanOrNull();
+                if ( this.GetAttributeValue( "DisplayInactiveGroups" ).AsBoolean() && inactiveGroups.HasValue )
+                {
+                    _hideInactive = !inactiveGroups ?? true;
+                }
                 ListGroups();
             }
 
@@ -102,7 +121,7 @@ namespace RockWeb.Blocks.Groups
                         .Queryable( "Group" );
 
             var parentGroupGuid = GetAttributeValue( "ParentGroup" ).AsGuidOrNull();
-            if ( parentGroupGuid!=null )
+            if ( parentGroupGuid != null )
             {
                 var availableGroupIds = ( List<int> ) GetCacheItem( "GroupListPersonalizedLava:" + parentGroupGuid.ToString() );
 
@@ -124,8 +143,12 @@ namespace RockWeb.Blocks.Groups
             }
 
             qry = qry.Where( m => m.PersonId == CurrentPersonId
-                        && m.GroupMemberStatus == GroupMemberStatus.Active
-                        && m.Group.IsActive == true );
+                        && m.GroupMemberStatus == GroupMemberStatus.Active );
+
+            if ( _hideInactive )
+            {
+                qry = qry.Where( m => m.Group.IsActive == true );
+            }
 
             List<Guid> includeGroupTypeGuids = GetAttributeValue( "IncludeGroupTypes" ).SplitDelimitedValues().Select( a => Guid.Parse( a ) ).ToList();
             if ( includeGroupTypeGuids.Count > 0 )
@@ -150,8 +173,6 @@ namespace RockWeb.Blocks.Groups
                         Group = groupMember.Group,
                         Role = groupMember.GroupRole.Name,
                         IsLeader = groupMember.GroupRole.IsLeader,
-                        CanView = groupMember.GroupRole.CanView,
-                        CanEdit = groupMember.GroupRole.CanEdit,
                         GroupType = groupMember.Group.GroupType.Name
                     } );
                 }
@@ -164,15 +185,14 @@ namespace RockWeb.Blocks.Groups
             linkedPages.Add( "DetailPage", LinkedPageRoute( "DetailPage" ) );
             mergeFields.Add( "LinkedPages", linkedPages );
 
-            string template = GetAttributeValue( "LavaTemplate" );
-
-            // show debug info
-            bool enableDebug = GetAttributeValue( "EnableDebug" ).AsBoolean();
-            if ( enableDebug && IsUserAuthorized( Authorization.EDIT ) )
+            if ( this.GetAttributeValue( "DisplayInactiveGroups" ).AsBoolean() )
             {
-                lDebug.Visible = true;
-                lDebug.Text = mergeFields.lavaDebugInfo();
+                mergeFields.Add( "ShowInactive", this.GetAttributeValue( "DisplayInactiveGroups" ) );
+                mergeFields.Add( "InitialActive", this.GetAttributeValue( "InitialActiveSetting" ) );
+                mergeFields.Add( "InactiveParameter", this.GetAttributeValue( "InactiveParameterName" ) );
             }
+
+            string template = GetAttributeValue( "LavaTemplate" );
 
             lContent.Text = template.ResolveMergeFields( mergeFields );
         }
@@ -194,15 +214,13 @@ namespace RockWeb.Blocks.Groups
             return childGroups;
         }
 
-        [DotLiquid.LiquidType( "Group", "Role", "IsLeader", "GroupType", "CanView", "CanEdit" )]
+        [DotLiquid.LiquidType( "Group", "Role", "IsLeader", "GroupType" )]
         public class GroupInvolvementSummary
         {
             public Group Group { get; set; }
             public string Role { get; set; }
             public bool IsLeader { get; set; }
             public string GroupType { get; set; }
-            public bool CanView { get; set; }
-            public bool CanEdit { get; set; }
         }
 
         #endregion

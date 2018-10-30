@@ -30,6 +30,7 @@ using Rock.Web.Cache;
 using Rock.Web.UI;
 
 using church.ccv.Utility.SystemGuids;
+using Rock.Communication;
 
 namespace church.ccv.Utility.Groups
 {
@@ -213,10 +214,12 @@ namespace church.ccv.Utility.Groups
             // build a recipient list using the "To" from the system email
             var recipients = new List<Rock.Communication.RecipientData>();
 
-            // add person and the mergeObjects (same mergeobjects as receipt)
-            recipients.Add( new Rock.Communication.RecipientData( reassignEmail.To, mergeObjects ) );
+            var emailMessage = new RockEmailMessage( emailTemplateGuid  );
 
-            Rock.Communication.Email.Send( emailTemplateGuid, recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ) );
+            // add person and the mergeObjects (same mergeobjects as receipt)
+            emailMessage.AddRecipient( new RecipientData( reassignEmail.To, mergeObjects ) );
+            emailMessage.CreateCommunicationRecord = true;
+            emailMessage.Send();
         }
 
         protected void SaveProfilePicture( Person person, RockContext rockContext )
@@ -276,35 +279,30 @@ namespace church.ccv.Utility.Groups
         /// <param name="rockContext">The rock context.</param>
         protected void StartWorkflow( string workflowName, object entity, Dictionary<string, string> attributes, RockContext rockContext )
         {
-            WorkflowType workflowType = null;
             Guid? workflowTypeGuid = GetAttributeValue( workflowName ).AsGuidOrNull();
             if ( workflowTypeGuid.HasValue )
             {
-                var workflowTypeService = new WorkflowTypeService( rockContext );
-                workflowType = workflowTypeService.Get( workflowTypeGuid.Value );
-                if ( workflowType != null )
+                try
                 {
-                    try
-                    {
-                        var workflow = Rock.Model.Workflow.Activate( workflowType, workflowName );
+                    var workflowTypeCache = WorkflowTypeCache.Read( workflowTypeGuid.Value );
+                    var workflow = Rock.Model.Workflow.Activate( workflowTypeCache, workflowName );
 
-                        // set optional attributes for the workflow
-                        if( attributes != null )
+                    // set optional attributes for the workflow
+                    if( attributes != null )
+                    {
+                        foreach ( KeyValuePair<string, string> kvp in attributes )
                         {
-                            foreach ( KeyValuePair<string, string> kvp in attributes )
-                            {
-                                workflow.SetAttributeValue( kvp.Key, kvp.Value );
-                            }
+                            workflow.SetAttributeValue( kvp.Key, kvp.Value );
                         }
-
-                        List<string> workflowErrors;
-                        new WorkflowService( rockContext ).Process( workflow, entity, out workflowErrors );
                     }
-                    catch ( Exception ex )
 
-                    {
-                        ExceptionLogService.LogException( ex, this.Context );
-                    }
+                    List<string> workflowErrors;
+                    new WorkflowService( rockContext ).Process( workflow, entity, out workflowErrors );
+                }
+                catch ( Exception ex )
+
+                {
+                    ExceptionLogService.LogException( ex, this.Context );
                 }
             }
         }

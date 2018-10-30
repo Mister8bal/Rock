@@ -454,6 +454,14 @@ namespace Rock.Web.UI.Controls
         public bool AllowMultiSelect { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [show select children].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show select children]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool ShowSelectChildren { get; set; }
+
+        /// <summary>
         /// Gets or sets the default text.
         /// </summary>
         /// <value>
@@ -535,17 +543,17 @@ namespace Rock.Web.UI.Controls
         /// </summary>
         protected virtual void RegisterJavaScript()
         {
-            string treeViewScriptFormat =
-@"Rock.controls.itemPicker.initialize({{ 
-    controlId: '{0}',
-    restUrl: '{1}',
-    allowMultiSelect: {2},
-    defaultText: '{3}',
-    restParams: $('#{4}').val(),
-    expandedIds: [{5}]
+            string treeViewScript =
+$@"Rock.controls.itemPicker.initialize({{ 
+    controlId: '{this.ClientID}',
+    restUrl: '{this.ResolveUrl( ItemRestUrl )}',
+    allowMultiSelect: {this.AllowMultiSelect.ToString().ToLower()},
+    defaultText: '{this.DefaultText}',
+    restParams: $('#{_hfItemRestUrlExtraParams.ClientID}').val(),
+    expandedIds: [{this.InitialItemParentIds}],
+    showSelectChildren: {this.ShowSelectChildren.ToString().ToLower()}
 }});
 ";
-            string treeViewScript = string.Format( treeViewScriptFormat, this.ClientID, this.ResolveUrl( ItemRestUrl ), this.AllowMultiSelect.ToString().ToLower(), this.DefaultText, _hfItemRestUrlExtraParams.ClientID, this.InitialItemParentIds );
             ScriptManager.RegisterStartupScript( this, this.GetType(), "item_picker-treeviewscript_" + this.ClientID, treeViewScript, true );
         }
 
@@ -586,8 +594,8 @@ namespace Rock.Web.UI.Controls
             _btnSelect.InnerText = "Select";
             _btnSelect.CausesValidation = false;
 
-            // we only need the postback on Select if SelectItem is assigned or if this is PagePicker
-            if ( SelectItem != null || ( this is PagePicker ) )
+            // make sure PagePicker always does a postback, even if _selectItem is not assigned
+            if ( _selectItem == null && ( this is PagePicker ) )
             {
                 _btnSelect.ServerClick += btnSelect_Click;
             }
@@ -599,8 +607,8 @@ namespace Rock.Web.UI.Controls
             _btnSelectNone.CausesValidation = false;
             _btnSelectNone.Style[HtmlTextWriterStyle.Display] = "none";
 
-            // we only need the postback on SelectNone if SelectItem is assigned or if this is PagePicker
-            if ( SelectItem != null || ( this is PagePicker ) )
+            // make sure PagePicker always does a postback, even if _selectItem is not assigned
+            if ( _selectItem == null && ( this is PagePicker ) )
             {
                 _btnSelectNone.ServerClick += btnSelect_Click;
             }
@@ -837,9 +845,9 @@ namespace Rock.Web.UI.Controls
                 SetValueOnSelect();
             }
 
-            if ( SelectItem != null )
+            if ( _selectItem != null )
             {
-                SelectItem( sender, e );
+                _selectItem( sender, e );
             }
         }
 
@@ -859,7 +867,7 @@ namespace Rock.Web.UI.Controls
         /// <param name="ids">The ids.</param>
         public void SetValues( IEnumerable<int> ids )
         {
-            ItemIds = ids.Select( i => i.ToString() );
+            ItemIds = ids != null ? ids.Select( i => i.ToString() ) : new List<string>();
             SetValuesOnSelect();
         }
 
@@ -873,10 +881,28 @@ namespace Rock.Web.UI.Controls
         /// </summary>
         protected abstract void SetValuesOnSelect();
 
+        private event EventHandler _selectItem;
+
         /// <summary>
         /// Occurs when [select item].
         /// </summary>
-        public event EventHandler SelectItem;
+        public event EventHandler SelectItem
+        {
+            add
+            {
+                EnsureChildControls();
+                _selectItem += value;
+                _btnSelect.ServerClick += btnSelect_Click;
+                _btnSelectNone.ServerClick += btnSelect_Click;
+            }
+
+            remove
+            {
+                _selectItem -= value;
+                _btnSelect.ServerClick -= btnSelect_Click;
+                _btnSelectNone.ServerClick -= btnSelect_Click;
+            }
+        }
 
         /// <summary>
         /// Shows the error message.

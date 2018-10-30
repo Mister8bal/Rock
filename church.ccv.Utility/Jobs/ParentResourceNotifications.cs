@@ -148,27 +148,13 @@ namespace church.ccv.Utility
 
                         // send SMS messages to each parent
                         var recipient = new RecipientData();
-                        var mediumEntity = EntityTypeCache.Read( Rock.SystemGuid.EntityType.COMMUNICATION_MEDIUM_SMS.AsGuid(), rockContext );
 
-                        if ( mediumEntity != null )
-                        {
-                            var medium = MediumContainer.GetComponent( mediumEntity.Name );
-                            if ( medium != null && medium.IsActive )
-                            {
-                                var transport = medium.Transport;
-                                if ( transport != null && transport.IsActive )
-                                {
-                                    var appRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "InternalApplicationRoot" );
-                                    var mediumData = new Dictionary<string, string>();
-                                    mediumData.Add( "FromValue", fromId.Value.ToString() );
-                                    mediumData.Add( "Message", message.ResolveMergeFields( mergeFields ) );
-
-                                    var numbers = new List<string> { parent.Number };
-
-                                    transport.Send( mediumData, numbers, appRoot, string.Empty );
-                                }
-                            }
-                        }
+                        var smsMessage = new RockSMSMessage();
+                        smsMessage.AddRecipient( new RecipientData( parent.Number, mergeFields ) );
+                        smsMessage.AppRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "InternalApplicationRoot" );
+                        smsMessage.FromNumber = DefinedValueCache.Read( fromId.Value );
+                        smsMessage.Message = message.ResolveMergeFields( mergeFields );
+                        smsMessage.Send();
 
                         messagesSent++;
                     }

@@ -37,10 +37,20 @@
                         <asp:Literal ID="lDateApplicationCompleted" runat="server"></asp:Literal>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6">
                         <asp:Literal ID="lApplicationWorkflow" runat="server"></asp:Literal>
+                    </div>
+                </div>
+            </div>
+
+             <%-- Application info --%>
+            <div class="panel-body">
+                <h4 class="panel-title"><strong>Initiated By</strong></h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <asp:Literal ID="lInitiatedBy" runat="server"></asp:Literal>
                     </div>
                 </div>
             </div>

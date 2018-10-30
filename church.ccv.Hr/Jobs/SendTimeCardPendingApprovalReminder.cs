@@ -79,7 +79,6 @@ namespace church.ccv.Hr.Jobs
                     if ( _notificationList.Any() )
                     {
                         // Send email
-                        var appRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
                         var recipients = new List<RecipientData>();
 
                         var notificationRecipients = _notificationList.GroupBy( p => p.Person.Id ).ToList();
@@ -92,10 +91,11 @@ namespace church.ccv.Hr.Jobs
 
                             List<TimeCard> submittedTimeCards = _submittedTimeCardList.Where( n => n.SubmittedToPersonAlias.Person == recipient ).ToList();
                             mergeFields.Add( "TimeCards", submittedTimeCards );                                                        
-                            
-                            recipients.Add( new RecipientData( recipient.Email, mergeFields ) );
 
-                            Email.Send( systemEmailGuid.Value, recipients, appRoot );
+                            var emailMessage = new RockEmailMessage( systemEmailGuid.Value );
+                            emailMessage.AddRecipient( new RecipientData( recipient.Email, mergeFields ) );
+                            emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
+                            emailMessage.Send();
 
                             recipients.Clear();
                         }

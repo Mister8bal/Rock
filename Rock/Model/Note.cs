@@ -22,13 +22,13 @@ using System.Data.Entity.ModelConfiguration;
 using System.Runtime.Serialization;
 
 using Rock.Data;
-using System.Linq;
 
 namespace Rock.Model
 {
     /// <summary>
     /// Represents a note that is entered in Rock and is associated with a specific entity. For example, a note could be entered on a person, GroupMember, a device, etc or for a specific subset of an entity type.
     /// </summary>
+    [RockDomain( "Core" )]
     [Table( "Note" )]
     [DataContract]
     public partial class Note : Model<Note>
@@ -90,7 +90,6 @@ namespace Rock.Model
         /// <value>
         /// <c>true</c> if this instance is private note; otherwise, <c>false</c>.
         /// </value>
-        /// Note: Unfortunately we cannot put an admin override on this because it's a pure accessor with no personId provided.
         [DataMember]
         public bool IsPrivateNote { get; set; }
 
@@ -144,14 +143,6 @@ namespace Rock.Model
                 return true;
             }
 
-            // if they're an admin, they're authorized for this note
-            GroupService service = new GroupService( new RockContext() );
-            Group adminGroup = service.GetByGuid( new Guid( Rock.SystemGuid.Group.GROUP_ADMINISTRATORS ) );
-            if ( adminGroup.Members.Where( m => m.PersonId == person.Id ).Count( ) > 0 )
-            {
-                return true;
-            }
-
             if ( IsPrivateNote )
             {
                 return false;
@@ -168,23 +159,11 @@ namespace Rock.Model
         /// <returns></returns>
         public override bool IsPrivate( string action, Person person )
         {
-            // if flagged as private
-            if ( IsPrivateNote )
+            if ( CreatedByPersonAlias != null && person != null &&
+                CreatedByPersonAlias.PersonId == person.Id &&
+                IsPrivateNote )
             {
-                // and this is the person that wrote the note
-                if ( CreatedByPersonAlias != null && person != null &&
-                CreatedByPersonAlias.PersonId == person.Id )
-                {
-                    return true;
-                }
-
-                // or, they're an admin
-                GroupService service = new GroupService( new RockContext() );
-                Group adminGroup = service.GetByGuid( new Guid( Rock.SystemGuid.Group.GROUP_ADMINISTRATORS ) );
-                if ( adminGroup.Members.Where( m => m.PersonId == person.Id ).Count( ) > 0 )
-                {
-                    return true;
-                }
+                return true;
             }
 
             return base.IsPrivate( action, person );

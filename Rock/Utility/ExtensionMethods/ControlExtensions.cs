@@ -166,15 +166,26 @@ namespace Rock
         /// <param name="className">Name of the class.</param>
         public static WebControl AddCssClass( this WebControl webControl, string className )
         {
-            string match = @"(^|\s+)" + className + @"($|\s+)";
-            string css = webControl.CssClass;
-
-            if ( !Regex.IsMatch( css, match, RegexOptions.IgnoreCase ) )
+            // if the className is blank, don't do anything
+            if ( className.IsNotNullOrWhitespace() )
             {
-                css += " " + className;
-            }
+                // if the webControl doesn't have a CssClass yet, simply set it to the className
+                if ( webControl.CssClass.IsNullOrWhiteSpace() )
+                {
+                    webControl.CssClass = className;
+                }
+                else
+                {
+                    string css = webControl.CssClass;
+                    string match = @"(^|\s+)" + className + @"($|\s+)";
+                    if ( !Regex.IsMatch( css, match, RegexOptions.IgnoreCase ) )
+                    {
+                        css += " " + className;
+                    }
 
-            webControl.CssClass = css.Trim();
+                    webControl.CssClass = css.Trim();
+                }
+            }
 
             return webControl;
         }
@@ -186,6 +197,12 @@ namespace Rock
         /// <param name="className">Name of the class.</param>
         public static WebControl RemoveCssClass( this WebControl webControl, string className )
         {
+            if (className.IsNullOrWhiteSpace() || webControl.CssClass.IsNullOrWhiteSpace())
+            {
+                // either the className is blank, or the webControl doesn't have a CssClass, so there is nothing to remove
+                return webControl;
+            }
+
             string match = @"(^|\s+)" + className + @"($|\s+)";
             string css = webControl.CssClass;
 
@@ -233,6 +250,37 @@ namespace Rock
 
         #endregion HtmlControl Extensions
 
+        #region ListBox Extensions
+
+        /// <summary>
+        /// Sets the Selected property of each item to true for each given matching string values.
+        /// </summary>
+        /// <param name="listBox">The list box.</param>
+        /// <param name="values">The values.</param>
+        public static void SetValues( this ListBox listBox, IEnumerable<string> values )
+        {
+            foreach ( ListItem item in listBox.Items )
+            {
+                item.Selected = values.Contains( item.Value, StringComparer.OrdinalIgnoreCase );
+            }
+        }
+
+        /// <summary>
+        /// Sets the Selected property of each item to true for each given matching int values.
+        /// </summary>
+        /// <param name="listBox">The list box.</param>
+        /// <param name="values">The values.</param>
+        public static void SetValues( this ListBox listBox, IEnumerable<int> values )
+        {
+            foreach ( ListItem item in listBox.Items )
+            {
+                int numValue = int.MinValue;
+                item.Selected = int.TryParse( item.Value, out numValue ) && values.Contains( numValue );
+            }
+        }
+
+        #endregion ListBox Extensions
+
         #region CheckBoxList Extensions
 
         /// <summary>
@@ -242,9 +290,17 @@ namespace Rock
         /// <param name="values">The values.</param>
         public static void SetValues( this CheckBoxList checkBoxList, IEnumerable<string> values )
         {
-            foreach ( ListItem item in checkBoxList.Items )
+            if ( checkBoxList is Rock.Web.UI.Controls.CampusesPicker )
             {
-                item.Selected = values.Contains( item.Value, StringComparer.OrdinalIgnoreCase );
+                // Campus Picker will add the items if neccessary, so needs to be handled differently
+                ( (Rock.Web.UI.Controls.CampusesPicker)checkBoxList ).SelectedCampusIds = values.AsIntegerList();
+            }
+            else
+            {
+                foreach ( ListItem item in checkBoxList.Items )
+                {
+                    item.Selected = values.Contains( item.Value, StringComparer.OrdinalIgnoreCase );
+                }
             }
         }
 
@@ -255,10 +311,18 @@ namespace Rock
         /// <param name="values">The values.</param>
         public static void SetValues( this CheckBoxList checkBoxList, IEnumerable<int> values )
         {
-            foreach ( ListItem item in checkBoxList.Items )
+            if ( checkBoxList is Rock.Web.UI.Controls.CampusesPicker )
             {
-                int numValue = int.MinValue;
-                item.Selected = int.TryParse( item.Value, out numValue ) && values.Contains( numValue );
+                // Campus Picker will add the items if neccessary, so needs to be handled differently
+                ( (Rock.Web.UI.Controls.CampusesPicker)checkBoxList ).SelectedCampusIds = values.ToList();
+            }
+            else
+            {
+                foreach ( ListItem item in checkBoxList.Items )
+                {
+                    int numValue = int.MinValue;
+                    item.Selected = int.TryParse( item.Value, out numValue ) && values.Contains( numValue );
+                }
             }
         }
 
@@ -277,21 +341,42 @@ namespace Rock
         {
             try
             {
-                var valueItem = listControl.Items.FindByValue( value );
-                if ( valueItem == null && defaultValue != null )
+                int? intValue = value.AsIntegerOrNull();
+                if ( listControl is Rock.Web.UI.Controls.CampusPicker && intValue.HasValue )
                 {
-                    valueItem = listControl.Items.FindByValue( defaultValue );
-                }
-
-                if ( valueItem != null )
-                {
-                    listControl.SelectedValue = valueItem.Value;
+                    // A Campus Picker can be configured to only load Active Campuses, but if trying to set the value to an Inactive Campus, it'll add that campus to the list
+                    // so this is a special case
+                    ( (Rock.Web.UI.Controls.CampusPicker)listControl ).SelectedCampusId = intValue.Value;
                 }
                 else
                 {
-                    if ( !(listControl is RadioButtonList) && listControl.Items.Count > 0 )
+                    var valueItem = listControl.Items.FindByValue( value );
+
+                    // if this is a Guid (string) but wasn't found, look and see if can find a match by converting the listitem.value and value to Guids first
+                    if ( valueItem == null )
                     {
-                        listControl.SelectedIndex = 0;
+                        Guid? valueAsGuid = value.AsGuidOrNull();
+                        if ( valueAsGuid.HasValue )
+                        {
+                            valueItem = listControl.Items.OfType<ListItem>()?.FirstOrDefault( a => a.Value.AsGuidOrNull() == valueAsGuid );
+                        }
+                    }
+
+                    if ( valueItem == null && defaultValue != null )
+                    {
+                        valueItem = listControl.Items.FindByValue( defaultValue );
+                    }
+
+                    if ( valueItem != null )
+                    {
+                        listControl.SelectedValue = valueItem.Value;
+                    }
+                    else
+                    {
+                        if ( !( listControl is RadioButtonList ) && listControl.Items.Count > 0 )
+                        {
+                            listControl.SelectedIndex = 0;
+                        }
                     }
                 }
             }

@@ -7,7 +7,6 @@ IF EXISTS (
     DROP PROCEDURE [dbo].spAnalytics_ETL_Attendance
 GO
 
-
 -- EXECUTE [dbo].[spAnalytics_ETL_Attendance] 
 CREATE PROCEDURE [dbo].spAnalytics_ETL_Attendance
 AS
@@ -220,10 +219,10 @@ BEGIN
     CROSS APPLY (
         SELECT TOP 1 DATEDIFF(day, previousAttendanceOfType.StartDateTime, asa.StartDateTime) [CalcDaysSinceLastAttendanceOfType]
         FROM AnalyticsSourceAttendance previousAttendanceOfType
-        WHERE previousAttendanceOfType.CurrentPersonKey = asa.CurrentPersonKey
+        WHERE previousAttendanceOfType.CurrentPersonKey is not null and previousAttendanceOfType.CurrentPersonKey = asa.CurrentPersonKey
             AND previousAttendanceOfType.AttendanceTypeId = asa.AttendanceTypeId
             AND convert(DATE, previousAttendanceOfType.StartDateTime) < convert(DATE, asa.StartDateTime)
         ORDER BY previousAttendanceOfType.StartDateTime DESC
         ) x
-    WHERE isnull(asa.DaysSinceLastAttendanceOfType, 0) != isnull(x.[CalcDaysSinceLastAttendanceOfType], 0)
+    WHERE asa.CurrentPersonKey is not null and isnull(asa.DaysSinceLastAttendanceOfType, 0) != isnull(x.[CalcDaysSinceLastAttendanceOfType], 0)
 END

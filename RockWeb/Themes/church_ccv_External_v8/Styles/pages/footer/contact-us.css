@@ -41,6 +41,15 @@
     width: 45%;
 }
 
+.control-wrapper {
+    display:block;
+    /* pointer-events: none; */
+}
+
+#formFontColor {
+    color: black;
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .first-name, .last-name, .email-address, .phone-number {

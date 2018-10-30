@@ -1,20 +1,4 @@
-﻿// <copyright>
-// Copyright by the Spark Development Network
-//
-// Licensed under the Rock Community License (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.rockrms.com/license
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
@@ -43,10 +27,10 @@ namespace RockWeb.Plugins.church_ccv.Connection
 
     [LinkedPage( "Configuration Page", "Page used to modify and create connection opportunities.", true, "", "", 0 )]
     [LinkedPage( "Detail Page", "Page used to view details of an requests.", true, "", "", 1 )]
-    [ConnectionTypesField("Connection Types", "Optional list of connection types to limit the display to (All will be displayed by default).", false, order:2 )]
-    [BooleanField( "Show Last Activity Note", "If enabled, the block will show the last activity note for each request in the list.", false, order:3 )]
-    [BooleanField( "Show Assigned Group", "If enabled, the block will show the assigned group for each request in the list.", false, order:4 )]
-    [BooleanField( "Show Created Date", "If enabled, the block will show the created date of the request.", false, order:5)]
+    [ConnectionTypesField( "Connection Types", "Optional list of connection types to limit the display to (All will be displayed by default).", false, order: 2 )]
+    [BooleanField( "Show Last Activity Note", "If enabled, the block will show the last activity note for each request in the list.", false, order: 3 )]
+    [BooleanField( "Show Assigned Group", "If enabled, the block will show the assigned group for each request in the list.", false, order: 4 )]
+    [BooleanField( "Show Created Date", "If enabled, the block will show the created date of the request.", false, order: 5 )]
 
     [CodeEditorField( "StatusTemplate", "Lava Template that can be used to customize what is displayed in the status bar. Includes common merge fields plus ConnectionOpportunities, ConnectionTypes and the default IdleTooltip.", CodeEditorMode.Lava, CodeEditorTheme.Rock, defaultValue:
 @"<div class='pull-left badge-legend padding-r-md'>
@@ -54,7 +38,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
     <span class='pull-left badge badge-warning js-legend-badge' data-toggle='tooltip' data-original-title='Unassigned Item'>&nbsp;</span>
     <span class='pull-left badge badge-critical js-legend-badge' data-toggle='tooltip' data-original-title='Critical Status'>&nbsp;</span>
     <span class='pull-left badge badge-danger js-legend-badge' data-toggle='tooltip' data-original-title='{{ IdleTooltip }}'>&nbsp;</span> 
-</div>", order:4
+</div>", order: 4
 )]
 
     [CodeEditorField( "OpportunitySummaryTemplate", "Lava Template that can be used to customize what is displayed in each Opportunity Summary. Includes common merge fields plus the OpportunitySummary, ConnectionOpportunity, and its ConnectionRequests.", CodeEditorMode.Lava, CodeEditorTheme.Rock, defaultValue:
@@ -232,7 +216,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
                 else
                 {
                     // if 'All Opportunities' is selected, show all the opportunities for the type
-                    rptConnectionOpportunities.DataSource = connectionType.Opportunities.OrderBy(c => c.Name);
+                    rptConnectionOpportunities.DataSource = connectionType.Opportunities.OrderBy( c => c.Name );
                 }
                 rptConnectionOpportunities.DataBind();
                 //rptConnectionOpportunities.ItemCommand += rptConnectionOpportunities_ItemCommand;
@@ -253,7 +237,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson, new Rock.Lava.CommonMergeFieldsOptions { GetLegacyGlobalMergeFields = false } );
             mergeFields.Add( "OpportunitySummary", DotLiquid.Hash.FromAnonymousObject( opportunitySummary ) );
 
-            string result = null; 
+            string result = null;
             using ( var rockContext = new RockContext() )
             {
                 var connectionOpportunity = new ConnectionOpportunityService( rockContext ).Queryable().AsNoTracking().FirstOrDefault( a => a.Id == opportunitySummary.Id );
@@ -276,7 +260,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
             var mergeFields = new Dictionary<string, object>();
             mergeFields.Add( "ConnectionRequest", connectionRequest );
 
-            var mergeTemplate = this.GetAttributeValue( "ConnectionRequestStatusTemplate" ); 
+            var mergeTemplate = this.GetAttributeValue( "ConnectionRequestStatusTemplate" );
             return mergeTemplate.ResolveMergeFields( mergeFields );
         }
 
@@ -326,7 +310,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
 
             BindGrid();
         }
-        
+
         /// <summary>
         /// Rs the filter_ display filter value.
         /// </summary>
@@ -530,24 +514,24 @@ namespace RockWeb.Plugins.church_ccv.Connection
                     var connectionRequestsQry = new ConnectionRequestService( rockContext ).Queryable().Where( a => a.ConnectionOpportunityId == opportunity.Id );
                     var currentDateTime = RockDateTime.Now;
                     int idleCount = connectionRequestsQry
-                                        .Where( cr => 
+                                        .Where( cr =>
                                             (
-                                                cr.ConnectionState == ConnectionState.Active 
-                                                || (cr.ConnectionState == ConnectionState.FutureFollowUp && cr.FollowupDate.HasValue && cr.FollowupDate.Value < _midnightToday)
+                                                cr.ConnectionState == ConnectionState.Active
+                                                || ( cr.ConnectionState == ConnectionState.FutureFollowUp && cr.FollowupDate.HasValue && cr.FollowupDate.Value < _midnightToday )
                                             )
                                             && (
-                                                ( cr.ConnectionRequestActivities.Any() && cr.ConnectionRequestActivities.Max(ra => ra.CreatedDateTime) < SqlFunctions.DateAdd( "day", -cr.ConnectionOpportunity.ConnectionType.DaysUntilRequestIdle, currentDateTime )) )
+                                                ( cr.ConnectionRequestActivities.Any() && cr.ConnectionRequestActivities.Max( ra => ra.CreatedDateTime ) < SqlFunctions.DateAdd( "day", -cr.ConnectionOpportunity.ConnectionType.DaysUntilRequestIdle, currentDateTime ) ) )
                                                 || ( !cr.ConnectionRequestActivities.Any() && cr.CreatedDateTime < SqlFunctions.DateAdd( "day", -cr.ConnectionOpportunity.ConnectionType.DaysUntilRequestIdle, currentDateTime ) )
                                                )
                                         .Count();
 
                     // Count the number requests that have a status that is considered critical.
                     int criticalCount = connectionRequestsQry
-                                            .Where( r => 
-                                                r.ConnectionStatus.IsCritical 
+                                            .Where( r =>
+                                                r.ConnectionStatus.IsCritical
                                                 && (
-                                                    r.ConnectionState == ConnectionState.Active 
-                                                    || (r.ConnectionState == ConnectionState.FutureFollowUp && r.FollowupDate.HasValue && r.FollowupDate.Value < _midnightToday)
+                                                    r.ConnectionState == ConnectionState.Active
+                                                    || ( r.ConnectionState == ConnectionState.FutureFollowUp && r.FollowupDate.HasValue && r.FollowupDate.Value < _midnightToday )
                                                     )
                                                     )
                                             .Count();
@@ -574,12 +558,12 @@ namespace RockWeb.Plugins.church_ccv.Connection
             var allOpportunities = SummaryState.SelectMany( s => s.Opportunities ).Select( o => o.Id ).Distinct().ToList();
 
             // Get all the active and past-due future followup request ids, and include the campus id and personid of connector
-            var midnightToday = RockDateTime.Today.AddDays(1);
+            var midnightToday = RockDateTime.Today.AddDays( 1 );
             var activeRequests = new ConnectionRequestService( rockContext )
                 .Queryable().AsNoTracking()
                 .Where( r =>
                     allOpportunities.Contains( r.ConnectionOpportunityId ) &&
-                    ( r.ConnectionState == ConnectionState.Active || 
+                    ( r.ConnectionState == ConnectionState.Active ||
                         ( r.ConnectionState == ConnectionState.FutureFollowUp && r.FollowupDate.HasValue && r.FollowupDate.Value < midnightToday ) ) )
                 .Select( r => new
                 {
@@ -630,7 +614,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
             }
 
             var statusTemplate = this.GetAttributeValue( "StatusTemplate" );
-            var statusMergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields(this.RockPage);
+            var statusMergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage );
             statusMergeFields.Add( "ConnectionOpportunities", allOpportunities );
             statusMergeFields.Add( "ConnectionTypes", connectionTypes );
             statusMergeFields.Add( "IdleTooltip", sb.ToString() );
@@ -713,7 +697,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
                     cblState.Visible = true;
                     cblState.SetValues( rFilter.GetUserPreference( "State" ).SplitDelimitedValues().AsIntegerList() );
                 }
-                
+
                 cblCampus.DataSource = CampusCache.All();
                 cblCampus.DataBind();
                 cblCampus.SetValues( rFilter.GetUserPreference( "Campus" ).SplitDelimitedValues().AsIntegerList() );
@@ -789,11 +773,11 @@ namespace RockWeb.Plugins.church_ccv.Connection
                     }
 
                     // Filter by State
-                    
+
                     if ( tglMyOpportunities.Checked )
                     {
                         requests = requests
-                            .Where( r => r.ConnectionState == ConnectionState.Active || 
+                            .Where( r => r.ConnectionState == ConnectionState.Active ||
                                     ( r.ConnectionState == ConnectionState.FutureFollowUp && r.FollowupDate.HasValue && r.FollowupDate.Value < _midnightToday ) );
                     }
                     else
@@ -845,7 +829,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
                             .Where( r => lastActivityIds.Contains(
                                 r.ConnectionRequestActivities.OrderByDescending( a => a.CreatedDateTime ).Select( a => a.ConnectionActivityTypeId ).FirstOrDefault() ) );
                     }
-                    
+
                     // select the data we need into new anonymous objects, and then turn it back into a query
                     var requestData = requests.ToList()
                                         .Select( r => new
@@ -869,7 +853,7 @@ namespace RockWeb.Plugins.church_ccv.Connection
                                             ConnectionState = r.ConnectionState,
                                             StateLabel = FormatStateLabel( r.ConnectionState, r.FollowupDate ),
                                             ConnectionRequest = r
-                                        } ).AsQueryable( );
+                                        } ).AsQueryable();
 
                     // now sort it, which will work because we've flattened our data into logical values that will display in the grid
                     SortProperty sortProperty = gRequests.SortProperty;
@@ -883,8 +867,8 @@ namespace RockWeb.Plugins.church_ccv.Connection
                     }
 
                     // bind!
-                    gRequests.DataSource = requestData.ToList( );
-                    gRequests.DataBind( );
+                    gRequests.DataSource = requestData.ToList();
+                    gRequests.DataBind();
 
                     lOpportunityIcon.Text = string.Format( "<i class='{0}'></i>", opportunitySummary.IconCssClass );
                     lConnectionRequest.Text = String.Format( "{0} Connection Requests", opportunitySummary.Name );
@@ -955,10 +939,18 @@ namespace RockWeb.Plugins.church_ccv.Connection
             string css = string.Empty;
             switch ( connectionState )
             {
-                case ConnectionState.Active: css = "success"; break;
-                case ConnectionState.Inactive: css = "danger"; break;
-                case ConnectionState.FutureFollowUp: css = ( followupDate.HasValue && followupDate.Value >= RockDateTime.Today.AddDays( 1 ) ) ? "info" : "info"; break;
-                case ConnectionState.Connected: css = "success"; break;
+                case ConnectionState.Active:
+                    css = "success";
+                    break;
+                case ConnectionState.Inactive:
+                    css = "danger";
+                    break;
+                case ConnectionState.FutureFollowUp:
+                    css = ( followupDate.HasValue && followupDate.Value >= RockDateTime.Today.AddDays( 1 ) ) ? "info" : "info";
+                    break;
+                case ConnectionState.Connected:
+                    css = "success";
+                    break;
             }
 
             string text = connectionState.ConvertToString();

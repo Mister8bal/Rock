@@ -210,9 +210,11 @@ namespace Rock.PayFlowPro
                             var rockContext = new RockContext();
                             var savedAccount = new FinancialPersonSavedAccountService( rockContext )
                                 .Queryable()
-                                .Where( s => s.TransactionCode == reference.TransactionCode )
+                                .Where( s => 
+                                    s.TransactionCode == reference.TransactionCode &&
+                                    s.FinancialGatewayId.HasValue &&
+                                    s.FinancialGatewayId.Value == financialGateway.Id )
                                 .FirstOrDefault();
-
                             if ( savedAccount != null )
                             {
                                 savedAccount.TransactionCode = txnResponse.Pnref;
@@ -224,14 +226,7 @@ namespace Rock.PayFlowPro
                     }
                     else
                     {
-                        if ( txnResponse.Result != 19 )
-                        {
-                            errorMessage = string.Format( "[{0}] {1}", txnResponse.Result, txnResponse.RespMsg );
-                        }
-                        else
-                        {
-                            errorMessage = @"Please note: Due to a processing error, you will need to re-enter your payment method in order to complete your transaction. You can do this by choosing the option 'Use a different payment method' and re-entering your credit card information. We apologize for the inconvenience. Thank you.";
-                        }
+                        errorMessage = string.Format( "[{0}] {1}", txnResponse.Result, txnResponse.RespMsg );
                     }
                 }
                 else

@@ -409,10 +409,10 @@ Sorry, your account has been locked.  Please contact our office at {{ 'Global' |
             mergeFields.Add( "Person", personDictionary );
             mergeFields.Add( "User", userLogin );
 
-            var recipients = new List<RecipientData>();
-            recipients.Add( new RecipientData( userLogin.Person.Email, mergeFields ) );
-
-            Email.Send( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid(), recipients, ResolveRockUrl( "~/" ), ResolveRockUrl( "~~/" ), false );
+            var emailMessage = new RockEmailMessage( GetAttributeValue( "ConfirmAccountTemplate" ).AsGuid() );
+            emailMessage.AddRecipient( new RecipientData( userLogin.Person.Email, mergeFields ) );
+            emailMessage.CreateCommunicationRecord = false;
+            emailMessage.Send();
         }
 
         /// <summary>

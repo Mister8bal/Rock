@@ -53,7 +53,7 @@ namespace Rock.Workflow.Action
 
             if ( entity is Model.BinaryFile )
             {
-               var binaryFile = (Model.BinaryFile) entity;
+                var binaryFile = (Model.BinaryFile) entity;
                 if ( binaryFile.BinaryFileType.Guid != new Guid( SystemGuid.BinaryFiletype.CHECKIN_LABEL ) )
                 {
                     errorMessages.Add( "Binary file is not a check-in label" );
@@ -61,7 +61,10 @@ namespace Rock.Workflow.Action
                     return false;
                 }
 
-                binaryFile.LoadAttributes();
+                if ( binaryFile.Attributes == null )
+                {
+                    binaryFile.LoadAttributes();
+                }
 
                 // Get the existing merge fields
                 var existingMergeFields = new Dictionary<string, string>();

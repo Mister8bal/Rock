@@ -36,6 +36,7 @@ namespace Rock.Web.UI.Controls
         private RockRadioButtonList _rblRole;
         private DropDownList _ddlTitle;
         private RockTextBox _tbFirstName;
+        private RockTextBox _tbNickName;
         private RockTextBox _tbMiddleName;
         private RockTextBox _tbLastName;
         private DropDownList _ddlSuffix;
@@ -70,7 +71,7 @@ namespace Rock.Web.UI.Controls
             {
                 if ( ViewState["PersonGuid"] != null )
                 {
-                    return (Guid)ViewState["PersonGuid"];
+                    return ( Guid ) ViewState["PersonGuid"];
                 }
                 else
                 {
@@ -90,6 +91,30 @@ namespace Rock.Web.UI.Controls
         {
             get { return _rblRole.SelectedValueAsInt(); }
             set { SetListValue( _rblRole, value ); }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [show title].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show title]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowTitle
+        {
+            get { return ViewState["ShowTitle"] as bool? ?? false; }
+            set { ViewState["ShowTitle"] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [show suffix].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show suffix]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowSuffix
+        {
+            get { return ViewState["ShowSuffix"] as bool? ?? false; }
+            set { ViewState["ShowSuffix"] = value; }
         }
 
         /// <summary>
@@ -117,6 +142,26 @@ namespace Rock.Web.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the name of the nick.
+        /// </summary>
+        /// <value>
+        /// The name of the nick.
+        /// </value>
+        public string NickName
+        {
+            get { return _tbNickName.Text; }
+            set { _tbNickName.Text = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [show nick name].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show nick name]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowNickName { get; set; }
+
+        /// <summary>
         /// Gets or sets the middle name
         /// </summary>
         /// <value>
@@ -127,14 +172,6 @@ namespace Rock.Web.UI.Controls
             get { return _tbMiddleName.Text; }
             set { _tbMiddleName.Text = value; }
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [show middle name].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [show middle name]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ShowMiddleName { get; set; }
 
         /// <summary>
         /// Gets or sets the last name.
@@ -180,11 +217,11 @@ namespace Rock.Web.UI.Controls
         /// </value>
         public Gender Gender
         {
-            get 
+            get
             {
                 return _rblGender.SelectedValueAsEnum<Gender>( Gender.Unknown );
             }
-            set 
+            set
             {
                 SetListValue( _rblGender, value.ConvertToInt().ToString() );
             }
@@ -244,11 +281,11 @@ namespace Rock.Web.UI.Controls
         /// </value>
         public bool RequireGender
         {
-            get 
+            get
             {
                 return _rblGender.Required;
             }
-            set 
+            set
             {
                 _rblGender.Required = value;
                 BindGender();
@@ -298,6 +335,18 @@ namespace Rock.Web.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [show middle name].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show middle name]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowMiddleName
+        {
+            get { return ViewState["ShowMiddleName"] as bool? ?? false; }
+            set { ViewState["ShowMiddleName"] = value; }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether [require grade].
         /// </summary>
         /// <value>
@@ -305,7 +354,7 @@ namespace Rock.Web.UI.Controls
         /// </value>
         public bool RequireGrade
         {
-            get 
+            get
             {
                 EnsureChildControls();
                 return _ddlGradePicker.Required;
@@ -335,6 +384,7 @@ namespace Rock.Web.UI.Controls
                 _rblRole.ValidationGroup = value;
                 _ddlTitle.ValidationGroup = value;
                 _tbFirstName.ValidationGroup = value;
+                _tbNickName.ValidationGroup = value;
                 _tbMiddleName.ValidationGroup = value;
                 _tbLastName.ValidationGroup = value;
                 _ddlSuffix.ValidationGroup = value;
@@ -354,6 +404,7 @@ namespace Rock.Web.UI.Controls
             _rblRole = new RockRadioButtonList();
             _ddlTitle = new DropDownList();
             _tbFirstName = new RockTextBox();
+            _tbNickName = new RockTextBox();
             _tbMiddleName = new RockTextBox();
             _tbLastName = new RockTextBox();
             _ddlSuffix = new DropDownList();
@@ -376,6 +427,7 @@ namespace Rock.Web.UI.Controls
             _rblRole.ID = "_rblRole";
             _ddlTitle.ID = "_ddlTitle";
             _tbFirstName.ID = "_tbFirstName";
+            _tbNickName.ID = "_tbNickName";
             _tbMiddleName.ID = "_tbMiddleName";
             _tbLastName.ID = "_tbLastName";
             _ddlSuffix.ID = "_ddlSuffix";
@@ -388,6 +440,7 @@ namespace Rock.Web.UI.Controls
             Controls.Add( _rblRole );
             Controls.Add( _ddlTitle );
             Controls.Add( _tbFirstName );
+            Controls.Add( _tbNickName );
             Controls.Add( _tbMiddleName );
             Controls.Add( _tbLastName );
             Controls.Add( _ddlSuffix );
@@ -415,6 +468,9 @@ namespace Rock.Web.UI.Controls
             _tbFirstName.Required = true;
             _tbFirstName.RequiredErrorMessage = "First Name is required for all group members";
 
+            _tbNickName.CssClass = "form-control";
+            _tbNickName.Placeholder = "Nick Name";
+
             _tbMiddleName.CssClass = "form-control";
             _tbMiddleName.Placeholder = "Middle Name";
             _tbMiddleName.Required = false;
@@ -435,6 +491,8 @@ namespace Rock.Web.UI.Controls
             BindGender();
 
             _dpBirthdate.StartView = DatePicker.StartViewOption.decade;
+            _dpBirthdate.ForceParse = false;
+            _dpBirthdate.AllowFutureDateSelection = false;
             _dpBirthdate.RequiredErrorMessage = "Birthdate is required for all group members";
             _dpBirthdate.Required = false;
 
@@ -445,7 +503,7 @@ namespace Rock.Web.UI.Controls
             _lbDelete.Controls.Add( iDelete );
             iDelete.AddCssClass( "fa fa-times" );
 
-            _lbDelete.CssClass = "btn btn-sm btn-danger";
+            _lbDelete.CssClass = "btn btn-sm btn-danger pull-right";
             _lbDelete.Click += lbDelete_Click;
             _lbDelete.CausesValidation = false;
         }
@@ -468,9 +526,12 @@ namespace Rock.Web.UI.Controls
                 writer.RenderEndTag();
                 writer.RenderEndTag();
 
-                writer.RenderBeginTag( HtmlTextWriterTag.Td );
-                _ddlTitle.RenderControl( writer );
-                writer.RenderEndTag();
+                if ( this.ShowTitle )
+                {
+                    writer.RenderBeginTag( HtmlTextWriterTag.Td );
+                    _ddlTitle.RenderControl( writer );
+                    writer.RenderEndTag();
+                }
 
                 writer.RenderBeginTag( HtmlTextWriterTag.Td );
 
@@ -478,6 +539,14 @@ namespace Rock.Web.UI.Controls
                 writer.RenderBeginTag( HtmlTextWriterTag.Div );
                 _tbFirstName.RenderControl( writer );
                 writer.RenderEndTag();
+
+                if ( this.ShowNickName )
+                {
+                    writer.AddAttribute( HtmlTextWriterAttribute.Class, "form-group" + ( _tbNickName.IsValid ? "" : " has-error" ) );
+                    writer.RenderBeginTag( HtmlTextWriterTag.Div );
+                    _tbNickName.RenderControl( writer );
+                    writer.RenderEndTag();
+                }
 
                 if ( this.ShowMiddleName )
                 {
@@ -494,9 +563,12 @@ namespace Rock.Web.UI.Controls
 
                 writer.RenderEndTag();
 
-                writer.RenderBeginTag( HtmlTextWriterTag.Td );
-                _ddlSuffix.RenderControl( writer );
-                writer.RenderEndTag();
+                if ( this.ShowSuffix )
+                {
+                    writer.RenderBeginTag( HtmlTextWriterTag.Td );
+                    _ddlSuffix.RenderControl( writer );
+                    writer.RenderEndTag();
+                }
 
                 writer.RenderBeginTag( HtmlTextWriterTag.Td );
                 _ddlConnectionStatus.RenderControl( writer );
@@ -569,11 +641,11 @@ namespace Rock.Web.UI.Controls
         /// </summary>
         /// <param name="listControl">The list control.</param>
         /// <param name="value">The value.</param>
-        private void SetListValue(ListControl listControl, int? value)
+        private void SetListValue( ListControl listControl, int? value )
         {
-            foreach(ListItem item in listControl.Items)
+            foreach ( ListItem item in listControl.Items )
             {
-                item.Selected = (value.HasValue && item.Value == value.Value.ToString());
+                item.Selected = ( value.HasValue && item.Value == value.Value.ToString() );
             }
         }
 

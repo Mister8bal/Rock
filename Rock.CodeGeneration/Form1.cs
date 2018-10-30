@@ -138,10 +138,15 @@ namespace Rock.CodeGeneration
                 var rootFolder = RootFolder();
                 if ( rootFolder != null )
                 {
+                    var dbSetEntityType = typeof( Rock.Data.RockContext ).GetProperties().Where( a => a.PropertyType.IsGenericType && a.PropertyType.Name == "DbSet`1" ).Select( a => a.PropertyType.GenericTypeArguments[0] ).ToList();
+                    var entityTypes = cblModels.Items.Cast<Type>().ToList();
+                    var missingDbSets = entityTypes.Where( a => !dbSetEntityType.Any( x => x.FullName == a.FullName ) ).ToList();
+                    System.Diagnostics.Debug.WriteLine( missingDbSets.Select( a => a.Name ).ToList().AsDelimited( "\r\n" ) );
+
                     foreach ( object item in cblModels.CheckedItems )
                     {
                         progressBar1.Value++;
-                        Type type = (Type)item;
+                        Type type = ( Type ) item;
 
                         // only generate Service and REST for IEntity types
                         if ( typeof( Rock.Data.IEntity ).IsAssignableFrom( type ) )
@@ -451,9 +456,10 @@ GO
             public string Column { get; set; }
             public bool IsPartOfPrimaryKey { get; set; }
             public bool Ignore { get; set; }
+            public bool HasEntityModel { get; set; }
             public override string ToString()
             {
-                return string.Format( "{0} | {1} {2} {3}", Table, Column, IsPartOfPrimaryKey ? "| PrimaryKey" : null, Ignore ? "| Ignored" : null );
+                return string.Format( "{0} | {1} {2} {3} {4}", Table, Column, IsPartOfPrimaryKey ? "| PrimaryKey" : null, Ignore ? "| Ignored" : null, HasEntityModel ? null : " | No Entity Model" );
             }
         }
 
@@ -515,8 +521,9 @@ order by [parentTable], [columnName]
             {
                 string parentTable = reader["parentTable"] as string;
                 string columnName = reader["columnName"] as string;
-                bool isPrimaryKey = (int)reader["IsPrimaryKey"] == 1;
+                bool isPrimaryKey = ( int ) reader["IsPrimaryKey"] == 1;
                 bool ignoreCanDelete = false;
+                bool hasEntityModel = true;
 
                 Type parentEntityType = Type.GetType( string.Format( "Rock.Model.{0}, {1}", parentTable, type.Assembly.FullName ) );
                 if ( parentEntityType != null )
@@ -530,8 +537,13 @@ order by [parentTable], [columnName]
                         }
                     }
                 }
+                else
+                {
+                    hasEntityModel = false;
+                }
 
-                parentTableColumnNameList.Add( new TableColumnInfo { Table = parentTable, Column = columnName, IsPartOfPrimaryKey = isPrimaryKey, Ignore = ignoreCanDelete } );
+
+                parentTableColumnNameList.Add( new TableColumnInfo { Table = parentTable, Column = columnName, IsPartOfPrimaryKey = isPrimaryKey, Ignore = ignoreCanDelete, HasEntityModel = hasEntityModel } );
             }
 
             parentTableColumnNameList = parentTableColumnNameList.OrderBy( a => a.Table ).ThenBy( a => a.Column ).ToList();
@@ -567,6 +579,13 @@ order by [parentTable], [columnName]
 @"            
             // ignoring {0},{1} 
 ", item.Table, item.Column );
+                    continue;
+                }
+
+                if ( !item.HasEntityModel )
+                {
+                    // if the table is in the database, but isn't a Rock Entity, skip it
+                    canDeleteMiddle += "";
                     continue;
                 }
 
@@ -666,17 +685,20 @@ order by [parentTable], [columnName]
             sb.AppendLine( "//" );
             sb.AppendLine( "" );
 
-            sb.AppendFormat( "using {0};" + Environment.NewLine, type.Namespace );
+            sb.AppendLine( $"using {type.Namespace};" );
             sb.AppendLine( "" );
 
-            sb.AppendFormat( "namespace {0}" + Environment.NewLine, restNamespace );
+            sb.AppendLine( $"namespace {restNamespace}" );
             sb.AppendLine( "{" );
             sb.AppendLine( "    /// <summary>" );
-            sb.AppendFormat( "    /// {0} REST API" + Environment.NewLine, pluralizedName );
+            sb.AppendLine( $"    /// {pluralizedName} REST API" );
             sb.AppendLine( "    /// </summary>" );
-            sb.AppendFormat( "    public partial class {0}Controller : Rock.Rest.ApiController<{1}.{2}>" + Environment.NewLine, pluralizedName, type.Namespace, type.Name );
+            sb.AppendLine( $"    public partial class {pluralizedName}Controller : Rock.Rest.ApiController<{type.Namespace}.{type.Name}>" );
             sb.AppendLine( "    {" );
-            sb.AppendFormat( "        public {0}Controller() : base( new {1}.{2}Service( new {3}() ) ) {{ }} " + Environment.NewLine, pluralizedName, type.Namespace, type.Name, dbContextFullName );
+            sb.AppendLine( "        /// <summary>" );
+            sb.AppendLine( $"        /// Initializes a new instance of the <see cref=\"{ pluralizedName}Controller\"/> class." );
+            sb.AppendLine( "        /// </summary>" );
+            sb.AppendLine( $"        public {pluralizedName}Controller() : base( new {type.Namespace}.{type.Name}Service( new {dbContextFullName}() ) ) {{ }} " );
             sb.AppendLine( "    }" );
             sb.AppendLine( "}" );
 
@@ -746,7 +768,7 @@ order by [parentTable], [columnName]
                 else
                 {
                     var sb = new StringBuilder();
-                    sb.AppendFormat( "{0}<", propertyType.Name.Split( (char)96 )[0] );
+                    sb.AppendFormat( "{0}<", propertyType.Name.Split( ( char ) 96 )[0] );
 
                     foreach ( var argType in propertyType.GetGenericArguments() )
                     {
@@ -792,18 +814,30 @@ order by [parentTable], [columnName]
         {
             switch ( typeName )
             {
-                case "Boolean": return "bool";
-                case "Byte": return "byte";
-                case "Char": return "char";
-                case "Decimal": return "decimal";
-                case "Double": return "double";
-                case "Single": return "float";
-                case "Int32": return "int";
-                case "Int64": return "long";
-                case "SByte": return "sbyte";
-                case "Int16": return "short";
-                case "String": return "string";
-                case "DbGeography": return "object";
+                case "Boolean":
+                    return "bool";
+                case "Byte":
+                    return "byte";
+                case "Char":
+                    return "char";
+                case "Decimal":
+                    return "decimal";
+                case "Double":
+                    return "double";
+                case "Single":
+                    return "float";
+                case "Int32":
+                    return "int";
+                case "Int64":
+                    return "long";
+                case "SByte":
+                    return "sbyte";
+                case "Int16":
+                    return "short";
+                case "String":
+                    return "string";
+                case "DbGeography":
+                    return "object";
             }
 
             return typeName;
@@ -921,6 +955,7 @@ order by [parentTable], [columnName]
 
             sb.AppendLine( "namespace Rock.Client.Enums" );
             sb.AppendLine( "{" );
+            sb.AppendLine( "    #pragma warning disable CS1591" );
 
             foreach ( var enumType in rockAssembly.GetTypes().Where( a => a.IsEnum ).OrderBy( a => a.Name ) )
             {
@@ -937,7 +972,7 @@ order by [parentTable], [columnName]
                     var enumValues = Enum.GetValues( enumType );
                     foreach ( var enumValueName in Enum.GetNames( enumType ) )
                     {
-                        int enumValue = (int)Convert.ChangeType( Enum.Parse( enumType, enumValueName ), typeof( int ) );
+                        int enumValue = ( int ) Convert.ChangeType( Enum.Parse( enumType, enumValueName ), typeof( int ) );
                         string enumValueParam = enumValue >= 0 ? " = 0x" + enumValue.ToString( "x" ) : " = " + enumValue.ToString();
                         sb.AppendFormat( "        {0}{1},", enumValueName, enumValueParam );
                         sb.AppendLine( "" );
@@ -948,7 +983,7 @@ order by [parentTable], [columnName]
                 }
             }
 
-
+            sb.AppendLine( "    #pragma warning restore CS1591" );
             sb.AppendLine( "}" );
 
             var file = new FileInfo( Path.Combine( rootFolder, "CodeGenerated\\Enums", "RockEnums.cs" ) );
@@ -991,6 +1026,7 @@ order by [parentTable], [columnName]
 
             sb.AppendLine( "namespace Rock.Client.SystemGuid" );
             sb.AppendLine( "{" );
+            sb.AppendLine( "    #pragma warning disable CS1591" );
 
             foreach ( var systemGuidType in rockAssembly.GetTypes().Where( a => a.Namespace == "Rock.SystemGuid" ).OrderBy( a => a.Name ) )
             {
@@ -1008,7 +1044,7 @@ order by [parentTable], [columnName]
                 sb.AppendLine( "" );
             }
 
-
+            sb.AppendLine( "    #pragma warning restore CS1591" );
             sb.AppendLine( "}" );
 
             var file = new FileInfo( Path.Combine( rootFolder, "CodeGenerated\\SystemGuid", "RockSystemGuids.cs" ) );
@@ -1148,7 +1184,7 @@ order by [parentTable], [columnName]
                     }
                     else if ( defaultValueAttribute.Value is bool )
                     {
-                        sb.AppendFormat( "        private {0} _{1} = {2};" + Environment.NewLine, this.PropertyTypeName( keyVal.Value.PropertyType ), keyVal.Key, (bool)defaultValueAttribute.Value ? "true" : "false" );
+                        sb.AppendFormat( "        private {0} _{1} = {2};" + Environment.NewLine, this.PropertyTypeName( keyVal.Value.PropertyType ), keyVal.Key, ( bool ) defaultValueAttribute.Value ? "true" : "false" );
                     }
                     else
                     {

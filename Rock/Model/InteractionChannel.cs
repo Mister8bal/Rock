@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration;
 using System.Runtime.Serialization;
 
@@ -30,6 +31,7 @@ namespace Rock.Model
     /// <summary>
     /// Represents a Interation Channel.
     /// </summary>
+    [RockDomain( "Core" )]
     [NotAudited]
     [Table( "InteractionChannel" )]
     [DataContract]
@@ -49,10 +51,10 @@ namespace Rock.Model
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the interaction service data.
+        /// Gets or sets the channel data.
         /// </summary>
         /// <value>
-        /// The interaction service data.
+        /// The channel data.
         /// </value>
         [DataMember]
         public string ChannelData { get; set; }
@@ -77,6 +79,10 @@ namespace Rock.Model
 
         /// <summary>
         /// Gets or sets the channel entity identifier.
+        /// Note, the ChannelEntityType is inferred based on what the ChannelTypeMediumValue is 
+        /// INTERACTIONCHANNELTYPE_WEBSITE = Rock.Model.Site
+        /// INTERACTIONCHANNELTYPE_COMMUNICATION = Rock.Model.Communication
+        /// INTERACTIONCHANNELTYPE_CONTENTCHANNEL = Rock.Model.ContentChannel
         /// </summary>
         /// <value>
         /// The channel entity identifier.
@@ -85,10 +91,10 @@ namespace Rock.Model
         public int? ChannelEntityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Id of the Service Type <see cref="Rock.Model.DefinedValue" /> representing what type of Interaction Service this is.
+        /// Gets or sets the Id of the Channel Type <see cref="Rock.Model.DefinedValue" /> representing what type of Interaction Channel this is.
         /// </summary>
         /// <value>
-        /// A <see cref="System.Int32"/> representing the Id of the <see cref="Rock.Model.DefinedValue"/> identifying the interaction service type. If no value is selected this can be null.
+        /// A <see cref="System.Int32"/> representing the Id of the <see cref="Rock.Model.DefinedValue"/> identifying the interaction channel type. If no value is selected this can be null.
         /// </value>
         [DataMember]
         [DefinedValue( SystemGuid.DefinedType.INTERACTION_CHANNEL_MEDIUM )]
@@ -103,6 +109,99 @@ namespace Rock.Model
         /// </value>
         [DataMember]
         public int? RetentionDuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the length of time that components of this channel should be cached
+        /// </summary>
+        /// <value>
+        /// The duration of the component cache.
+        /// </value>
+        [DataMember]
+        public int? ComponentCacheDuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel list template.
+        /// </summary>
+        /// <value>
+        /// The channel list template.
+        /// </value>
+        [DataMember]
+        public string ChannelListTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel detail template.
+        /// </summary>
+        /// <value>
+        /// The channel detail template.
+        /// </value>
+        [DataMember]
+        public string ChannelDetailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the component list template.
+        /// </summary>
+        /// <value>
+        /// The component list template.
+        /// </value>
+        [DataMember]
+        public string ComponentListTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the component detail template.
+        /// </summary>
+        /// <value>
+        /// The component detail template.
+        /// </value>
+        [DataMember]
+        public string ComponentDetailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session list template.
+        /// </summary>
+        /// <value>
+        /// The session list template.
+        /// </value>
+        [DataMember]
+        public string SessionListTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session detail template.
+        /// </summary>
+        /// <value>
+        /// The session detail template.
+        /// </value>
+        [DataMember]
+        public string SessionDetailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the interaction list template.
+        /// </summary>
+        /// <value>
+        /// The interaction list template.
+        /// </value>
+        [DataMember]
+        public string InteractionListTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the interaction detail template.
+        /// </summary>
+        /// <value>
+        /// The interaction detail template.
+        /// </value>
+        [DataMember]
+        public string InteractionDetailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [uses session].
+        /// Set to true if interactions in this channel from a web browser session (for example: PageViews).
+        /// Set to false if interactions in this channel are not associated with a web browser session (for example: communication clicks and opens from an email client or sms device).
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [uses session]; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember]
+        public bool UsesSession { get; set; }
+
 
         #endregion
 
@@ -139,6 +238,16 @@ namespace Rock.Model
 
         #region Public Methods
 
+        /// <summary>
+        /// Method that will be called on an entity immediately after the item is saved by context
+        /// </summary>
+        /// <param name="dbContext">The database context.</param>
+        public override void PostSaveChanges( Data.DbContext dbContext )
+        {
+            Web.Cache.InteractionChannelCache.Flush( this.Id );
+
+            base.PostSaveChanges( dbContext );
+        }
 
         #endregion
     }

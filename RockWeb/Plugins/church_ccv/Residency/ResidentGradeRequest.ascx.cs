@@ -314,11 +314,10 @@ namespace RockWeb.Plugins.church_ccv.Residency
 
             mergeObjects.Add( "GradeDetailPageUrl", gradeDetailPageUrl.ToString() );
 
-            var recipients = new List<RecipientData>();
-
-            recipients.Add( new RecipientData( facilitator.Email, mergeObjects ) );
-
-            Email.Send( church.ccv.Utility.SystemGuids.EmailTemplate.RESIDENCY_PROJECT_GRADE_REQUEST.AsGuid(), recipients );
+            var emailMessage = new RockEmailMessage( church.ccv.Utility.SystemGuids.EmailTemplate.RESIDENCY_PROJECT_GRADE_REQUEST.AsGuid() );
+            emailMessage.AddRecipient( new RecipientData( facilitator.Email, mergeObjects ) );
+            emailMessage.CreateCommunicationRecord = false;
+            emailMessage.Send();
 
             var parentParams = new Dictionary<string, string>();
             parentParams.Add( "CompetencyPersonProjectId", hfCompetencyPersonProjectId.Value );
