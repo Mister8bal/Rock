@@ -1,79 +1,63 @@
+{% for campusItem in Campuses %}
+    {% if campusItem.Id == Context.Campus.Id %}
+        {% assign campus = campusItem %}
+    {% endif %}
+{% endfor %}
 
-{% assign SpecialNeedsTimes = Context.Campus | Attribute: 'SpecialNeedsServiceTimes' | Split: ", " %}
-{% capture email %}{{ Context.Campus | Attribute: 'Email' }}{% endcapture%}
-{% if SpecialNeedsTime != empty  %}
-    {% if Context.Campus.Name != "Verrado"  %}
-        <div class="special-needs-details">
-            <div class="special-needs-service-times">
-            <br />
-                <h3>SERVICE TIMES</h3>
-                {% for time in SpecialNeedsTimes %}
-                    {{ time }} <br />
-                {% endfor %}  
-            </div>
-{% comment %} 
-             <div class="special-needs-service-detail">
-                <p class="">Contact: </p>
-            <div> <i class="fa fa-fw fa-phone"></i> {{ Context.Campus.PhoneNumber }}<br/> 
-        <fa class="fa fa-fw fa-envelope"></fa> <a href="mailto:{{ email }}?subject=Special Needs">{{ email }}</a>
-        </div>
-    </div> {% endcomment %}
-
-            <div class="special-needs-features">
-                <h3>FEATURES</h3>
-                <ul>
-                    <li>Weekend Programs</li>
-                    <li>Summer Camps</li>
-                    <li>Parent Groups</li>
-                    <li>Sports Programs</li>
-                </ul>
-            
-            </div>
-        </div>
-    {% else %}
-    <br>
-              <h3>Coming Soon!</h3>
-    {% endif %}    
+{% assign comingSoonUntil = campus | Attribute: 'ComingSoonUntil' | Date: 'yyyyMMdd' %}
+{% assign today = 'Now' | Date: 'yyyyMMdd' %}
+    
+{% if today < comingSoonUntil %}
+    {% assign isComingSoon = true %}
 {% endif %}
 
-
-
-
-{% comment %} 
-{% assign SpecialNeedsTimes = Context.Campus | Attribute: 'SpecialNeedsServiceTimes' | Split: ", " %}
-
-{% capture specialNeedsTimes %}{{ Context.Campus | Attribute: 'SpecialNeedsServiceTimes' }}{% endcapture%}
-
-{% assign num = Context.Campus | Attribute: 'PhoneNumber' %}
-{% capture phoneNumber %}{{ Context.Campus | Attribute: 'PhoneNumber' }}{% endcapture%}
 {% capture email %}{{ Context.Campus | Attribute: 'Email' }}{% endcapture%}
 
-{% if SpecialNeedsTime != empty  %}
-<div class="special-needs-details">
-    <div class="special-needs-service-times">
+{% unless isComingSoon %}
+    <div class="special-needs-details">
+        <div class="special-needs-service-times">
         <br />
-        {% if JrHighContact != empty and JrHighLocations != empty and JrHighTime != empty  %}
-            <div class="special-needs-service-detail">
-                <p class="special-needs-service-detail-label">When: </p>
-                <p>{{ specialNeedsTimes }}</p>
-            </div>
-            {% endif %}
-    </div>
-    <div class="special-needs-service-detail">
-        <p class="special-needs-service-detail-label">Contact: </p>
-        <div> <i class="fa fa-fw fa-phone"></i> {{ Context.Campus.PhoneNumber }}<br/> 
-        <fa class="fa fa-fw fa-envelope"></fa> <a href="mailto:{{ email }}?subject=Special Needs">{{ email }}</a>
+            <h3>SERVICE TIMES</h3>
+            <strong><span style="font-weight: bold;">Saturday</span></strong>
+            <ul class="list-inline">
+                {% for time in campus.ServiceTimes %}
+                    {% if time.Day == 'Saturday' %}
+                        {% if time.Time contains '%' %}
+                            {% assign hasSaturday = true %}
+                            <li>{{ time.Time | Remove: ' ' | Replace: '*', '' | Replace: '%', '' }}</li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% unless hasSaturday %}
+                    <li>None currently scheduled</li>
+                {% endunless %}
+            </ul>
+
+            <strong><span style="font-weight: bold;">Sunday</span></strong>
+            <ul class="list-inline">
+                {% for time in campus.ServiceTimes %}
+                    {% if time.Day == 'Sunday' %}
+                        {% if time.Time contains '%' %}
+                            {% assign hasSunday = true %}
+                            <li>{{ time.Time | Replace: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% unless hasSunday %}
+                    <li>None currently scheduled</li>
+                {% endunless %}
+            </ul>
+        </div>        
+        <div class="special-needs-features">
+            <h3>FEATURES</h3>
+            <ul>
+                <li>Weekend Programs</li>
+                <li>Summer Camps</li>
+                <li>Parent Groups</li>
+                <li>Sports Programs</li>
+            </ul>
         </div>
     </div>
-    
-    <div class="special-needs-features">
-        <h3>FEATURES</h3>
-        <ul>
-            <li>Weekend Programs</li>
-            <li>Summer Camps</li>
-            <li>Exceptional STARS</li>
-        </ul>
-    
-    </div>
-</div>
-{% endif %}  {% endcomment %}
+{% else %}
+    <h3>Coming Soon!</h3>
+{% endunless %}
