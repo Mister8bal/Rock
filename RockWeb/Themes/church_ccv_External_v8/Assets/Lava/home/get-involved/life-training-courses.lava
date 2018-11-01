@@ -1,6 +1,6 @@
 <div class="neighborhood-groups-card">
     <div class="title">
-        <h4>Life Training Classes</h4>
+        <h4>Life Training Courses</h4>
     </div>
     <div class="content">
         <div>               
@@ -19,7 +19,7 @@
                         <div class="person-info">       
                             {% for attribute in group.AttributeValues %}
                                 {% if attribute.Value != empty %}
-                                    {% if attribute.AttributeName == "Class Title" %}
+                                    {% if attribute.AttributeName == "Course Title" %}
                                          <h5>{{ attribute.ValueFormatted }}</h5>
                                          <p>{{ group.Schedule.FriendlyScheduleText }}</p>
                                     {% endif %}     
@@ -28,7 +28,7 @@
 
                             {% for attribute in group.AttributeValues %}
                                 {% if attribute.Value != empty %}
-                                    {% if attribute.AttributeName == "Class Topic" %}
+                                    {% if attribute.AttributeName == "Course Topic" %}
                                         <div class="registrationDiv">  
                                         <h5>Topic: </h5>
                                         <p>{{ attribute.ValueFormatted }}</p>
@@ -57,7 +57,7 @@
                             <div class="details-right-card">
                                 {% for attribute in group.AttributeValues %}
                                     {% if attribute.Value != empty %}
-                                        {% if attribute.AttributeName == "Class Description" %}
+                                        {% if attribute.AttributeName == "Course Description" %}
                                             <h5>Description</h5>
                                             {{ attribute.ValueFormatted }}
                                         <div class="moreInfoContainer">  
@@ -66,9 +66,9 @@
                                                 <h5>Registration Starts: </h5>
                                                 <p>{{ attribute.ValueFormatted }}</p>
                                              </div>  
-                                            {% elseif attribute.AttributeName == "Class Duration" %}
+                                            {% elseif attribute.AttributeName == "Course Duration" %}
                                             <div class="classDurationDiv">     
-                                                <h5>Class Duration: </h5>
+                                                <h5>Course Duration: </h5>
                                                <p> {{ attribute.ValueFormatted }}</p>
                                             </div>     
                                         

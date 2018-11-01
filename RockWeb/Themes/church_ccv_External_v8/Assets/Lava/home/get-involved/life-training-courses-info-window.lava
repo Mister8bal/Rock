@@ -1,6 +1,6 @@
 	{% for attribute in Group.AttributeValues %}
 		{% if attribute.Value != empty %}
-			  {% if attribute.AttributeName == "Class Title" %}
+			  {% if attribute.AttributeName == "Course Title" %}
 						<h5>{{ attribute.ValueFormatted }}</h5>
 						<p>{{ Group.Schedule.FriendlyScheduleText }}</p>
 				{% endif %}     
