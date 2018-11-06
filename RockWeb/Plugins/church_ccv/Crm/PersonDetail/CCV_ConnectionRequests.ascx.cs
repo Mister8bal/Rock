@@ -71,7 +71,12 @@ namespace RockWeb.Plugins.church_ccv.Crm.PersonDetail
             {
                 var rockContext = new RockContext();
                 var connectionTypeService = new ConnectionTypeService( rockContext );
-                var connectionTypesQry = connectionTypeService.Queryable().Where( a => a.ConnectionOpportunities.Any( b => b.ConnectionRequests.Any( r => r.PersonAlias.PersonId == this.Person.Id ) ) ).OrderBy( a => a.Name );
+                var connectionTypesQry = connectionTypeService
+                    .Queryable()
+                    .Where( a => a.ConnectionOpportunities
+                        .Any( b => b.ConnectionRequests
+                            .Any( r => r.PersonAlias.PersonId == this.Person.Id ) ) )
+                    .OrderBy( a => a.Name );
 
                 var connectionTypesList = connectionTypesQry.AsNoTracking().ToList();
 
@@ -104,7 +109,13 @@ namespace RockWeb.Plugins.church_ccv.Crm.PersonDetail
                     {
                         int personId = this.Person.Id;
                         var connectionRequestService = new ConnectionRequestService( rockContext );
-                        var connectionRequestList = connectionRequestService.Queryable().Where( a => a.PersonAlias.PersonId == personId && a.ConnectionOpportunity.ConnectionTypeId == connectionType.Id ).OrderBy( a => a.ConnectionOpportunity.Name ).AsNoTracking().ToList();
+                        var connectionRequestList = connectionRequestService
+                            .Queryable()
+                            .Where( a => a.PersonAlias.PersonId == personId && a.ConnectionOpportunity.ConnectionTypeId == connectionType.Id )
+                            .OrderBy( a => a.ConnectionOpportunity.Name )
+                            .AsNoTracking()
+                            .ToList();
+
                         string listHtml = string.Empty;
                         foreach ( var connectionRequest in connectionRequestList )
                         {
