@@ -151,11 +151,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
 
                         Person person = null;
 
-                        if ( CurrentPerson != null )
-                        {
-                            person = personService.Get( CurrentPerson.Id );
-                        }
-
                         // Create note
                         var note = new Note()
                         {
