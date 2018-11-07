@@ -31,15 +31,14 @@ using Rock.Web.UI;
 
 using church.ccv.Utility.SystemGuids;
 using church.ccv.Utility.Groups;
+using System.Globalization;
 
 namespace RockWeb.Plugins.church_ccv.Groups
 {
     [DisplayName( "NH Group Member Detail" )]
     [Category( "CCV > Groups" )]
     [Description( "Displays the details of the given Neighborhood group member " )]
-    [WorkflowTypeField( "OptOut Needs Next Steps Coach", "The workflow to use when opting out a person due to them needing a Next Steps Coach. The Person will be set as the workflow 'Entity' attribute when processing is started.", false, false, "", "" )]
     [WorkflowTypeField( "OptOut Not Attending Group", "The workflow to use when opting out a person due to them not attending group. The Person will be set as the workflow 'Entity' attribute when processing is started.", false, false, "", "" )]
-    [WorkflowTypeField( "OptOut No Longer Attends Workflow", "The workflow to use when opting out a person due to them no longer attending CCV. The Person will be set as the workflow 'Entity' attribute when processing is started.", false, false, "", "" )]
     public partial class NHGroupMemberDetail : ToolboxGroupMemberDetail, IDetailBlock
     {
         #region Control Methods
@@ -117,7 +116,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 // let the base save its stuff
                 base.SaveGroupMember( groupMember, rockContext );
                 
-
                 // now we only need to save stuff specific to this toolbox
 
                 // set their home phone
@@ -139,28 +137,41 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     groupMember.SaveAttributeValues( rockContext );
                 } );
 
-                // pass the group to the workflow
-                var workflowAttribs = new Dictionary<string, string>();
-                workflowAttribs.Add( "Group", groupMember.Group.Guid.ToString() );
-
                 // now handle any opt-out specific behavior
                 switch ( ddlOptOutReason.SelectedValue )
                 {
                     case church.ccv.Utility.SystemGuids.DefinedValue.NEIGHBORHOOD_OPT_OUT_NOT_ATTENDING_GROUP:
                     {
-                        StartWorkflow( "OptOutNotAttendingGroup", groupMember.Person, workflowAttribs, rockContext );
-                        break;
-                    }
+                        // Get current date and time
+                        DateTime now = DateTime.Now;
 
-                    case church.ccv.Utility.SystemGuids.DefinedValue.NEIGHBORHOOD_OPT_OUT_NEEDS_NEXT_STEPS_COACH:
-                    {
-                        StartWorkflow( "OptOutNeedsNextStepsCoach", groupMember.Person, workflowAttribs, rockContext );
-                        break;
-                    }
+                        // Create Note and Person Service
+                        var noteService = new NoteService( rockContext );
+                        var personService = new PersonService( rockContext );
 
-                    case church.ccv.Utility.SystemGuids.DefinedValue.NEIGHBORHOOD_OPT_OUT_NO_LONGER_ATTENDING_CCV:
-                    {
-                        StartWorkflow( "OptOutNoLongerAttendsWorkflow", groupMember.Person, workflowAttribs, rockContext );
+                        Person person = null;
+
+                        // Create note
+                        var note = new Note()
+                        {
+                            IsSystem = false,
+                            NoteTypeId = 8,
+                            EntityId = groupMember.Person.Id,
+                            Caption = string.Empty,
+                            CreatedByPersonAliasId = person.PrimaryAliasId,
+                            Text = person.FullName + " has flagged " + groupMember.Person.FullName + " as no longer attending group.",
+                            IsAlert = false,
+                            IsPrivateNote = false,
+                            CreatedDateTime = string.IsNullOrWhiteSpace( now.ToString( "F" ) ) ? RockDateTime.Now : DateTime.Parse( now.ToString( "F" ), new CultureInfo( "en-US" ) )
+                        };
+
+                        // Add note to persons profile
+                        noteService.Add( note );
+
+                        // delete the group member from the current group
+                        groupMemberService.Delete( groupMember );
+
+                        rockContext.SaveChanges();
                         break;
                     }
                 }
@@ -268,32 +279,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 {
                     IsMarried = true;
                 }
-
-                SetControlVisibilities();
             }
-        }
-        /// <summary>
-        /// Handles the SelectedIndexChanged event of the ddlOptOutReason control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected void ddlOptOutReason_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            SetControlVisibilities();
-        }
-
-        /// <summary>
-        /// Sets the control visibilities.
-        /// </summary>
-        private void SetControlVisibilities()
-        {
-            // toggle the follow-up date on or off depending on the reason.
-            dpFollowUpDate.Visible = ddlOptOutReason.SelectedValue == church.ccv.Utility.SystemGuids.DefinedValue.NEIGHBORHOOD_OPT_OUT_FOLLOW_UP_LATER;
-
-            // show the active / pending status picker if there's NO opt out reason.
-            rblActivePendingStatus.Visible = ddlOptOutReason.SelectedValue == string.Empty;
-            
-            dpAnniversaryDate.Visible = IsMarried == true;
         }
         #endregion
     }
