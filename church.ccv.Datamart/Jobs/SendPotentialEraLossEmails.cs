@@ -86,39 +86,46 @@ namespace church.ccv.Utility
 
             foreach (var lossRecipient in lossRecipients)
             {
+                // Check to see if the next family from the list of lost Recipients exists
                 var family = new GroupService( rockContext ).Get( lossRecipient.FamilyId );
-                var headOfHouse = family.Members.AsQueryable().HeadOfHousehold();
-                var campus = family.Campus.Name;
-                var campusPastor = new PersonAliasService( rockContext ).GetPerson( (int)family.Campus.LeaderPersonAliasId ).FullName;
-
-                if ( headOfHouse != null )
+                if ( family != null )
                 {
-                    var familyNeighborhoodId = new DatamartFamilyService( rockContext ).Queryable().Where( a => a.FamilyId == family.Id ).Select( a => a.NeighborhoodId ).FirstOrDefault() ?? 0;
-                    var neighborhoodPastorId = new DatamartNeighborhoodService( rockContext ).Queryable().Where( a => a.NeighborhoodId == familyNeighborhoodId ).Select( a => a.NeighborhoodPastorId ).FirstOrDefault() ?? 0;
-                    var neighborhoodPastor = new PersonService( rockContext ).Get( neighborhoodPastorId );
+                    var headOfHouse = family.Members.AsQueryable().HeadOfHousehold();
+                    var campus = family.Campus.Name;
+                    var campusPastor = new PersonAliasService( rockContext ).GetPerson( ( int ) family.Campus.LeaderPersonAliasId ).FullName;
 
-                    if ( neighborhoodPastor != null )
+                    // Check to see if the head of household exists
+                    if ( headOfHouse != null )
                     {
-                        var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
-                        mergeFields.Add( "Person", headOfHouse );
-                        mergeFields.Add( "Pastor", neighborhoodPastor );
-                        mergeFields.Add( "Campus", campus );
-                        mergeFields.Add( "CampusPastor", campusPastor );
+                        var familyNeighborhoodId = new DatamartFamilyService( rockContext ).Queryable().Where( a => a.FamilyId == family.Id ).Select( a => a.NeighborhoodId ).FirstOrDefault() ?? 0;
+                        var neighborhoodPastorId = new DatamartNeighborhoodService( rockContext ).Queryable().Where( a => a.NeighborhoodId == familyNeighborhoodId ).Select( a => a.NeighborhoodPastorId ).FirstOrDefault() ?? 0;
+                        var neighborhoodPastor = new PersonService( rockContext ).Get( neighborhoodPastorId );
 
-                        var emailMessage = new RockEmailMessage();
-                        emailMessage.AddRecipient( new RecipientData( headOfHouse.Email, mergeFields ) );
-                        emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                        emailMessage.FromEmail = neighborhoodPastor.Email;
-                        emailMessage.FromName = campusPastor;
-                        emailMessage.Subject = systemEmail.Subject;
-                        emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
-                        emailMessage.CreateCommunicationRecord = true;
-                        emailMessage.Send();
-                        emailsSent++;
+                        // Check to see if the neighborhood pastor exists
+                        if ( neighborhoodPastor != null )
+                        {
+                            var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+                            mergeFields.Add( "Person", headOfHouse );
+                            mergeFields.Add( "Pastor", neighborhoodPastor );
+                            mergeFields.Add( "Campus", campus );
+                            mergeFields.Add( "CampusPastor", campusPastor );
+
+                            // Create email to send
+                            var emailMessage = new RockEmailMessage();
+                            emailMessage.AddRecipient( new RecipientData( headOfHouse.Email, mergeFields ) );
+                            emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
+                            emailMessage.FromEmail = neighborhoodPastor.Email;
+                            emailMessage.FromName = campusPastor;
+                            emailMessage.Subject = systemEmail.Subject;
+                            emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
+                            emailMessage.CreateCommunicationRecord = true;
+                            emailMessage.Send();
+                            emailsSent++;
+                        }
                     }
                 }
 
-                // mark sent
+                // Whether the email sent or not mark as sent
                 lossRecipient.Sent = true;
                 rockContext.SaveChanges();
             }
