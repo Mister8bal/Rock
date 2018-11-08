@@ -40,6 +40,11 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [DisplayName( "CCV Group Detail Lava" )]
     [Category( "CCV > Groups" )]
     [Description( "Presents the details of a CCV group using Lava" )]
+    [LinkedPage( "Person Detail Page", "Page to link to for more information on a group member.", false, "", "", 0 )]
+    [LinkedPage( "Roster Page", "The page to link to to view the roster.", false, "", "", 2 )]
+    [LinkedPage( "Communication Page", "The communication page to use for sending emails to the group members.", false, "", "", 4 )]
+    [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
+    [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
     public partial class CCVGroupDetailLava : RockBlock
     {
         public UpdatePanel MainPanel { get { return upnlContent; } }
