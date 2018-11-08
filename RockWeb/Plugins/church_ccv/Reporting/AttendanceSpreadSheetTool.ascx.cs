@@ -1369,7 +1369,7 @@ namespace RockWeb.Plugins.church_ccv.Reporting
         private static System.Drawing.Color GetExcelColorForCampus( int campusId )
         {
             var campus = CampusCache.Read( campusId );
-            string campusHexColor = "#000000";
+            string campusHexColor = "#968484";
             if ( campus != null )
             {
                 switch ( campus.ShortCode )
@@ -1393,7 +1393,16 @@ namespace RockWeb.Plugins.church_ccv.Reporting
                         campusHexColor = "#DDD9C4";
                         break;
                     case "MID":
-                        campusHexColor = "#FFC000";
+                        campusHexColor = "#e29e5a";
+                        break;
+                    case "NPX":
+                        campusHexColor = "#9ae0ba";
+                        break;
+                    case "CHD":
+                        campusHexColor = "#dce886";
+                        break;
+                    case "VER":
+                        campusHexColor = "#ffdda8";
                         break;
                 }
             }
