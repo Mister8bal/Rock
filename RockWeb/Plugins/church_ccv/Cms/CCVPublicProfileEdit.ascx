@@ -30,7 +30,7 @@
                                             <Rock:RockDropDownList ID="ddlGroup" runat="server" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="ddlGroup_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
                                         </div>
                                 </h1>
-                                <div>
+                                <div class="flexThis">
                                     <div>
                                         <ul class="person-demographics list-unstyled">
                                             <li>
@@ -45,7 +45,7 @@
                                         <asp:Literal ID="lAddress" runat="server" />
                                         <br />
                                         </div>
-                                    <div>
+                                    <div class="indentedInnerContainer">
                                         <ul class="phone-list list-unstyled">
                                             <asp:Repeater ID="rptPhones" runat="server">
                                                 <ItemTemplate>
@@ -97,9 +97,9 @@
                                     <div class="photo">
                                         <asp:Literal ID="lGroupMemberImage" runat="server" />
                                     </div>
-                                    <div class="indentedContainer">
+                                    <div class="indentedContainer flexThis">
                                         <div>
-                                            <div>
+                                            <div class="boldThis">
                                               <asp:Literal ID="lGroupMemberName" runat="server" /></b>
                                             </div>
                                             <ul class="person-demographics list-unstyled">
@@ -113,7 +113,7 @@
                                                     <asp:Literal ID="lGrade" runat="server" /></li>
                                             </ul>
                                         </div>
-                                        <div>
+                                        <div class="indentedInnerContainer">
                                             <ul class="phone-list list-unstyled">
                                                 <asp:Repeater ID="rptGroupMemberPhones" runat="server">
                                                     <ItemTemplate>
@@ -151,9 +151,10 @@
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
-                    <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click"> Add New Family Member</asp:LinkButton>
-
-                    <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
+                   <div>
+                       <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click"> Add New Family Member</asp:LinkButton>
+                        <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
+                   </div> 
                 </asp:Panel>
 
                 <asp:Panel ID="pnlEdit" runat="server">

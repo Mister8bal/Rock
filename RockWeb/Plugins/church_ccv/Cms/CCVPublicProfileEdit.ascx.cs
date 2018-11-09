@@ -852,7 +852,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                                         .FirstOrDefault();
                                     if ( address != null )
                                     {
-                                        lAddress.Text = string.Format( "{0} Address</b><br />{1}", addressTypeDv.Value, address.FormattedHtmlAddress );
+                                        lAddress.Text = string.Format( "{0}<strong> Address</strong><br />{1}", addressTypeDv.Value, address.FormattedHtmlAddress );
                                     }
                                 }
                             }
