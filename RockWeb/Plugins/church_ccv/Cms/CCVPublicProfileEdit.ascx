@@ -44,7 +44,7 @@
                                         </ul>
                                         <asp:Literal ID="lAddress" runat="server" />
                                         <br />
-                                        </div>
+                                    </div>
                                     <div class="indentedInnerContainer">
                                         <ul class="phone-list list-unstyled">
                                             <asp:Repeater ID="rptPhones" runat="server">
