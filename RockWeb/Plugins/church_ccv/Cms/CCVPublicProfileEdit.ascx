@@ -81,9 +81,7 @@
                         </div>
 
                         </div>
-
-                       
-                            <asp:LinkButton ID="lbEditPerson" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" OnClick="lbEditPerson_Click" CausesValidation="false"> Update</asp:LinkButton>
+                        <asp:LinkButton ID="lbEditPerson" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" OnClick="lbEditPerson_Click" CausesValidation="false"> Update</asp:LinkButton>
                     </div>
                     <hr />
 
@@ -145,7 +143,7 @@
                                         </asp:Repeater>
                                     </div>  
                                 </div>
-                                <div>
+                                <div class="div-spacing">
                                     <asp:LinkButton ID="lbEditGroupMember" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" CommandArgument='<%# Eval("PersonId") %>' CommandName="Update"> Update</asp:LinkButton>
                                 </div>
                             </div>
@@ -153,7 +151,7 @@
                     </asp:Repeater>
                    <div>
                        <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click"> Add New Family Member</asp:LinkButton>
-                        <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
+                       <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
                    </div> 
                 </asp:Panel>
 
@@ -214,10 +212,10 @@
                     </asp:Panel>
 
                     <h3>Contact Info</h3>
-                    <div class="form-horizontal">
+                    <div>
                         <asp:Repeater ID="rContactInfo" runat="server">
                             <ItemTemplate>
-                                <div class="form-group">
+                                <div>
                                     <div class="control-label"><%# Eval("NumberTypeValue.Value")  %></div>
                                     <div class="controls">
                                         <div>
@@ -241,14 +239,14 @@
                             </ItemTemplate>
                         </asp:Repeater>
 
-                        <div class="form-group">
+                        <div>
                             <div class="control-label">Email</div>
                             <div class="controls">
                                 <Rock:DataTextBox ID="tbEmail" PrependText="<i class='fa fa-envelope'></i>" runat="server" SourceTypeName="Rock.Model.Person, Rock" PropertyName="Email" Label="" />
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div>
                             <div class="controls">
                                 <Rock:RockRadioButtonList ID="rblEmailPreference" runat="server" RepeatDirection="Horizontal" Label="Email Preference">
                                     <asp:ListItem Text="Email Allowed" Value="EmailAllowed" />

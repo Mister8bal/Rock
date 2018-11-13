@@ -291,7 +291,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
 
             // Setup Image
-            string imgTag = Rock.Model.Person.GetPersonPhotoImageTag( person, 200, 200 );
+            string imgTag = Rock.Model.Person.GetPersonPhotoImageTag( person );
             if ( person.PhotoId.HasValue )
             {
                 lGroupMemberImage.Text = string.Format( "<a href='{0}'>{1}</a>", person.PhotoUrl, imgTag );
@@ -764,7 +764,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 var personId = CurrentPerson.Id;
 
                 // Setup Image
-                string imgTag = Rock.Model.Person.GetPersonPhotoImageTag( CurrentPerson, 200, 200 );
+                string imgTag = Rock.Model.Person.GetPersonPhotoImageTag( CurrentPerson );
                 if ( CurrentPerson.PhotoId.HasValue )
                 {
                     lImage.Text = string.Format( "<a href='{0}'>{1}</a>", CurrentPerson.PhotoUrl, imgTag );
@@ -852,7 +852,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                                         .FirstOrDefault();
                                     if ( address != null )
                                     {
-                                        lAddress.Text = string.Format( "{0}<strong> Address</strong><br />{1}", addressTypeDv.Value, address.FormattedHtmlAddress );
+                                        lAddress.Text = string.Format( "{0}Address<br />{1}", addressTypeDv.Value, address.FormattedHtmlAddress );
                                     }
                                 }
                             }
