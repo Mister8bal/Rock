@@ -48,8 +48,8 @@
                         <div class="col-md-6">
                             <Rock:DatePicker ID="dpAnniversaryDate" runat="server" Label="Anniversary Date" RepeatDirection="Horizontal" />
 
-                            <Rock:RockDropDownList ID="ddlOptOutReason" runat="server" Label="Opt Out" AutoPostBack="true" OnSelectedIndexChanged="ddlOptOutReason_SelectedIndexChanged" />
-                            <Rock:DatePicker ID="dpFollowUpDate" runat="server" Label="Follow Up Date" />
+                            <Rock:RockDropDownList ID="ddlOptOutReason" runat="server" Label="Delete member from group" AutoPostBack="true" />
+                            <Rock:DatePicker ID="dpFollowUpDate" runat="server" Label="Follow Up Date" visible="false" />
                         </div>
                     </div>
 

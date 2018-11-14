@@ -48,6 +48,10 @@ using Rock.Web.Cache;
 using Rock.Web.UI;
 using UAParser;
 
+// CCV CORE 
+// AJS 10/30/18
+// Added PersonByAliasGuid function
+
 namespace Rock.Lava
 {
     /// <summary>
@@ -1919,6 +1923,30 @@ namespace Rock.Lava
                 var rockContext = new RockContext();
 
                 return new PersonService( rockContext ).Get( personGuid.Value );
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Loads a person by their alias guid
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static Person PersonByAliasGuid( DotLiquid.Context context, object input )
+        {
+            if ( input == null )
+            {
+                return null;
+            }
+            Guid? personAliasGuid = input.ToString().AsGuidOrNull();
+            if ( personAliasGuid.HasValue )
+            {
+                var rockContext = new RockContext();
+                return new PersonAliasService( rockContext ).Get( personAliasGuid.Value ).Person;
             }
             else
             {

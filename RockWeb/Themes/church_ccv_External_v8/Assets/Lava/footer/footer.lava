@@ -19,7 +19,7 @@
             <h5>Resources</h5>
             <a href="/ministries/adults/life-training">Life Training</a>
             <a href="/reach-out/prayer">Prayer</a>
-            {% comment %} <a href="/ccv-resources">Church Resources</a> {% endcomment %}
+            <a href="/ccv-resources">Church Resources</a>
         </div>
         <div class="footer-links-section">
             <h5>Reach out</h5>
