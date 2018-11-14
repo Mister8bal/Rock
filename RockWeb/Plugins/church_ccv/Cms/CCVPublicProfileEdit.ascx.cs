@@ -261,40 +261,55 @@ namespace RockWeb.Plugins.church_ccv.Cms
             var rptGroupMemberAttributes = e.Item.FindControl( "rptGroupMemberAttributes" ) as Repeater;
             var lbEditGroupMember = e.Item.FindControl( "lbEditGroupMember" ) as LinkButton;
 
-            var lbBaptismPhoto = e.Item.FindControl( "lbBaptismPhoto" ) as Literal;
-            var lbCertificate = e.Item.FindControl( "lbCertificate" ) as Literal;
+            var lBaptismPhoto = e.Item.FindControl( "lBaptismPhoto" ) as Literal;
+            var lCertificate = e.Item.FindControl( "lCertificate" ) as Literal;
+
+            var lLeaderBaptismPhoto = e.Item.FindControl( "lLeaderBaptismPhoto" ) as Literal;
+            var lLeaderCertificate = e.Item.FindControl( "lLeaderCertificate" ) as Literal;
+
+
 
             if ( lbEditGroupMember != null )
             {
                 lbEditGroupMember.Visible = _canEdit;
             }
 
+            var tempText = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
+
+            DateTime? baptismDate = person.GetAttributeValue( "BaptismDate" ).AsDateTime();
+            var baptismPhoto = person.AttributeValues["BaptismPhoto"];
+            var baptizedHere = person.AttributeValues["BaptizedHere"].ToString();
+
+
+            // do they have spiritual gifts set?
+            //if ( string.IsNullOrWhiteSpace( spiritualGiftsAttrib.Value ) == false )
+
             // Assign baptism photo
-            if ( person.PhotoId.HasValue )
+            if ( baptismPhoto != null )
             {
-                lbBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
+                lBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
             }
             else
             {
-                lbBaptismPhoto.Text = "";
+                lBaptismPhoto.Text = "";
             }
 
             // Assign baptism certificate 
-            if ( person.PhotoId.HasValue )
+            if ( baptizedHere == "Yes" && baptismDate != null )
             {
-                lbCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
+                lCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
             }
             else
             {
-                lbCertificate.Text = "";
+                lCertificate.Text = "";
             }
-
 
             // Setup Image
             string imgTag = Rock.Model.Person.GetPersonPhotoImageTag( person );
             if ( person.PhotoId.HasValue )
             {
                 lGroupMemberImage.Text = string.Format( "<a href='{0}'>{1}</a>", person.PhotoUrl, imgTag );
+                
             }
             else
             {
@@ -780,6 +795,34 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 {
                     lAge.Text = string.Format( "{0} old <small>({1})</small><br/>", CurrentPerson.FormatAge(), CurrentPerson.BirthYear != DateTime.MinValue.Year ? CurrentPerson.BirthDate.Value.ToShortDateString() : CurrentPerson.BirthDate.Value.ToMonthDayString() );
                 }
+
+
+                DateTime? baptismDate = CurrentPerson.GetAttributeValue( "BaptismDate" ).AsDateTime();
+                var baptismPhoto = CurrentPerson.AttributeValues["BaptismPhoto"];
+                var baptizedHere = CurrentPerson.AttributeValues["BaptizedHere"].ToString();
+
+                // Assign Head of House baptism photo
+                if ( baptismPhoto != null )
+                {
+                    lLeaderBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
+                }
+                else
+                {
+                    lLeaderBaptismPhoto.Text = "";
+                }
+
+                // Assign Head of House baptism certificate 
+                if ( baptizedHere == "Yes" && baptismDate != null )
+                {
+                    lLeaderCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
+                }
+                else
+                {
+                    lLeaderCertificate.Text = "";
+                }
+
+
+
 
                 lGender.Text = CurrentPerson.Gender != Gender.Unknown ? CurrentPerson.Gender.ToString() : string.Empty;
                 lGrade.Text = CurrentPerson.GradeFormatted;

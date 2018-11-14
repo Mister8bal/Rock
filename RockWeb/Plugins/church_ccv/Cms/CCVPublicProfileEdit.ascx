@@ -18,19 +18,26 @@
                 <Rock:NotificationBox ID="nbNotAuthorized" runat="server" Text="You must be logged in to view your account." NotificationBoxType="Danger" Visible="false" />
                 <asp:Panel ID="pnlView" runat="server">
                     <div>
-
-                        <div class="flexThis">
-                            <div class="photo">
+                        <div class="person-row">
+                            <div class="person-photo">
                                 <asp:Literal ID="lImage" runat="server" />
+                                <div class="nextstep-modal-baptism-buttons-person-profile">
+                                    <div>
+                                        <asp:Literal ID="lLeaderBaptismPhoto" runat="server" />
+                                    </div>
+                                    <div>
+                                        <asp:Literal ID="lLeaderCertificate" runat="server" />
+                                    </div>
+                                </div>
                             </div>
-                            <div class="indentedContainer">
+                            <div class="person-profile-info no-flex-zone">
                                 <h1 class="title name">
-                                        <asp:Literal ID="lName" runat="server" />
-                                        <div>
-                                            <Rock:RockDropDownList ID="ddlGroup" runat="server" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="ddlGroup_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
-                                        </div>
+                                    <asp:Literal ID="lName" runat="server" />
+                                    <div>
+                                        <Rock:RockDropDownList ID="ddlGroup" runat="server" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="ddlGroup_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
+                                    </div>
                                 </h1>
-                                <div class="flexThis">
+                                <div class="person-info-details">
                                     <div>
                                         <ul class="person-demographics list-unstyled">
                                             <li>
@@ -45,18 +52,20 @@
                                         <asp:Literal ID="lAddress" runat="server" />
                                         <br />
                                     </div>
-                                    <div class="indentedInnerContainer">
+                                    <div class="person-contact-info">
                                         <ul class="phone-list list-unstyled">
                                             <asp:Repeater ID="rptPhones" runat="server">
                                                 <ItemTemplate>
                                                     <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
                                                 </ItemTemplate>
                                             </asp:Repeater>
+                                            <asp:Literal ID="lEmail" runat="server" />
                                         </ul>
-                                        <asp:Literal ID="lEmail" runat="server" />
+                                        
                                     </div>
-                                </div>
-                            <div>
+                                </div>                            
+                                
+                           <div>
                                 <asp:Repeater ID="rptPersonAttributes" runat="server">
                                     <ItemTemplate>
                                         <div>
@@ -91,12 +100,20 @@
                     <asp:Repeater ID="rptGroupMembers" runat="server" OnItemDataBound="rptGroupMembers_ItemDataBound" OnItemCommand="rptGroupMembers_ItemCommand">
                         <ItemTemplate>
                             <div>
-                                <div class="flexThis">
-                                    <div class="photo">
+                                <div class="person-row">
+                                    <div class="person-photo">
                                         <asp:Literal ID="lGroupMemberImage" runat="server" />
+                                         <div class="nextstep-modal-baptism-buttons-person-profile">
+                                            <div>
+                                                <asp:Literal ID="lBaptismPhoto" runat="server" />
+                                            </div>
+                                            <div>
+                                                <asp:Literal ID="lCertificate" runat="server" />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="indentedContainer flexThis">
-                                        <div>
+                                    <div class="person-profile-info">
+                                        <div class="person-info-details no-flex-zone">
                                             <div class="boldThis">
                                               <asp:Literal ID="lGroupMemberName" runat="server" /></b>
                                             </div>
@@ -111,26 +128,19 @@
                                                     <asp:Literal ID="lGrade" runat="server" /></li>
                                             </ul>
                                         </div>
-                                        <div class="indentedInnerContainer">
+                                        <div class="person-contact-info">
                                             <ul class="phone-list list-unstyled">
                                                 <asp:Repeater ID="rptGroupMemberPhones" runat="server">
                                                     <ItemTemplate>
                                                         <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
                                                     </ItemTemplate>
                                                 </asp:Repeater>
+                                                <asp:Literal ID="lGroupMemberEmail" runat="server" />
                                             </ul>
-                                            <asp:Literal ID="lGroupMemberEmail" runat="server" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="nextstep-modal-baptism-buttons-person-profile">
-                                    <div>
-                                        <asp:Literal ID="lbBaptismPhoto" runat="server" />
-                                    </div>
-                                    <div>
-                                        <asp:Literal ID="lbCertificate" runat="server" />
-                                    </div>
-                                </div>
+                               
                                 <div>
                                
                                     <div>
