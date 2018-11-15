@@ -62,8 +62,8 @@
     }
 
     .main-feature {
-        height: unset !important;
-        padding-top: 50px !important;
+        height: 240px !important;
+        padding-top: 90px !important;
     }
 }    
 

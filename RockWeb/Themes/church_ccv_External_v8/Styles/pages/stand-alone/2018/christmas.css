@@ -2,12 +2,21 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
 }
 
+#subnavbar-bg {
+    display: none;
+}
+
 .main-feature {
     padding-top: 100px;
 }
 
 #zone-feature {
     margin: 0 auto;
+}
+
+/* temp hiding advent section until page is ready */
+#section-c-bg {
+    display: none;
 }
 
 /* Mobile Background Image */
@@ -96,6 +105,10 @@
 /* End Map Section */
 
 /* Campus Card Section */
+#zone-sectionb {
+    margin: 0 auto;
+}
+
 .service-times-title {
     color: #bb191f;
     font-family: heebo;
@@ -106,14 +119,16 @@
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .campus-card {
     display: flex;
     flex-direction: column;
-    margin: 0 0 20px 0;
-    width: 32%;
+    margin: 0 10px 20px 10px;
+    width: 345px;
+    min-width: 345px;
+    max-width: 345px;
     height: 575px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     border-radius: 5px;
@@ -187,10 +202,16 @@
 }
 
 /* Campus Card Responsive Styling */
-@media screen and (max-width: 1520px) {
+@media screen and (max-width: 760px) {
+    .campus-cards-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .campus-card {
         height: 600px;
     }
+
     .campus-card .link {
         flex-direction: column;
         justify-content: center;
@@ -209,15 +230,11 @@
     }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 320px) {
     .campus-card {
-        width: 48%;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .campus-card {
-        width: 98%;
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
     }
 }
 
@@ -247,12 +264,99 @@
     border-radius: 5px;
 } 
 
+@media screen and (max-width: 768px) {
+    .btn {
+        width: unset;
+        max-width: 200px;
+        margin: 5px 0;
+    }
+}
+
+/* Event Scroller Overrides */
+#zone-sectione {
+    margin: 0 auto;
+    width: 1075px;
+}
+
+.events-row {
+    width: 1075px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.event-cards-header {
+    margin-left: 0;
+}
+
+.contextsetter {
+    margin-right: 0;
+}
+
+.contextsetter-campus .dropdown {
+    margin-right: 0;
+}
+
 .event-cards-header h3 {
     color: #bb191f;
 }
 
-@media screen and (max-width: 500px) {
-    .events-row {
-        padding: 0;
+.slick-list {
+    width: 1075px;
+    margin: 0 auto;
+}
+
+.event-card {
+    width: 345px;
+    margin: 5px 10px;
+}
+
+@media screen and (max-width: 1124px) {
+    #zone-sectione, .events-row, .slick-list {
+        width: 710px;
     }
 }
+
+
+@media screen and (max-width: 760px) {
+    #zone-sectione, .slick-list {
+        width: 345px;
+        padding: 0;
+    }
+
+    .events-row {
+        width: 345px;
+    }
+
+    .event-card {
+        margin: 5px 0;
+    }
+
+    .event-campus-setter {
+        float: unset;
+        padding: 10px 0;
+    }
+
+    .contextsetter {
+        margin: 7.5px 0;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    #zone-sectione, .slick-list {
+        width: 300px;
+    }
+
+    .events-row {
+        width: 300px;
+    }
+
+    .event-card {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+}
+
+/* End Events Scroller overrides */
+
+/* End Overrides */
