@@ -22,12 +22,12 @@
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-mobile-christmas.jpg") !important;
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
     }
 
     .main-feature {
-        height: 240px !important;
-        padding-top: 90px !important;
+        height: unset !important;
+        padding-top: 75px !important;
     }
 }
 
@@ -40,8 +40,9 @@
 }
 
 .title img {
-    margin: unset;
+    margin: 0 auto;
     width: unset;
+    width: 80%;
 }
 
 .title h3 {
@@ -51,7 +52,7 @@
 
 .title-buttons {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     margin: 20px 0;
     padding-bottom: 20px;
 }
@@ -60,7 +61,7 @@
     background-color: #FFFFFF;
     border-color: #FFFFFF;
     color: #bb191f;
-    font-family: DIN Offc;
+    font-family: Akrobat;
     font-size: 20px;
     font-weight: 600;
     line-height: 24px;
@@ -72,6 +73,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 5.64px;
+    margin: 0 20px;
 }
 
 .title-button:hover {
@@ -79,6 +81,27 @@
     background-color: #bb191f;
     border-color: #bb191f;
     color: #FFFFFF;
+}
+
+@media screen and (max-width: 768px) {
+    .title-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .title-button {
+        margin: 10px 20px;
+    }
+
+    .title img {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .title-button {
+        width: 100%;
+    }
 }
 
 /* End Feature Title Section */
@@ -111,7 +134,7 @@
 
 .service-times-title {
     color: #bb191f;
-    font-family: heebo;
+    font-family: Akrobat;
     font-weight: bold;
     text-align: center;
 }
@@ -179,7 +202,7 @@
 }
 
 .contact-phone {
-    color: #7A1315 !important;
+    color: #bb191f !important;
     background-color: unset !important;
     border-color: unset !important;
 }
@@ -258,6 +281,14 @@
 /* End Shirt Section */
 
  /* Overrides */
+ h2, h3, h4 {
+     color: #bb191f;
+}
+
+a:focus {
+    outline: none;
+}
+
 .btn-primary, .contextsetter-campus .dropdown {
     background-color: #bb191f;
     border-color: #bb191f;
@@ -296,8 +327,12 @@
     margin-right: 0;
 }
 
-.event-cards-header h3 {
+.event-cards-header h3, .event-cards-header .nav-button, .event-card .link a i {
     color: #bb191f;
+}
+
+.contextsetter-campus .dropdown a:hover {
+    background-color: #bb191f;
 }
 
 .slick-list {
@@ -308,6 +343,10 @@
 .event-card {
     width: 345px;
     margin: 5px 10px;
+}
+
+.event-card .link a {
+    color: #bb191f;
 }
 
 @media screen and (max-width: 1124px) {
