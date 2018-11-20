@@ -149,7 +149,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         var noteService = new NoteService( rockContext );
                         var personService = new PersonService( rockContext );
 
-                        Person person = null;
 
                         // Create note
                         var note = new Note()
@@ -158,8 +157,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
                             NoteTypeId = 8,
                             EntityId = groupMember.Person.Id,
                             Caption = string.Empty,
-                            CreatedByPersonAliasId = person.PrimaryAliasId,
-                            Text = person.FullName + " has flagged " + groupMember.Person.FullName + " as no longer attending group.",
+                            CreatedByPersonAliasId = CurrentPerson.PrimaryAliasId,
+                            Text = CurrentPerson.FullName + " has flagged " + groupMember.Person.FullName + " as no longer attending group.",
                             IsAlert = false,
                             IsPrivateNote = false,
                             CreatedDateTime = string.IsNullOrWhiteSpace( now.ToString( "F" ) ) ? RockDateTime.Now : DateTime.Parse( now.ToString( "F" ), new CultureInfo( "en-US" ) )
