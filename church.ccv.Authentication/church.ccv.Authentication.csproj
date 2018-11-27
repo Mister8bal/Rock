@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arena\Arena.cs" />
+    <Compile Include="Azure\AzureActiveDirectory.cs" />
     <Compile Include="ChOP\ChurchOnlinePlatform.cs" />
     <Compile Include="Migrations\001_RenameDomain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,9 +93,7 @@
       <Name>Rock</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Azure\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
