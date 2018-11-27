@@ -111,7 +111,7 @@ namespace church.ccv.Authentication
                     return !String.IsNullOrWhiteSpace( jobject.ToString() );              
 
                 } 
-                catch (Exception e)
+                catch
                 {
                     // A non 200 reposnse was return indicating something failed
                     // return false - aka failed authentication
