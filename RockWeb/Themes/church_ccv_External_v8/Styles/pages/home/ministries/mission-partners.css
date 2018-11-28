@@ -10,36 +10,62 @@
     }
 }
 
-#ternavbar-bg {
-	display: flex;
-}
+ #ternavbar-bg {
+	 display: flex;
+ }
  
-.event-cards-row {
-	flex-wrap: wrap;
-	justify-content: space-between;
+ #zone-singlesection {
+	margin: 0 auto;
 }
 
-@media screen and (min-width: 992px) {
-	.event-cards-row {
-		justify-content: left;
-	}
+.event-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
- 
+
 .event-card {
-	height: 450px;
-}
- 
-.missions-partners-card-override {
+    height: 500px;
+    z-index: 1;
+	overflow: hidden;
 	padding-bottom: 25px;
-	height: 500px;
-	margin-bottom: 25px;
+    margin-bottom: 25px;
+}
+
+.card-content {
+    padding: 0px 16px;
 }
  
-.event-card.missions-partners-card-override .image img {
-	object-fit: cover;
+.event-card .card-content {
+	height: 115px;
 }
- 
-.event-card.missions-partners-card-override .read-more a {
-	font-weight: 900;
-	display: flex;
+
+.event-card .card-content p {
+    line-height: unset;
+    margin: unset;
+}
+
+.event-card .link a {
+    display: flex;
+}
+
+ /* Campus Card Responsive Styling */
+@media screen and (max-width: 760px) {
+    .event-cards-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .event-card {
+        height: 500px;
+    }
+
+    .event-card .link {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        min-width: 100%;
+    }
 }
