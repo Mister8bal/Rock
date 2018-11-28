@@ -42,7 +42,7 @@
                     <div class="campus-leader-details">
                         <h4>{{ campusLeader.NickName }} {{ campusLeader.LastName }}</h4>
                         <p>Campus Pastor</p>
-                        <p class="campus-leader-email">{{ campusLeader.Email }}</p>
+                        <p class="campus-leader-email">{{ campusLeader.PublicEmail }}</p>
                     </div>
                 {% endif %}
             </div>
