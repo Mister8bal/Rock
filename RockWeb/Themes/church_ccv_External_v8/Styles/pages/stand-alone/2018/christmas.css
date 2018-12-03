@@ -2,6 +2,10 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
 }
 
+#subnavbar-bg {
+    display: none;
+}
+
 .main-feature {
     padding-top: 100px;
 }
@@ -13,12 +17,12 @@
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-mobile-christmas.jpg") !important;
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
     }
 
     .main-feature {
-        height: 240px !important;
-        padding-top: 90px !important;
+        height: unset !important;
+        padding-top: 75px !important;
     }
 }
 
@@ -31,18 +35,19 @@
 }
 
 .title img {
-    margin: unset;
+    margin: 0 auto;
     width: unset;
+    width: 80%;
 }
 
 .title h3 {
-    font-size: 43px;
-    line-height: 45px;
+    font-size: 36px;
+    line-height: 38px;
 }
 
 .title-buttons {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     margin: 20px 0;
     padding-bottom: 20px;
 }
@@ -51,7 +56,7 @@
     background-color: #FFFFFF;
     border-color: #FFFFFF;
     color: #bb191f;
-    font-family: DIN Offc;
+    font-family: Akrobat;
     font-size: 20px;
     font-weight: 600;
     line-height: 24px;
@@ -63,6 +68,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 5.64px;
+    margin: 0 20px;
 }
 
 .title-button:hover {
@@ -72,15 +78,48 @@
     color: #FFFFFF;
 }
 
+@media screen and (max-width: 768px) {
+    .title-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .title-button {
+        margin: 10px 20px;
+    }
+
+    .title img {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .title-button {
+        width: 100%;
+    }
+
+    .title h3 {
+        font-size: 26px;
+        line-height: 28px;
+    }
+}
+
 /* End Feature Title Section */
+
+/* video promo section */
+#section-a-bg {
+    background-color: #FFFFFF;
+}
+
+/* End video promo Section */
 
 /* Map Section */
 
-#section-a-bg {
+#section-b-bg {
     padding: 0;
 }
 
-#zone-sectiona {
+#zone-sectionb {
     max-width: 100%;
     margin: unset;
 }
@@ -96,9 +135,13 @@
 /* End Map Section */
 
 /* Campus Card Section */
+#zone-sectionc {
+    margin: 0 auto;
+}
+
 .service-times-title {
     color: #bb191f;
-    font-family: heebo;
+    font-family: Akrobat;
     font-weight: bold;
     text-align: center;
 }
@@ -106,15 +149,17 @@
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .campus-card {
     display: flex;
     flex-direction: column;
-    margin: 0 0 20px 0;
-    width: 32%;
-    height: 575px;
+    margin: 0 10px 20px 10px;
+    width: 345px;
+    min-width: 345px;
+    max-width: 345px;
+    height: 375px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     border-radius: 5px;
     border: unset;
@@ -164,7 +209,7 @@
 }
 
 .contact-phone {
-    color: #7A1315 !important;
+    color: #bb191f !important;
     background-color: unset !important;
     border-color: unset !important;
 }
@@ -187,10 +232,16 @@
 }
 
 /* Campus Card Responsive Styling */
-@media screen and (max-width: 1520px) {
-    .campus-card {
-        height: 600px;
+@media screen and (max-width: 760px) {
+    .campus-cards-row {
+        flex-direction: column;
+        align-items: center;
     }
+
+    .campus-card {
+        height: 400px;
+    }
+
     .campus-card .link {
         flex-direction: column;
         justify-content: center;
@@ -209,15 +260,11 @@
     }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 320px) {
     .campus-card {
-        width: 48%;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .campus-card {
-        width: 98%;
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
     }
 }
 
@@ -226,33 +273,141 @@
 
 /* Christmas Advent Section */
 
-#section-c-bg {
+#section-d-bg {
     background: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/background-christmas-advent.jpg");
 }
 
+.advent-logo {
+	width: 350px;
+    	margin-bottom: 20px;
+}
 /* End Advent Section */
 
 /* Shirt Section */
 
-#section-d-bg {
+#section-e-bg {
     background-color: #FFFFFF;
 }
 
 /* End Shirt Section */
 
  /* Overrides */
+ h2, h3, h4 {
+     color: #bb191f;
+}
+
+a:focus {
+    outline: none;
+}
+
 .btn-primary, .contextsetter-campus .dropdown {
     background-color: #bb191f;
     border-color: #bb191f;
     border-radius: 5px;
 } 
 
-.event-cards-header h3 {
+@media screen and (max-width: 768px) {
+    .btn {
+        width: unset;
+        max-width: 200px;
+        margin: 5px 0;
+    }
+}
+
+/* Event Scroller Overrides */
+#zone-sectionf {
+    margin: 0 auto;
+    width: 1075px;
+}
+
+.events-row {
+    width: 1075px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.event-cards-header {
+    margin-left: 0;
+    padding-top: 20px;
+}
+
+.contextsetter {
+    margin-right: 0;
+}
+
+.contextsetter-campus .dropdown {
+    margin-right: 0;
+}
+
+.event-cards-header h3, .event-cards-header .nav-button, .event-card .link a i {
     color: #bb191f;
 }
 
-@media screen and (max-width: 500px) {
-    .events-row {
-        padding: 0;
+.contextsetter-campus .dropdown a:hover {
+    background-color: #bb191f;
+}
+
+.slick-list {
+    width: 1075px;
+    margin: 0 auto;
+}
+
+.event-card {
+    width: 345px;
+    margin: 5px 10px;
+}
+
+.event-card .link a {
+    color: #bb191f;
+}
+
+@media screen and (max-width: 1124px) {
+    #zone-sectionf, .events-row, .slick-list {
+        width: 710px;
     }
 }
+
+
+@media screen and (max-width: 760px) {
+    #zone-sectionf, .slick-list {
+        width: 345px;
+        padding: 0;
+    }
+
+    .events-row {
+        width: 345px;
+    }
+
+    .event-card {
+        margin: 5px 0;
+    }
+
+    .event-campus-setter {
+        float: unset;
+        padding: 10px 0;
+    }
+
+    .contextsetter {
+        margin: 7.5px 0;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    #zone-sectionf, .slick-list {
+        width: 300px;
+    }
+
+    .events-row {
+        width: 300px;
+    }
+
+    .event-card {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+}
+
+/* End Events Scroller overrides */
+
+/* End Overrides */

@@ -16,8 +16,9 @@
 }
 
 .main-feature {
-    padding-top: 175px;
-    height: unset;
+    padding-top: 250px;
+    /* height: unset; --Christmas Change, leaving for easy access to revert back to */
+    height: 720px;
 }
 
 .title h1 {
@@ -93,7 +94,7 @@
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .main-feature {
-        height: unset;
+        height: 450px;
         padding-top: 50px;
     }
     

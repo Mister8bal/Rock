@@ -81,7 +81,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endcomment %}
 
     {% if thursdayTimesString != '' %}
-        <strong>Thursday</strong>
+        <strong>Thursday, 12/20</strong>
         <ul class="list-inline">
             {% assign thursdayTimes = thursdayTimesString | Split:';' %}
             {% for thursdayTime in thursdayTimes %}
@@ -91,7 +91,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if fridayTimesString != '' %}
-        <strong>Friday</strong>
+        <strong>Friday, 12/21</strong>
         <ul class="list-inline">
             {% assign fridayTimes = fridayTimesString | Split:';' %}
             {% for fridayTime in fridayTimes %}
@@ -101,7 +101,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if saturdayTimesString != '' %}
-        <strong>Saturday</strong>
+        <strong>Saturday, 12/22</strong>
         <ul class="list-inline">
             {% assign saturdayTimes = saturdayTimesString | Split:';' %}
             {% for saturdayTime in saturdayTimes %}
@@ -111,7 +111,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if sundayTimesString != '' %}
-        <strong>Sunday</strong>
+        <strong>Sunday, 12/23</strong>
         <ul class="list-inline">
             {% assign sundayTimes = sundayTimesString | Split:';' %}
             {% for sundayTime in sundayTimes %}
@@ -121,7 +121,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
         {% if mondayTimesString != '' %}
-        <strong>Monday</strong>
+        <strong>Monday, 12/24</strong>
         <ul class="list-inline">
             {% assign mondayTimes = mondayTimesString | Split:';' %}
             {% for mondayTime in mondayTimes %}
