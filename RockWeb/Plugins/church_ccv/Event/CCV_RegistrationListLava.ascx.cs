@@ -97,7 +97,6 @@ namespace RockWeb.Plugins.church_ccv.Event
         protected void LoadContent()
         {
             RockContext rockContext = new RockContext();
-
             var registrationService = new RegistrationService(rockContext);
             var qryRegistrations = registrationService.Queryable();
 
@@ -113,12 +112,15 @@ namespace RockWeb.Plugins.church_ccv.Event
 
             // bring into a list so we can filter on non-database columns
             var registrationsList = qryRegistrations.ToList();
-
+     
             // Assign todays date
             var todayDate = DateTime.Now.ToString("M/d/yyyy");
 
+            // Remove Events that don't have Linkages
+            registrationsList = registrationsList.Where( r => r.RegistrationInstance.Linkages.Any( x => x.EventItemOccurrenceId.HasValue)).ToList();
+
             // Take list of all events and order by date
-            registrationsList = registrationsList.OrderBy(a => a.RegistrationInstance.Linkages.OrderBy(b => b.EventItemOccurrence.NextStartDateTime).FirstOrDefault().EventItemOccurrence.NextStartDateTime).ToList();
+            registrationsList = registrationsList.OrderBy( r => r.RegistrationInstance.Linkages.FirstOrDefault().EventItemOccurrence.NextStartDateTime ).ToList();
 
             // filter by date range (start date)
             var requestDateRange = SlidingDateRangePicker.CalculateDateRangeFromDelimitedValues(GetAttributeValue("DateRange") ?? "-1||");

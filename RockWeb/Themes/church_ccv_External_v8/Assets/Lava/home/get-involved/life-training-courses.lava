@@ -25,60 +25,59 @@
                                     {% endif %}     
                                 {% endif %}
                             {% endfor %}
-
-                            {% for attribute in group.AttributeValues %}
-                                {% if attribute.Value != empty %}
-                                    {% if attribute.AttributeName == "Course Topic" %}
-                                        <div class="registrationDiv">  
+                        {% for attribute in group.AttributeValues %}
+                            {% if attribute.Value != empty %}
+                                {% if attribute.AttributeName == "Course Topic" %}
+                                    <div class="registrationDiv">  
                                         <h5>Topic: </h5>
                                         <p>{{ attribute.ValueFormatted }}</p>
-                                        </div>
-                                    {% endif %}
-                                    {% endif %}
-                            {% endfor %}
-                        </div>
-                </a> 
-                    <div id="personDetails{{ personIndex }}" class="collapse">
-                        <div class="details-container">
-                            <div class="person-row-details">
-                            {% for groupdistancelist in GroupDistanceList %}
-                                    {% if groupdistancelist.GroupId == group.Id %}
-                                        <p>Distance: {{ groupdistancelist.Distance }} miles away</p>                                      
-                                    {% endif %} 
-                                {% endfor %}
-                                {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
-                                    {% if LinkedPages.RegisterPage contains '?' %}
-                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
-                                    {% else %}
-                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
-                                    {% endif %}
+                                    </div>
                                 {% endif %}
-                            </div>
-                            <div class="details-right-card">
-                                {% for attribute in group.AttributeValues %}
-                                    {% if attribute.Value != empty %}
-                                        {% if attribute.AttributeName == "Course Description" %}
-                                            <h5>Description</h5>
-                                            {{ attribute.ValueFormatted }}
-                                        <div class="moreInfoContainer">  
-                                            {% elseif attribute.AttributeName == "Registration Start Date" %}
-                                             <div class="registrationDiv">  
-                                                <h5>Registration Starts: </h5>
-                                                <p>{{ attribute.ValueFormatted }}</p>
-                                             </div>  
-                                            {% elseif attribute.AttributeName == "Course Duration" %}
-                                            <div class="classDurationDiv">     
-                                                <h5>Course Duration: </h5>
-                                               <p> {{ attribute.ValueFormatted }}</p>
-                                            </div>     
-                                        
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
+                </a> 
+                <div id="personDetails{{ personIndex }}" class="collapse">
+                    <div class="details-container">
+                        <div class="person-row-details">
+                        {% for groupdistancelist in GroupDistanceList %}
+                                {% if groupdistancelist.GroupId == group.Id %}
+                                    <p>Distance: {{ groupdistancelist.Distance }} miles away</p>                                      
+                                {% endif %} 
+                            {% endfor %}
+                            {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
+                                {% if LinkedPages.RegisterPage contains '?' %}
+                                    <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
+                                {% else %}
+                                    <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% for attribute in group.AttributeValues %}
+                            {% if attribute.Value != empty %}
+                                {% if attribute.AttributeName == "Course Description" %}
+                                    <div class="details-right-card">
+                                        <h5>Description</h5>
+                                        {{ attribute.ValueFormatted }}
+                                        <div class="moreInfoContainer">  
+                                {% elseif attribute.AttributeName == "Registration Start Date" %}
+                                    <div class="registrationDiv">  
+                                        <h5>Registration Starts: </h5>
+                                        <p>{{ attribute.ValueFormatted }}</p>
+                                    </div>  
+                                {% elseif attribute.AttributeName == "Course Duration" %}
+                                    <div class="classDurationDiv">     
+                                        <h5>Course Duration: </h5>
+                                        <p> {{ attribute.ValueFormatted }}</p>
+                                    </div>     
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
 
             <script>
 
@@ -100,4 +99,4 @@
             {% endfor %}
         </div>
     </div>
-</div>
+
