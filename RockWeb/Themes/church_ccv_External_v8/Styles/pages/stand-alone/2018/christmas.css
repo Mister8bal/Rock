@@ -14,11 +14,6 @@
     margin: 0 auto;
 }
 
-/* temp hiding advent section until page is ready */
-#section-c-bg {
-    display: none;
-}
-
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
@@ -111,13 +106,20 @@
 
 /* End Feature Title Section */
 
+/* video promo section */
+#section-a-bg {
+    background-color: #FFFFFF;
+}
+
+/* End video promo Section */
+
 /* Map Section */
 
-#section-a-bg {
+#section-b-bg {
     padding: 0;
 }
 
-#zone-sectiona {
+#zone-sectionb {
     max-width: 100%;
     margin: unset;
 }
@@ -133,7 +135,7 @@
 /* End Map Section */
 
 /* Campus Card Section */
-#zone-sectionb {
+#zone-sectionc {
     margin: 0 auto;
 }
 
@@ -157,7 +159,7 @@
     width: 345px;
     min-width: 345px;
     max-width: 345px;
-    height: 575px;
+    height: 375px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     border-radius: 5px;
     border: unset;
@@ -237,7 +239,7 @@
     }
 
     .campus-card {
-        height: 600px;
+        height: 400px;
     }
 
     .campus-card .link {
@@ -271,15 +273,19 @@
 
 /* Christmas Advent Section */
 
-#section-c-bg {
+#section-d-bg {
     background: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/background-christmas-advent.jpg");
 }
 
+.advent-logo {
+	width: 350px;
+    	margin-bottom: 20px;
+}
 /* End Advent Section */
 
 /* Shirt Section */
 
-#section-d-bg {
+#section-e-bg {
     background-color: #FFFFFF;
 }
 
@@ -309,7 +315,7 @@ a:focus {
 }
 
 /* Event Scroller Overrides */
-#zone-sectione {
+#zone-sectionf {
     margin: 0 auto;
     width: 1075px;
 }
@@ -322,7 +328,7 @@ a:focus {
 
 .event-cards-header {
     margin-left: 0;
-    margin-top: 20px;
+    padding-top: 20px;
 }
 
 .contextsetter {
@@ -356,14 +362,14 @@ a:focus {
 }
 
 @media screen and (max-width: 1124px) {
-    #zone-sectione, .events-row, .slick-list {
+    #zone-sectionf, .events-row, .slick-list {
         width: 710px;
     }
 }
 
 
 @media screen and (max-width: 760px) {
-    #zone-sectione, .slick-list {
+    #zone-sectionf, .slick-list {
         width: 345px;
         padding: 0;
     }
@@ -387,7 +393,7 @@ a:focus {
 }
 
 @media screen and (max-width: 320px) {
-    #zone-sectione, .slick-list {
+    #zone-sectionf, .slick-list {
         width: 300px;
     }
 
