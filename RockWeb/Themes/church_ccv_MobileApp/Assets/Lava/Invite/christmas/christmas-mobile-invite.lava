@@ -232,7 +232,6 @@ p {
 
     function myFunction() {
       var x = document.getElementById("ChoosePage");
-      x.style.zindex
         if (x.className == "hide") {
           x.className = "show"; 
         }
