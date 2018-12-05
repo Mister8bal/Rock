@@ -1,0 +1,293 @@
+<style>
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  .wrapper {
+    position: relative;
+  }
+
+  article.page {
+    position: absolute;
+    width: 100%;
+    padding-bottom: 60px;
+  }
+
+  .fade {
+    z-index: 9;
+    visibility: hidden;
+  }
+
+  .fade.in {
+    z-index: 10;
+    visibility: visible;
+  }
+
+.lead {
+    padding-top: 20px;
+}
+
+.campuses-dropdown a{
+    background-color: #555;
+    color: #eee;
+    border-radius: 10px;
+}
+
+.campuses-dropdown a:hover { 
+    color: black;
+}
+
+p {
+    margin: 0 0 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.dropdown-menu > li > a {
+    padding: 3px 20px;
+    border-radius: 0px;
+    color: #eee;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center;
+        margin: 0;
+    }
+    .campuses-dropdown a{
+        border-radius: 10px;
+    }
+    .hide {
+        visibility: hidden;
+    }
+    .show {
+        visibility: visible;
+    }
+    .navbar-nav .open .dropdown-menu > li > a {
+        line-height: 40px;
+    }
+}
+</style>
+
+{% assign GoogleCampaignName = 'Christmas Page' %}
+{% assign inviteBtnClasses = 'btn btn-default btn-block' %}
+{% assign inviteAllBtnClasses = 'btn btn-default btn-block' %}
+{% assign preUrl = 'external:' %}
+
+{% if trackEvents == null %}
+  {% assign trackEvents = true %}
+{% endif %}
+
+{% assign item = ContentObject | Where: "ShortCode", Context.Campus.ShortCode | First %}
+
+{% assign specialNeedsIcon = 'fa fa-heart' %}
+{% assign hearingIcon = 'fa fa-asl-interpreting' %}
+
+{% comment %}
+<pre>
+  {{ item | ToJSON }}
+</pre>
+<pre>
+  {{ item.Services | ToJSON }}
+</pre>
+{% endcomment %}
+
+<div class="wrapper">
+
+  <article id="ChoosePage" class="show">
+    <p>
+      &nbsp;
+    </p>
+
+    <p style="margin-bottom: 0px; padding-bottom: 15px;" class="lead">How would you like to send your invite?</p>
+
+    {% if Context.Campus.Name != null %}
+          <p>{{ Context.Campus.Name }} Campus</p>
+    {% else %}
+          <p>Please choose a campus</p>
+    {% endif %}
+
+    {% comment %} <h6 style="margin-top: 0px; padding-top: 0px; text-align: center;">{{ Context.Campus.Name }} Campus</h6> {% endcomment %}
+    <p><a href="#EmailPage" data-label="Email Invite {{ Context.Campus.Name }}" class="btn btn-default btn-block js-change-page">Email</a></p>
+    <p><a href="#SMSPage" data-label="SMS Invite {{ Context.Campus.Name }}" class="btn btn-default btn-block js-change-page">Text Message</a></p>
+  </article>
+
+  <article id="EmailPage" class="page fade">
+    <div class="row margin-t-lg">
+      <div class="col-xs-7">
+        <h4 class="margin-t-none">Email Invite</h4>
+      </div>
+      {% comment %} <div class="col-xs-5 text-right">
+        <a href="#ChoosePage" data-label="Back Button {{ Context.Campus.Name }}" class="js-change-page btn btn-default btn-xs"><i class="fa fa-angle-left"></i> Back</a>
+      </div> {% endcomment %}
+    </div>
+
+    <p class="lead" style="margin-bottom: 5px;">Which service are you attending?</p>
+    <div style="margin-bottom: 25px;" class="row">
+       <div class="col-xs-6">
+         <i class="{{ specialNeedsIcon }}"> Special Needs</i>
+       </div>
+       <div class="col-xs-6">
+            <i class="{{ hearingIcon }}"> Sign Language</i>
+          </div>
+    </div>
+    
+
+    {% for day in item.Services %}
+      <h5>{{ day.Date }}</h5>
+      <div class="row">
+        {% for time in day.Times %}
+
+          {% if time contains 'sunrise' %}
+            {% assign hasSunrise = true %}
+          {% else %}
+            {% assign hasSunrise = false %}
+         {% endif %}
+
+         {% if time contains 'special' %}
+           {% assign hasSpecial = true %}
+         {% else %}
+           {% assign hasSpecial = false %}
+         {% endif %}
+         
+         {% if time contains 'hearing' %}
+           {% assign hasHearing = true %}
+         {% else %}
+           {% assign hasHearing = false %}
+         {% endif %}
+
+         {% assign rawTime = time | Remove: 'sunrise' | Remove: ' special' | Remove: ' hearing' %}
+         <div class="col-xs-6 margin-b-lg" style="align-items: right;">{% include '/Themes/church_ccv_MobileApp/Assets/Lava/Invite/christmas/christmas-email.lava' %}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <p>
+      &nbsp;
+    </p>
+    {% include '/Themes/church_ccv_MobileApp/Assets/Lava/Invite/christmas/christmas-email-all.lava' %}
+  </article>
+
+  <article id="SMSPage" class="page fade">
+    <div class="row margin-t-lg">
+      <div class="col-xs-7">
+        <h4 class="margin-t-none">Text Invite</h4>
+      </div>
+      {% comment %} <div class="col-xs-5 text-right">
+        <a href="#ChoosePage" data-label="Back Button {{ Context.Campus.Name }}" class="js-change-page btn btn-default btn-xs"><i class="fa fa-angle-left"></i> Back</a>
+      </div> {% endcomment %}
+    </div>
+
+    <p class="lead">Which service are you attending?</p>
+    <div style="margin-bottom: 25px;" class="row">
+         <div class="col-xs-6">
+           <i class="{{ specialNeedsIcon }}"> Special Needs</i>
+         </div>
+         <div class="col-xs-6">
+              <i class="{{ hearingIcon }}"> Sign Language</i>
+            </div>
+      </div>
+
+    {% for day in item.Services %}
+      <h5>{{ day.Date }}</h5>
+      <div class="row">
+        {% for time in day.Times %}
+
+         {% if time contains 'sunrise' %}
+           {% assign hasSunrise = true %}
+         {% else %}
+            {% assign hasSunrise = false %}
+         {% endif %}
+
+         {% if time contains 'special' %}
+            {% assign hasSpecial = true %}
+         {% else %}
+            {% assign hasSpecial = false %}
+         {% endif %}
+         
+         {% if time contains 'hearing' %}
+            {% assign hasHearing = true %}
+         {% else %}
+            {% assign hasHearing = false %}
+         {% endif %}
+
+          {% assign rawTime = time | Remove: 'sunrise' | Remove: ' special' | Remove: ' hearing' %}
+          <div class="col-xs-6 margin-b-lg">{% include '/Themes/church_ccv_MobileApp/Assets/Lava/Invite/christmas/christmas-sms.lava' %}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <p>
+      &nbsp;
+    </p>
+    {% include '/Themes/church_ccv_MobileApp/Assets/Lava/Invite/christmas/christmas-sms-all.lava' %}
+
+  </article>
+
+</div>
+
+<script type="text/javascript">
+
+    document.getElementsByClassName("dropdown").ontoggle = function() {myFunction()};
+
+    function myFunction() {
+      var x = document.getElementById("ChoosePage");
+      x.style.zindex
+        if (x.className == "hide") {
+          x.className = "show"; 
+        }
+        else if (x.className == "show") {
+          x.className = "hide"; 
+        }
+        else {
+          x.className = "hide";
+        }
+    }
+
+    function trackEvent(action, label) {
+      {% if trackEvents %}
+        if (label) {
+          ga('send', {
+            hitType: 'event',
+            eventCategory: '{{ GoogleCampaignName }}',
+            eventAction: action,
+            eventLabel: label
+          });
+        } else {
+          ga('send', {
+            hitType: 'event',
+            eventCategory: '{{ GoogleCampaignName }}',
+            eventAction: action
+          });
+        }
+      {% else %}
+        if (label) {
+          console.log('{{ GoogleCampaignName }}, '+action+', '+label)
+        } else {
+          console.log('{{ GoogleCampaignName }}, '+action)
+        }
+      {% endif %}
+    }
+
+    $('body').on('click', '.js-track-sms', function(){
+      var label = $(this).data('label')
+      trackEvent('Text Invite', label)
+    })
+    $('body').on('click', '.js-track-email', function(){
+      var label = $(this).data('label')
+      trackEvent('Email Invite', label)
+    })
+    $('body').on('click', '.js-track-fb', function(){
+      var label = $(this).data('label')
+      trackEvent('Facebook Invite', label)
+    })
+
+    $('.js-change-page').click(function(e){
+      e.preventDefault()
+      var $this = $(this)
+      var nextPage = $this.attr('href')
+      $('.page.fade.in').removeClass('in')
+      $(nextPage).addClass('in')
+      trackEvent('Page View', $this.data('label'))
+    })
+</script>
