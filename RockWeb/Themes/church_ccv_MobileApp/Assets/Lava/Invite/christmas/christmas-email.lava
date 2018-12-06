@@ -10,8 +10,7 @@
 Join me for Christmas at CCV
 {% endcapture %}
 
-{% capture body %}I'm going to Christmas service at CCV. Would you like to join me? I'll be attending the {{ rawTime }} service on {{ day.Date }} on the {{ item.Name }} campus. Let’s go together!
-
+{% capture body %} Do you want to join me for Christmas at CCV? I'll be attending the {{ rawTime }} service on {{ day.Date }} on the {{ item.Name }} campus. It would be great to go together!
 https://www.ccv.church/christmas
 {% endcapture %}
 

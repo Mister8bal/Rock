@@ -7,7 +7,7 @@
 {% assign inviteBtnClasses = inviteBtnClasses | Default: 'btn btn-default' %}
 
 {% capture smsAll %}
-Come to Christmas at CCV with me! I'll be going to the {{ rawTime }} service on {{ day.Date }} at the {{ item.Name }} campus. You should join me! https://www.ccv.church/christmas
+Do you want to join me for Christmas at CCV? I'll be attending the {{ rawTime }} service on {{ day.Date }} on the {{ item.Name }} campus. It would be great to go together! https://www.ccv.church/christmas
 {% endcapture %}
 
 {% case OSFamily %}

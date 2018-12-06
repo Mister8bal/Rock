@@ -103,14 +103,12 @@ p {
 
     <p style="margin-bottom: 0px; padding-bottom: 15px;" class="lead">How would you like to send your invite?</p>
 
-    {% if Context.Campus.Name != null %}
-          <p>{{ Context.Campus.Name }} Campus</p>
-    {% else %}
-          <p>Please choose a campus</p>
-    {% endif %}
+    {% if Context.Campus.Name == null %}
+           <p>Please choose a campus</p>        
+    {% elseif Context.Campus.Name != null %}
+           <p>{{ Context.Campus.Name }} Campus</p>
 
-    {% comment %} <h6 style="margin-top: 0px; padding-top: 0px; text-align: center;">{{ Context.Campus.Name }} Campus</h6> {% endcomment %}
-    <p><a href="#EmailPage" data-label="Email Invite {{ Context.Campus.Name }}" class="btn btn-default btn-block js-change-page">Email</a></p>
+           <p><a href="#EmailPage" data-label="Email Invite {{ Context.Campus.Name }}" class="btn btn-default btn-block js-change-page">Email</a></p>
     <p><a href="#SMSPage" data-label="SMS Invite {{ Context.Campus.Name }}" class="btn btn-default btn-block js-change-page">Text Message</a></p>
   </article>
 
@@ -222,6 +220,10 @@ p {
     </p>
     {% include '/Themes/church_ccv_MobileApp/Assets/Lava/Invite/christmas/christmas-sms-all.lava' %}
 
+
+    {% endif %}
+
+    
   </article>
 
 </div>
