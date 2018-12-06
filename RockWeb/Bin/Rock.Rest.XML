@@ -419,6 +419,14 @@
             The duration.
             </value>
         </member>
+        <member name="P:Rock.Rest.Controllers.PresenceController.Presence.SessionId">
+            <summary>
+            Gets or sets the session identifier.
+            </summary>
+            <value>
+            The session identifier.
+            </value>
+        </member>
         <member name="T:Rock.Rest.Controllers.PresenceController.MACPresence">
             <summary>
             The presence for a device with specfic MAC address
@@ -3064,6 +3072,13 @@
             </summary>
             <param name="personId">The person id.</param>
             <param name="siteId">The site identifier.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rock.Rest.Controllers.PersonBadgesController.GetPersonalDevicesNumber(System.Int32)">
+            <summary>
+            Gets the Total number of personal devices
+            </summary>
+            <param name="personId">The person id.</param>
             <returns></returns>
         </member>
         <member name="M:Rock.Rest.Controllers.PersonBadgesController.GetFamilyAttendance(System.Int32,System.Int32)">
