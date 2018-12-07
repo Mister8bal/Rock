@@ -160,9 +160,23 @@
                         <div class="module-footer">
                             <Rock:Zone Name="ScottsdaleContact" runat="server" />
                         </div>
+                    </div>
+                    <div class="module module-with-footer">
+                        <div class="module-body">
+                            <h3 class="module-title margin-b-lg">Verrado Campus</h3>
+                            <Rock:Zone Name="VerradoSports" runat="server" />
+                        </div>
+                        <div class="module-mid js-fieldstatus fieldstatus clearfix">
+                            <strong class="pull-left margin-r-sm">Field Status:</strong>
+                            <div class="pull-left">
+                                <Rock:Zone Name="VerradoStatus" runat="server" />
+                            </div>
+                        </div>
+                        <div class="module-footer">
+                            <Rock:Zone Name="VerradoContact" runat="server" />
+                        </div>
+                    </div>
                 </div>
-                </div>
-                
             </div>
             <Rock:Zone Name="Feature" runat="server" />
         </div>
