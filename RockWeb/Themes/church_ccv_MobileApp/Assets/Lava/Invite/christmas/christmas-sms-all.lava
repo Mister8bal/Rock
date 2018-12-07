@@ -1,6 +1,6 @@
 {% comment %}
 
-{% include '~~/Assets/Lava/MobileApp/Invite/easter/easter-sms-all.lava' %}
+{% include '~~/Assets/Lava/MobileApp/Invite/christmas/christmas-sms-all.lava' %}
 
 {% endcomment %}
 
