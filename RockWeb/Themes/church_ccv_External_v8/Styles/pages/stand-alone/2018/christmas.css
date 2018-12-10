@@ -271,9 +271,16 @@
 
 /* End Campus Card Section */
 
+/* Countdown section */
+#section-d-bg {
+    background-color: #FFFFFF;
+}
+
+/* End countdown Section */
+
 /* Christmas Advent Section */
 
-#section-d-bg {
+#section-e-bg {
     background: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/background-christmas-advent.jpg");
 }
 
@@ -285,7 +292,7 @@
 
 /* Shirt Section */
 
-#section-e-bg {
+#section-f-bg {
     background-color: #FFFFFF;
 }
 
@@ -315,7 +322,7 @@ a:focus {
 }
 
 /* Event Scroller Overrides */
-#zone-sectionf {
+#zone-sectiong {
     margin: 0 auto;
     width: 1075px;
 }
@@ -362,14 +369,14 @@ a:focus {
 }
 
 @media screen and (max-width: 1124px) {
-    #zone-sectionf, .events-row, .slick-list {
+    #zone-sectiong, .events-row, .slick-list {
         width: 710px;
     }
 }
 
 
 @media screen and (max-width: 760px) {
-    #zone-sectionf, .slick-list {
+    #zone-sectiong, .slick-list {
         width: 345px;
         padding: 0;
     }
@@ -393,7 +400,7 @@ a:focus {
 }
 
 @media screen and (max-width: 320px) {
-    #zone-sectionf, .slick-list {
+    #zone-sectiong, .slick-list {
         width: 300px;
     }
 
