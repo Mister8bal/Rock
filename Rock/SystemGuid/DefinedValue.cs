@@ -427,6 +427,11 @@ namespace Rock.SystemGuid
         /// </summary>
         public const string PERSONAL_DEVICE_TYPE_MOBILE = "5A8F264F-3BE6-4F15-912A-3CE93A98E8F6";
 
+        /// <summary>
+        /// Computer personal device type
+        /// </summary>
+        public const string PERSONAL_DEVICE_TYPE_COMPUTER = "828ADECE-EFE7-49DF-BA8C-B3F132509A95";
+
         #endregion
 
         #region Personal Device Platform
