@@ -135,7 +135,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [TextField( "ScheduleFilters", "", false, "", "CustomSetting" )]
     [BooleanField( "Display Campus Filter", "", false, "CustomSetting" )]
     [BooleanField( "Enable Campus Context", "", false, "CustomSetting" )]
-    [BooleanField( "Hide Overcapacity Groups", "When set to true, groups that are at capacity or whose default GroupTypeRole are at capacity are hidden.", true )]
+    [BooleanField( "Hide Over Capacity Groups", "When set to true, groups that are at capacity or whose default GroupTypeRole are at capacity are hidden.", true )]
     [AttributeField( Rock.SystemGuid.EntityType.GROUP, "Attribute Filters", "", false, true, "", "CustomSetting" )]
     [DataViewField( "DataView", "", false, "", "Rock.Model.Group", "CustomSetting" )]
 
@@ -380,6 +380,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
             }
 
             SetAttributeValue( "DisplayCampusFilter", cbFilterCampus.Checked.ToString() );
+            SetAttributeValue( "HideOverCapacityGroups", cbOverCapacityGroups.Checked.ToString() );
             SetAttributeValue( "EnableCampusContext", cbCampusContext.Checked.ToString() );
             SetAttributeValue( "AttributeFilters", cblAttributes.Items.Cast<ListItem>().Where( i => i.Selected ).Select( i => i.Value ).ToList().AsDelimited( "," ) );
 
@@ -542,6 +543,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
             dvpDataView.SetValue( dataViewVal );
 
             cbFilterCampus.Checked = GetAttributeValue( "DisplayCampusFilter" ).AsBoolean();
+            cbOverCapacityGroups.Checked = GetAttributeValue( "HideOverCapacityGroups" ).AsBoolean();
             cbCampusContext.Checked = GetAttributeValue( "EnableCampusContext" ).AsBoolean();
 
             cbShowMap.Checked = GetAttributeValue( "ShowMap" ).AsBoolean();
@@ -961,7 +963,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
             // 1) If the group has a GroupCapacity, check that we haven't met or exceeded that.
             // 2) When someone registers for a group on the front-end website, they automatically get added with the group's default
             //    GroupTypeRole. If that role exists and has a MaxCount, check that we haven't met or exceeded it yet.
-            if ( GetAttributeValue( "HideOvercapacityGroups" ).AsBoolean() )
+            if ( GetAttributeValue( "HideOverCapacityGroups" ).AsBoolean() )
             {
                 groupQry = groupQry.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
 
@@ -969,7 +971,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                      g.GroupType == null ||
                      g.GroupType.DefaultGroupRole == null ||
                      g.GroupType.DefaultGroupRole.MaxCount == null ||
-                     g.Members.Where( m => m.GroupRoleId == g.GroupType.DefaultGroupRole.Id ).Count() < g.GroupType.DefaultGroupRole.MaxCount );
+                     g.Members.Where( m => m.GroupRoleId == g.GroupType.DefaultGroupRole.Id && (m.GroupMemberStatus == GroupMemberStatus.Active || m.GroupMemberStatus == GroupMemberStatus.Pending ) ).Count() < g.GroupType.DefaultGroupRole.MaxCount );
             }
 
             // Filter query by any configured attribute filters
