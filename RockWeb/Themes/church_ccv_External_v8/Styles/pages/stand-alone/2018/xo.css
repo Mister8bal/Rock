@@ -6,6 +6,7 @@
 @media screen and (max-width: 500px) {
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-mobile-leadership-institute.jpg");
+        background-color: black;
     }
 }
 
@@ -31,12 +32,37 @@
     border-color: #9b8261;
 }
 
+.tan:active {
+    background-color: #9b8261;
+    border-color: #9b8261;
+}
+
+.tan:focus {
+    background-color: #9b8261;
+    border-color: #9b8261;
+}
+
 p {
     color: #535353;
 }
 
 h2 {
     color: black;
+}
+
+.title h2 {
+    color: white;
+    padding: 0;
+    text-align: center;
+}
+
+.title .text {
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.space {
+    margin-left: 1%;
 }
 
 h3 {
@@ -59,7 +85,14 @@ h3 {
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    
+    .main-feature {
+        height: 340px;
+        padding-top: 90px;
+    }
+
+    .space {
+        margin-left: 0%;
+    }
 }
 
 
