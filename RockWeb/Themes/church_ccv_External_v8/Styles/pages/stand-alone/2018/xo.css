@@ -1,0 +1,68 @@
+.page-background {
+   background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-leadership-institute.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-mobile-leadership-institute.jpg");
+    }
+}
+
+#subnavbar-bg {
+    display: none;
+}
+
+#section-a-bg {
+    background-color: black;
+}
+
+#section-b-bg, #section-d-bg, #section-f-bg {
+    background-color: #FFFFFF;
+}
+
+.tan {
+    background-color: #bd9f74;
+    border-color: #bd9f74;
+}
+
+.tan:hover {
+    background-color: #9b8261;
+    border-color: #9b8261;
+}
+
+p {
+    color: #535353;
+}
+
+h2 {
+    color: black;
+}
+
+h3 {
+    padding: 0;
+}
+
+.center {
+    text-align: center;
+}
+
+/* Tablet Landscape Styling */
+@media screen and (max-width: 1024px) {
+  
+}
+
+/* Tablet Portrait Styling */
+@media screen and (max-width: 768px) {
+   
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    
+}
+
+
+
+
+
