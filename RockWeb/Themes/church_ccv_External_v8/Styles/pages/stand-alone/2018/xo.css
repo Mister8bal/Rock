@@ -1,11 +1,11 @@
 .page-background {
-   background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-leadership-institute.jpg");
+   background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-xo-event.jpg");
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/footer/hero-mobile-leadership-institute.jpg");
+        background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-xo-event.jpg");
         background-color: black;
     }
 }
@@ -50,10 +50,18 @@ h2 {
     color: black;
 }
 
+.title {
+    margin-top: -10%;
+}
+
 .title h2 {
     color: white;
     padding: 0;
     text-align: center;
+}
+
+.title img {
+    max-width: 250px;
 }
 
 .title .text {
@@ -92,6 +100,14 @@ h3 {
 
     .space {
         margin-left: 0%;
+    }
+
+    .title img {
+        max-width: 150px;
+    }
+
+    .title {
+        margin-top: -10%;
     }
 }
 
