@@ -22,6 +22,10 @@
     background-color: #FFFFFF;
 }
 
+#section-d-bg {
+    background-color: #000;
+}
+
 .tan {
     background-color: #bd9f74;
     border-color: #bd9f74;
@@ -30,6 +34,23 @@
 .tan:hover {
     background-color: #9b8261;
     border-color: #9b8261;
+}
+
+.call-to-action {
+    padding-bottom: 7%;
+    padding-top: 5%;
+}
+
+.call-to-action h2 {
+    color: #FFFFFF;
+}
+
+.call-to-action p{
+    color: #FFFFFF;
+}
+
+.white h2 {
+    color: #FFFFFF;
 }
 
 .tan:active {
