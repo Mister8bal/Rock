@@ -309,6 +309,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 13px;
 }
 
 .navigation-primary-item-button {
@@ -453,9 +454,7 @@
     position: absolute;
     color: #FFFFFF;
     transition: .25s;
-
-
-    width: 125px;
+    width: 115px;
 }
 .navigation-primary-dropdown-content {
     background: rgba( 255, 255, 255, .15);
@@ -472,8 +471,8 @@
     color: #FFFFFF;
     transition: .25s;
     background:#7A1315;
-    border-radius: 4px;
     cursor: pointer;
+    border-radius: 0;
 }
 
 .navigation-primary-item:hover .navigation-primary-dropdown-content-wrapper {
