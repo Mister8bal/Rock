@@ -75,7 +75,7 @@ TODO: Add Other Group Type leader roles
                                             </div>
                                         </a>
                                     {% elseif group.Group.GroupTypeId == 117 %}                            
-                                        <a href="/toolbox?GroupId={{ group.Group.Id }}" class="tooltip-access-toolbox">
+                                        <a href="/life-training-toolbox?GroupId={{ group.Group.Id }}" class="tooltip-access-toolbox">
                                             <div class="group-name-row-content">
                                                 <span>{{ group.Group.Name }}</span>
                                                 <i class="mdi mdi-chevron-right group-header-icon"></i>
