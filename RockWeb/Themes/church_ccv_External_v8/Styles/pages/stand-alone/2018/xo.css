@@ -10,6 +10,11 @@
     }
 }
 
+.main-feature {
+    height: 820px;
+    padding-top: 250px;
+}
+
 #subnavbar-bg {
     display: none;
 }
@@ -67,12 +72,12 @@ p {
     color: #535353;
 }
 
-h2 {
+h2, h4 {
     color: black;
 }
 
 .title {
-    margin-top: -10%;
+    margin-top: -15%;
 }
 
 .title h2 {
@@ -82,16 +87,12 @@ h2 {
 }
 
 .title img {
-    max-width: 250px;
+    max-width: 500px;
 }
 
 .title .text {
     padding-top: 2%;
     padding-bottom: 2%;
-}
-
-.space {
-    margin-left: 1%;
 }
 
 h3 {
@@ -100,6 +101,10 @@ h3 {
 
 .center {
     text-align: center;
+}
+
+.faq {
+    padding-bottom: 20px;
 }
 
 /* Tablet Landscape Styling */
@@ -115,16 +120,8 @@ h3 {
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .main-feature {
-        height: 340px;
+        height: 440px;
         padding-top: 90px;
-    }
-
-    .space {
-        margin-left: 0%;
-    }
-
-    .title img {
-        max-width: 150px;
     }
 
     .title {
