@@ -454,7 +454,7 @@
     position: absolute;
     color: #FFFFFF;
     transition: .25s;
-    width: 115px;
+    min-width: 115px;
 }
 .navigation-primary-dropdown-content {
     background: rgba( 255, 255, 255, .15);
@@ -496,6 +496,10 @@
 .dropdown-content-item {
     line-height: 17px;
     padding: 2px 15px;
+}
+
+.locations-dropdown {
+    display: flex;
 }
  
 /* Navigation-Primary Mobile Styling */

@@ -46,23 +46,42 @@
             {% endcase %}
 
             <li class="navigation-primary-item {{ activeClass }}">
-                {% unless childPage.Title == 'Locations' %}
-                    <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
-                    <div class="navigation-primary-dropdown-content-wrapper">
-                        <div class="navigation-primary-dropdown-content">
+                <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
+                <div class="navigation-primary-dropdown-content-wrapper">
+                    <div class="navigation-primary-dropdown-content">
+
+                        {% unless childPage.Title == 'Locations' %}
                             <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                    
+                            {% for dropdownPage in childPage.Pages  %}
+                                <a class="navigation-primary-item-a dropdown-content-item" href="{{ dropdownPage.Url }}">{{ dropdownPage.Title }}</a>
+                            {% endfor %}
+                        {% else %}
+                            <div class="locations-dropdown">
+                                <div class="locations-column">
+                                    <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                    
+                                    {% for campus in Campuses %}
+                                        {% assign startNewColumn = forloop.index | Modulo:6 %}
+                                        
+                                        {% unless campus.Id == 12 %}
+                                            <a class="navigation-primary-item-a dropdown-content-item" href="{{ campus.Url }}">{{ campus.Name }}</a>                                
+                                        {% endunless %}
 
-                                {% for dropdownPage in childPage.Pages  %}
-                                    <a class="navigation-primary-item-a dropdown-content-item" href="{{ dropdownPage.Url }}">{{ dropdownPage.Title }}</a>
-                                {% endfor %}
+                                {% if startNewColumn == 0 %}
+                                </div>
+                                <div class="locations-column">
+                                {% endif %}
 
-                        </div>
+                                    {% endfor %}
+                                
+                                </div>
+                            </div>
+                        {% endunless %}
+
                     </div>
-                {% else %}
-                    <a class="navigation-primary-item-a" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
-                {% endunless %}
+                </div>
             </li>
-
             {% assign activeClass = '' %}
         {% endfor %}
         {% if CurrentPerson %}
@@ -72,3 +91,5 @@
         {% endif %}
     </ul>
 {% endif %}
+
+
