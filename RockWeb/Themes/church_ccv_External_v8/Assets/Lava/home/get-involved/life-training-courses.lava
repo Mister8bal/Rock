@@ -5,9 +5,7 @@
     <div class="content">
         <div>               
             {% for group in Groups %}
-                {% assign personIndex = forloop.index %}
-                {% assign courseStartDate = group | Attribute: 'CourseStartDate' %}
-                {% assign courseEndDate = group | Attribute: 'CourseEndDate' %}      
+                {% assign personIndex = forloop.index %}               
                 <a type="button" data-toggle="collapse" data-target="#personDetails{{ personIndex }}" class="person-details-toggle">
                     <div class="person-row">
                         <div class="profile-picture">
@@ -16,7 +14,7 @@
                                 {% if attribute.AttributeName == "Course Topic" %}
                                     {% assign topic = group | Attribute: 'CourseTopic' %}
                                         {% if topic == "Marriage" %}
-                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg"/>
+                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg"/>
                                         {% elseif topic == "Divorce" %}
                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg"/>
                                         {% elseif topic == "Finance" %}
@@ -38,7 +36,7 @@
                                         {% elseif topic == "Pain & Suffering" %}
                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg"/>
                                     {% endif %}
-                                {% endif %}
+                                 {% endif %}
                             {% endif %}
                         {% endfor %}
                         </div>
@@ -46,8 +44,8 @@
                             {% for attribute in group.AttributeValues %}
                                 {% if attribute.Value != empty %}
                                     {% if attribute.AttributeName == "Course Title" %}
-                                        <h5>{{ attribute.ValueFormatted }}</h5>
-                                        <p>{{ group.Schedule.FriendlyScheduleText }}</p>
+                                         <h5>{{ attribute.ValueFormatted }}</h5>
+                                         <p>{{ group.Schedule.FriendlyScheduleText }}</p>
                                     {% endif %}     
                                 {% endif %}
                             {% endfor %}
@@ -87,17 +85,15 @@
                                         {{ attribute.ValueFormatted }}
                                         <div class="moreInfoContainer">  
                                 {% elseif attribute.AttributeName == "Registration Start Date" %}
-                                    <div class="classDurationDiv">     
-                                        <h5>Course Duration: </h5>
-                                        <p>{{ courseStartDate }} - {{ courseEndDate }}</p>
-                                    </div> 
                                     <div class="registrationDiv">  
                                         <h5>Registration Starts: </h5>
                                         <p>{{ attribute.ValueFormatted }}</p>
                                     </div>  
-                                    
-                                {% else %}
-                                        
+                                {% elseif attribute.AttributeName == "Course Duration" %}
+                                    <div class="classDurationDiv">     
+                                        <h5>Course Duration: </h5>
+                                        <p> {{ attribute.ValueFormatted }}</p>
+                                    </div>     
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -107,22 +103,23 @@
         </div>
     </div>
 
-                    <script>
+            <script>
 
-                        // on details collapse change toggle icon
-                        $('#personDetails{{ personIndex }}').on('shown.bs.collapse', function() {
-                            toggleChevron('#personDetailsToggle{{ personIndex }}');
-                        });
-                        $('#personDetails{{ personIndex }}').on('hidden.bs.collapse', function() {
-                            toggleChevron('#personDetailsToggle{{ personIndex }}');
-                        });
+                // on details collapse change toggle icon
+                $('#personDetails{{ personIndex }}').on('shown.bs.collapse', function() {
+                    toggleChevron('#personDetailsToggle{{ personIndex }}');
+                });
+                $('#personDetails{{ personIndex }}').on('hidden.bs.collapse', function() {
+                    toggleChevron('#personDetailsToggle{{ personIndex }}');
+                });
 
-                        toggleChevron = function(element) {
-                            $(element).toggleClass('mdi-chevron-down mdi-chevron-up');
-                        }
+                toggleChevron = function(element) {
+                    $(element).toggleClass('mdi-chevron-down mdi-chevron-up');
+                }
 
-                        activatePopOver('.tooltip-person-details', 'Person Details');
-                    </script>    
+                activatePopOver('.tooltip-person-details', 'Person Details');
+            </script>    
+ 
             {% endfor %}
         </div>
     </div>

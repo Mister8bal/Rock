@@ -970,7 +970,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
                      g.GroupType.DefaultGroupRole == null ||
                      g.GroupType.DefaultGroupRole.MaxCount == null ||
                      g.Members.Where( m => m.GroupRoleId == g.GroupType.DefaultGroupRole.Id ).Count() < g.GroupType.DefaultGroupRole.MaxCount );
-
             }
 
             // Filter query by any configured attribute filters
@@ -1013,28 +1012,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
             {
                 groups = groupQry.OrderBy( g => g.Name ).ToList();
             }
-
-            // Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display. 
-
-            var today = RockDateTime.Now;
-
-            List<Group> groupsList = null;
-            var filteredList = new List<Group>();
-            groupsList = groupQry.ToList();
-
-            foreach ( var group in groupsList )
-            {
-                group.LoadAttributes();
-                DateTime? registrationDate = group.GetAttributeValue( "RegistrationStartDate" ).AsDateTime();
-                if ( registrationDate <= today )
-                {
-                    filteredList.Add( group );
-                }
-            }
-
-            groups = filteredList;
-
-
 
             int? fenceGroupTypeId = GetGroupTypeId( GetAttributeValue( "GeofencedGroupType" ).AsGuidOrNull() );
             bool showMap = GetAttributeValue( "ShowMap" ).AsBoolean();
