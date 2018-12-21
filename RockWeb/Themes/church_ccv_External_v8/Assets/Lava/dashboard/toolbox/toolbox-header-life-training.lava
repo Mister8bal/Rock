@@ -11,7 +11,7 @@
     var gCurrentPanel;
 
     function handleOnLoad() {
-        // default to the dashboard panel
+        // default to the curriculum panel
         gCurrentLink = $("#curriculum-button")[0];
         gCurrentPanel = $("#curriculum-panel")[0];
         
@@ -31,7 +31,7 @@
          
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
         // remove styling from default mobile panel - Jered better way?
-      //  $('#dashboard-mobile-button').removeClass('toolbox-subnav-div-selected');
+        $('#dashboard-mobile-button').removeClass('toolbox-subnav-div-selected');
 
         // turn off existing panel
         togglePanel( gCurrentLink, gCurrentPanel, false );
