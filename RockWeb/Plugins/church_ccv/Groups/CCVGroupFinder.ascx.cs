@@ -1024,14 +1024,14 @@ namespace RockWeb.Plugins.church_ccv.Groups
             // Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display. 
             if ( GetAttributeValue( "FilterByRegistrationStartDate" ).AsBoolean() )
             {
-
-                if ( group.GetAttributeValue( "RegistrationStartDate" ).AsBoolean)
+                var hasRegistrationDate = group.GetAttributeValue( "RegistrationStartDate" );
+                // Check if Registration Start Date attribute exists
+                if ( !string.IsNullOrWhiteSpace( hasRegistrationDate ))
                 {
                     var today = RockDateTime.Now;
 
-                    List<Group> groupsList = null;
+                    List<Group> groupsList = groupQry.ToList();
                     var filteredList = new List<Group>();
-                    groupsList = groupQry.ToList();
 
                     foreach ( var group in groupsList )
                     {
@@ -1042,17 +1042,10 @@ namespace RockWeb.Plugins.church_ccv.Groups
                             filteredList.Add( group );
                         }
                     }
-
+                    
                     groups = filteredList;
                 }
             }
-
-
-
-
-
-
-
 
             int? fenceGroupTypeId = GetGroupTypeId( GetAttributeValue( "GeofencedGroupType" ).AsGuidOrNull() );
             bool showMap = GetAttributeValue( "ShowMap" ).AsBoolean();
