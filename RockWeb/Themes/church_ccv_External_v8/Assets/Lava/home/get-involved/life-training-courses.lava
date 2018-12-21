@@ -9,12 +9,36 @@
                 <a type="button" data-toggle="collapse" data-target="#personDetails{{ personIndex }}" class="person-details-toggle">
                     <div class="person-row">
                         <div class="profile-picture">
-                            {% assign familyPicture = group | Attribute: 'FamilyPicture', 'RawValue' %}
-                            {% if familyPicture != empty %}
-                                    <img class="pull-left margin-r-sm margin-b-sm" src="/GetImage.ashx?guid={{ familyPicture }}"/>
-                            {% else %}
-                                    <img class="pull-left margin-r-sm margin-b-sm" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/icon-connect.png"/>
+                            {% for attribute in group.AttributeValues %}
+                            {% if attribute.Value != empty %}
+                                {% if attribute.AttributeName == "Course Topic" %}
+                                    {% assign topic = group | Attribute: 'CourseTopic' %}
+                                        {% if topic == "Marriage" %}
+                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg"/>
+                                        {% elseif topic == "Divorce" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg"/>
+                                        {% elseif topic == "Finance" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-finance.jpg"/>
+                                        {% elseif topic == "Parenting" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-parenting.jpg"/>
+                                        {% elseif topic == "Blended Families" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-parenting.jpg"/>
+                                        {% elseif topic == "Addiction" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-addiction.jpg"/>
+                                        {% elseif topic == "Grief" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg"/>
+                                        {% elseif topic == "Abuse" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-trauma-and-abuse.jpg"/>
+                                        {% elseif topic == "Pornography" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-sex-and-sexuality.jpg"/>
+                                        {% elseif topic == "Pornography Spouse Support" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-sex-and-sexuality.jpg"/>
+                                        {% elseif topic == "Pain & Suffering" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg"/>
+                                    {% endif %}
+                                 {% endif %}
                             {% endif %}
+                        {% endfor %}
                         </div>
                         <div class="person-info">       
                             {% for attribute in group.AttributeValues %}

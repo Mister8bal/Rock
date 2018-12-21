@@ -11,9 +11,10 @@
     var gCurrentPanel;
 
     function handleOnLoad() {
-        // default to the dashboard panel
-        gCurrentLink = $("#dashboard-button")[0];
-        gCurrentPanel = $("#dashboard-panel")[0];
+        // default to the curriculum panel
+        gCurrentLink = $("#curriculum-button")[0];
+        gCurrentPanel = $("#curriculum-panel")[0];
+        
         togglePanel( gCurrentLink, gCurrentPanel, true );
     }
 
@@ -71,19 +72,28 @@
     </div>
 
     <div class="toolbox-subnav-desktop">
-        <div id="dashboard-button" onClick="linkClicked(this, 'dashboard')">Toolbox</div>
+        
         <div id="curriculum-button" onClick="linkClicked(this, 'curriculum')">Curriculum</div>
+        {% unless group.GroupTypeId == 117 %}
+            <div id="dashboard-button" onClick="linkClicked(this, 'dashboard')">Toolbox</div>
+        {% endunless %}
         <div id="training-center-button" onClick="linkClicked(this, 'training-center')">Training Center</div>
-        <div id="baptisms-button" onClick="linkClicked(this, 'baptisms')">Baptisms</div>
+        {% unless group.GroupTypeId == 117 %}
+            <div id="baptisms-button" onClick="linkClicked(this, 'baptisms')">Baptisms</div>
+        {% endunless %}
         <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)">Group Details</div>
     </div>
 
     <div class="toolbox-subnav-mobile">
         <div class="toolbox-subnav-mobile-items">
+        {% unless group.GroupTypeId == 117 %}
             <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="subnav-item toolbox-subnav-div-selected">Dashboard</div>
+        {% endunless %}    
             <div id="curriculum-mobile-button" onClick="linkClicked(this, 'curriculum')" class="subnav-item">Curriculum</div>
             <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
+        {% unless group.GroupTypeId == 117 %}    
             <div id="baptisms-mobile-button" onClick="linkClicked(this, 'baptisms')" class="subnav-item">Baptisms</div>
+        {% endunless %}    
             <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)" class="subnav-item">Group Details</div>
         </div>
     </div>
