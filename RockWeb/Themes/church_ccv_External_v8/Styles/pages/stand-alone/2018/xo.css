@@ -5,7 +5,7 @@
  /* Mobile Background Image */
  @media screen and (max-width: 500px) {
      .page-background {
-         background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-xo-event.jpg");
+         background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-xo-event-mobile.jpg");
          background-color: black;
      }
  }
