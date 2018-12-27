@@ -5,7 +5,9 @@
     <div class="content">
         <div>               
             {% for group in Groups %}
-                {% assign personIndex = forloop.index %}               
+                {% assign personIndex = forloop.index %}
+                {% assign courseStartDate = group | Attribute: 'CourseStartDate' %}
+                {% assign courseEndDate = group | Attribute: 'CourseEndDate' %}                  
                 <a type="button" data-toggle="collapse" data-target="#personDetails{{ personIndex }}" class="person-details-toggle">
                     <div class="person-row">
                         <div class="profile-picture">
@@ -85,15 +87,14 @@
                                         {{ attribute.ValueFormatted }}
                                         <div class="moreInfoContainer">  
                                 {% elseif attribute.AttributeName == "Registration Start Date" %}
+                                    <div class="classDurationDiv">     
+                                        <h5>Course Duration: </h5>
+                                        <p>{{ courseStartDate }} - {{ courseEndDate }}</p>
+                                    </div> 
                                     <div class="registrationDiv">  
                                         <h5>Registration Starts: </h5>
                                         <p>{{ attribute.ValueFormatted }}</p>
                                     </div>  
-                                {% elseif attribute.AttributeName == "Course Duration" %}
-                                    <div class="classDurationDiv">     
-                                        <h5>Course Duration: </h5>
-                                        <p> {{ attribute.ValueFormatted }}</p>
-                                    </div>     
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
