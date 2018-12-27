@@ -1018,33 +1018,37 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 groups = groupQry.OrderBy( g => g.Name ).ToList();
             }
 
-
-
-
             // Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display. 
             if ( GetAttributeValue( "FilterByRegistrationStartDate" ).AsBoolean() )
             {
-                var hasRegistrationDate = group.GetAttributeValue( "RegistrationStartDate" );
-                // Check if Registration Start Date attribute exists
-                if ( !string.IsNullOrWhiteSpace( hasRegistrationDate ))
+                List<Group> groupsList = groupQry.ToList();
+                var filteredList = new List<Group>();
+
+                // Loop through groups
+                foreach ( var group in groupsList )
                 {
-                    var today = RockDateTime.Now;
+                    // Load the groups attributes
+                    group.LoadAttributes();
 
-                    List<Group> groupsList = groupQry.ToList();
-                    var filteredList = new List<Group>();
-
-                    foreach ( var group in groupsList )
+                    // Get RegistrationStartDate attribute
+                    string registration = group.GetAttributeValue( "RegistrationStartDate" );
+                    
+                    // if RegistrationStartDate attribute is not null
+                    if ( !string.IsNullOrWhiteSpace( registration ) )
                     {
-                        group.LoadAttributes();
-                        DateTime? registrationDate = group.GetAttributeValue( "RegistrationStartDate" ).AsDateTime();
+                        // Get the RegistrationStartDate attribute as Date to compare to today's date.
+                        DateTime registrationDate = DateTime.Parse( registration );
+
+                        var today = RockDateTime.Now;
+
+                        // If RegistrationStartDate is before today's date
                         if ( registrationDate <= today )
                         {
-                            filteredList.Add( group );
+                               filteredList.Add( group );
                         }
                     }
-                    
-                    groups = filteredList;
                 }
+                groups = filteredList;
             }
 
             int? fenceGroupTypeId = GetGroupTypeId( GetAttributeValue( "GeofencedGroupType" ).AsGuidOrNull() );
