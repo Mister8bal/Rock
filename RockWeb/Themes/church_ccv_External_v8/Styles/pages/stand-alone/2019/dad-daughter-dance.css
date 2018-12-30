@@ -27,12 +27,20 @@
 }
 
 .left-and-right-container h3 {
-    color: black;
+    color: rgb(12, 12, 12);
 }
 
 .event-campus-buttons .btn-primary {
     margin-top: 1%;
 }
+
+.event-campus-buttons .btn-primary:hover {
+   background-color: rgb(196, 196, 196)
+}
+
+.event-campus-buttons .btn-primary:active {
+    background-color: rgb(196, 196, 196)
+ }
 
  /* Tablet Landscape Styling */
  @media screen and (max-width: 1024px) {
