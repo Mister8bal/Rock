@@ -1,0 +1,312 @@
+/* important needed to override giving css (need to move giving block CSS into its own file so we dont have these conflicts, instead of being in giving page css file) */
+#ternavbar-bg {
+    display: flex;
+}
+
+#section-a-bg {
+    background-color: #EBEBEB !important;
+}
+
+.head {
+    display: flex;
+    flex-direction: row;
+}
+
+.img-row {
+    position: relative;
+}
+
+.img-row img {
+    width: 100%;
+    height: 500px;
+}
+
+.top-and-bottom-container img {
+    width: 100%;
+    height: 500px;
+    padding-bottom: 2%;
+}
+
+.top .btn-row {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.bottom-left .btn-row {
+    position: absolute;
+    top: 85%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.btn-row h2 {
+    color: white;
+}
+
+.bottom-right .btn-row {
+    position: absolute;
+    top: 85%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.bottom-left-and-right-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.btn-primary {
+    font-family: akrobat;
+    -webkit-font-smoothing: antialiased;
+    font-weight: bold;
+    min-width: 200px;
+    max-width: 200px;
+    text-transform: uppercase;
+    color: white;
+    background-color: #e43d35;
+    border: solid 1px #e43d35;
+    border: 1px solid transparent;
+    text-align: center;
+}
+
+h2 {
+    font-family: akrobat;
+    -webkit-font-smoothing: antialiased;
+    font-weight: bold;
+    font-size: 32px;
+    min-width: 200px;
+    max-width: 200px;
+    text-transform: uppercase;
+    color: white;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    color: #e43d35;
+    background-color: white;
+    border: solid 1px  white;
+    text-decoration: none;
+}
+
+.btn-primary:active {
+    color: #e43d35;
+    background-color: white;
+    border: solid 1px white;
+    text-decoration: none;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    background-color: #e43d35;
+}
+
+.bottom-left-and-right-container .img-row img {
+    width: 97%;
+    height: 300px;
+}
+
+.navigation-tertiary-items {
+    width: unset !important;
+}
+
+.nav-pills > li > a {
+    color: red;
+    text-transform: uppercase;
+}
+
+.nav {
+    width: 700px;
+    padding-top: 7%;
+}
+
+.big-logo .logo {
+    min-height: 100px;
+}
+
+.logo {
+    padding-left: 100px;
+}
+
+.header-title {
+    text-align: center;
+    padding-bottom: 3%;
+}
+
+.header-buttons {
+    padding-top: 7%;
+}
+
+.navigation-primary-items-search-wrapper {
+    display: flex;
+}
+
+/* Footer Styling */
+
+.mainfooter-dark {
+    background-color: black;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(0, 0, 0);
+    padding: 20px 35px;
+}
+
+.footer-logo img {
+    height: 100px;
+}
+
+.footer-copyright {
+    color: rgba(213,213,213,0.87); 
+    padding-top: 10px; 
+    font-family: Heebo; 
+    line-height: 200%; 
+    font-size: 12px; 
+    font-weight: 200;
+}
+
+.footer-social {
+    display: flex;
+}
+
+.footer-social a{
+    padding-right: 4%;
+}
+
+.footer-social i {
+    color: #FFFFFF;
+    font-size: 30px;
+    margin: 10px 0;
+    padding: 0 20px;
+}
+
+.footer-social img {
+    height: 43px !important;
+}
+
+.footer-social {
+    /* padding-right:10px; */
+}
+
+.footer-social i:first-of-type {
+    margin-left: -20px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+    width: 45%;
+    font-size: 13px;
+    font-weight: 200;
+    text-transform: uppercase;
+    padding-top: 5%;
+    color: white;
+}
+
+.footer-links-section {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+
+.footer-links-section h5 {
+    font-size: 20px;
+    color: rgba(213,213,213,0.87);
+    border-bottom: 1px solid rgba(213,213,213,0.87);
+    width: 80%;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.footer-links-section a {
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    justify-content: space-evenly;
+}
+
+/* Footer Mobile Styling */
+@media screen and (max-width: 768px) {
+    .footer-links-section {
+        width: 100%;
+    }
+
+    .footer-links-section h5 {
+        text-align: center;
+    }
+
+    .footer-links-legal {
+        flex-direction: column;
+    }
+
+    .footer-links-legal .legal-copyright {
+        margin-left: 0;
+    }
+}
+@media screen and (max-width: 1100px) {
+    .footer {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+    }
+
+    .footer-logo {
+        width: 100%;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .footer-links, .footer-links-subsection {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .footer-links-section {
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .footer-links-section h5 {
+        text-align: center;
+    }
+
+    .footer-links-legal {
+        margin-bottom: -20px;
+        align-items: center;
+    }
+}
+
+
+
+
+/* Tablet Styling */
+@media screen and (max-width: 768px) {
+    
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    /* temporarily disable 3rd nav in mobile until we decide on design. */
+    #ternavbar-bg {
+        display: none !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 50px !important;
+    }
+
+    .nav {
+        width: unset;
+    }
+}    
+
+
