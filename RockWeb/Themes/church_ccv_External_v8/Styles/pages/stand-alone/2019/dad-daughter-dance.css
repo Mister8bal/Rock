@@ -21,7 +21,7 @@
  .event-campus-buttons .btn-primary {
     min-width: 100%;
     max-width: 100%;
-    color: #777;
+    color: #484848;
     background-color: #f3f3f3;
     border-color: #d5d5d5;
 }
@@ -40,6 +40,12 @@
 
 .event-campus-buttons .btn-primary:active {
     background-color: rgb(196, 196, 196)
+ }
+
+ h3 span {
+    color: #7c7c7c;
+    font-size: 12px;
+}
  }
 
  /* Tablet Landscape Styling */
