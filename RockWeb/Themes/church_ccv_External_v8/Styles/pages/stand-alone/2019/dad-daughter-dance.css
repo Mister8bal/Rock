@@ -42,9 +42,8 @@
     background-color: rgb(196, 196, 196)
  }
 
- h3 span {
-    color: #7c7c7c;
-    font-size: 12px;
+p {
+    color: black;
 }
 
  /* Tablet Landscape Styling */
