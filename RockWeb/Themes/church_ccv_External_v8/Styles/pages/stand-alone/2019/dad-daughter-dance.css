@@ -21,8 +21,8 @@
  .event-campus-buttons .btn-primary {
     min-width: 100%;
     max-width: 100%;
-    color: #484848;
-    background-color: #f3f3f3;
+    color: #000000;
+    background-color: #d5d5d5;
     border-color: #d5d5d5;
 }
 
@@ -35,11 +35,11 @@
 }
 
 .event-campus-buttons .btn-primary:hover {
-   background-color: rgb(196, 196, 196)
+   background-color: rgb(241, 241, 241);
 }
 
 .event-campus-buttons .btn-primary:active {
-    background-color: rgb(196, 196, 196)
+    background-color: rgb(241, 241, 241);
  }
 
 p {
