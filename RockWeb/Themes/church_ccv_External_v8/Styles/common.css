@@ -309,7 +309,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 13px;
 }
 
 .navigation-primary-item-button {
@@ -465,6 +464,7 @@
 
 .navigation-primary-dropdown-content a {
     display: block;
+    font-size: 13px;
 }
 
 .navigation-primary-dropdown-content a:hover {
