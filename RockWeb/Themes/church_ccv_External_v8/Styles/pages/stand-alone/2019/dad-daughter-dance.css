@@ -1,0 +1,66 @@
+.page-background {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance.jpg");
+ }
+ 
+ /* Mobile Background Image */
+ @media screen and (max-width: 500px) {
+     .page-background {
+         background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance.jpg");
+         background-color: black;
+     }
+ }
+ 
+ #subnavbar-bg {
+     display: none;
+ }
+ 
+ #section-a-bg {
+     background-color: black;
+ }
+
+ .event-campus-buttons .btn-primary {
+    min-width: 100%;
+    max-width: 100%;
+    color: #000000;
+    background-color: #d5d5d5;
+    border-color: #d5d5d5;
+}
+
+.left-and-right-container h3 {
+    color: rgb(12, 12, 12);
+}
+
+.event-campus-buttons .btn-primary {
+    margin-top: 1%;
+}
+
+.event-campus-buttons .btn-primary:hover {
+   background-color: rgb(241, 241, 241);
+}
+
+.event-campus-buttons .btn-primary:active {
+    background-color: rgb(241, 241, 241);
+ }
+
+p {
+    color: black;
+}
+
+ /* Tablet Landscape Styling */
+ @media screen and (max-width: 1024px) {
+   
+ }
+ 
+ /* Tablet Portrait Styling */
+ @media screen and (max-width: 768px) {
+    
+ }
+ 
+ /* Mobile Styling */
+ @media screen and (max-width: 500px) {
+     .main-feature {
+         height: 470px;
+         padding-top: 90px;
+     }
+ 
+ }

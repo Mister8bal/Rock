@@ -26,6 +26,7 @@ namespace RockWeb.Plugins.church_ccv.Reporting
 
     [IntegerField( "Weeks Back", "The number of weeks back to display in the 'Week of' selection.", false, 8, "", 1 )]
     [IntegerField( "Weeks Ahead", "The number of weeks ahead to display in the 'Week of' selection.", false, 0, "", 2 )]
+    [CustomDropdownListField( "Campus Service Time Type", "What service times campus attribute to use", "Weekend Service,Christmas,Easter", true, "Weekend Service", "", 3 )]
 
     [IntegerField( "HeadcountsMetricCategoryId", Category = "CustomSetting" )]
     [SchedulesField( "Schedules", Category = "CustomSetting" )]
@@ -110,14 +111,7 @@ namespace RockWeb.Plugins.church_ccv.Reporting
         /// </summary>
         private void LoadDropDowns()
         {
-            bddlCampus.Items.Clear();
             bddlWeekend.Items.Clear();
-
-            // Load Campuses
-            foreach ( var campus in CampusCache.All( false ) )
-            {
-                bddlCampus.Items.Add( new ListItem( campus.Name, campus.Id.ToString() ) );
-            }
 
             var selectedCampusId = GetBlockUserPreference( "CampusId" ).AsIntegerOrNull();
 
@@ -168,39 +162,96 @@ namespace RockWeb.Plugins.church_ccv.Reporting
         }
 
         /// <summary>
-        /// Gets the service times for campus.
+        /// Gets the service times that match a selected schedule for a campus with option to use custom campus attribute
         /// </summary>
         /// <param name="campus">The campus.</param>
+        /// <param name="campusAttribute">The campus attribute of the special event service times</param>
         /// <returns></returns>
-        private List<Schedule> GetServiceTimesForCampus( CampusCache campus )
+        private List<Schedule> GetServiceTimesForCampus( CampusCache campus, string campusAttribute = "ServiceTimes" )
         {
-            var rockContext = new RockContext();
+            // return object
             var serviceTimesForCampus = new List<Schedule>();
+
+            // dont proceed if campus inactive
+            if ( campus.IsActive == false )
+            {
+                // return empty list
+                return serviceTimesForCampus;
+            }
+
+            // setup schedule service
+            RockContext rockContext = new RockContext();
             var scheduleService = new ScheduleService( rockContext );
 
-            var scheduleLookupList = scheduleService.Queryable().Where( a => a.Name != null ).ToList().Select( a => new
+            // get all schedules with a name
+            var scheduleLookupList = scheduleService.Queryable().Where( a => a.Name != null && a.Name != "" ).ToList().Select( a => new
             {
                 a.Id,
-                a.FriendlyScheduleText
+                a.Name
             } );
 
+            // get selected schedules from block setting
             var selectedScheduleIds = new ScheduleService( rockContext ).GetByGuids( this.GetAttributeValue( "Schedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
 
-            var campusServiceTimes = campus.ServiceTimes;
+            // setup and populate campusServiceTimes object
+            var campusServiceTimes = new string[0];
+            if ( campusAttribute != "ServiceTimes" )
+            {
+                // special event, use campus custom attribute
+                campusServiceTimes = campus.GetAttributeValue( campusAttribute ).Split( '|' );
+            } else
+            {
+                // weekend services, use default campus service times
+                // convert the default service times object to string[] so we dont have to maintain different ways of matching names
+                campusServiceTimes = ConvertCampusServiceTimesToStringArray( campus.ServiceTimes );
+            }
 
-            // add all the advertised schedules
+            // find the schedules that match the times specificed in campusServiceTimes
             foreach ( var serviceTime in campusServiceTimes )
             {
-                var serviceTimeFriendlyText = string.Format( "{0} at {1}", serviceTime.Day, serviceTime.Time ).Replace( "*", "" ).Replace("%", "").Trim();
-                var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.FriendlyScheduleText.StartsWith( serviceTimeFriendlyText, StringComparison.OrdinalIgnoreCase ) );
+                // check for a service time and skip if null or empty
+                if (serviceTime.IsNullOrWhiteSpace())
+                {
+                    break;
+                }
+
+                // get the day and time from serviceTime
+                var serviceTimeArray = serviceTime.Split( '^' );
+                var day = serviceTimeArray[0];
+                var time = serviceTimeArray[1].Replace( " ", "" );
+
+                // build name to match
+                var serviceTimeName = string.Format( "{0} {1}", day, time ).Replace( "*", "" ).Replace( "%", "" ).Trim();
+
+                // find the schedule that matches the name of a schedule selected in the block settings
+                var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.Name == serviceTimeName );
                 if ( scheduleLookup != null && selectedScheduleIds.Contains( scheduleLookup.Id ) )
                 {
-                    var schedule = scheduleService.Get( scheduleLookup.Id );
-                    serviceTimesForCampus.Add( schedule );
+                    // match found, add schedule to serviceTimesForCampus
+                    serviceTimesForCampus.Add( scheduleService.Get( scheduleLookup.Id ) );
                 }
             }
 
             return serviceTimesForCampus;
+        }
+
+        /// <summary>
+        /// Convert a Campus Service Time Object to a string array
+        /// </summary>
+        /// <param name="serviceTimes">Campus Service Times</param>
+        /// <returns></returns>
+        private string[] ConvertCampusServiceTimesToStringArray( List<CampusCache.ServiceTime> serviceTimes )
+        {
+            // return object
+            var campusServiceTimes = new List<string>();
+
+            // convert each service time to string and add to return object
+            foreach ( var serviceTime in serviceTimes )
+            {
+                campusServiceTimes.Add( String.Format( "{0}^{1}", serviceTime.Day, serviceTime.Time ) );
+            }
+
+            return campusServiceTimes.ToArray();
         }
 
         /// <summary>
@@ -246,11 +297,28 @@ namespace RockWeb.Plugins.church_ccv.Reporting
             var definedValueOverflow = definedType.DefinedValues.FirstOrDefault( a => a.Value == "Overflow" );
 
             var serviceMetricValuesList = new List<ServiceMetricValues>();
-            var campusServiceSchedules = GetServiceTimesForCampus( CampusCache.Read( campusId.Value ) );
+
+            var campusServiceSchedules = new List<Schedule>();
+
+            var campusServiceTimeType = GetAttributeValue( "CampusServiceTimeType" );
+
+            switch ( campusServiceTimeType )
+            {
+                case "Easter":
+                    campusServiceSchedules = GetServiceTimesForCampus( CampusCache.Read( campusId.Value ), "EasterServiceTimes" );
+                    break;
+                case "Christmas":
+                    campusServiceSchedules = GetServiceTimesForCampus( CampusCache.Read( campusId.Value ), "ChristmasServiceTimes" );
+                    break;
+                default:
+                    campusServiceSchedules = GetServiceTimesForCampus( CampusCache.Read( campusId.Value ) );
+                    break;
+            }
+
 
             foreach ( var campusSchedule in campusServiceSchedules )
             {
-                var serviceMetricValue = new ServiceMetricValues( campusSchedule.Id, campusSchedule.FriendlyScheduleText );
+                var serviceMetricValue = new ServiceMetricValues( campusSchedule.Id, campusSchedule.Name );
 
                 var campusScheduleMetricValues = metricValueService
                                 .Queryable().AsNoTracking()
