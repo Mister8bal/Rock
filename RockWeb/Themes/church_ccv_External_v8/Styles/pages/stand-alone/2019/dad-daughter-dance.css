@@ -1,11 +1,12 @@
 .page-background {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance.jpg");
+    background-position: inherit;
  }
  
  /* Mobile Background Image */
  @media screen and (max-width: 500px) {
      .page-background {
-         background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance.jpg");
+         background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance-mobile.jpg");
          background-color: black;
      }
  }
@@ -59,7 +60,6 @@ p {
  /* Mobile Styling */
  @media screen and (max-width: 500px) {
      .main-feature {
-         height: 470px;
          padding-top: 90px;
      }
  
