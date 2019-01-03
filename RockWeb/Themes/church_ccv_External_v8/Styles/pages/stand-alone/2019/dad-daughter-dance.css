@@ -1,6 +1,5 @@
 .page-background {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-dad-daughter-dance.jpg");
-    background-position: inherit;
  }
  
  /* Mobile Background Image */
@@ -29,6 +28,11 @@
 
 .left-and-right-container {
     padding-bottom: 5%;
+}
+
+.left-and-right-container .fullWidth {
+    width: 100%;
+    max-width: 100%;
 }
 
 .left-and-right-container h3 {
