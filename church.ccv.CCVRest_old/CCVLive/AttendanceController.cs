@@ -34,12 +34,12 @@ using church.ccv.CCVRest.CCVLive.Model;
 
 namespace church.ccv.CCVRest.CCVLive
 {
-    public class AttendanceController : Rock.Rest.ApiControllerBase
+    class AttendanceController : Rock.Rest.ApiControllerBase
     {
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/CCVLive/Attendance")]
         [Authenticate, Secured]
-        public HttpResponseMessage Attendance(AttendanceModel attendanceModel)
+        public HttpResponseMessage Attendance([FromBody]AttendanceModel attendanceModel)
         {
             var rockContext = new RockContext();
             var interactionService = new InteractionService(rockContext);
@@ -68,11 +68,11 @@ namespace church.ccv.CCVRest.CCVLive
             dt = TimeZoneInfo.ConvertTime(dt, timeZoneInfo);
             Interaction thisInteraction = new Interaction()
             {
+                EntityId = attendanceModel.EntityId,
                 Operation = attendanceModel.Operation,
                 InteractionDateTime = dt,
                 PersonAliasId = attendanceModel.PersonAliasId,
-                InteractionComponentId = attendanceModel.InteractionComponentId,
-                InteractionSessionId = attendanceModel.InteractionSessionId
+                InteractionComponentId = attendanceModel.InteractionComponentId
             };
 
             interactionService.Add(thisInteraction);
@@ -81,7 +81,7 @@ namespace church.ccv.CCVRest.CCVLive
 
             responseData.Message = "Interaction created with Id " + thisInteraction.Id.ToString();
             responseData.Success = true;
-            responseData.Data = "{\"Id\":" + thisInteraction.Id + "}";
+            responseData.Data = "{\"Id\":" + thisInteraction.Id.ToString() + "\"}";
 
             response.Content = new StringContent(JsonConvert.SerializeObject(responseData), Encoding.UTF8, "application/json");
 
