@@ -99,6 +99,8 @@
                                             Help="Display the campus filter" ValidationGroup="GroupFinderSettings" />
                                         <Rock:RockCheckBox ID="cbOverCapacityGroups" runat="server" Label="Hide Over Capacity Groups" Text="Yes"
                                             Help="Hides over capacity groups. If a 'capacity' attribute is added to the group, it will check that first. If there isn't, it will check to see if the group type has a capacity attribute." ValidationGroup="GroupFinderSettings" />
+                                        <Rock:RockCheckBox ID="cbRegistrationStartDate" runat="server" Label="Filter By Registration Start Date" Text="Yes"
+                                            Help="Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display." ValidationGroup="GroupFinderSettings" />
                                         <Rock:RockCheckBox ID="cbCampusContext" runat="server" Label="Enable Campus Context" Text="Yes"
                                             Help="If the page has a campus context it's value will be used as a filter" ValidationGroup="GroupFinderSettings" />
                                         <Rock:RockCheckBoxList ID="cblAttributes" runat="server" Label="Display Attribute Filters" RepeatDirection="Horizontal"
