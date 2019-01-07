@@ -4,23 +4,30 @@
     <!-- Page Header -->
     <header class="masthead big-logo">
         <div class="container">
-
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row-header">
+                <div>
                     <Rock:Zone Name="Logo" runat="server" />
                 </div>
-                <div class="col-sm-6">
+                <div>
                     <Rock:Zone Name="Header" runat="server" />
                     <Rock:Zone Name="Login" runat="server" />
                     <Rock:Zone Name="Navigation" runat="server" />
                 </div>
             </div>
-
         </div>
     </header>
 </asp:Content>
 
 <asp:Content ID="ctFeature" ContentPlaceHolderID="feature" runat="server">
+
+
+    <section class="main">
+        <div class="">
+            <div class="col-md-12">
+                <Rock:Zone Name="Section Top" runat="server" />
+            </div>
+        </div>
+    </section>  
 
     <div class="container">
         <!-- Ajax Error -->
@@ -29,10 +36,10 @@
             <span class="ajax-error-message"></span>
         </div>
     </div>
-
+  
     <section class="main-feature">
         <div class="container">
-            <h2 class="margin-v-lg">Choose Your Sport</h2>
+            <h2 class="margin-v-lg">Sports By Location</h2>
 
             <div class="row">
                 <div class="col-md-6">

@@ -16,52 +16,43 @@
     flex-direction: row;
 }
 
-.img-row {
-    position: relative;
-}
-
-.img-row img {
-    width: 100%;
-    height: 500px;
-}
-
-.top-and-bottom-container img {
-    width: 100%;
-    height: 500px;
-    padding-bottom: 2%;
-}
-
-.top .btn-row {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-}
-
-.bottom-left .btn-row {
-    position: absolute;
-    top: 85%;
-    left: 25%;
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-}
-
-.btn-row h2 {
-    color: white;
-}
-
-.bottom-right .btn-row {
-    position: absolute;
-    top: 85%;
-    left: 75%;
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-}
-
-.bottom-left-and-right-container {
+.row-header {
     display: flex;
     flex-direction: row;
+}
+
+.image-top {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 80%;
+    height: 500px;
+}
+
+.image-bottom-left {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 400px;
+}
+
+.image-bottom-right {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 400px;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.bottom-left, .bottom-right {
+    width: 45%;
 }
 
 .btn-primary {
@@ -106,11 +97,6 @@ h2 {
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     background-color: #e43d35;
-}
-
-.bottom-left-and-right-container .img-row img {
-    width: 97%;
-    height: 300px;
 }
 
 .navigation-tertiary-items {
@@ -189,14 +175,6 @@ h2 {
     padding: 0 20px;
 }
 
-.footer-social img {
-    height: 43px !important;
-}
-
-.footer-social {
-    /* padding-right:10px; */
-}
-
 .footer-social i:first-of-type {
     margin-left: -20px;
 }
@@ -262,6 +240,16 @@ h2 {
     /* temporarily disable 3rd nav in mobile until we decide on design. */
     #ternavbar-bg {
         display: none !important;
+    }
+
+    .image-top {
+        width: 100%;
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
 
     .footer-links a {
