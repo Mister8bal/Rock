@@ -3,17 +3,58 @@
     display: flex;
 }
 
+#sectionb-bg, #sectionc-bg, #sectiond-bg {
+    display: none;
+}
+
+.announcement-bar {
+    padding-top: 5px;
+    background-color: #e43d35;
+    color: #FFFFFF;
+    font-weight: normal;
+    font-family: Heebo;
+    text-align: center;
+    padding: 10px 0px;
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
+/* Navigation Section */
+
+.navigation-primary-items-search-wrapper {
+    display: flex;
+}
+
+.navigation-tertiary-items {
+    width: unset !important;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    background-color: #e43d35;
+}
+
+.nav-pills > li > a {
+    color: red;
+    text-transform: uppercase;
+}
+
 .nav {
+    width: 700px;
+    padding-top: 7%;
     padding-left: 5%;
 }
 
-#section-a-bg {
-    background-color: #EBEBEB !important;
+.big-logo .logo {
+    min-height: 100px;
 }
 
-.head {
-    display: flex;
-    flex-direction: row;
+.logo {
+    padding-left: 100px;
+}
+
+.header-title {
+    text-align: center;
+    padding-bottom: 3%;
 }
 
 .row-header {
@@ -21,12 +62,56 @@
     flex-direction: row;
 }
 
+.header-buttons {
+    padding-top: 7%;
+}
+
+.head {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    #ternavbar-bg {
+        display: none !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 50px !important;
+    }
+
+    .nav {
+        width: unset;
+    }
+} 
+
+/* End Navigation Section */
+
+/* Top section */
+
 .image-top {
-    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.png");
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
     background-repeat: no-repeat;
     background-size: contain;
-    width: 80%;
     height: 500px;
+    background-position: center;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .image-top {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 500px;
+        background-position: center;
+    }
+}
+
+.top {
+    width: 100%;
 }
 
 .image-bottom-left {
@@ -34,7 +119,19 @@
     background-repeat: no-repeat;
     background-size: contain;
     width: 100%;
-    height: 400px;
+    background-position: center;
+    height: inherit;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .image-bottom-left {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 100%;
+        background-position: center;
+    }
 }
 
 .image-bottom-right {
@@ -42,22 +139,50 @@
     background-repeat: no-repeat;
     background-size: contain;
     width: 100%;
-    height: 400px;
+    background-position: center;
+    height: inherit;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .image-bottom-right {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+    }
 }
 
 .bottom {
     display: flex;
     flex-direction: row;
     width: 100%;
+    padding-top: 1%;
+    padding-bottom: 1%;
 }
 
 .bottom-left, .bottom-right {
-    width: 45%;
+    height: 300px;
+    width: 100%;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .bottom-left, .bottom-right {
+        height: 210px;
+        width: 100%;
+        margin-top: 2%;
+    }
+}
+
+.content-container {
+    text-align: center;
+    height: inherit;
+    padding-top: 15%;
 }
 
 .btn-primary {
-    font-family: akrobat;
-    -webkit-font-smoothing: antialiased;
+    font-family: unset;
     font-weight: bold;
     min-width: 200px;
     max-width: 200px;
@@ -70,15 +195,11 @@
 }
 
 h2 {
-    font-family: akrobat;
-    -webkit-font-smoothing: antialiased;
-    font-weight: bold;
     font-size: 32px;
-    min-width: 200px;
-    max-width: 200px;
     text-transform: uppercase;
     color: white;
-    text-align: center;
+    font-family: unset;
+    font-weight: bold;
 }
 
 .btn-primary:hover {
@@ -95,46 +216,32 @@ h2 {
     text-decoration: none;
 }
 
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    background-color: #e43d35;
-}
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
 
-.navigation-tertiary-items {
-    width: unset !important;
-}
+    h1 {
+        font-size: 24px;
+    }
 
-.nav-pills > li > a {
-    color: red;
-    text-transform: uppercase;
-}
+    h2 {
+        font-size: 18px;
+    }
 
-.nav {
-    width: 700px;
-    padding-top: 7%;
-}
+    .image-top {
+        width: 100%;
+        height: 200px;
+    }
 
-.big-logo .logo {
-    min-height: 100px;
-}
+    .bottom {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+} 
 
-.logo {
-    padding-left: 100px;
-}
+/* End Top section */
 
-.header-title {
-    text-align: center;
-    padding-bottom: 3%;
-}
-
-.header-buttons {
-    padding-top: 7%;
-}
-
-.navigation-primary-items-search-wrapper {
-    display: flex;
-}
-
-/* Footer Styling */
+/* Footer Section */
 
 .mainfooter-dark {
     background-color: black;
@@ -158,6 +265,7 @@ h2 {
     line-height: 200%; 
     font-size: 12px; 
     font-weight: 200;
+    text-align: center;
 }
 
 .footer-social {
@@ -213,6 +321,14 @@ h2 {
     justify-content: space-evenly;
 }
 
+.mainfooter-dark a {
+    text-decoration: none;
+}
+
+.footer-social img {
+    height: 50px;
+}
+
 @media screen and (max-width: 1024px) {
     .footer {
         display: flex;
@@ -226,7 +342,6 @@ h2 {
     }
 }
 
-
 /* Footer Tablet Styling */
 @media screen and (max-width: 768px) {
     .footer-links {
@@ -235,23 +350,9 @@ h2 {
         text-align: center;
     }
 }
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    /* temporarily disable 3rd nav in mobile until we decide on design. */
-    #ternavbar-bg {
-        display: none !important;
-    }
-
-    .image-top {
-        width: 100%;
-    }
-
-    .bottom {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-
     .footer-links a {
         padding-right: 4%;
     }
@@ -263,16 +364,8 @@ h2 {
 
     .footer-social {
         justify-content: center;
-    }
-
-    .main-feature {
-        height: unset !important;
-        padding-top: 50px !important;
-    }
-
-    .nav {
-        width: unset;
+        padding-top: 2%;
     }
 }    
 
-
+/* End Footer Section */

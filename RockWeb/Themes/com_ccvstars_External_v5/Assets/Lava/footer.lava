@@ -9,11 +9,11 @@
     </div>
 
      <div class="footer-links">
-        <a href="/community-services/premarital">About Us</a>
-        <a href="/community-services/weddings-at-ccv">Soccer</a>
-        <a href="/community-services/funerals">Football</a>
-        <a href="/community-services/weddings-at-ccv">Basketball</a>
-        <a href="/community-services/funerals">Volunteer</a>
+        <a href="/about-us">About Us</a>
+        <a href="/soccer">Soccer</a>
+        <a href="/football">Football</a>
+        <a href="/basketball">Basketball</a>
+        <a href="/volunteer">Volunteer</a>
     </div>
 
     <div>
@@ -22,6 +22,6 @@
             <a href="https://www.instagram.com/ccvmusic/" target="_blank"><img src="~~/Assets/Images/facebook.png"></a>
             <a href="https://www.instagram.com/ccvmusic/" target="_blank"><img src="~~/Assets/Images/twitter.png"></a>
         </div>
-        <span class="footer-copyright"><i class="fa fa-copyright"></i>2018 Christ's Church of the Valley</span>
+        <div class="footer-copyright"><i class="fa fa-copyright"></i>2018 Christ's Church of the Valley</div>
     </div>
 </div>
