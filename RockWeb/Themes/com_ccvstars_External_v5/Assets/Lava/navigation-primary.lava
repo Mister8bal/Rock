@@ -48,9 +48,9 @@
                         <div class="navigation-primary-dropdown-content">
                             <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
 
-                                {% for dropdownPage in childPage.Pages  %}
+                                {% comment %} {% for dropdownPage in childPage.Pages  %}
                                     <a class="navigation-primary-item-a dropdown-content-item" href="{{ dropdownPage.Url }}">{{ dropdownPage.Title }}</a>
-                                {% endfor %}
+                                {% endfor %} {% endcomment %}
                         </div>
                     </div>
                 {% else %}

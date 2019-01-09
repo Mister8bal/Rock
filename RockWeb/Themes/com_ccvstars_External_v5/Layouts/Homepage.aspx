@@ -53,7 +53,7 @@
                 <div class="col-md-6">
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">Peoria Campus</h3>
+                            <h3 class="module-title margin-b-lg">Peoria</h3>
                             <Rock:Zone Name="PeoriaSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -68,7 +68,7 @@
                     </div>
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">Avondale Campus</h3>
+                            <h3 class="module-title margin-b-lg">Avondale</h3>
                             <Rock:Zone Name="AvondaleSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -83,7 +83,7 @@
                     </div>
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">North Phoenix Campus</h3>
+                            <h3 class="module-title margin-b-lg">North Phoenix</h3>
                             <Rock:Zone Name="NorthPhoenixSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -100,7 +100,7 @@
                 <div class="col-md-6">
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">Surprise Campus</h3>
+                            <h3 class="module-title margin-b-lg">Surprise</h3>
                             <Rock:Zone Name="SurpriseSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -116,7 +116,7 @@
 
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">East Valley Campus</h3>
+                            <h3 class="module-title margin-b-lg">East Valley</h3>
                             <Rock:Zone Name="EastValleySports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -133,7 +133,7 @@
                 <div class="col-md-6">
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">Chandler Campus</h3>
+                            <h3 class="module-title margin-b-lg">Chandler</h3>
                             <Rock:Zone Name="ChandlerSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">
@@ -148,7 +148,7 @@
                     </div>
                     <div class="module module-with-footer">
                         <div class="module-body">
-                            <h3 class="module-title margin-b-lg">Verrado Campus</h3>
+                            <h3 class="module-title margin-b-lg">Verrado</h3>
                             <Rock:Zone Name="VerradoSports" runat="server" />
                         </div>
                         <div class="module-mid js-fieldstatus fieldstatus clearfix">

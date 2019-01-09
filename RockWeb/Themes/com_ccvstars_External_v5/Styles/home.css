@@ -3,6 +3,14 @@
     display: flex;
 }
 
+h2 {
+    font-size: 32px;
+    text-transform: uppercase;
+    color: white;
+    font-family: unset;
+    font-weight: bold;
+}
+
 #sectionb-bg, #sectionc-bg, #sectiond-bg {
     display: none;
 }
@@ -21,29 +29,6 @@
 
 /* Navigation Section */
 
-/* .navigation-primary-items-search-wrapper {
-    display: flex;
-} */
-
-/* .navigation-tertiary-items {
-    width: unset !important;
-} */
-/* 
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    background-color: #e43d35;
-} */
-
-/* .nav-pills > li > a {
-    color: red;
-    text-transform: uppercase;
-} */
-
-/* .nav {
-    width: 700px;
-    padding-top: 7%;
-    padding-left: 5%;
-} */
-
 .big-logo .logo {
     min-height: 100px;
 }
@@ -57,36 +42,18 @@
     padding-bottom: 3%;
 }
 
-/* .row-header {
-    display: flex;
-    flex-direction: row;
-} */
+@media screen and (max-width: 1024px) {
+    h2 {
+        font-size: 24px;
+    }
+}
 
-/* .header-buttons {
-    padding-top: 7%;
-} */
-
-/* .head {
-    display: flex;
-    flex-direction: row;
-} */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    h2 {
+        font-size: 18px;
+    }
+}
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
@@ -109,11 +76,6 @@
 } 
 
 /* End Navigation Section */
-
-
-
-
-
 
 
 /* Start Master Header and Navigation-Primary Styling */
@@ -152,18 +114,12 @@
     
 }
 
-/* .masthead-brand .logo {
-    display: block;
+@media screen and (min-width: 768px) {
+.masthead .logo {
+    margin: unset;
     float: left;
-    background-image: url(../assets/images/logos/logo.svg);
-    background-repeat: no-repeat;
-    background-position: left center;
-    margin-left: 5px;
-    height: 35px;
-    width: 225px;
-    margin-left: 15px;
-    margin-top: 10px;
-} */
+}
+}
 
 .header-navigation {
     display: flex;
@@ -268,28 +224,6 @@
     color: #e43d35;
 }
 
-/* Styling for the 'Search' magnifying glass on the navigation primary bar. */
-.navigation-primary-items-search-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-.search-item {
-    margin-left: 15px;
-    padding: 10px;
-    font-size: 20px;
-}
-
-.search-item:hover {
-    color: #FFFFFF;
-    transition: .25s;
-    background: rgba( 255, 255, 255, .15);
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
-/**/
-
 .loginstatus {
     color: #FFFFFF;
     font-family: akrobat;
@@ -346,7 +280,7 @@
 .navigation-primary-dropdown-content-wrapper {
     display: none;
     position: absolute;
-    color: #FFFFFF;
+    color: #e43d35;
     transition: .25s;
     width: 115px;
 }
@@ -362,7 +296,7 @@
 }
 
 .navigation-primary-dropdown-content a:hover {
-    color: #FFFFFF;
+    color: gray;
     transition: .25s;
     background: #e43d35;
     cursor: pointer;
@@ -375,7 +309,7 @@
 }
 
 .navigation-primary-item:hover .navigation-primary-item-button {
-    color: #FFFFFF;
+    color: black;
     transition: .25s;
     background: rgba( 255, 255, 255, .15);
     border-radius: 4px;
@@ -518,11 +452,6 @@
 
  /* End Hamburger Menu aka Full Menu*/
 
-
-
-
-
-
 /* Top section */
 
 .image-top {
@@ -533,12 +462,30 @@
     background-position: center;
 }
 
+@media screen and (max-width: 1441px) {
+    .image-top {
+        background-size: cover;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .image-top {
+        height: 400px;
+        background-size: cover;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+
+}
+
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .image-top {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
         background-repeat: no-repeat;
-        background-size: contain;
+        background-size: cover;
         height: 500px;
         background-position: center;
     }
@@ -549,38 +496,88 @@
 }
 
 .image-bottom-left {
-    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.png");
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     width: 100%;
     background-position: right;
-    height: inherit;
+    height: 327px;
+}
+
+@media screen and (max-width: 2560px) {
+    .image-bottom-left {
+        background-size: contain;
+    }
+}
+
+@media screen and (max-width: 1441px) {
+    .image-bottom-left {
+        background-size: cover;
+    }
+}
+
+@media screen and (max-width: 1025px) {
+    .image-bottom-left {
+        background-position: left;
+        height: inherit;
+        background-size: cover;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    .image-bottom-left {
+        background-size: cover;
+    }
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .image-bottom-left {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.png");
-        background-repeat: no-repeat;
-        background-size: cover;
-        width: 100%;
-        background-position: center;
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
     }
 }
 
 .image-bottom-right {
-    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.png");
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.jpg");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     width: 100%;
     background-position: left;
-    height: inherit;
+    height: 327px;
+}
+
+@media screen and (max-width: 2560px) {
+    .image-bottom-right {
+        background-size: contain;
+    }
+}
+
+@media screen and (max-width: 1441px) {
+    .image-bottom-right {
+        background-size: cover;
+    }
+}
+
+@media screen and (max-width: 1025px) {
+    .image-bottom-right {
+        background-size: cover;
+        background-position: left;
+        height: inherit;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    .image-bottom-right {
+        background-position: unset;
+    }
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .image-bottom-right {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.png");
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -596,17 +593,59 @@
 }
 
 .bottom-left, .bottom-right {
-    height: 300px;
+    height: 330px;
     width: 100%;
 }
+
+.bottom-left {
+    padding-right: 1%;
+}
+
+@media screen and (max-width: 1024px) {
+    .bottom-left, .bottom-right {
+        width: 100%;
+        
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    .bottom-left, .bottom-right {
+        height: 210px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+}
+
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .bottom-left, .bottom-right {
         height: 210px;
-        width: 100%;
-        margin-top: 2%;
     }
+
+    .bottom-left {
+       padding-right: 0;
+    }
+
+    .bottom-right {
+        padding-top: 1%;
+        margin-bottom: 1%;
+     }
 }
 
 .content-container {
@@ -626,14 +665,6 @@
     border: solid 1px #e43d35;
     border: 1px solid transparent;
     text-align: center;
-}
-
-h2 {
-    font-size: 32px;
-    text-transform: uppercase;
-    color: white;
-    font-family: unset;
-    font-weight: bold;
 }
 
 .btn-primary:hover {
