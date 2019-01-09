@@ -114,11 +114,20 @@ h2 {
     
 }
 
-@media screen and (min-width: 768px) {
-.masthead .logo {
-    margin: unset;
-    float: left;
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    color: #ffffff;
+    background-color: #e43d35;
 }
+
+@media screen and (min-width: 768px) {
+    .masthead .logo {
+        margin: unset;
+        float: left;
+    }
+}
+
+#zone-navigation {
+    padding-top: 2%;
 }
 
 .header-navigation {
@@ -126,6 +135,18 @@ h2 {
     justify-content: space-between;
     align-items: center;
     padding-left: 10px;
+}
+
+.nav > li > a {
+    color: #e43d35;
+    font-family: akrobat;
+    font-size: 15px;
+    font-weight: bold;
+    -webkit-font-smoothing: antialiased;
+    line-height: 40px;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding-left: 20px;
 }
 
 .navigation-primary-items {
@@ -384,6 +405,8 @@ h2 {
      -webkit-transition-duration: 600ms;
      transition-duration: 600ms;
      overflow-y: auto;
+     position: absolute;
+     z-index: 999;
  }
  
  .masthead-fullmenu.offscreen {
@@ -391,6 +414,8 @@ h2 {
      -webkit-transform: translate(100%);
  }
  
+ position: absolute;
+    z-index: 999;
  .navigation-mobile-title {
      padding: 15px 5px 15px 20px;
      background-color: #e43d35;
@@ -405,9 +430,9 @@ h2 {
  }
  
  .navigation-mobile-close {
-     background: none;
-     border-style: none;
-     outline: none;
+    background: none;
+    border-style: none;
+    font-family: monospace;
  }
  
  .navigation-mobile-title-search-wrapper {
@@ -457,21 +482,14 @@ h2 {
 .image-top {
     background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     height: 500px;
     background-position: center;
-}
-
-@media screen and (max-width: 1441px) {
-    .image-top {
-        background-size: cover;
-    }
 }
 
 @media screen and (max-width: 1024px) {
     .image-top {
         height: 400px;
-        background-size: cover;
     }
 }
 
@@ -485,7 +503,6 @@ h2 {
     .image-top {
         background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
         background-repeat: no-repeat;
-        background-size: cover;
         height: 500px;
         background-position: center;
     }
@@ -500,34 +517,13 @@ h2 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    background-position: right;
+    /* background-position: right; */
     height: 327px;
-}
-
-@media screen and (max-width: 2560px) {
-    .image-bottom-left {
-        background-size: contain;
-    }
-}
-
-@media screen and (max-width: 1441px) {
-    .image-bottom-left {
-        background-size: cover;
-    }
 }
 
 @media screen and (max-width: 1025px) {
     .image-bottom-left {
-        background-position: left;
-        height: inherit;
-        background-size: cover;
-    }
-}
-
-/* Footer Tablet Styling */
-@media screen and (max-width: 768px) {
-    .image-bottom-left {
-        background-size: cover;
+        background-position: bottom;
     }
 }
 
@@ -543,27 +539,14 @@ h2 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    background-position: left;
+    /* background-position: left; */
     height: 327px;
 }
 
-@media screen and (max-width: 2560px) {
-    .image-bottom-right {
-        background-size: contain;
-    }
-}
-
-@media screen and (max-width: 1441px) {
-    .image-bottom-right {
-        background-size: cover;
-    }
-}
 
 @media screen and (max-width: 1025px) {
     .image-bottom-right {
-        background-size: cover;
         background-position: left;
-        height: inherit;
     }
 }
 
@@ -579,7 +562,6 @@ h2 {
     .image-bottom-right {
         background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
         background-repeat: no-repeat;
-        background-size: cover;
         background-position: center;
     }
 }
@@ -616,11 +598,8 @@ h2 {
     }
 }
 
-/* Footer Tablet Styling */
+/* Tablet Styling */
 @media screen and (max-width: 768px) {
-    .bottom-left, .bottom-right {
-        height: 210px;
-    }
 
     h2 {
         font-size: 18px;
@@ -634,10 +613,6 @@ h2 {
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
-    .bottom-left, .bottom-right {
-        height: 210px;
-    }
-
     .bottom-left {
        padding-right: 0;
     }
@@ -694,13 +669,17 @@ h2 {
 
     .image-top {
         width: 100%;
-        height: 200px;
+        height: 300px;
     }
 
     .bottom {
         display: flex;
         flex-direction: column;
         width: 100%;
+    }
+
+    .content-container {
+        padding-top: 25%;
     }
 } 
 
