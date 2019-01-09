@@ -10,17 +10,6 @@ REQUIRED VARIABLES
 
 {% endcomment %}
 
-
-{% capture currentPage %}/page/{{ CurrentPage.Id }}{% endcapture %}
-{% assign currentPageEscaped = currentPage | Replace: ' ', '%20' | Replace: '&', '%26' | Replace: '?', '%3F' | Replace: '!', '%21' | Replace: ',', '%2C' | Replace: "'", "%27" | Replace: '/', '%252f' %}
-
-{% if CurrentPerson %}
-  <div>
-    <a class="small header-login-item" href="{{ myAccountPage }}">My Account</a>
-    <a class="small header-login-item margin-r-md" href="?logout=true">Logout</a>
-  </div>
-{% else %}
-  <div>
-    <a class="small header-login-item" href="{{ loginPage }}?returnurl={{ currentPageEscaped }}">Login</a>
-  </div>
-{% endif %}
+{% unless CurrentPerson %}
+    <a id="masthead-navitem-register" class="masthead-navitem" href="/register">CREATE ACCOUNT</a>
+{% endunless %}

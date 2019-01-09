@@ -1,21 +1,29 @@
 ﻿<%@ Page Language="C#" MasterPageFile="Site.Master" AutoEventWireup="true" Inherits="Rock.Web.UI.RockPage" %>
 
 <asp:Content ID="ctHeader" ContentPlaceHolderID="header" runat="server">
-    <!-- Page Header -->
-    <header class="masthead big-logo">
-        <div class="container">
-            <div class="row-header">
-                <div>
-                    <Rock:Zone Name="Logo" runat="server" />
-                </div>
-                <div>
-                    <Rock:Zone Name="Header" runat="server" />
-                    <Rock:Zone Name="Login" runat="server" />
+   <!-- Page Header -->
+   <header class="masthead" runat="server" id="masthead">
+        
+        <Rock:Zone Name="AnnouncementBar" runat="server" />
+    
+        <div class="masthead-upper">
+            <div class="masthead-brand">
+                <button class="navbar-toggle" type="button" onClick="toggleNavbar(true);">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <Rock:Zone Name="Header" runat="server" />
+            </div>
+
+            <nav class="masthead-nav">
+                <div class="navbar-collapse js-all-collapse collapse">
                     <Rock:Zone Name="Navigation" runat="server" />
                 </div>
-            </div>
+            </nav>
         </div>
-    </header>
+        <div class="masthead-fullmenu offscreen">
+            <Rock:Zone Name="Full Menu" runat="server" />
+        </div>
+</header>
 </asp:Content>
 
 <asp:Content ID="ctFeature" ContentPlaceHolderID="feature" runat="server">

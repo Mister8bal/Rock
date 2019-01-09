@@ -35,6 +35,7 @@
     <link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/bootstrap.css", true) %>"/>
 	<link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/theme.css", true) %>"/>
 	<link rel="stylesheet" href="<%# ResolveRockUrl("~/Styles/developer.css", true) %>"/>
+    <link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/common.css", true) %>"/>
 
     <script src="<%# ResolveRockUrl("~/Scripts/modernizr.js" ) %>" ></script>
 
@@ -87,33 +88,54 @@
     </noscript>
     <!-- End Facebook Pixel Code -->
 
+    <script>
+        function toggleNavbar(visible) {
+            var fullMenu = $(".masthead-fullmenu");
+            
+            if( visible == true ) {
+                fullMenu.removeClass("offscreen");
+            }
+            else {
+                fullMenu.addClass("offscreen");
+            }
+        }
+    </script>
+
+
 </head>
 <body>
 
     <form id="form1" runat="server">
 
         <asp:ContentPlaceHolder ID="header" runat="server">
+
+        
             <!-- Page Header -->
-            <header class="masthead">
-
+            <header class="masthead" runat="server" id="masthead">
+        
                 <Rock:Zone Name="AnnouncementBar" runat="server" />
-
-                <div class="container">
                 
-                    <div class="row">
+                <div class="masthead-upper">
+                <div class="masthead-brand">
+                    <button class="navbar-toggle" type="button" onClick="toggleNavbar(true);">
+                    <i class="fa fa-bars"></i>
+                    </button>
+                    <Rock:Zone Name="Header" runat="server" />
+                </div>
 
-                        <div class="col-sm-6">
-                            <Rock:Zone Name="Logo" runat="server" />
-                        </div>
-                        <div class="col-sm-6">
-                            <Rock:Zone Name="Header" runat="server" />
-                            <Rock:Zone Name="Login" runat="server" />
-                            <Rock:Zone Name="Navigation" runat="server" />
-                        </div>
+                <nav class="masthead-nav">
+                    <div class="navbar-collapse js-all-collapse collapse">
+                    <Rock:Zone Name="Navigation" runat="server" />
                     </div>
-
+                </nav>
+                </div>
+                <div class="masthead-fullmenu offscreen">
+                <Rock:Zone Name="Full Menu" runat="server" />
                 </div>
             </header>
+
+
+
         </asp:ContentPlaceHolder>
 
         <asp:ContentPlaceHolder ID="feature" runat="server"></asp:ContentPlaceHolder>
