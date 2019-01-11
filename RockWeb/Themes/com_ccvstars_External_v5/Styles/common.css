@@ -40,6 +40,7 @@ h2 {
 .header-title {
     text-align: center;
     padding-bottom: 3%;
+    font-family: akrobat black
 }
 
 @media screen and (max-width: 1024px) {
@@ -112,6 +113,10 @@ h2 {
 .masthead-brand {
     margin-left: 15px;
     
+}
+
+.masthead .logo {
+   width: 207px;
 }
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
@@ -414,8 +419,6 @@ h2 {
      -webkit-transform: translate(100%);
  }
  
- position: absolute;
-    z-index: 999;
  .navigation-mobile-title {
      padding: 15px 5px 15px 20px;
      background-color: #e43d35;
@@ -479,6 +482,9 @@ h2 {
 
 /* Top section */
 
+.page-header {
+    font-family: akrobat black;
+}
 .image-top {
     background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
     background-repeat: no-repeat;
@@ -696,6 +702,10 @@ h2 {
     background-color: black;
 }
 
+.mainfooter {
+    background-color: black;
+}
+
 .footer {
     display: flex;
     justify-content: space-between;
@@ -778,6 +788,9 @@ h2 {
     height: 50px;
 }
 
+hr {
+    border-top: 0px;
+}
 @media screen and (max-width: 1024px) {
     .footer {
         display: flex;
