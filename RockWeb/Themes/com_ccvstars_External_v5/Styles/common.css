@@ -213,7 +213,7 @@ h2 {
 
 .navigation-primary-login {
     display: flex;
-    flex-direction: row-reverse;
+    /* flex-direction: row-reverse; */
     align-items: center;
 }
 
@@ -264,6 +264,11 @@ h2 {
     align-items: center;
     padding-top: unset;
     padding-bottom: unset;
+}
+
+.loginstatus > li {
+    min-width: unset;
+    text-align: right;
 }
 
 .loginstatus .masthead-navitem {

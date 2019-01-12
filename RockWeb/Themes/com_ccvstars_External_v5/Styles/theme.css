@@ -5627,10 +5627,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
   background-color: #fcf8e3;
   border-color: #faebcc;
 }
-.loginstatus > li {
-  min-width: 160px;
-  text-align: right;
-}
+
 .loginstatus > li li {
   text-align: left;
 }
