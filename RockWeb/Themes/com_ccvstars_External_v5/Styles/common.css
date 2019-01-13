@@ -153,6 +153,8 @@ h1 {
 
 .masthead .logo {
    width: 207px;
+   margin-left: 40px;
+   margin: 0 0;
 }
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
@@ -162,7 +164,7 @@ h1 {
 
 @media screen and (min-width: 768px) {
     .masthead .logo {
-        margin: unset;
+        margin-left: 40px;
         float: left;
     }
 }
@@ -327,7 +329,7 @@ h1 {
 }
 
 .loginstatus li a:hover, #masthead-navitem-register:hover {
-    /* background-color:#c7c7c7; */
+    background-color:#c7c7c7;
 }
 
 #masthead-navitem-register {
@@ -839,6 +841,7 @@ h1 {
 
 .mainfooter-dark a {
     text-decoration: none;
+    font-family: akrobat;
 }
 
 .footer-social img {
