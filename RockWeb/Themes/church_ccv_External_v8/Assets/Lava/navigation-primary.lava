@@ -46,8 +46,50 @@
             {% endcase %}
 
             <li class="navigation-primary-item {{ activeClass }}">
-                <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
+                <div class="navigation-primary-dropdown-content-wrapper">
+                    <div class="navigation-primary-dropdown-content">
+
+                        {% unless childPage.Title == 'Locations' %}
+                            <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                    
+                            {% for dropdownPage in childPage.Pages  %}
+                                <a class="navigation-primary-item-a dropdown-content-item" href="{{ dropdownPage.Url }}">{{ dropdownPage.Title }}</a>
+                            {% endfor %}
+                        {% else %}
+                            <div class="locations-dropdown">
+                                <div class="locations-column">
+                                    <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                    
+                                    {% for campus in Campuses %}
+                                        {% assign startNewColumn = forloop.index | Modulo:6 %}
+                                        
+                                        {% unless campus.Id == 12 %}
+                                            <a class="navigation-primary-item-a dropdown-content-item" href="{{ campus.Url }}">{{ campus.Name }}</a>                                
+                                        {% endunless %}
+
+                                {% if startNewColumn == 0 %}
+                                </div>
+                                <div class="locations-column">
+                                {% endif %}
+
+                                    {% endfor %}
+                                
+                                </div>
+                            </div>
+                        {% endunless %}
+
+                    </div>
+                </div>
             </li>
+            {% assign activeClass = '' %}
         {% endfor %}
+        {% if CurrentPerson %}
+            <li class="navigation-primary-item {{ activeClass }}">
+                <a class="navigation-primary-item-a" href="https://pushpay.com/g/christchurchofthevalley?r=fortnightly">Give</a>
+            </li>
+        {% endif %}
     </ul>
 {% endif %}
+
+
