@@ -1,0 +1,30 @@
+{% assign email = 'KidsCamp@ccv.church' %}
+
+<div class="registration-wrapper">
+    <div class="registration-row">
+        {% if audience != 'hs' and audience != 'sn' %}
+        <div class="registration-links">
+            <h3 class="camp-date">May 30 - June 2</h3>
+            <a class="btn btn-default">Register Now (Boys)</a>
+            <a class="btn btn-default">Register Now (Girls)</a> 
+        </div>
+        {% endif %}
+        <div class="registration-links">
+            <h3 class="camp-date">May 30 - June 2</h3>
+            <a class="btn btn-default">Register Now (Boys)</a>
+            <a class="btn btn-default">Register Now (Girls)</a>
+        </div>
+    </div>
+</div>
+
+<div class="registration-info">
+    {% if costInfo and priceIncreaseDate %}
+    <h3>Cost: {{ costInfo }}  (price increases on {{ priceIncreaseDate }}).</h3>
+    {% elsif costInfo %}
+    <h3>Cost: {{ costInfo }} </h3>
+    {% else %}
+    <h3>Cost: $375, $100 Deposit to Register (price increases on {{ priceIncreaseDate }}).</h3>
+    {% endif %}
+    <p>New to CCV or unsure which campus to choose? <a href="mailto:{{ email }}">Send us a quick email</a> and we can help you select the right campus.
+    }
+</div>
