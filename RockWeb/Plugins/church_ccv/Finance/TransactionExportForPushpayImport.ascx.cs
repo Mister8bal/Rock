@@ -27,7 +27,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
     /// </summary>
     [DisplayName( "Transaction Export For Pushpay Import" )]
     [Category( "CCV > Finance" )]
-    [Description( "Utility to export financial transactions to a CSV file that can be used to import to Pushpay" )]
+    [Description( "Utility to export financial transactions to an Excel file that can be used to import to Pushpay" )]
 
     #endregion
 
@@ -58,40 +58,43 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 // bind SourceType dropdown, dont include Pushpay source
                 ddlSourceType.BindToDefinedType( DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE )), true );
                 ddlSourceType.Items.Remove( ddlSourceType.Items.FindByText( "Pushpay" ) );
+
+                // ensure message box is hidden
+                nbExportMessage.Visible = false;
             }
-
-
-            // TODO: Add back in mailing addresses and fix any slowness that comes with them
-            //       Add in somekind of feedback Message stating how many records were exported.
         }
-
+        
+        /// <summary>
+        /// Click event for Export button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void btnExport_Click( object sender, EventArgs e )
         {
-            // cetup rock context with increased timeout
+            // setup rock context with increased timeout
             RockContext rockContext = new RockContext();
             rockContext.Database.CommandTimeout = 240;
 
             // tables for join
             var personAliasTable = new PersonAliasService( rockContext ).Queryable().AsNoTracking();
             var datamartPersonTable = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var groupTable = new GroupService( rockContext ).Queryable().AsNoTracking();
+            var groupLocationTable = new GroupLocationService( rockContext ).Queryable().AsNoTracking();
+            var locationTable = new LocationService( rockContext ).Queryable().AsNoTracking();
 
-            // date range filter - If no date range, default to past 12 months
-            DateTime startDate = drpDateRange.LowerValue.HasValue ? ( DateTime ) drpDateRange.LowerValue : DateTime.Now.AddMonths( -4 );
+            // date range filter 
+            // date range is required input, but just in case default to past 1 month
+            DateTime startDate = drpDateRange.LowerValue.HasValue ? ( DateTime ) drpDateRange.LowerValue : DateTime.Now.AddMonths( -1 );
             DateTime endDate = drpDateRange.UpperValue.HasValue ? ( DateTime ) drpDateRange.UpperValue : DateTime.MaxValue;
 
             // get the financial transactions filtered by fund, source type, and date
-            // dont include Pushpay Source ID 11308
+            // dont include Pushpay - SourceTYpeValueId: 11308
             var qry = new FinancialTransactionDetailService( rockContext ).Queryable().AsNoTracking()
+                    .Where( a => apAccount.SelectedValues.Contains( a.AccountId.ToString() ) )
                     .Where( a => a.Transaction.TransactionDateTime.HasValue )
                     .Where( a => a.Transaction.TransactionDateTime.Value >= startDate )
                     .Where( a => a.Transaction.TransactionDateTime.Value <= endDate )
                     .Where( a => a.Transaction.SourceTypeValueId != 11308 );
-
-            // filter by accounts
-            if ( apAccount.SelectedValues.FirstOrDefault() != "0" )
-            {
-                qry = qry.Where( a => apAccount.SelectedValues.Contains( a.Account.Id.ToString() ) );
-            }
 
             // filter by person
             if ( ppPerson.PersonId.HasValue )
@@ -101,7 +104,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 qry = qry.Where( a => a.Transaction.AuthorizedPersonAliasId == person.PrimaryAliasId );
             }
 
-            // filter currency type
+            // filter by currency type
             int currencyTypeId = int.MinValue;
             if ( int.TryParse( ddlCurrencyType.SelectedValue, out currencyTypeId ) )
             {
@@ -118,15 +121,21 @@ namespace RockWeb.Plugins.church_ccv.Finance
             // prep for export
             var exportQry =
                 from transaction in qry
+                // get person from person alias
                 join aliasPerson in personAliasTable on transaction.Transaction.AuthorizedPersonAliasId equals aliasPerson.Id into aliases
                 from alias in aliases.DefaultIfEmpty()
                 join datamartPerson in datamartPersonTable on alias.PersonId equals datamartPerson.PersonId into dpPeople
                 from people in dpPeople.DefaultIfEmpty()
+                // get mailing address
+                join groupLocation in groupLocationTable on people.FamilyId equals groupLocation.GroupId into groupLocations
+                from locations in groupLocations.Where(l => l.IsMailingLocation == true).DefaultIfEmpty()
+                join location in locationTable on locations.LocationId equals location.Id into familyLocations
+                from familyLocation in familyLocations.DefaultIfEmpty()
                 select new
                 {
                     TransactionId = transaction.Id,
-                    Date = SqlFunctions.StringConvert((double)transaction.Transaction.TransactionDateTime.Value.Month).Trim() + "/" + SqlFunctions.StringConvert((double)transaction.Transaction.TransactionDateTime.Value.Day).Trim() + "/" + SqlFunctions.StringConvert((double)transaction.Transaction.TransactionDateTime.Value.Year).Trim(),
-                    Time = SqlFunctions.StringConvert((double)transaction.Transaction.TransactionDateTime.Value.Hour).Trim() + ":" + SqlFunctions.StringConvert((double)transaction.Transaction.TransactionDateTime.Value.Minute).Trim(),
+                    Date = SqlFunctions.StringConvert( ( double ) transaction.Transaction.TransactionDateTime.Value.Month ).Trim() + "/" + SqlFunctions.StringConvert( ( double ) transaction.Transaction.TransactionDateTime.Value.Day ).Trim() + "/" + SqlFunctions.StringConvert( ( double ) transaction.Transaction.TransactionDateTime.Value.Year ).Trim(),
+                    Time = SqlFunctions.StringConvert( ( double ) transaction.Transaction.TransactionDateTime.Value.Hour ).Trim() + ":" + SqlFunctions.StringConvert( ( double ) transaction.Transaction.TransactionDateTime.Value.Minute ).Trim(),
                     Amount = transaction.Amount.ToString(),
                     Method = transaction.Transaction.FinancialPaymentDetail.CurrencyTypeValue.Value,
                     Source = transaction.Transaction.SourceTypeValue.Value,
@@ -134,13 +143,19 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     FundName = transaction.Account.Name,
                     PersonAliasId = transaction.Transaction.AuthorizedPersonAliasId,
                     MobileNumber = people.CellPhone,
-                    Person = alias.Person
+                    Person = alias.Person,
+                    Street1 = familyLocation.Street1,
+                    Street2 = familyLocation.Street2,
+                    City = familyLocation.City,
+                    State = familyLocation.State,
+                    PostalCode = familyLocation.PostalCode,
+                    Country = familyLocation.Country
                 };
 
-            // setup transactions object
+            // setup transactions list
             List<Transaction> transactions = new List<Transaction>();
 
-            // create a transaction for each item in export query and add to transactions object
+            // create a transaction object for each item in export query and add to transactions list
             foreach (var item in exportQry )
             {
                 Transaction transaction = new Transaction();
@@ -159,6 +174,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 transaction.YourID = item.PersonAliasId.ToString();
                 transaction.PersonID = item.PersonAliasId.ToString();
 
+                // making assumption if first name is blank its a business
                 if (item.Person.FirstName.IsNotNullOrWhitespace())
                 {
                     transaction.FirstName = item.Person.FirstName;
@@ -179,19 +195,17 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     }
                 }
 
-
                 //Location mailingAddress = item.Person.GetMailingLocation();
 
-                //if (mailingAddress != null)
-                //{
-                //    transaction.AddressOne = mailingAddress.Street1;
-                //    transaction.AddressTwo = mailingAddress.Street2;
-                //    transaction.City = mailingAddress.City;
-                //    transaction.State = mailingAddress.State;
-                //    transaction.Zip = mailingAddress.PostalCode;
-                //    transaction.Country = mailingAddress.Country;
-                //}
-
+    //            if ( mailingAddress != null )
+  //              {
+                transaction.AddressOne = item.Street1;
+                transaction.AddressTwo = item.Street2;
+                transaction.City = item.City;
+                transaction.State = item.State;
+                transaction.Zip = item.PostalCode;
+                transaction.Country = item.Country;
+//                }
 
                 transaction.DOB = item.Person.BirthDate.ToString();
                 transaction.Gender = item.Person.Gender.ToString();
@@ -199,41 +213,55 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 transactions.Add(transaction);
             }
 
-            // testing
-            ltlMessage.Text = transactions.Count.ToString();
-            
-            // Convert transactions List to DataTable
+            // convert transactions List to dataTable
             DataTable dt = new DataTable();
             ListToDataTableConverter converter = new ListToDataTableConverter();
             dt = converter.ToDataTable(transactions);
 
-            // Setup file name and export datatable to an excel file
-            ExportToExcel(dt, rtbFileName.Text );
+            // export datatable to an excel file
+            if ( !ExportToExcel( dt, rtbFileName.Text ) )
+            {
+                nbExportMessage.NotificationBoxType = Rock.Web.UI.Controls.NotificationBoxType.Danger;
+                nbExportMessage.Text = "Export failed";
+                nbExportMessage.Visible = true;
+            }
         }
 
-        private bool ExportToExcel( DataTable dt, string fileName )
+        /// <summary>
+        /// Export a dataTable to excel
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private bool ExportToExcel( DataTable dataTable, string fileName )
         {
+            // initiate excel instance
             ExcelPackage excel = new ExcelPackage();
 
             excel.Workbook.Properties.Title = "Export";
 
+            // add worksheet
             ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add( "Export" );
-            var totalCols = dt.Columns.Count;
-            var totalRows = dt.Rows.Count;
 
-            for ( var col = 1; col <= totalCols; col++ )
+            var totalColumns = dataTable.Columns.Count;
+            var totalRows = dataTable.Rows.Count;
+
+            // poulate the columns
+            for ( var col = 1; col <= totalColumns; col++ )
             {
-                worksheet.Cells[1, col].Value = dt.Columns[col - 1].ColumnName;
+                worksheet.Cells[1, col].Value = dataTable.Columns[col - 1].ColumnName;
             }
 
+            // populate the rows
             for ( var row = 1; row <= totalRows; row++ )
             {
-                for ( var col = 0; col < totalCols; col++ )
+                for ( var col = 0; col < totalColumns; col++ )
                 {
-                    worksheet.Cells[row + 1, col + 1].Value = dt.Rows[row - 1][col];
+                    worksheet.Cells[row + 1, col + 1].Value = dataTable.Rows[row - 1][col];
                 }
             }
 
+            // send the file to the browser
             using ( var memoryStream = new MemoryStream() )
             {
                 Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -243,8 +271,11 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 {
                     excel.SaveAs( memoryStream );
                     memoryStream.WriteTo( Response.OutputStream );
+
+                    // close the stream
                     Response.Flush();
-                    Response.End();
+                    Response.SuppressContent = true;
+                    ApplicationInstance.CompleteRequest();
 
                     return true;
                 }
@@ -263,28 +294,28 @@ namespace RockWeb.Plugins.church_ccv.Finance
             public DataTable ToDataTable<T>( List<T> items )
             {
                 DataTable dataTable = new DataTable( typeof( T ).Name );
-                //Get all the properties  
+                
+                // get all the properties  
                 PropertyInfo[] Props = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.Instance );
-                // Loop through all the properties  
+
+                // set column names as property names  
                 foreach ( PropertyInfo prop in Props )
                 {
-                    //Setting column names as Property names  
                     dataTable.Columns.Add( prop.Name );
                 }
 
+                // populate values to datatable
                 foreach ( T item in items )
                 {
                     var values = new object[Props.Length];
                     for ( int i = 0; i < Props.Length; i++ )
                     {
-                        //inserting property values to datatable rows  
                         values[i] = Props[i].GetValue( item, null );
                     }
-                    // Finally add value to datatable  
-                    dataTable.Rows.Add( values );
 
+                    dataTable.Rows.Add( values );
                 }
-                //put a breakpoint here and check datatable of return values  
+
                 return dataTable;
             }
         }
@@ -299,7 +330,6 @@ namespace RockWeb.Plugins.church_ccv.Finance
         {
             listControl.BindToDefinedType( DefinedTypeCache.Read( definedTypeGuid ) );
             listControl.Items.Insert( 0, new ListItem( string.Empty, string.Empty ) );
-
         }
 
         protected class Transaction
