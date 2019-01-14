@@ -22,7 +22,7 @@
 }
 
 .navigation-item.selected {
-    background-color: #ee7624;
+    background-color: #777;
     color: #FFFFFF;
 }
 
@@ -82,18 +82,18 @@
 }
 
 .expires {
-    background-color: #ecc759;
-    border-color: #ecc759;
+    background-color: #777;
+    border-color: #777;
 }
 
 .expired {
-    background-color: #A71315;
-    border-color: #A71315;
+    background-color: #c46565;
+    border-color: #c46565;
 }
 
 .progress-bar {
-    background-color: #ecc759;
-    border-color: #ecc759;
+    background-color: #777;
+    border-color: #777;
 }
 
 .progress {
@@ -114,8 +114,8 @@
 }
 
 .completed {
-    background-color: #0DA100;
-    border-color: #0DA100;
+    background-color: #74ad91;
+    border-color: #74ad91;
     color: #FFFFFF;
 }
 
@@ -127,6 +127,13 @@
 .btn-talentlms {
     min-width: 100px;
     margin: 0 10px;
+    background-color: transparent;
+    border-color: #c2b8ab;
+    color: #6a6a6a;
+}
+
+.btn-primary:hover {
+    background-color: #f08f4d;
 }
 
 /* All Courses*/
