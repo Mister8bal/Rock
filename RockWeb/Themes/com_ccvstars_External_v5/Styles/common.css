@@ -6,7 +6,7 @@
 .button, html input[type="button"], input[type="reset"], input[type="submit"] {
     -webkit-appearance: button;
     cursor: pointer;
-    margin: 1px;
+    margin: 2px;
 }
 
 h1 {
