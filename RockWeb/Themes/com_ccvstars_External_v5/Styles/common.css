@@ -495,14 +495,17 @@ h1 {
 .btn-primary {
     font-family: unset;
     font-weight: bold;
-    min-width: 200px;
-    max-width: 200px;
     text-transform: uppercase;
     color: white;
     background-color: #e43d35;
     border: solid 1px #e43d35;
     border: 1px solid transparent;
     text-align: center;
+}
+
+.homepage-button {
+    min-width: 200px;
+    max-width: 200px;
 }
 
 .btn-primary:hover {
