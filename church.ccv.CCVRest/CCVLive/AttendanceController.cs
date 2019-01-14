@@ -44,6 +44,8 @@ namespace church.ccv.CCVRest.CCVLive
             var rockContext = new RockContext();
             var interactionService = new InteractionService(rockContext);
             var timeZoneInfo = RockDateTime.OrgTimeZoneInfo;
+            var person = GetPerson(attendanceModel.Email, attendanceModel.Name, rockContext);
+            
             ResponseModel responseData = new ResponseModel()
             {
                 Success=false,
@@ -62,6 +64,16 @@ namespace church.ccv.CCVRest.CCVLive
                 return response;
             }
 
+            if (person == null)
+            {
+                statusCode = HttpStatusCode.OK;
+                responseData.Success = false;
+                responseData.Message = "We could not find a person with that name and email address.";
+                response.StatusCode = statusCode;
+                response.Content = new StringContent(JsonConvert.SerializeObject(responseData), Encoding.UTF8, "application/json");
+                return response;
+            }
+
             response.StatusCode = HttpStatusCode.OK;
 
             var dt = DateTime.Now;
@@ -70,7 +82,7 @@ namespace church.ccv.CCVRest.CCVLive
             {
                 Operation = attendanceModel.Operation,
                 InteractionDateTime = dt,
-                PersonAliasId = attendanceModel.PersonAliasId,
+                PersonAliasId = person.Id,
                 InteractionComponentId = attendanceModel.InteractionComponentId,
                 InteractionSessionId = attendanceModel.InteractionSessionId
             };
@@ -86,6 +98,32 @@ namespace church.ccv.CCVRest.CCVLive
             response.Content = new StringContent(JsonConvert.SerializeObject(responseData), Encoding.UTF8, "application/json");
 
             return response;
+
+        }
+
+        /// <summary>
+        /// Gets first person associated with a specific phone number. If there is more 
+        /// than one person, the oldest adult will be returned first. If no adults, the
+        /// oldest child.
+        /// </summary>
+        /// <param name="fromPhone">From phone.</param>
+        /// <param name="rockContext">The rock context.</param>
+        /// <returns></returns>
+        private static Person GetPerson(string email, string name, RockContext rockContext)
+        {
+
+            var personQuery = new PersonService( rockContext );
+
+
+            var person = personQuery
+                .Queryable()
+                .Where(e => (e.Email == email) && (e.FirstName == name || e.NickName == name)).FirstOrDefault();
+               
+
+            // If we have a person, return it
+            if (person != null) return person;
+
+            return null;
 
         }
     }
