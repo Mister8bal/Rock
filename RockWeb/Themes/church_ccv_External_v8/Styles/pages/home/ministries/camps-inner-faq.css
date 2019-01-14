@@ -1,0 +1,132 @@
+/**
+ * Camps Inner FAQ Styles
+ * This file contains all general styles for camps child pages.  Changes here
+ * will modify all camps child pages.  
+ *
+ * To edit specific camps child page styles, look for a for the file name of camps-inner-SPECIFIC-CAMP.css
+ */
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps.png");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 768px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps.png");
+    }
+}
+
+#section-a-bg {
+	background-color:#f9f9f9;
+	padding-bottom:48px;
+}
+
+#section-a-bg h1, #section-a-bg h2 {
+    text-align: left;
+}
+#section-a-bg h2 {
+    margin-top: 4rem;
+}
+#section-a-bg h2.no-top-margin {
+    margin-top:0;
+}
+
+#section-b-bg {
+    background-color:#f9f9f9;
+    padding: 2.8rem 0 4rem 0;
+}
+
+#section-c-bg {
+    background-color:#f9f9f9;
+}
+
+#section-d-bg {
+    background-color: #f9f9f9;
+    padding: 48px 0;
+} 
+
+#section-e-bg {
+    background-color:#f9f9f9;
+}
+
+#section-e-bg h2 {
+    padding: 3rem 0 2.8rem 0;
+}
+
+.title h1 {
+    font-size: 60px;
+    font-family: akrobat;
+    color: #FFFFFF;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-primary {
+    max-width:none;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,0.125);
+    border-radius: 0.25rem;
+    margin-bottom:0px;
+}
+.card-header {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0;
+  background-color: #f7f7f9;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+.card-header:first-child {
+  border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+}
+.faq-section {
+  margin-top: 4rem;
+}
+.faq-section h2 {
+  font-weight: bold;
+  font-size: 3em;
+  margin-bottom: 2rem;
+}
+.faq-list .card {
+    border-radius: 0;
+    border: none;
+    text-align: left;
+    background: #f9f9f9;
+
+}
+.faq-list .card a:focus, .faq-list .card a:visited, .faq-list .card a:hover, .faq-list .card a:active {
+  text-decoration: none;
+}
+.faq-list .card .card-header {
+  background-color: #f9f9f9;
+  vertical-align: middle;
+}
+.faq-list .card .card-header h5 {
+    margin:.3rem 0;
+    line-height:2.5rem;
+}
+.faq-list .card .card-header i {
+  color: #8c8c8c;
+  margin-right: .5rem;
+  cursor:pointer;
+}
+.faq-list .card .card-header a {
+  font-size: 1.2em;
+  line-height:1em;
+  font-weight: bold;
+  max-width: 80%;
+
+}
+.faq-list .card .card-header .fa-border {
+  border-radius: 1.1em;
+  border: 2px solid #8c8c8c;
+  padding: 0.2em 0.25em 0.1em;
+}
+.faq-list .card .card-body {
+  padding: 0.75rem 1.25rem;
+}
