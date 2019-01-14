@@ -59,12 +59,14 @@ h1 {
 .header-title h1 {
     text-align: center;
     font-weight: 700;
+    font-family: "akrobat";
 }
 
 .header-title p {
     text-align: center;
     padding-bottom: 3%;
-    font-family: akrobat black;
+    font-family: "Helvetica Neue";
+    font-size: 21px;
 }
 
 .header-login-item {
@@ -427,12 +429,12 @@ h1 {
 /* Top section */
 
 .page-header {
-    font-family: akrobat;
+    font-family: "akrobat";
     font-weight: 700;
 }
 
 .margin-v-lg {
-    font-family: akrobat black;
+    font-family: "akrobat";
     font-weight: 700;
 }
 
@@ -493,7 +495,7 @@ h1 {
 }
 
 .btn-primary {
-    font-family: unset;
+    font-family: akrobat;
     font-weight: bold;
     text-transform: uppercase;
     color: white;
