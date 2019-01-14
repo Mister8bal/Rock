@@ -1,0 +1,762 @@
+/* important needed to override giving css (need to move giving block CSS into its own file so we dont have these conflicts, instead of being in giving page css file) */
+#ternavbar-bg {
+    display: flex;
+}
+
+.button, html input[type="button"], input[type="reset"], input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+    margin: 2px;
+}
+
+h1 {
+    font-size: 4.2rem;
+    line-height: 110%;
+    margin: 0;
+    padding: 2.1rem 0 1.68rem 0;
+    font-family: akrobat;
+    color: #000000;
+    text-transform: uppercase;
+  }
+  
+  h2 {
+    font-size: 3.56rem;
+    line-height: 110%;
+    margin: 0;
+    padding: 1.78rem 0 1.424rem 0;
+    font-family: akrobat;
+    color: #FFFFFF;
+    text-transform: uppercase;
+  }
+  
+
+#sectionb-bg, #sectionc-bg, #sectiond-bg {
+    display: none;
+}
+
+.announcement-bar {
+    padding-top: 5px;
+    background-color: #e43d35;
+    color: #FFFFFF;
+    font-weight: normal;
+    font-family: Heebo;
+    text-align: center;
+    padding: 10px 0px;
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
+/* Navigation Section */
+
+.big-logo .logo {
+    min-height: 100px;
+}
+
+.logo {
+    padding-left: 100px;
+}
+
+.header-title h1 {
+    text-align: center;
+    font-weight: 700;
+}
+
+.header-title p {
+    text-align: center;
+    padding-bottom: 3%;
+    font-family: akrobat black;
+}
+
+.header-login-item {
+    color: white;
+    padding: 3px 12px 5px 12px;
+    margin-top: 10px;
+    background-color: #e43d35;
+    border: solid 1px #e43d35;
+    border-radius: 6px;
+}
+
+@media screen and (max-width: 1024px) {
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    h2 {
+        font-size: 18px;
+    }
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    #ternavbar-bg {
+        display: none !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 50px !important;
+    }
+
+    .nav {
+        width: unset;
+    }
+
+    .announcement-bar {
+        font-size: 12px;
+    }
+} 
+
+/* End Navigation Section */
+
+
+/* Start Master Header and Navigation-Primary Styling */
+.masthead {
+    font-family: akrobat;
+	font-weight: bold;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: transparent;
+	width: 100%;
+	z-index: 999;
+}
+
+.masthead-brand {
+    margin-left: 15px;
+    
+}
+
+.masthead .logo {
+   width: 207px;
+   margin-left: 40px;
+   margin: 0 0;
+} 
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    color: #ffffff;
+    background-color: #e43d35;
+}
+
+@media screen and (min-width: 768px) {
+    .masthead .logo {
+        margin-left: 40px;
+        float: left;
+    }
+}
+
+#zone-navigation {
+    padding-top: 2%;
+}
+
+.header-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.nav > li > a {
+    color: #e43d35;
+    font-family: akrobat;
+    font-size: 15px;
+    font-weight: bold;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding-left: 20px;
+}
+
+.navigation-primary-items {
+    display: flex;
+    margin-bottom: unset;
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+}
+
+.navigation-primary-item {
+    list-style-type: none;
+}
+
+.navigation-primary-item-a, .navigation-primary-item-button  {
+    color: #e43d35;
+    font-family: akrobat;
+    font-size: 15px;
+    font-weight: bold;
+    -webkit-font-smoothing: antialiased;
+    line-height: 40px;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 0px 15px;
+}
+
+.navigation-primary-item-a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+}
+
+.navigation-primary-item-button {
+    border: none;
+    -webkit-appearance: none;
+    background-color: unset;
+}
+ 
+.navigation-primary-item-a:not(:hover), .navigation-primary-item-button:not(:hover) {
+    background: rgba( 255, 255, 255, 0);
+}
+ 
+.navigation-primary-item-a:hover, .navigation-primary-item-button:hover, .nav>li>a:focus, .nav .open>a, .nav .open>a:focus {
+    color: #e43d35;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.navigation-primary-item.active {
+    background: rgba( 255, 255, 255, .15);
+    border-radius: 4px;
+    color: #e43d35;
+}
+
+.navigation-primary-login .loginstatus {
+    outline: 0;
+}
+
+.navigation-primary-login .loginstatus .dropdown-menu {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 5px 5px;
+    padding: 0px;
+    font-size: 14px;
+}
+
+.navigation-primary-login .loginstatus .dropdown-menu li a:hover {
+    min-height: unset;
+}
+
+.navigation-primary-login .loginstatus .dropdown-menu li a {
+    padding: 5px 0px 5px 5px;
+    margin: 5px 0px 5px 0px;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.navigation-primary-login .loginstatus .dropdown-menu li a:hover {
+    color: #FFFFFF;
+}
+
+.navigation-primary-login .loginstatus .dropdown-menu li a:focus {
+    background-color: #e43d35;
+    outline: 0;
+}
+
+.loginstatus {
+    color: #FFFFFF;
+    font-family: akrobat;
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: uppercase;
+}
+
+.loginstatus li a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding-left: 20px;
+    padding: 6px 12px;
+}
+
+.loginstatus .masthead-navitem {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.loginstatus .dropdown-menu {
+    font-size: 14px;
+    background: rgba(0,0,0,0.9);
+    margin-top: 52px;
+}
+
+.loginstatus .dropdown-menu li a {
+    color: #c7c7c7;
+    padding: 3px 5px;
+}
+
+.loginstatus .dropdown-menu li a:hover, .masthead-navitems .dropdown-menu li a:hover {
+    background-color: #e43d35;
+}
+
+.loginstatus li a:hover, #masthead-navitem-register:hover {
+    background-color:#c7c7c7;
+}
+
+#masthead-navitem-register {
+    margin: 7px 0px;
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #FFFFFF;
+    background-color: #e43d35;
+    border-radius: 6px;
+}
+
+.flexIt{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-evenly;
+    width: 300px;
+}
+
+/* End Start Master Header and Navigation-Primary Styling */
+
+
+
+
+
+
+/* Start Hamburger Menu aka Full Menu*/
+/* Show Hamburger Menu on any device smaller than 1024px */
+/* Overriding Bootstrap media query */
+@media (max-width: 1100px) {
+
+    .nav-pills > li > a {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: inline-block;
+        margin-top: 0;
+    }
+ 
+    .collapse {
+        display: none;
+    }
+ 
+    .navbar-collapse.collapse {
+        display: none !important;
+    }
+ }
+ 
+ .navbar-toggle i {
+     font-size: 24px;
+ }
+ 
+ .masthead-fullmenu {
+     background-color: #FFFFFF;
+     position: fixed;
+     display: block;
+     margin: auto;
+     top: 0;
+     bottom: 0;
+     right: 0;
+     width: 75%;
+     -webkit-transition-duration: 600ms;
+     transition-duration: 600ms;
+     overflow-y: auto;
+     position: absolute;
+     z-index: 999;
+ }
+ 
+ .masthead-fullmenu.offscreen {
+     transform: translate(100%);
+     -webkit-transform: translate(100%);
+ }
+ 
+ .navigation-mobile-title {
+     padding: 15px 5px 15px 20px;
+     background-color: #e43d35;
+     color: #FFFFFF;
+     font-size: 24px;
+     font-weight: 400;
+     font-family: akrobat;
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+ }
+ 
+ .navigation-mobile-close {
+    background: none;
+    border-style: none;
+    font-family: monospace;
+ }
+ 
+ .navigation-mobile-title-search-wrapper,  .navigation-primary-items-search-wrapper {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     width: 70%;
+ }
+ 
+ .navigation-mobile-magnify,.navigation-mobile-magnify:hover {
+     margin-left: 25px;
+     color: #FFFFFF;
+     text-decoration: none;
+     font-size: 18px;
+ }
+ 
+ .navigation-mobile-items {
+     display: flex;
+     flex-direction: column;
+     padding: 15px 35px 15px 20px;
+     font-size: 18px;
+     list-style: none;
+     z-index: 999;
+ }
+ 
+ .navigation-mobile-item {
+     color: #e43d35;
+     padding: 15px 10px;
+     text-transform: uppercase;
+     background-color: transparent;
+     font-size: 18px;
+     list-style: none;
+ }
+
+ #masthead-navitem-register:hover {
+    background-color: rgba(213,213,213,0.87);
+ }
+
+
+/* End Hamburger Menu aka Full Menu*/
+
+/* Top section */
+
+.page-header {
+    font-family: akrobat;
+    font-weight: 700;
+}
+
+.margin-v-lg {
+    font-family: akrobat black;
+    font-weight: 700;
+}
+
+.image-top {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 500px;
+    background-position: center;
+}
+
+.top-and-bottom-container {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.top {
+    width: 100%;
+}
+
+.image-bottom-left {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 327px;
+}
+
+.image-bottom-right {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 327px;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+.bottom-left, .bottom-right {
+    height: 330px;
+    width: 100%;
+}
+
+.bottom-left {
+    padding-right: 1%;
+}
+
+.content-container {
+    text-align: center;
+    height: inherit;
+    padding-top: 15%;
+}
+
+.btn-primary {
+    font-family: unset;
+    font-weight: bold;
+    min-width: 200px;
+    max-width: 200px;
+    text-transform: uppercase;
+    color: white;
+    background-color: #e43d35;
+    border: solid 1px #e43d35;
+    border: 1px solid transparent;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    color: #e43d35;
+    background-color: white;
+    border: solid 1px  white;
+    text-decoration: none;
+}
+
+.btn-primary:active {
+    color: #e43d35;
+    background-color: white;
+    border: solid 1px white;
+    text-decoration: none;
+}
+
+@media screen and (max-width: 1024px) {
+    .image-top {
+        height: 400px;
+    }
+
+    .image-bottom-left {
+        background-position: bottom;
+    }
+
+    .image-bottom-right {
+        background-position: left;
+    }
+
+    .bottom-left, .bottom-right {
+        width: 100%;
+        
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 768px) {
+    .image-bottom-right {
+        background-position: unset;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+}
+
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    .masthead-brand .logo {
+        margin-left: 0;
+    }
+
+    .masthead .navbar-toggle {
+        margin-right: 0;
+    }
+
+    .image-top {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
+        background-repeat: no-repeat;
+        height: 500px;
+        background-position: center;
+    }
+
+    .image-bottom-left {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
+    }
+
+    .image-bottom-right {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .bottom-left {
+        padding-right: 0;
+     }
+ 
+     .bottom-right {
+         padding-top: 1%;
+         margin-bottom: 1%;
+      }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .image-top {
+        width: 100%;
+        height: 300px;
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .content-container {
+        padding-top: 25%;
+    }
+} 
+
+/* End Top section */
+
+/* Footer Section */
+
+.mainfooter-dark {
+    background-color: black;
+}
+
+.mainfooter {
+    background-color: black;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(0, 0, 0);
+    padding: 20px 35px;
+}
+
+.footer-logo img {
+    height: 100px;
+}
+
+.footer-copyright {
+    color: rgba(213,213,213,0.87); 
+    padding-top: 10px; 
+    font-family: Heebo; 
+    line-height: 200%; 
+    font-size: 12px; 
+    font-weight: 200;
+    text-align: center;
+}
+
+.footer-social {
+    display: flex;
+}
+
+.footer-social a{
+    padding-right: 4%;
+}
+
+.footer-social i {
+    color: #FFFFFF;
+    font-size: 30px;
+    margin: 10px 0;
+    padding: 0 20px;
+}
+
+.footer-social i:first-of-type {
+    margin-left: -20px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+    width: 45%;
+    font-size: 13px;
+    font-weight: 200;
+    text-transform: uppercase;
+    padding-top: 5%;
+    color: white;
+}
+
+.footer-links-section {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+
+.footer-links-section h5 {
+    font-size: 20px;
+    color: rgba(213,213,213,0.87);
+    border-bottom: 1px solid rgba(213,213,213,0.87);
+    width: 80%;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.footer-links-section a {
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    justify-content: space-evenly;
+}
+
+.mainfooter-dark a {
+    text-decoration: none;
+    font-family: akrobat;
+}
+
+.footer-social img {
+    height: 50px;
+}
+
+hr {
+    border-top: 0px;
+}
+@media screen and (max-width: 1024px) {
+    .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+    }
+
+    .footer-links, .footer-links-subsection {
+        margin-bottom: 20px;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    .footer-links {
+        display: block;
+        width: 60%;
+        text-align: center;
+    }
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    .footer-links a {
+        padding-right: 4%;
+    }
+
+    .footer {
+        padding: 0;
+        width: 100%;
+    }
+
+    .footer-social {
+        justify-content: center;
+        padding-top: 2%;
+    }
+}    
+
+/* End Footer Section */
