@@ -10,22 +10,6 @@
 </div>
 
 <ul class="navigation-mobile-items">
-    {% comment %} {% if CurrentPerson %}
-        <li>
-            <div class="dropdown">
-                <button class="dropdown-toggle navigation-mobile-item" type="button" data-toggle="dropdown" style="border: 0px;">Dashboard<b class="fa fa-caret-down"></b></button>
-                <ul class="dropdown-menu">
-                    <li><a class="navigation-mobile-item" href="/dashboard">Dashboard</a></li>
-                    <li><a class="navigation-mobile-item" href="/dashboard/profile">Profile</a></li>
-                    <li><a class="navigation-mobile-item" href="/get-involved/giving/now">Give Now</a></li>
-                    <li><a class="navigation-mobile-item" href="/dashboard/recurring-giving">Recurring Giving</a></li>
-                    <li><a class="navigation-mobile-item" href="/dashboard/payment-accounts">Payment Accounts</a></li>
-                    <li><a class="navigation-mobile-item" href="/dashboard/giving-history">Giving History</a></li>
-                </ul>
-            <div>
-        </li>
-    {% endif %} {% endcomment %}
-
     {% if Page.DisplayChildPages == 'true' and Page.Pages != empty %}
         {% for childPage in Page.Pages %}
             {% if childPage.Pages != empty and childPage.Title != 'Locations' %}

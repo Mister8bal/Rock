@@ -3,6 +3,12 @@
     display: flex;
 }
 
+.button, html input[type="button"], input[type="reset"], input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+    margin: 1px;
+}
+
 h1 {
     font-size: 4.2rem;
     line-height: 110%;
@@ -70,17 +76,6 @@ h1 {
     border-radius: 6px;
 }
 
-.login-container {
-    color: white;
-    background-color: #e43d35;
-    border-radius: 6px;
-}
-
-.login-container:hover {
-    color: black;
-    background-color: #c9bbba;
-}
-
 @media screen and (max-width: 1024px) {
     h2 {
         font-size: 24px;
@@ -129,23 +124,6 @@ h1 {
 	z-index: 999;
 }
 
-.masthead-upper {
-    margin: 5px 0px;
-}
-
-.masthead-upper:before, .masthead-upper:after {
-    content: " ";
-    display: table;
-}
-
-.masthead-upper:after {
-    clear: both;
-}
-
-.masthead-upper a {
-    color: inherit;
-}
-
 .masthead-brand {
     margin-left: 15px;
     
@@ -155,7 +133,7 @@ h1 {
    width: 207px;
    margin-left: 40px;
    margin: 0 0;
-}
+} 
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     color: #ffffff;
@@ -244,12 +222,6 @@ h1 {
     color: #e43d35;
 }
 
-/* .navigation-primary-login {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-} */
-
 .navigation-primary-login .loginstatus {
     outline: 0;
 }
@@ -280,10 +252,6 @@ h1 {
     outline: 0;
 }
 
-.navbar-nav > li > a {
-    color: #e43d35;
-}
-
 .loginstatus {
     color: #FFFFFF;
     font-family: akrobat;
@@ -302,11 +270,6 @@ h1 {
     padding-left: 20px;
     padding: 6px 12px;
 }
-
-/* .loginstatus > li {
-    min-width: unset;
-    text-align: right;
-} */
 
 .loginstatus .masthead-navitem {
     padding: 10px;
@@ -347,69 +310,8 @@ h1 {
     justify-content: space-evenly;
     width: 300px;
 }
-/* Navigation dropdown Styling */
-.navigation-primary-dropdown-content-wrapper {
-    display: none;
-    position: absolute;
-    color: #e43d35;
-    transition: .25s;
-    width: 115px;
-}
-.navigation-primary-dropdown-content {
-    background: rgba( 255, 255, 255, .15);
-    border-radius: 4px;
-    margin-top: 2px;
-    padding: 10px 0;
-}
 
-.navigation-primary-dropdown-content a {
-    display: block;
-}
-
-.navigation-primary-dropdown-content a:hover {
-    color: #c7c7c7;
-    transition: .25s;
-    background: #e43d35;
-    cursor: pointer;
-    border-radius: 0;
-}
-
-.navigation-primary-item:hover .navigation-primary-dropdown-content-wrapper {
-    display: block;
-    padding: 0;
-}
-
-.navigation-primary-item:hover .navigation-primary-item-button {
-    color: black;
-    transition: .25s;
-    background: rgba( 255, 255, 255, .15);
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.navigation-primary-item button:focus {
-    outline: none;
-}
-
-.dropdown-content-item {
-    line-height: 17px;
-    padding: 2px 15px;
-}
- 
-/* Navigation-Primary Mobile Styling */
-@media screen and (max-width: 500px){
-    .masthead-brand .logo {
-        margin-left: 0;
-    }
-
-    .masthead .navbar-toggle {
-        margin-right: 0;
-    }
-}
-
-/* End Navigation-Primary */
-
+/* End Start Master Header and Navigation-Primary Styling */
 
 
 
@@ -519,18 +421,8 @@ h1 {
     background-color: rgba(213,213,213,0.87);
  }
 
-/* Navigation-Primary Mobile Styling */
-@media screen and (max-width: 500px){
-    .masthead-brand .logo {
-        margin-left: 0;
-    }
 
-    .masthead .navbar-toggle {
-        margin-right: 0;
-    }
-}
-
- /* End Hamburger Menu aka Full Menu*/
+/* End Hamburger Menu aka Full Menu*/
 
 /* Top section */
 
@@ -557,27 +449,6 @@ h1 {
     padding-right: 5%;
 }
 
-@media screen and (max-width: 1024px) {
-    .image-top {
-        height: 400px;
-    }
-}
-
-/* Footer Tablet Styling */
-@media screen and (max-width: 768px) {
-
-}
-
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .image-top {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
-        background-repeat: no-repeat;
-        height: 500px;
-        background-position: center;
-    }
-}
-
 .top {
     width: 100%;
 }
@@ -587,21 +458,7 @@ h1 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    /* background-position: right; */
     height: 327px;
-}
-
-@media screen and (max-width: 1025px) {
-    .image-bottom-left {
-        background-position: bottom;
-    }
-}
-
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .image-bottom-left {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
-    }
 }
 
 .image-bottom-right {
@@ -609,31 +466,7 @@ h1 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    /* background-position: left; */
     height: 327px;
-}
-
-
-@media screen and (max-width: 1025px) {
-    .image-bottom-right {
-        background-position: left;
-    }
-}
-
-/* Footer Tablet Styling */
-@media screen and (max-width: 768px) {
-    .image-bottom-right {
-        background-position: unset;
-    }
-}
-
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .image-bottom-right {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
-        background-repeat: no-repeat;
-        background-position: center;
-    }
 }
 
 .bottom {
@@ -651,46 +484,6 @@ h1 {
 
 .bottom-left {
     padding-right: 1%;
-}
-
-@media screen and (max-width: 1024px) {
-    .bottom-left, .bottom-right {
-        width: 100%;
-        
-    }
-
-    .bottom {
-        padding-top: 1%;
-    }
-
-    h2 {
-        font-size: 24px;
-    }
-}
-
-/* Tablet Styling */
-@media screen and (max-width: 768px) {
-
-    h2 {
-        font-size: 18px;
-    }
-
-    .bottom {
-        padding-top: 1%;
-    }
-}
-
-
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .bottom-left {
-       padding-right: 0;
-    }
-
-    .bottom-right {
-        padding-top: 1%;
-        margin-bottom: 1%;
-     }
 }
 
 .content-container {
@@ -726,8 +519,84 @@ h1 {
     text-decoration: none;
 }
 
+@media screen and (max-width: 1024px) {
+    .image-top {
+        height: 400px;
+    }
+
+    .image-bottom-left {
+        background-position: bottom;
+    }
+
+    .image-bottom-right {
+        background-position: left;
+    }
+
+    .bottom-left, .bottom-right {
+        width: 100%;
+        
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 768px) {
+    .image-bottom-right {
+        background-position: unset;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .bottom {
+        padding-top: 1%;
+    }
+}
+
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
+    .masthead-brand .logo {
+        margin-left: 0;
+    }
+
+    .masthead .navbar-toggle {
+        margin-right: 0;
+    }
+
+    .image-top {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
+        background-repeat: no-repeat;
+        height: 500px;
+        background-position: center;
+    }
+
+    .image-bottom-left {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
+    }
+
+    .image-bottom-right {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .bottom-left {
+        padding-right: 0;
+     }
+ 
+     .bottom-right {
+         padding-top: 1%;
+         margin-bottom: 1%;
+      }
 
     h1 {
         font-size: 24px;
