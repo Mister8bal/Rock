@@ -49,6 +49,12 @@ namespace RockWeb.Plugins.church_ccv.Finance
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
             this.AddConfigurationUpdateTrigger( upPanel );
+
+            mdManageSchedule.Header.Visible = false;
+            mdManageSchedule.SaveButtonText = "Transfer";
+            mdManageSchedule.SaveClick += mdManageSchedule_SaveClick;
+            mdManageSchedule.CancelLinkVisible = true;
+
         }
 
         /// <summary>
@@ -101,33 +107,33 @@ namespace RockWeb.Plugins.church_ccv.Finance
             string paymentAccount = row.Cells[3].Text;
 
             // if schedule id and amount exist, try to delete the schedule
-            if ( gatewayScheduleId.IsNotNullOrWhitespace() || amount.IsNotNullOrWhitespace())
+            if (gatewayScheduleId.IsNotNullOrWhitespace() || amount.IsNotNullOrWhitespace())
             {
-                using ( var rockContext = new RockContext() )
+                using (var rockContext = new RockContext())
                 {
-                    FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
+                    FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService(rockContext);
 
                     // get the transaction and load its attributes
-                    var selectedTransaction = transactionService.GetByScheduleId( gatewayScheduleId );
+                    var selectedTransaction = transactionService.GetByScheduleId(gatewayScheduleId);
 
                     if (selectedTransaction != null && selectedTransaction.FinancialGateway != null)
                     {
-                        selectedTransaction.FinancialGateway.LoadAttributes( rockContext );
+                        selectedTransaction.FinancialGateway.LoadAttributes(rockContext);
                     }
 
                     // try to cancel the scheduled transaction
                     string errorMessage = string.Empty;
-                    if (transactionService.Cancel ( selectedTransaction, out errorMessage))
+                    if (transactionService.Cancel(selectedTransaction, out errorMessage))
                     {
                         try
                         {
-                            transactionService.GetStatus( selectedTransaction, out errorMessage );
+                            transactionService.GetStatus(selectedTransaction, out errorMessage);
                         }
                         catch { }
 
                         // success - save changes and update message
                         rockContext.SaveChanges();
-                        nbMessage.Text = String.Format( "<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue( "TransactionLabel" ).ToLower(), amount, paymentAccount );
+                        nbMessage.Text = String.Format("<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue("TransactionLabel").ToLower(), amount, paymentAccount);
                         nbMessage.Visible = true;
 
                         // Rebind grid
@@ -136,7 +142,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     else
                     {
                         // cancel failed - update message
-                        nbMessage.Text = String.Format( "<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage );
+                        nbMessage.Text = String.Format("<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage);
                         nbMessage.Visible = true;
                     }
                 }
@@ -210,6 +216,85 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles the Delete event of the btnDeleteSchedule control.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void mdManageSchedule_SaveClick( object sender, EventArgs e)
+        {
+            if ( hfGatewayScheduleId.Value.IsNullOrWhiteSpace() ||
+                 hfScheduleFrequency.Value.IsNullOrWhiteSpace() ||
+                 hfTotalAmount.Value.IsNullOrWhiteSpace() ||
+                 hfPaymentAccount.Value.IsNullOrWhiteSpace() )
+            {
+                // missing schedule id
+
+                // TODO: Error handle
+
+                return;
+            }
+
+            // try to delete the schedule
+            using ( var rockContext = new RockContext() )
+            {
+                FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
+
+                // get the transaction and load its attributes
+                var selectedTransaction = transactionService.GetByScheduleId( hfGatewayScheduleId.Value );
+
+                if ( selectedTransaction != null && selectedTransaction.FinancialGateway != null )
+                {
+                    selectedTransaction.FinancialGateway.LoadAttributes(rockContext);
+                }
+
+                // try to cancel the scheduled transaction
+                string errorMessage = string.Empty;
+                if ( transactionService.Cancel( selectedTransaction, out errorMessage) )
+                {
+                    try
+                    {
+                        transactionService.GetStatus( selectedTransaction, out errorMessage );
+                    }
+                    catch { }
+
+                    // success - save changes and update message
+                    rockContext.SaveChanges();
+                    nbMessage.Text = String.Format( "<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue( "TransactionLabel" ).ToLower(), hfTotalAmount.Value, hfPaymentAccount.Value );
+                    nbMessage.Visible = true;
+
+                    // Rebind grid
+                    BindGrid();
+                }
+                else
+                {
+                    // cancel failed - update message
+                    nbMessage.Text = String.Format( "<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage );
+                    nbMessage.Visible = true;
+                }
+            }            
+        }
+
+        protected void gScheduledTransactions_Manage( object sender, RowEventArgs e )
+        {
+            // Get the row that triggered the event
+            GridViewRow row = gScheduledTransactions.Rows[e.RowIndex];
+
+            // Set hiddenfields
+            hfGatewayScheduleId.Value = row.Cells[0].Text;
+            hfTotalAmount.Value = row.Cells[1].Text;
+            hfPaymentAccount.Value = row.Cells[3].Text;
+
+            // TEMP UNTIL COL ADDED
+            hfScheduleFrequency.Value = "Weekly";
+
+            // set tranfer detail message
+            ltlTransferDetails.Text = string.Format( "<br />{0} {1} using {2}<br />", hfTotalAmount.Value, hfScheduleFrequency.Value, hfPaymentAccount.Value );
+
+            mdManageSchedule.Show();
+
         }
     }
 }

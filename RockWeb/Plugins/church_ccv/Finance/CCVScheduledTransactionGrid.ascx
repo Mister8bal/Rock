@@ -21,10 +21,27 @@
                     <Rock:RockBoundField DataField="TransactionFrequencyValue" HeaderText="Frequency" />                    
                     <Rock:RockBoundField DataField="NextPaymentDate" HeaderText="Next Gift" DataFormatString="{0:MM/d/yyyy}" />
                     <Rock:RockBoundField DataField="StartDate" HeaderText="First Gift" DataFormatString="{0:MM/d/yyyy}" />
+                    <Rock:EditField IconCssClass="fa fa-pencil" HeaderText="Manage" OnClick="gScheduledTransactions_Manage" />
                     <Rock:DeleteField OnClick="gScheduledTransactions_Delete" />
                 </Columns>
             </Rock:Grid>
         </div>
 
+        <asp:Panel ID="pnlManageSchedule" runat="server" Visible="true">
+            <Rock:ModalDialog ID="mdManageSchedule" runat="server">
+                <Content>
+                    Transfer message here, probalby some instructions on what to do next
+
+                    <asp:Literal ID="ltlTransferDetails" runat="server" />
+
+                    <asp:HiddenField ID="hfGatewayScheduleId" runat="server" />
+                    <asp:HiddenField ID="hfTotalAmount" runat="server" />
+                    <asp:HiddenField ID="hfScheduleFrequency" runat="server" />
+                    <asp:HiddenField ID="hfPaymentAccount" runat="server" />
+                </Content>
+            </Rock:ModalDialog>
+        </asp:Panel>
+
     </ContentTemplate>
 </asp:UpdatePanel>
+
