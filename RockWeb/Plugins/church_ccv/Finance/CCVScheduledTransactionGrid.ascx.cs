@@ -219,7 +219,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
         }
 
         /// <summary>
-        /// Handles the Delete event of the btnDeleteSchedule control.
+        /// Handles the Transfer event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -262,6 +262,18 @@ namespace RockWeb.Plugins.church_ccv.Finance
 
                     // success - save changes and update message
                     rockContext.SaveChanges();
+
+                    //var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
+                    //queryString.Set( "a", hfTotalAmount.Value );
+                    //queryString.Set( "r", hfScheduleFrequency.Value );
+                    //queryString.Set( "fnd", hfPaymentAccount.Value );
+                    //Response.Redirect( string.Format( "{0}?{1}", "https://christopherdev.ccv.church", queryString ), false );
+
+                    // https://pushpay.com/g/christchurchofthevalley?a={0}&r={1}&fnd={2}
+                    string redirectUrl = string.Format( "<script>window.open('https://christopherdev.ccv.church?a={0}&r={1}&fnd={2}');</script>", hfTotalAmount.Value, hfScheduleFrequency.Value, hfPaymentAccount.Value );
+                    Response.Write( redirectUrl );
+                   
+
                     nbMessage.Text = String.Format( "<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue( "TransactionLabel" ).ToLower(), hfTotalAmount.Value, hfPaymentAccount.Value );
                     nbMessage.Visible = true;
 

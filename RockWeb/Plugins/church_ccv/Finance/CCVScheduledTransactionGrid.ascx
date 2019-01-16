@@ -1,4 +1,9 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVScheduledTransactionGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVScheduledTransactionGrid" %>
+<style>
+    .modal.modal-overflow {
+        top: 40%;
+    }
+</style>
 
 <asp:UpdatePanel ID="upPanel" runat="server">
     <ContentTemplate>
