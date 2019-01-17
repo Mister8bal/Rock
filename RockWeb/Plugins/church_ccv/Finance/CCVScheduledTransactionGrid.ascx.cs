@@ -68,8 +68,10 @@ namespace RockWeb.Plugins.church_ccv.Finance
             if ( !Page.IsPostBack )
             {
                 BindGrid();
-            }
+            } 
         }
+
+
 
         /// <summary>
         /// Handles the BlockUpdated event of the control.
@@ -243,42 +245,36 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
 
                 // get the transaction and load its attributes
-                var selectedTransaction = transactionService.GetByScheduleId( hfGatewayScheduleId.Value );
+                var selectedScheduleTransaction = transactionService.GetByScheduleId( hfGatewayScheduleId.Value );
 
-                if ( selectedTransaction != null && selectedTransaction.FinancialGateway != null )
+                if ( selectedScheduleTransaction != null && selectedScheduleTransaction.FinancialGateway != null )
                 {
-                    selectedTransaction.FinancialGateway.LoadAttributes(rockContext);
+                    selectedScheduleTransaction.FinancialGateway.LoadAttributes(rockContext);
                 }
+
+                var fund = selectedScheduleTransaction.ScheduledTransactionDetails.Select( a => new { Fund = a.AccountId } );
 
                 // try to cancel the scheduled transaction
                 string errorMessage = string.Empty;
-                if ( transactionService.Cancel( selectedTransaction, out errorMessage) )
+                if ( transactionService.Cancel( selectedScheduleTransaction, out errorMessage) )
                 {
                     try
                     {
-                        transactionService.GetStatus( selectedTransaction, out errorMessage );
+                        transactionService.GetStatus( selectedScheduleTransaction, out errorMessage );
                     }
                     catch { }
 
                     // success - save changes and update message
                     rockContext.SaveChanges();
 
-                    //var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
-                    //queryString.Set( "a", hfTotalAmount.Value );
-                    //queryString.Set( "r", hfScheduleFrequency.Value );
-                    //queryString.Set( "fnd", hfPaymentAccount.Value );
-                    //Response.Redirect( string.Format( "{0}?{1}", "https://christopherdev.ccv.church", queryString ), false );
-
                     // https://pushpay.com/g/christchurchofthevalley?a={0}&r={1}&fnd={2}
-                    string redirectUrl = string.Format( "<script>window.open('https://christopherdev.ccv.church?a={0}&r={1}&fnd={2}');</script>", hfTotalAmount.Value, hfScheduleFrequency.Value, hfPaymentAccount.Value );
-                    Response.Write( redirectUrl );
-                   
 
-                    nbMessage.Text = String.Format( "<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue( "TransactionLabel" ).ToLower(), hfTotalAmount.Value, hfPaymentAccount.Value );
-                    nbMessage.Visible = true;
+                    var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
+                    queryString.Set( "a", selectedScheduleTransaction.TotalAmount.ToString() );
+                    queryString.Set( "r", selectedScheduleTransaction.TransactionFrequencyValue.ToString() );
+                    //Response.Redirect( string.Format( "{0}?{1}", "https://pushpay.com/g/christchurchofthevalley", queryString ), false );
 
-                    // Rebind grid
-                    BindGrid();
+                    
                 }
                 else
                 {
@@ -296,14 +292,13 @@ namespace RockWeb.Plugins.church_ccv.Finance
 
             // Set hiddenfields
             hfGatewayScheduleId.Value = row.Cells[0].Text;
-            hfTotalAmount.Value = row.Cells[1].Text;
-            hfPaymentAccount.Value = row.Cells[3].Text;
 
-            // TEMP UNTIL COL ADDED
-            hfScheduleFrequency.Value = "Weekly";
+            string totalAmount = row.Cells[0].Text;
+            string scheduleFrequency = row.Cells[0].Text;
+            string paymentAccount = row.Cells[0].Text;
 
             // set tranfer detail message
-            ltlTransferDetails.Text = string.Format( "<br />{0} {1} using {2}<br />", hfTotalAmount.Value, hfScheduleFrequency.Value, hfPaymentAccount.Value );
+            ltlTransferDetails.Text = string.Format( "<br />{0} {1} using {2}<br />", totalAmount, scheduleFrequency, paymentAccount );
 
             mdManageSchedule.Show();
 

@@ -21,6 +21,7 @@
                 <Columns>
                     <Rock:RockBoundField DataField="GatewayScheduleId" HeaderText="Gateway Schedule Id" />
                     <Rock:RockBoundField DataField="TotalAmount" HeaderText="Amount" DataFormatString="{0:C}"/>
+                    <Rock:RockBoundField DataField="Fund" HeaderText="Fund" />
                     <Rock:RockBoundField DataField="CurrencyTypeValue" HeaderText="Payment Type"/>
                     <Rock:RockBoundField DataField="AccountNumberMasked" HeaderText="Payment Account" />
                     <Rock:RockBoundField DataField="TransactionFrequencyValue" HeaderText="Frequency" />                    
@@ -40,9 +41,6 @@
                     <asp:Literal ID="ltlTransferDetails" runat="server" />
 
                     <asp:HiddenField ID="hfGatewayScheduleId" runat="server" />
-                    <asp:HiddenField ID="hfTotalAmount" runat="server" />
-                    <asp:HiddenField ID="hfScheduleFrequency" runat="server" />
-                    <asp:HiddenField ID="hfPaymentAccount" runat="server" />
                 </Content>
             </Rock:ModalDialog>
         </asp:Panel>
