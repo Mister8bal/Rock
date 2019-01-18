@@ -34,8 +34,17 @@ using church.ccv.CCVRest.CCVLive.Model;
 
 namespace church.ccv.CCVRest.CCVLive
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class AttendanceController : Rock.Rest.ApiControllerBase
     {
+        /// <summary>
+        /// Use this to log an Attendance Interaction on the CCV Live Interaction Channel 
+        /// </summary>
+        /// <param name="attendanceModel">The opject containing the attendance data to be logged with the interaction <see cref="church.ccv.CCVRest.CCVLive.Model.AttendanceModel"/>.</param>
+        /// <exception cref="System.Web.Http.HttpResponseException"></exception>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/CCVLive/Attendance")]
         [Authenticate, Secured]
@@ -64,20 +73,33 @@ namespace church.ccv.CCVRest.CCVLive
                 return response;
             }
 
+            /**
+             * From this point on, all responses are valid.
+             */ 
+            statusCode = HttpStatusCode.OK;
+
+            /**
+             * If no person is found, we simply return a 200 response with an appropriate message.
+             * The request doesn't need to fail at this point.  Just let the user know that no person 
+             * is registered with the provided data. 
+             */ 
             if (person == null)
             {
-                statusCode = HttpStatusCode.OK;
                 responseData.Success = false;
                 responseData.Message = "We could not find a person with that name and email address.";
                 response.StatusCode = statusCode;
                 response.Content = new StringContent(JsonConvert.SerializeObject(responseData), Encoding.UTF8, "application/json");
                 return response;
             }
-
-            response.StatusCode = HttpStatusCode.OK;
+    
+            response.StatusCode = statusCode;
 
             var dt = DateTime.Now;
             dt = TimeZoneInfo.ConvertTime(dt, timeZoneInfo);
+
+            /** 
+             * Instantiate the interaction
+             */ 
             Interaction thisInteraction = new Interaction()
             {
                 Operation = attendanceModel.Operation,
