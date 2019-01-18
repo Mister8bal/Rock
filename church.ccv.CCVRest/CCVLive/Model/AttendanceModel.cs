@@ -86,6 +86,10 @@ namespace church.ccv.CCVRest.CCVLive.Model
         */
         public string RequestTime;
 
+        public string Email;
+
+        public string Name;
+
         public AttendanceModel()
         {
 
