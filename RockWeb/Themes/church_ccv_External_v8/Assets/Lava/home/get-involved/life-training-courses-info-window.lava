@@ -2,6 +2,7 @@
 		{% if attribute.Value != empty %}
 			  {% if attribute.AttributeName == "Course Title" %}
 						<h5>{{ attribute.ValueFormatted }}</h5>
+            <h6>{{ Group.Name }}</h6>
 						<p>{{ Group.Schedule.FriendlyScheduleText }}</p>
 				{% endif %}     
 		{% endif %}   

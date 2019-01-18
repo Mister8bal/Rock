@@ -14,7 +14,6 @@
         // default to the dashboard panel
         gCurrentLink = $("#dashboard-button")[0];
         gCurrentPanel = $("#dashboard-panel")[0];
-        
         togglePanel( gCurrentLink, gCurrentPanel, true );
     }
 
@@ -61,13 +60,11 @@
 {% comment %}Force conversion from string to int {% endcomment %}
 {% assign groupId = PageParameter.GroupId | Plus: 0 %}
 
-{% assign groupMembers = CurrentPerson | Groups: "49" %}
-
-    {% for groupMember in groupMembers %}
-        {% if groupMember.Group.Id == groupId %}
-            {% assign group = groupMember.Group %}
-        {% endif %}
+{% group where:'Id == {{ groupId }} ' %}
+    {% for lifeTrainingGroup in groupItems %}
+            {% assign group = lifeTrainingGroup %}
     {% endfor %}
+{% endgroup %}
 
     <div class="header">
         <h4>{{ group.Name }}</h4>
