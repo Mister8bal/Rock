@@ -1,6 +1,18 @@
-/* important needed to override giving css (need to move giving block CSS into its own file so we dont have these conflicts, instead of being in giving page css file) */
 #ternavbar-bg {
     display: flex;
+}
+
+#zone-sectiona {
+	padding: 0 10%;
+}
+
+.content-area {
+    padding: 0 10%;
+    margin-left: 40px;
+}
+
+.main-feature {
+	padding: 0 12%;
 }
 
 .button, html input[type="button"], input[type="reset"], input[type="submit"] {
@@ -10,27 +22,38 @@
 }
 
 h1 {
-    font-size: 4.2rem;
-    line-height: 110%;
+    font-size: 60px;
+    line-height: 68px;
+	letter-spacing: -1px;
     margin: 0;
     padding: 2.1rem 0 1.68rem 0;
     font-family: akrobat;
+    font-weight: 900;
     color: #000000;
     text-transform: uppercase;
   }
   
-  h2 {
-    font-size: 3.56rem;
-    line-height: 110%;
-    margin: 0;
-    padding: 1.78rem 0 1.424rem 0;
+h2 {
+	font-size: 56px;
+	line-height: 58px;
+	margin: 0;
+	padding: 1.78rem 0 1.424rem 0;
     font-family: akrobat;
-    color: #FFFFFF;
-    text-transform: uppercase;
-  }
-  
+    font-weight: 900;
+	color: #FFFFFF;
+	text-transform: uppercase;
+}
 
-#sectionb-bg, #sectionc-bg, #sectiond-bg {
+@media screen and (max-width: 1024px) {
+    .content-area {
+        padding: 0;
+        margin-left: 0;
+    }
+}
+  
+/* Navigation Section */
+
+.masthead-nav {
     display: none;
 }
 
@@ -46,8 +69,6 @@ h1 {
     font-size: 20px;
 }
 
-/* Navigation Section */
-
 .big-logo .logo {
     min-height: 100px;
 }
@@ -58,95 +79,73 @@ h1 {
 
 .header-title h1 {
     text-align: center;
-    font-weight: 700;
-    font-family: "akrobat";
+	padding: 0;
+	padding-top: 75px;
+	padding-bottom: 25px;
 }
 
 .header-title p {
     text-align: center;
-    padding-bottom: 3%;
-    font-family: "Helvetica Neue";
-    font-size: 21px;
+    font-family: "Heebo";
+    font-size: 20px;
+	line-height: 22px;
+	color: #6d6d6d;
+	margin: 0;
+	margin-bottom: 55px;
 }
 
 .header-login-item {
     color: white;
-    padding: 3px 12px 5px 12px;
+    min-width: 110px;
+    padding: 3px 20px;
     margin-top: 10px;
+    margin-left: 10px;
     background-color: #e43d35;
     border: solid 1px #e43d35;
     border-radius: 6px;
+    font-family: Heebo;
+    font-size: 16px;
+    line-height: 18px;
 }
 
-@media screen and (max-width: 1024px) {
-    h2 {
-        font-size: 24px;
-    }
+.header-login-item a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 12px;
 }
-
-/* Footer Tablet Styling */
-@media screen and (max-width: 768px) {
-    h2 {
-        font-size: 18px;
-    }
-}
-
-/* Mobile Styling */
-@media screen and (max-width: 500px) {
-    #ternavbar-bg {
-        display: none !important;
-    }
-
-    .main-feature {
-        height: unset !important;
-        padding-top: 50px !important;
-    }
-
-    .nav {
-        width: unset;
-    }
-
-    .announcement-bar {
-        font-size: 12px;
-    }
-} 
-
-/* End Navigation Section */
 
 
 /* Start Master Header and Navigation-Primary Styling */
+/* only set padding on masthead-upper, we want the anouncement bar to go full width */
+.masthead-upper {
+   padding-left: 10%;
+    padding-right: 10%;
+}
+
 .masthead {
     font-family: akrobat;
-	font-weight: bold;
+	font-weight: 700;
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: transparent;
 	width: 100%;
 	z-index: 999;
-}
-
-.masthead-brand {
-    margin-left: 15px;
-    
+	padding-top: 30px;
 }
 
 .masthead .logo {
-   width: 207px;
-   margin-left: 40px;
+   width: 164px;
+   float: left;
    margin: 0 0;
+   margin-left: 40px;
+
 } 
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     color: #ffffff;
     background-color: #e43d35;
-}
-
-@media screen and (min-width: 768px) {
-    .masthead .logo {
-        margin-left: 40px;
-        float: left;
-    }
 }
 
 #zone-navigation {
@@ -157,26 +156,42 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 10px;
+}
+
+.header-navigation-left {
+	flex: 1;
+	display: flex;
+	align-items: center;
+}
+
+.header-navigation-right {
+	display: flex;
+	align-items: center;
+}
+
+.lead {
+	margin-bottom: 0;
+	margin-top: 12px;
 }
 
 .nav > li > a {
     color: #e43d35;
     font-family: akrobat;
-    font-size: 15px;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 21px;
+	line-height: 23px;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
     text-transform: uppercase;
-    padding-left: 20px;
+	padding: 10px 12.5px;
 }
 
 .navigation-primary-items {
     display: flex;
     margin-bottom: unset;
     margin: 0;
-    padding-left: 20px;
-    display: flex;
+	margin-top: 12px;
+    padding-left: 62px;
 }
 
 .navigation-primary-item {
@@ -257,7 +272,7 @@ h1 {
 .loginstatus {
     color: #FFFFFF;
     font-family: akrobat;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 15px;
     text-transform: uppercase;
 }
@@ -313,6 +328,115 @@ h1 {
     width: 300px;
 }
 
+/* Start to shrink cause menu is colliding */
+@media screen and (max-width: 1290px) {
+    .masthead .logo {
+        margin-left: 20px;
+    }
+    .navigation-primary-items {
+        padding-left: 20px;
+    }
+
+    .nav > li > a {
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .main-feature {
+        padding: 0 5%;
+    }
+}
+
+/* mobile styling ( aka hamburger menu triggered) */
+@media screen and (max-width: 1150px) {
+    .masthead-brand {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .masthead-brand .logo {
+        margin-left: 0;
+        width: 160px;
+        height: 94px;
+    }
+
+    .navbar-toggle {
+        float: none;
+        margin-top: 18px;
+        padding: 9px 30px 9px 10px;
+    }
+}
+
+@media screen and (max-width: 910px) {
+    .navigation-primary-items {
+        display: none;
+    }
+
+    .header-title h1 {
+        padding-top: 0;
+    }
+}
+
+/* Footer Tablet Styling */
+@media screen and (max-width: 768px) {
+    #zone-sectiona {
+        padding: 0;
+    }
+
+    .main-feature {
+        padding: 0 15px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .header-title h1 {
+        font-size: 34px;
+        line-height: 36px;
+    }
+
+    .header-title p {
+        font-size: 15px;
+        line-height: 17px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    #ternavbar-bg {
+        display: none !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 50px !important;
+    }
+   
+    .masthead {
+        padding-top: 0;
+    }
+
+    .masthead-upper {
+        padding-left: 30px;
+        padding-right: 0;
+    }
+
+    .nav {
+        width: unset;
+    }
+
+    .announcement-bar {
+        font-size: 12px;
+    }
+} 
+
+/* End Navigation Section */
+
+
 /* End Start Master Header and Navigation-Primary Styling */
 
 
@@ -321,17 +445,17 @@ h1 {
 
 
 /* Start Hamburger Menu aka Full Menu*/
+.fa.fa-bars {
+    color: #e43d35;
+    font-size: 30px;
+    line-height: 32px;
+}
+
 /* Show Hamburger Menu on any device smaller than 1024px */
 /* Overriding Bootstrap media query */
-@media (max-width: 1100px) {
-
-    .nav-pills > li > a {
-        display: none;
-    }
-
+@media (max-width: 1150px) {
     .navbar-toggle {
         display: inline-block;
-        margin-top: 0;
     }
  
     .collapse {
@@ -340,6 +464,10 @@ h1 {
  
     .navbar-collapse.collapse {
         display: none !important;
+    }
+
+    .navigation-header-right {
+        display: none;
     }
  }
  
@@ -359,7 +487,6 @@ h1 {
      -webkit-transition-duration: 600ms;
      transition-duration: 600ms;
      overflow-y: auto;
-     position: absolute;
      z-index: 999;
  }
  
@@ -385,13 +512,6 @@ h1 {
     background: none;
     border-style: none;
     font-family: monospace;
- }
- 
- .navigation-mobile-title-search-wrapper,  .navigation-primary-items-search-wrapper {
-     display: flex;
-     flex-direction: row;
-     justify-content: space-between;
-     width: 70%;
  }
  
  .navigation-mobile-magnify,.navigation-mobile-magnify:hover {
@@ -442,13 +562,8 @@ h1 {
     background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    height: 500px;
+    height: 600px;
     background-position: center;
-}
-
-.top-and-bottom-container {
-    padding-left: 5%;
-    padding-right: 5%;
 }
 
 .top {
@@ -460,7 +575,7 @@ h1 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    height: 327px;
+    height: 375px;
 }
 
 .image-bottom-right {
@@ -468,19 +583,18 @@ h1 {
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
-    height: 327px;
+    height: 375px;
 }
 
 .bottom {
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding-top: 1%;
-    padding-bottom: 1%;
+    padding-top: 20px;
+    padding-bottom: 100px;
 }
 
 .bottom-left, .bottom-right {
-    height: 330px;
     width: 100%;
 }
 
@@ -489,14 +603,16 @@ h1 {
 }
 
 .content-container {
-    text-align: center;
-    height: inherit;
-    padding-top: 15%;
+	height: inherit;
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 .btn-primary {
     font-family: akrobat;
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
     color: white;
     background-color: #e43d35;
@@ -506,8 +622,16 @@ h1 {
 }
 
 .homepage-button {
-    min-width: 200px;
-    max-width: 200px;
+    border-radius: 0;
+	font-size: 22px;
+	line-height: 24px;
+	width: 240px;
+	height: 55px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	margin: 0;	
 }
 
 .btn-primary:hover {
@@ -545,34 +669,44 @@ h1 {
     .bottom {
         padding-top: 1%;
     }
-
-    h2 {
-        font-size: 24px;
-    }
 }
 
 /* Tablet Styling */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {    
     .image-bottom-right {
         background-position: unset;
     }
 
     h2 {
-        font-size: 18px;
+        font-size: 34px;
+        line-height: 36px;
     }
 
     .bottom {
-        padding-top: 1%;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-top: 15px;
+        padding-bottom: 40px;
+    }
+
+    .bottom-left {
+        padding-right: 0;
+    }
+ 
+    .bottom-right {
+        padding-top: 15px;
+    }
+
+    .homepage-button {
+        font-size: 16.5px;
+        line-height: 18.5px;
     }
 }
 
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    .masthead-brand .logo {
-        margin-left: 0;
-    }
-
     .masthead .navbar-toggle {
         margin-right: 0;
     }
@@ -580,88 +714,88 @@ h1 {
     .image-top {
         background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/soccer-mobile.jpg");
         background-repeat: no-repeat;
-        height: 500px;
+        height: 260px;
         background-position: center;
     }
 
     .image-bottom-left {
         background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/bball.jpg");
+        height: 260px;
     }
 
     .image-bottom-right {
         background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/home/football-mobile.jpg");
         background-repeat: no-repeat;
         background-position: center;
-    }
-
-    .bottom-left {
-        padding-right: 0;
-     }
- 
-     .bottom-right {
-         padding-top: 1%;
-         margin-bottom: 1%;
-      }
-
-    h1 {
-        font-size: 24px;
-    }
-
-    h2 {
-        font-size: 18px;
+        height: 260px;
     }
 
     .image-top {
         width: 100%;
         height: 300px;
     }
-
-    .bottom {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .content-container {
-        padding-top: 25%;
-    }
 } 
 
 /* End Top section */
 
-/* Footer Section */
-
-.mainfooter-dark {
-    background-color: black;
+/* Sports Section */
+.main-feature-title {
+	font-size: 44px;
+	line-height: 46px;
+	padding: 40px 0;
 }
 
+.main-feature-locations {
+	padding: 0 100px;
+	padding-bottom: 50px;
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 768px) {
+	.main-feature-locations {
+		padding: 0 15px;
+    }
+    
+    .col-md-6 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* End Sports Section */
+
+/* Footer Section */
+
 .mainfooter {
-    background-color: black;
+    background-color: #000;
+	padding: 0 12%;
 }
 
 .footer {
     display: flex;
     justify-content: space-between;
-    background-color: rgb(0, 0, 0);
-    padding: 20px 35px;
+	align-items: center;
+    height: 310px;
 }
 
-.footer-logo img {
-    height: 100px;
+.footer-logo {
+    height: 130px;
+	width: 215px;
 }
 
 .footer-copyright {
     color: rgba(213,213,213,0.87); 
     padding-top: 10px; 
-    font-family: Heebo; 
-    line-height: 200%; 
-    font-size: 12px; 
+    font-family: Roboto Condensed; 
+    font-size: 12px;
+	line-height: 14px;
     font-weight: 200;
     text-align: center;
 }
 
 .footer-social {
     display: flex;
+	padding-top: 15px;
 }
 
 .footer-social a{
@@ -682,12 +816,22 @@ h1 {
 .footer-links {
     display: flex;
     justify-content: space-around;
-    width: 45%;
-    font-size: 13px;
-    font-weight: 200;
+	font-family: akrobat;
+    font-size: 20px;
+	line-height: 22px;
+    font-weight: bold;
     text-transform: uppercase;
-    padding-top: 5%;
     color: white;
+	padding-top: 15px;
+}
+
+.footer-links a {
+	padding: 0 10px;
+	text-decoration: none;
+}
+
+.footer-links a:hover {
+	text-decoration: none;
 }
 
 .footer-links-section {
@@ -719,13 +863,19 @@ h1 {
 }
 
 .footer-social img {
-    height: 50px;
+    height: 70px;
+	width: 70px;
 }
 
 hr {
     border-top: 0px;
 }
 @media screen and (max-width: 1024px) {
+    .mainfooter {
+        padding-top: 15px;
+        padding-bottom: 50px;
+    }
+
     .footer {
         display: flex;
         flex-direction: column;
@@ -733,35 +883,35 @@ hr {
         padding: 20px 0;
     }
 
-    .footer-links, .footer-links-subsection {
-        margin-bottom: 20px;
-    }
-}
-
-/* Footer Tablet Styling */
-@media screen and (max-width: 768px) {
     .footer-links {
+        margin-bottom: 20px;
         display: block;
-        width: 60%;
         text-align: center;
+    }
+
+    .footer-social {
+        justify-content: space-around;
+    }
+
+    .footer-social img {
+        height: 50px;
+        width: 50px;
     }
 }
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    .footer-links a {
-        padding-right: 4%;
-    }
-
     .footer {
         padding: 0;
         width: 100%;
     }
-
-    .footer-social {
-        justify-content: center;
-        padding-top: 2%;
-    }
 }    
 
 /* End Footer Section */
+
+/* Bootstrap overrides */
+a:focus {
+	outline: none;
+	text-decoration: none;
+	color: #FFFFFF;
+}

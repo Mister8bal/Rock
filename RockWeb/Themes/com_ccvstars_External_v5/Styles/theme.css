@@ -175,6 +175,9 @@ img.jcrop-preview {
   max-width: none;
 }
 
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800);
+@import url('https://fonts.googleapis.com/css?family=Heebo');
+
 @font-face {
   font-family: "summernote";
   font-style: normal;
@@ -184,21 +187,31 @@ img.jcrop-preview {
 }
 
 @font-face {
+  font-family: 'akrobat';
+  src: url('../Assets/Fonts/Akrobat-SemiBold.eot');
+  src: url('../Assets/Fonts/Akrobat-SemiBold.eot?#iefix') format('embedded-opentype'),
+    url('../Assets/Fonts/Akrobat-SemiBold.woff') format('woff'),
+    url('../Assets/Fonts/Akrobat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
 font-family: 'akrobat';
-src: local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.eot');
-src: local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
-  local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.woff') format('woff'),
-  local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.ttf') format('truetype');
-font-weight: bold;
+src: url('../Assets/Fonts/Akrobat-Bold.eot');
+src: url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
+  url('../Assets/Fonts/Akrobat-Bold.woff') format('woff'),
+  url('../Assets/Fonts/Akrobat-Bold.ttf') format('truetype');
+font-weight: 700;
 font-style: normal;
 }
 
 @font-face {
 font-family: 'akrobat';
-src: local('akrobat'), url('../Assets/Fonts/Akrobat-Black.eot');
-src: local('akrobat'), url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
-  local('akrobat'), url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
-  local('akrobat'), url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
+src: url('../Assets/Fonts/Akrobat-Black.eot');
+src: url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
+  url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
+  url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
 font-weight: 900;
 font-style: normal;
 }
