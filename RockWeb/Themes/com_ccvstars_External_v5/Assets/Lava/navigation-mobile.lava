@@ -10,18 +10,14 @@
 </div>
 
 <ul class="navigation-mobile-items">
-     {% if CurrentPerson %}
-            <li><a class="navigation-mobile-item" href="/stars-account">My Account</a></li>
-    {% endif %}
-
     {% if Page.DisplayChildPages == 'true' and Page.Pages != empty %}
         {% for childPage in Page.Pages %}
                 <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
         {% endfor %}
-
     {% endif %}
 
     {% if CurrentPerson %}
+        <li><a class="navigation-mobile-item" href="/stars-account">My Account</a></li>
         <li><a class="navigation-mobile-item" onclick="logout();">Logout</a></li>
     {% else %}
         <li><a class="navigation-mobile-item" href="/page/892">Register</a></li>
