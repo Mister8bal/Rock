@@ -54,7 +54,7 @@
                             </div>
                             <div class="person-info">
                                 <div>
-                                    <a href="/toolbox/edit-group-member?GroupMemberId={{ member.Id }}&AdminPersonId={{ CurrentPerson.Id }}"> <h5>{{ member.Person.FullName }}</h5> </a> 
+                                    <a href="{{ editGroupMemberRoute }}?GroupMemberId={{ member.Id }}&AdminPersonId={{ CurrentPerson.Id }}"> <h5>{{ member.Person.FullName }}</h5> </a> 
                                 </div>
                                 {% unless member.GroupMemberStatus == 1 %}
                                     <p style="padding: 0;"><small>{{ member.GroupMemberStatus }}</small></p>

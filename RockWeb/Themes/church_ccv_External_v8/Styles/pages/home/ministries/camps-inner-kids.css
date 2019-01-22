@@ -1,0 +1,15 @@
+/**
+ * Styles specific to the kids camp page.
+ */
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps-kids.png");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 768px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps-kids.png");
+    }
+}
+
