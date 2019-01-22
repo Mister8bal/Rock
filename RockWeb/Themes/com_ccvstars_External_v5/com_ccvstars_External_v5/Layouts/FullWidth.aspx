@@ -2,7 +2,7 @@
 
 <asp:Content ID="ctMain" ContentPlaceHolderID="main" runat="server">
     
-	<main class="container">
+	<main class="content-area">
         
         <!-- Start Content Area -->
         
@@ -18,23 +18,11 @@
             <span class="ajax-error-message"></span>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <Rock:Zone Name="Feature" runat="server" />
-            </div>
-        </div>
+        <Rock:Zone Name="Feature" runat="server" />
 
-        <div class="row">
-            <div class="col-md-12">
-                <Rock:Zone Name="Main" runat="server" />
-            </div>
-        </div>
+        <Rock:Zone Name="Main" runat="server" />
 
-        <div class="row">
-            <div class="col-md-12">
-                <Rock:Zone Name="Section A" runat="server" />
-            </div>
-        </div>
+        <Rock:Zone Name="Section A" runat="server" />
 
         <div class="row">
             <div class="col-md-4">
