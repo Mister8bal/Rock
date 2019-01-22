@@ -10,23 +10,13 @@
 </div>
 
 <ul class="navigation-mobile-items">
+     {% if CurrentPerson %}
+            <li><a class="navigation-mobile-item" href="/stars-account">My Account</a></li>
+    {% endif %}
+
     {% if Page.DisplayChildPages == 'true' and Page.Pages != empty %}
         {% for childPage in Page.Pages %}
-            {% if childPage.Pages != empty and childPage.Title != 'Locations' %}
-                <li>
-                    <div class="dropdown">
-                        <button class="dropdown-toggle navigation-mobile-item" type="button" data-toggle="dropdown" style="border: 0px;">{{ childPage.Title }}<b class="fa fa-caret-down"></b></button>
-                        <ul class="dropdown-menu">
-                            <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
-                            {% for grandchildPage in childPage.Pages %}
-                                <li><a class="navigation-mobile-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-            {% else %}
                 <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
-            {% endif %}
         {% endfor %}
 
     {% endif %}
