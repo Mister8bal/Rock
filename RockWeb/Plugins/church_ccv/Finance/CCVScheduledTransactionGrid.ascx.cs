@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
@@ -54,7 +53,6 @@ namespace RockWeb.Plugins.church_ccv.Finance
             mdManageSchedule.SaveButtonText = "Transfer";
             mdManageSchedule.SaveClick += mdManageSchedule_SaveClick;
             mdManageSchedule.CancelLinkVisible = true;
-
         }
 
         /// <summary>
@@ -70,8 +68,6 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 BindGrid();
             } 
         }
-
-
 
         /// <summary>
         /// Handles the BlockUpdated event of the control.
@@ -227,33 +223,28 @@ namespace RockWeb.Plugins.church_ccv.Finance
         /// <param name="e"></param>
         protected void mdManageSchedule_SaveClick( object sender, EventArgs e)
         {
-            if ( hfGatewayScheduleId.Value.IsNullOrWhiteSpace() ||
-                 hfScheduleFrequency.Value.IsNullOrWhiteSpace() ||
-                 hfTotalAmount.Value.IsNullOrWhiteSpace() ||
-                 hfPaymentAccount.Value.IsNullOrWhiteSpace() )
-            {
-                // missing schedule id
-
-                // TODO: Error handle
-
-                return;
-            }
-
-            // try to delete the schedule
             using ( var rockContext = new RockContext() )
             {
+                // services needed to get info required for pushpay
                 FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
+                FinancialScheduledTransactionDetailService transactionDetailService = new FinancialScheduledTransactionDetailService( rockContext );
 
-                // get the transaction and load its attributes
+                // get the transaction
                 var selectedScheduleTransaction = transactionService.GetByScheduleId( hfGatewayScheduleId.Value );
+                var selectedScheduleTransactionDetail = new FinancialScheduledTransactionDetail();
 
+                // load its attributes and transaction detail
                 if ( selectedScheduleTransaction != null && selectedScheduleTransaction.FinancialGateway != null )
                 {
                     selectedScheduleTransaction.FinancialGateway.LoadAttributes(rockContext);
+
+                    // use the first schedule transaction detail. Ignore 520 Building Fund, 1004 Disaster Relief, and 1012 Columbia funds
+                    // intentionally only went with single transaction and not concerened with which transaction
+                    selectedScheduleTransactionDetail = transactionDetailService.Get( selectedScheduleTransaction.ScheduledTransactionDetails
+                                                                                            .Where( a => a.AccountId != 520 && a.AccountId != 1004 && a.AccountId != 1012 )
+                                                                                            .FirstOrDefault().Id );
                 }
-
-                var fund = selectedScheduleTransaction.ScheduledTransactionDetails.Select( a => new { Fund = a.AccountId } );
-
+                
                 // try to cancel the scheduled transaction
                 string errorMessage = string.Empty;
                 if ( transactionService.Cancel( selectedScheduleTransaction, out errorMessage) )
@@ -264,44 +255,87 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     }
                     catch { }
 
-                    // success - save changes and update message
+                    // success - save changes
                     rockContext.SaveChanges();
 
-                    // https://pushpay.com/g/christchurchofthevalley?a={0}&r={1}&fnd={2}
-
+                    // build query string for pushpay
                     var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
-                    queryString.Set( "a", selectedScheduleTransaction.TotalAmount.ToString() );
-                    queryString.Set( "r", selectedScheduleTransaction.TransactionFrequencyValue.ToString() );
-                    //Response.Redirect( string.Format( "{0}?{1}", "https://pushpay.com/g/christchurchofthevalley", queryString ), false );
 
-                    
+                    // amount
+                    queryString.Set( "a", selectedScheduleTransaction.TotalAmount.ToString() );
+
+                    // frequency
+                    if ( selectedScheduleTransactionDetail != null )
+                    {
+                        queryString.Set( "r", PaypalSchedFreqToPushpaySchedFreq( selectedScheduleTransaction.TransactionFrequencyValue.Value ) );
+                    }
+
+                    // fund
+                    queryString.Set( "fnd", selectedScheduleTransactionDetail.Account.Name );
+
+                    // person info
+                    queryString.Set( "ufn", CurrentPerson.FirstName );
+                    queryString.Set( "uln", CurrentPerson.LastName );
+                    queryString.Set( "ue", CurrentPerson.Email );
+                    queryString.Set( "up", CurrentPerson.PhoneNumbers.Where( a => a.NumberTypeValue.Guid == Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).FirstOrDefault().ToString().RemoveSpecialCharacters().RemoveSpaces() );
+
+                    // redirect to pushpay
+                    Response.Redirect( string.Format( "{0}?{1}", "https://pushpay.com/g/christchurchofthevalley", queryString ), false );                    
                 }
                 else
                 {
                     // cancel failed - update message
                     nbMessage.Text = String.Format( "<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage );
+
+                    mdManageSchedule.Hide();
                     nbMessage.Visible = true;
                 }
             }            
         }
 
+        /// <summary>
+        /// Handles the Manage event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void gScheduledTransactions_Manage( object sender, RowEventArgs e )
         {
-            // Get the row that triggered the event
+            // get the row that triggered the event
             GridViewRow row = gScheduledTransactions.Rows[e.RowIndex];
 
-            // Set hiddenfields
+            // set hidden field
             hfGatewayScheduleId.Value = row.Cells[0].Text;
 
-            string totalAmount = row.Cells[0].Text;
-            string scheduleFrequency = row.Cells[0].Text;
-            string paymentAccount = row.Cells[0].Text;
+            // get info and build detail message
+            string totalAmount = row.Cells[1].Text;
+            string paymentAccount = row.Cells[3].Text;
+            string scheduleFrequency = row.Cells[4].Text;
 
-            // set tranfer detail message
             ltlTransferDetails.Text = string.Format( "<br />{0} {1} using {2}<br />", totalAmount, scheduleFrequency, paymentAccount );
 
+            // show the modal
             mdManageSchedule.Show();
+        }
 
+
+        /// <summary>
+        /// Transform Paypal schedule frequency to Pushpay schedule frequency. Defaults to "fortnightly" if a matching schedule is not found.
+        /// </summary>
+        /// <param name="frequency"></param>
+        /// <returns></returns>
+        private string PaypalSchedFreqToPushpaySchedFreq( string frequency )
+        {
+            switch ( frequency.ToLower().RemoveSpaces() )
+            {
+                case "weekly":
+                    return "weekly";
+                case "twiceamonth":
+                    return "firstandfifteenth";
+                case "monthly":
+                    return "monthly";
+                default:
+                    return "fortnightly";
+            }
         }
     }
 }

@@ -21,7 +21,6 @@
                 <Columns>
                     <Rock:RockBoundField DataField="GatewayScheduleId" HeaderText="Gateway Schedule Id" />
                     <Rock:RockBoundField DataField="TotalAmount" HeaderText="Amount" DataFormatString="{0:C}"/>
-                    <Rock:RockBoundField DataField="Fund" HeaderText="Fund" />
                     <Rock:RockBoundField DataField="CurrencyTypeValue" HeaderText="Payment Type"/>
                     <Rock:RockBoundField DataField="AccountNumberMasked" HeaderText="Payment Account" />
                     <Rock:RockBoundField DataField="TransactionFrequencyValue" HeaderText="Frequency" />                    
