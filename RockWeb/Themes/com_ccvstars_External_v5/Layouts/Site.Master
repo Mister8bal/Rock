@@ -155,21 +155,21 @@
                 <Rock:Zone Name="AnnouncementBar" runat="server" />
                 
                 <div class="masthead-upper">
-                <div class="masthead-brand">
-                    <button class="navbar-toggle" type="button" onClick="toggleNavbar(true);">
-                    <i class="fa fa-bars"></i>
-                    </button>
-                    <Rock:Zone Name="Header" runat="server" />
-                </div>
-
-                <nav class="masthead-nav">
-                    <div class="navbar-collapse js-all-collapse collapse">
-                    <Rock:Zone Name="Navigation" runat="server" />
+                    <div class="masthead-brand">
+                        <button class="navbar-toggle" type="button" onClick="toggleNavbar(true);">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <Rock:Zone Name="Header" runat="server" />
                     </div>
-                </nav>
+
+                    <nav class="masthead-nav">
+                        <div class="navbar-collapse js-all-collapse collapse">
+                            <Rock:Zone Name="Navigation" runat="server" />
+                        </div>
+                    </nav>
                 </div>
                 <div class="masthead-fullmenu offscreen">
-                <Rock:Zone Name="Full Menu" runat="server" />
+                    <Rock:Zone Name="Full Menu" runat="server" />
                 </div>
             </header>
 
@@ -183,12 +183,9 @@
 
         <asp:ContentPlaceHolder ID="footer" runat="server">
             <footer class="mainfooter">
-                <div class="container margin-b-md">
 
-                    <hr>
-                    <Rock:Zone Name="Footer" runat="server" />
+                <Rock:Zone Name="Footer" runat="server" />
 
-                </div>
             </footer>
         </asp:ContentPlaceHolder>
 
