@@ -2,7 +2,7 @@
 
 <asp:Content ID="ctMain" ContentPlaceHolderID="main" runat="server">
     
-	<main class="content-area">
+	<main>
         
         <!-- Start Content Area -->
 
@@ -17,18 +17,6 @@
         <Rock:Zone Name="Main" runat="server" />
 
         <Rock:Zone Name="Section A" runat="server" />
-
-        <div class="row">
-            <div class="col-md-4">
-                <Rock:Zone Name="Section B" runat="server" />
-            </div>
-            <div class="col-md-4">
-                <Rock:Zone Name="Section C" runat="server" />
-            </div>
-            <div class="col-md-4">
-                <Rock:Zone Name="Section D" runat="server" />
-            </div>
-        </div>
 
         <!-- End Content Area -->
 

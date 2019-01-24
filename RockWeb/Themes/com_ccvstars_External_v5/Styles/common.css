@@ -44,6 +44,10 @@ h2 {
 	text-transform: uppercase;
 }
 
+.general-wrapper {
+    padding: 2% 10%;
+}
+
 @media screen and (max-width: 1024px) {
     .content-area {
         padding: 0;
@@ -51,6 +55,18 @@ h2 {
     }
 }
   
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    .general-wrapper {
+        padding: 7% 3%;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
 /* Navigation Section */
 
 .masthead-nav {
@@ -139,8 +155,6 @@ h2 {
    width: 164px;
    float: left;
    margin: 0 0;
-   margin-left: 40px;
-
 } 
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
@@ -393,6 +407,10 @@ h2 {
         font-size: 18px;
     }
 
+    /* .nav {
+        padding-left: 40px;
+    } */
+
     .header-title h1 {
         font-size: 34px;
         line-height: 36px;
@@ -423,10 +441,6 @@ h2 {
     .masthead-upper {
         padding-left: 30px;
         padding-right: 0;
-    }
-
-    .nav {
-        width: unset;
     }
 
     .announcement-bar {
@@ -755,11 +769,10 @@ h2 {
 	.main-feature-locations {
 		padding: 0 15px;
     }
-    
-    .col-md-6 {
-        padding-left: 0;
-        padding-right: 0;
-    }
+    /* .row {
+        margin-left: 0;
+        margin-right: 0;
+    } */
 }
 
 /* End Sports Section */
@@ -768,7 +781,7 @@ h2 {
 
 .mainfooter {
     background-color: #000;
-	padding: 0 12%;
+	padding: 0 10%;
 }
 
 .footer {
@@ -795,6 +808,7 @@ h2 {
 
 .footer-social {
     display: flex;
+    justify-content: space-around;
 	padding-top: 15px;
 }
 
@@ -811,6 +825,11 @@ h2 {
 
 .footer-social i:first-of-type {
     margin-left: -20px;
+}
+
+.footer-links .nav > li > a {
+    background-color: #000;
+    color: white;
 }
 
 .footer-links {
@@ -870,10 +889,18 @@ h2 {
 hr {
     border-top: 0px;
 }
+
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 @media screen and (max-width: 1024px) {
     .mainfooter {
         padding-top: 15px;
         padding-bottom: 50px;
+        padding: 5% 1% 5% 1%;
     }
 
     .footer {
@@ -897,15 +924,14 @@ hr {
         height: 50px;
         width: 50px;
     }
-}
+}  
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    .footer {
-        padding: 0;
-        width: 100%;
+    .nav {
+        max-width: 300px;
     }
-}    
+}
 
 /* End Footer Section */
 
