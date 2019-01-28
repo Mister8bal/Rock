@@ -15,12 +15,21 @@
 // limitations under the License.
 // </copyright>
 //
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Web;
-using System.Web.Http;
 using System.Threading;
+using System.Collections.Generic;
+using Rock;
+using Rock.Data;
+using Rock.Model;
+using Rock.Web.Cache;
+using System.Data.Entity;
+using church.ccv.MobileApp.Models;
+using System.Net;
+using church.ccv.Actions;
+using System.Linq;
+using Newtonsoft.Json;
 
 /// <summary>
 /// EventBrite Webhook Handler
@@ -124,13 +133,15 @@ class EventBriteReponseAsync : IAsyncResult
 
         response.ContentType = "text/plain";
 
-        if ( request.HttpMethod != "POST" )
+        if ( request.HttpMethod != "POST" || requestData == null)
         {
             response.Write( "Invalid request type. Please use POST." );
 
             _completed = true;
 
             _callback( this );
+
+            return;
         }
 
     }
@@ -138,14 +149,125 @@ class EventBriteReponseAsync : IAsyncResult
     private Object GetRequestData(HttpRequest request)
     {
         object requestData;
-        var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        //var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
         using (Stream receiveStream = request.InputStream)
         {
             using (StreamReader readStream = new StreamReader(receiveStream))
             {
-                requestData = serializer.DeserializeObject(readStream.ReadToEnd());;
+                requestData = JsonConvert.DeserializeObject(readStream.ReadToEnd());
             }
         }
         return requestData;
+    }
+
+    private Boolean isInGroup()
+    {
+        Boolean output = false;
+
+        return output;
+    }
+
+    public static bool RegisterPersonInGroup(GroupRegModel regModel)
+    {
+        bool success = false;
+
+        // setup all variables we'll need
+        var rockContext = new RockContext();
+        var personService = new PersonService(rockContext);
+        var groupService = new GroupService(rockContext);
+
+        DefinedValueCache connectionStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT);
+        DefinedValueCache recordStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING);
+        DefinedValueCache homeAddressType = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME);
+
+        Person person = null;
+        Group family = null;
+
+        // setup history tracking
+        var changes = new List<string>();
+        var familyChanges = new List<string>();
+
+        // first, get the group the person wants to join
+        Group requestedGroup = groupService.Get(regModel.RequestedGroupId);
+        if (requestedGroup != null)
+        {
+            // Try to find person by name/email 
+            var matches = personService.GetByMatch(regModel.FirstName.Trim(), regModel.LastName.Trim(), regModel.Email.Trim());
+            if (matches.Count() == 1)
+            {
+                person = matches.First();
+            }
+
+            // Check to see if this is a new person
+            if (person == null)
+            {
+                // If so, create the person and family record for the new person
+                person = new Person();
+                person.FirstName = regModel.FirstName.Trim();
+                person.LastName = regModel.LastName.Trim();
+                person.Email = regModel.Email.Trim();
+                person.IsEmailActive = true;
+                person.EmailPreference = EmailPreference.EmailAllowed;
+                person.RecordTypeValueId = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid()).Id;
+                person.ConnectionStatusValueId = connectionStatusPending.Id;
+                person.RecordStatusValueId = recordStatusPending.Id;
+                person.Gender = Gender.Unknown;
+
+                family = PersonService.SaveNewPerson(person, rockContext, requestedGroup.CampusId, false);
+            }
+
+
+            // if provided, store their phone number
+            if (string.IsNullOrWhiteSpace(regModel.Phone) == false)
+            {
+                DefinedValueCache mobilePhoneType = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE);
+                person.UpdatePhoneNumber(mobilePhoneType.Id, PhoneNumber.DefaultCountryCode(), regModel.Phone, null, null, rockContext);
+            }
+
+            // Save all changes
+            rockContext.SaveChanges();
+
+
+            // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
+            // (Or nothing if there's no problem but they're already in the group)
+            GroupMember primaryGroupMember = PersonToGroupMember(rockContext, person, requestedGroup);
+
+
+            // try to add them to the group (would only fail if the're already in it)
+            TryAddGroupMemberToGroup(rockContext, primaryGroupMember, requestedGroup);
+
+            // if we mae it here, all is good!
+            success = true;
+        }
+
+        return success;
+    }
+
+    private static GroupMember PersonToGroupMember(RockContext rockContext, Person person, Group group)
+    {
+        // puts a person into a group member object, so that we can pass it to a workflow
+        GroupMember newGroupMember = new GroupMember();
+        newGroupMember.PersonId = person.Id;
+        newGroupMember.GroupRoleId = group.GroupType.DefaultGroupRole.Id;
+        newGroupMember.GroupMemberStatus = GroupMemberStatus.Pending;
+        newGroupMember.GroupId = group.Id;
+
+        return newGroupMember;
+    }
+
+    /// <summary>
+    /// Adds the group member to the group if they aren't already in it
+    /// </summary>
+    private static void TryAddGroupMemberToGroup(RockContext rockContext, GroupMember newGroupMember, Group group)
+    {
+        if (!group.Members.Any(m =>
+            m.PersonId == newGroupMember.PersonId &&
+            m.GroupRoleId == group.GroupType.DefaultGroupRole.Id))
+        {
+            var groupMemberService = new GroupMemberService(rockContext);
+            groupMemberService.Add(newGroupMember);
+
+            rockContext.SaveChanges();
+        }
     }
 }
