@@ -131,6 +131,8 @@ class EventBriteReponseAsync : IAsyncResult
 
         var api_url = request["api_url"];
 
+        //String action = requestData.config.action; 
+
         response.ContentType = "text/plain";
 
         if ( request.HttpMethod != "POST" || requestData == null)
@@ -148,13 +150,13 @@ class EventBriteReponseAsync : IAsyncResult
 
     private Object GetRequestData(HttpRequest request)
     {
-        object requestData;
+        EventBriteRequest requestData;
         //var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
         using (Stream receiveStream = request.InputStream)
         {
             using (StreamReader readStream = new StreamReader(receiveStream))
             {
-                requestData = JsonConvert.DeserializeObject(readStream.ReadToEnd());
+                requestData = JsonConvert.DeserializeObject<EventBriteRequest>(readStream.ReadToEnd());
             }
         }
         return requestData;
@@ -227,7 +229,6 @@ class EventBriteReponseAsync : IAsyncResult
             // Save all changes
             rockContext.SaveChanges();
 
-
             // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
             // (Or nothing if there's no problem but they're already in the group)
             GroupMember primaryGroupMember = PersonToGroupMember(rockContext, person, requestedGroup);
@@ -270,4 +271,18 @@ class EventBriteReponseAsync : IAsyncResult
             rockContext.SaveChanges();
         }
     }
+}
+
+public class EventBriteRequestConfig
+{
+    public string action { get; set; }
+    public string user_id { get; set; }
+    public string endpoint { get; set; }
+    public string webhook_id { get; set; }
+}
+
+public class EventBriteRequest
+{
+    public EventBriteRequestConfig config { get; set; }
+    public string api_url { get; set; }
 }
