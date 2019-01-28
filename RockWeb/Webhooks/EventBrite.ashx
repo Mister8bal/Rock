@@ -135,16 +135,17 @@ class EventBriteReponseAsync : IAsyncResult
 
     }
 
-    private string GetRequestData(HttpRequest request)
+    private Object GetRequestData(HttpRequest request)
     {
-        string documentContents;
+        object requestData;
+        var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
         using (Stream receiveStream = request.InputStream)
         {
             using (StreamReader readStream = new StreamReader(receiveStream))
             {
-                documentContents = readStream.ReadToEnd();
+                requestData = serializer.DeserializeObject(readStream.ReadToEnd());;
             }
         }
-        return documentContents;
+        return requestData;
     }
 }
