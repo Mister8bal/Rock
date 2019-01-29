@@ -55,7 +55,9 @@ function toggleNavbarEffect( enabled ) {
    // whenever we turn it off, force the background to black.
 	if( navbarFadeEnabled == false ) {
 		var navBar = $(".masthead");
-		navBar.css( "background-color", "rgba( 0, 0, 0, 1 )" );
+      navBar.css( "background-color", "rgba( 0, 0, 0, 1 )" );
+      var dropdown = $(".navigation-primary-dropdown-content");
+		dropdown.css( "background-color", "rgba( 0, 0, 0, 1 )" );
 	}
    else {
       // otherwise, let it update according to where the page is scrolled
@@ -66,6 +68,9 @@ function toggleNavbarEffect( enabled ) {
 function updateNavbarForScroll( ) {
    // first get the navbar
    var navBar = $(".masthead");
+
+   // get the primary navigation dropdown
+   var dropdown = $(".navigation-primary-dropdown-content");
 
    var windowPos = $(window).scrollTop();
 
@@ -79,5 +84,7 @@ function updateNavbarForScroll( ) {
    var alpha = 1.0 - (deltaPos / navbarHeight);
 
    navBar.css( "background-color", 'rgba( 0, 0, 0,' +  alpha + ')' );
+
+   dropdown.css( "background-color", 'rgba( 0, 0, 0,' +  alpha + ')' );
 }
 //
