@@ -13,7 +13,9 @@
             </div>
             <div class="right">
                 <h3>{{ item.Title }} </h3> 
-                <p><b>Active Date:</b> {{ item.ActiveDate }} </p> 
+                 {% if item.StartDateTime != '' %}
+                    <p><b>Active Date:</b> {{ item.StartDateTime }} </p> 
+                {% endif %}
                 <p>{{ item.Content }} </p> 
             {% if downloadLink != '' %}
                 <ol class="messages">
