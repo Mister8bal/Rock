@@ -78,7 +78,7 @@ h2 {
     background-color: #e43d35;
     color: #FFFFFF;
     font-weight: normal;
-    font-family: Heebo;
+    font-family: akrobat;
     text-align: center;
     padding: 10px 0px;
     margin-bottom: 5px;
@@ -119,9 +119,17 @@ h2 {
     background-color: #e43d35;
     border: solid 1px #e43d35;
     border-radius: 6px;
-    font-family: Heebo;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;    
     font-size: 16px;
     line-height: 18px;
+}
+
+.header-login-item:hover {
+    background-color: #5b5b5c;
+    border: solid 1px  #5b5b5c;
+    color: white;
 }
 
 .header-login-item a {
@@ -129,6 +137,9 @@ h2 {
     justify-content: center;
     align-items: center;
     padding: 0 12px;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 
@@ -635,6 +646,16 @@ h2 {
     text-align: center;
 }
 
+.btn-info {
+    color: #ffffff;
+    background-color: #5b5b5c;
+    border-color: #5b5b5c;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+ }
+
 .homepage-button {
     border-radius: 0;
 	font-size: 22px;
@@ -649,16 +670,17 @@ h2 {
 }
 
 .btn-primary:hover {
-    color: #e43d35;
-    background-color: white;
-    border: solid 1px  white;
+    background-color: #5b5b5c;
+    border: solid 1px  #5b5b5c;
+    color: white;
     text-decoration: none;
 }
 
 .btn-primary:active {
     color: #e43d35;
-    background-color: white;
-    border: solid 1px white;
+    background-color: #5b5b5c;
+    border: solid 1px #5b5b5c;
+    color: white;
     text-decoration: none;
 }
 
