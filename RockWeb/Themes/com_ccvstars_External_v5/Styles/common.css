@@ -691,7 +691,7 @@ h2 {
 
 .btn-primary:hover {
     background-color: #FFFFFF;
-    border: solid 1px  #FFFFFF;
+    border: solid 1px #e43d35;
     text-decoration: none;
     color: #e43d35;
 }
