@@ -55,7 +55,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
         public Panel GroupView { get { return pnlGroupView; } }             
         public Panel Schedule { get { return pnlSchedule; } }
         public DayOfWeekPicker DayOfWeekPicker { get { return dowWeekly; } }
-        public TimePicker MeetingTime { get { return timeWeekly; } }               
+        public TimePicker MeetingTime { get { return timeWeekly; } }
+        public NumberUpDown CapacityOfGroup { get { return groupCapacity; } }
         public Literal GroupName { get { return tbName; } }
         //public override TextBox GroupDesc { get { return tbDescription; } }
         //public override CheckBox IsActive { get { return cbIsActive; } }
@@ -388,6 +389,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
 
                     group.Schedule.WeeklyDayOfWeek = DayOfWeekPicker.SelectedDayOfWeek;
                     group.Schedule.WeeklyTimeOfDay = MeetingTime.SelectedTime;
+                    group.GroupCapacity = CapacityOfGroup.Value;
                 }
 
                 // set attributes
@@ -593,11 +595,13 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         {
                             DayOfWeekPicker.SelectedDayOfWeek = group.Schedule.WeeklyDayOfWeek;
                             MeetingTime.SelectedTime = group.Schedule.WeeklyTimeOfDay;
+                            CapacityOfGroup.Value = (int)group.GroupCapacity;
                         }
                         else
                         {
                             DayOfWeekPicker.SelectedDayOfWeek = null;
                             MeetingTime.SelectedTime = null;
+                             CapacityOfGroup.Value= 0;
                         }
                     }
                     else

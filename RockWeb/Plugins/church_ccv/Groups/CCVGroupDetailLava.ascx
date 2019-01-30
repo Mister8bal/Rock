@@ -19,11 +19,14 @@
 
             <div class="row">
                 <asp:Panel ID="pnlSchedule" runat="server" Visible="false" CssClass="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <Rock:DayOfWeekPicker ID="dowWeekly" runat="server" CssClass="input-width-md" Label="Day of the Week" />
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <Rock:TimePicker ID="timeWeekly" runat="server" Label="Time of Day" />
+                    </div>
+                    <div class="col-sm-4">
+                        <Rock:NumberUpDown ID="groupCapacity" runat="server"  Label="Group Capacity" />
                     </div>
                 </asp:Panel>
 
