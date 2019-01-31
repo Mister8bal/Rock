@@ -703,6 +703,20 @@ h2 {
     text-decoration: none;
 }
 
+.btn-info:hover {
+    background-color: #FFFFFF;
+    border: solid 1px #e43d35;
+    text-decoration: none;
+    color: #e43d35;
+}
+
+.btn-info:active {
+    color: #e43d35;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
+    text-decoration: none;
+}
+
 @media screen and (max-width: 1024px) {
     .image-top {
         height: 400px;
