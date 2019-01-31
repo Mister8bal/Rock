@@ -27,6 +27,9 @@ using Rock.Web.Cache;
 using System.Data.Entity;
 using church.ccv.MobileApp.Models;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using church.ccv.Actions;
 using System.Linq;
 using Newtonsoft.Json;
@@ -96,6 +99,10 @@ class EventBriteReponseAsync : IAsyncResult
     Object IAsyncResult.AsyncState { get { return _state; } }
     bool IAsyncResult.CompletedSynchronously { get { return false; } }
 
+    static HttpClient client = new HttpClient();
+    int GroupId = 2500748;
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ReponseAsync"/> class.
     /// </summary>
@@ -120,7 +127,8 @@ class EventBriteReponseAsync : IAsyncResult
     }
 
     /// <summary>
-    /// Starts the asynchronous task.
+    /// Starts the asynchronous task.  In our case, grab the EventBrite request data and call 
+    /// the necessary function based on the action parameter sent with the webhook request.
     /// </summary>
     /// <param name="workItemState">State of the work item.</param>
     private void StartAsyncTask( Object workItemState )
@@ -129,9 +137,8 @@ class EventBriteReponseAsync : IAsyncResult
         var response = _context.Response;
         var requestData = GetRequestData(request);
 
-        var api_url = request["api_url"];
-
-        //String action = requestData.config.action; 
+        //Set the authorization token for Eventbrite API calls. 
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "AEOV2MTUDQGM3OYQABGK");
 
         response.ContentType = "text/plain";
 
@@ -146,12 +153,35 @@ class EventBriteReponseAsync : IAsyncResult
             return;
         }
 
-    }
+        /**
+         * Call appropriate handler method based on the 
+         * action sent by the webhook request. 
+         */
+        switch (requestData.config.action)
+        {
+            case "order.placed": HandleEventBriteOrderPlaced(requestData.api_url);
+                break;
+            case "barcode.checked_in": HandleEventBriteCheckedIn(requestData.api_url);
+                break;
+            default:
+                break;
+        }
 
-    private Object GetRequestData(HttpRequest request)
+        _completed = true;
+
+        _callback( this );
+
+    }
+    
+    /// <summary>
+    /// Parse and return the request body data as an EventBriteRequest object
+    /// </summary>
+    /// <param name="request">A valid HttpRequest object</param>
+    /// <returns>Instantiate EventBriteRequest object<see cref="EventBriteRequest"/></returns>
+    private EventBriteRequest GetRequestData(HttpRequest request)
     {
         EventBriteRequest requestData;
-        //var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        ;
         using (Stream receiveStream = request.InputStream)
         {
             using (StreamReader readStream = new StreamReader(receiveStream))
@@ -162,14 +192,89 @@ class EventBriteReponseAsync : IAsyncResult
         return requestData;
     }
 
-    private Boolean isInGroup()
-    {
-        Boolean output = false;
 
-        return output;
+    static async Task<EventBriteOrder> GetOrderAsync(string path)
+    {
+        EventBriteOrder order = null;
+        HttpResponseMessage response = await client.GetAsync(path);
+        if (response.IsSuccessStatusCode)
+        {
+            order = await response.Content.ReadAsAsync<EventBriteOrder>();
+        }
+        return order;
     }
 
-    public static bool RegisterPersonInGroup(GroupRegModel regModel)
+    static async Task<Ticket> GetTicketAsync(string path)
+    {
+        Ticket ticket = null;
+        HttpResponseMessage response = await client.GetAsync(path);
+        if (response.IsSuccessStatusCode)
+        {
+            ticket = await response.Content.ReadAsAsync<Ticket>();
+        }
+        return ticket;
+    }
+
+    public async Task HandleEventBriteOrderPlaced(string Endpoint)
+    {
+
+        EventBriteOrder orderData = await GetOrderAsync(Endpoint + "?expand=attendees");
+
+        if(orderData.attendees.Count() <= 0)
+        {
+            return;
+        }
+
+        foreach(Ticket ticket in orderData.attendees)
+        {
+            RegisterPersonInGroup(ticket.profile, GroupId);
+        }
+    }
+
+    public async Task HandleEventBriteCheckedIn(string Endpoint)
+    {
+
+        Ticket ticket = await GetTicketAsync(Endpoint + "?expand=attendees");
+
+        if(ticket.profile == null)
+        {
+            return;
+        }
+
+        var rockContext = new RockContext();
+        var personService = new PersonService(rockContext);
+        var groupService = new GroupService(rockContext);
+        var groupMemberService = new GroupMemberService(rockContext);
+
+        Person person = null;
+
+        Group requestedGroup = groupService.Get(GroupId);
+        //This is where we need to find the person, pull the group memeber and update the attribute.
+        var matches = personService.GetByMatch(ticket.profile.first_name.Trim(), ticket.profile.last_name.Trim(), ticket.profile.email.Trim());
+        if (matches.Count() == 1)
+        {
+            person = matches.First();
+        }
+
+        GroupMember primaryGroupMember = groupMemberService.GetByGroupIdAndPersonId(requestedGroup.Id, person.Id).First();
+
+        primaryGroupMember.LoadAttributes();
+
+        primaryGroupMember.SetAttributeValue("Attended", "Yes");
+
+        primaryGroupMember.SaveAttributeValues(rockContext);
+
+    }
+
+    public static void SetGroupMemberAttendance(Person person)
+    {
+        if(person == null)
+        {
+            return;
+        }
+    }
+
+    public static bool RegisterPersonInGroup(AttendeeProfile attendeeProfile, int requestedGroupId)
     {
         bool success = false;
 
@@ -180,7 +285,6 @@ class EventBriteReponseAsync : IAsyncResult
 
         DefinedValueCache connectionStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT);
         DefinedValueCache recordStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING);
-        DefinedValueCache homeAddressType = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME);
 
         Person person = null;
         Group family = null;
@@ -190,11 +294,11 @@ class EventBriteReponseAsync : IAsyncResult
         var familyChanges = new List<string>();
 
         // first, get the group the person wants to join
-        Group requestedGroup = groupService.Get(regModel.RequestedGroupId);
+        Group requestedGroup = groupService.Get(requestedGroupId);
         if (requestedGroup != null)
         {
             // Try to find person by name/email 
-            var matches = personService.GetByMatch(regModel.FirstName.Trim(), regModel.LastName.Trim(), regModel.Email.Trim());
+            var matches = personService.GetByMatch(attendeeProfile.first_name.Trim(), attendeeProfile.last_name.Trim(), attendeeProfile.email.Trim());
             if (matches.Count() == 1)
             {
                 person = matches.First();
@@ -205,9 +309,9 @@ class EventBriteReponseAsync : IAsyncResult
             {
                 // If so, create the person and family record for the new person
                 person = new Person();
-                person.FirstName = regModel.FirstName.Trim();
-                person.LastName = regModel.LastName.Trim();
-                person.Email = regModel.Email.Trim();
+                person.FirstName = attendeeProfile.first_name.Trim();
+                person.LastName = attendeeProfile.last_name.Trim();
+                person.Email = attendeeProfile.email.Trim();
                 person.IsEmailActive = true;
                 person.EmailPreference = EmailPreference.EmailAllowed;
                 person.RecordTypeValueId = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid()).Id;
@@ -220,10 +324,10 @@ class EventBriteReponseAsync : IAsyncResult
 
 
             // if provided, store their phone number
-            if (string.IsNullOrWhiteSpace(regModel.Phone) == false)
+            if (string.IsNullOrWhiteSpace(attendeeProfile.home_phone) == false)
             {
                 DefinedValueCache mobilePhoneType = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE);
-                person.UpdatePhoneNumber(mobilePhoneType.Id, PhoneNumber.DefaultCountryCode(), regModel.Phone, null, null, rockContext);
+                person.UpdatePhoneNumber(mobilePhoneType.Id, PhoneNumber.DefaultCountryCode(), attendeeProfile.home_phone, null, null, rockContext);
             }
 
             // Save all changes
@@ -250,7 +354,7 @@ class EventBriteReponseAsync : IAsyncResult
         GroupMember newGroupMember = new GroupMember();
         newGroupMember.PersonId = person.Id;
         newGroupMember.GroupRoleId = group.GroupType.DefaultGroupRole.Id;
-        newGroupMember.GroupMemberStatus = GroupMemberStatus.Pending;
+        newGroupMember.GroupMemberStatus = GroupMemberStatus.Active;
         newGroupMember.GroupId = group.Id;
 
         return newGroupMember;
@@ -271,6 +375,14 @@ class EventBriteReponseAsync : IAsyncResult
             rockContext.SaveChanges();
         }
     }
+
+    private static void GetGroupMember(RockContext rockContext, GroupMember groupMember, Group group)
+    {
+        var foundMembers = group.Members.Any(m =>
+            m.PersonId == groupMember.PersonId &&
+            m.GroupRoleId == group.GroupType.DefaultGroupRole.Id);
+
+    }
 }
 
 public class EventBriteRequestConfig
@@ -286,3 +398,35 @@ public class EventBriteRequest
     public EventBriteRequestConfig config { get; set; }
     public string api_url { get; set; }
 }
+
+public class EventBriteOrder
+{
+    public string first_name { get; set; }
+    public string last_name { get; set; }
+    public string name { get; set; }
+    public string status { get; set; }
+    public string event_id { get; set; }
+    public IList<Ticket> attendees;
+}
+
+public class Ticket
+{
+
+    public string team { get; set; }
+    public string resource_uri { get; set; }
+    public int quantity { get; set; }
+    public AttendeeProfile profile { get; set; }
+    public bool checked_in { get; set; }
+
+}
+
+public class AttendeeProfile
+{
+    public string first_name { get; set; }
+    public string last_name { get; set; }
+    public string email { get; set; }
+    public string home_phone { get; set; }
+
+}
+
+
