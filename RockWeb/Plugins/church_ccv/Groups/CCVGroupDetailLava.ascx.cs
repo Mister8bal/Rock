@@ -389,11 +389,21 @@ namespace RockWeb.Plugins.church_ccv.Groups
 
                     group.Schedule.WeeklyDayOfWeek = DayOfWeekPicker.SelectedDayOfWeek;
                     group.Schedule.WeeklyTimeOfDay = MeetingTime.SelectedTime;
+                }
+
+                // if group capacity equals null set to 0
+                if ( group.GroupCapacity == null )
+                {
+                    group.GroupCapacity = 0;
+                }
+                else
+                {
                     group.GroupCapacity = CapacityOfGroup.Value;
                 }
 
-                // set attributes
-                group.LoadAttributes( rockContext );
+
+            // set attributes
+            group.LoadAttributes( rockContext );
                 Rock.Attribute.Helper.GetEditValues( AttributesPlaceholder, group );
 
                 rockContext.SaveChanges();
@@ -595,18 +605,26 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         {
                             DayOfWeekPicker.SelectedDayOfWeek = group.Schedule.WeeklyDayOfWeek;
                             MeetingTime.SelectedTime = group.Schedule.WeeklyTimeOfDay;
-                            CapacityOfGroup.Value = (int)group.GroupCapacity;
                         }
                         else
                         {
                             DayOfWeekPicker.SelectedDayOfWeek = null;
                             MeetingTime.SelectedTime = null;
-                             CapacityOfGroup.Value= 0;
                         }
                     }
                     else
                     {
                         Schedule.Visible = false;
+                    }
+
+                    // if group capacity does not equal null set the value else set to 0
+                    if ( group.GroupCapacity != null )
+                    {
+                        CapacityOfGroup.Value = ( int ) group.GroupCapacity;
+                    }
+                    else
+                    {
+                        CapacityOfGroup.Value = 0;
                     }
 
                     group.LoadAttributes();
