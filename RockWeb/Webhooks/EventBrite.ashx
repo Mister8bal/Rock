@@ -138,7 +138,7 @@ class EventBriteReponseAsync : IAsyncResult
         var requestData = GetRequestData(request);
 
         //Set the authorization token for Eventbrite API calls. 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "AEOV2MTUDQGM3OYQABGK");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
 
         response.ContentType = "text/plain";
 
