@@ -101,6 +101,7 @@ class EventBriteReponseAsync : IAsyncResult
 
     static HttpClient client = new HttpClient();
     int GroupId = 2500748;
+    RockContext rockContext = new RockContext();
 
 
     /// <summary>
@@ -137,6 +138,7 @@ class EventBriteReponseAsync : IAsyncResult
         var response = _context.Response;
         var requestData = GetRequestData(request);
 
+
         //Set the authorization token for Eventbrite API calls. 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
 
@@ -163,6 +165,9 @@ class EventBriteReponseAsync : IAsyncResult
                 break;
             case "barcode.checked_in": HandleEventBriteCheckedIn(requestData.api_url);
                 break;
+            case "order.refunded": HandleEventBriteOrderRefunded(requestData);//handle refund order 
+                break;
+            case "attendee.updated": //handle attendee updated
             default:
                 break;
         }
@@ -172,7 +177,7 @@ class EventBriteReponseAsync : IAsyncResult
         _callback( this );
 
     }
-    
+
     /// <summary>
     /// Parse and return the request body data as an EventBriteRequest object
     /// </summary>
@@ -241,7 +246,38 @@ class EventBriteReponseAsync : IAsyncResult
             return;
         }
 
-        var rockContext = new RockContext();
+        GroupMember primaryGroupMember = GetGroupMemberFromEventBriteTicket(ticket);
+
+        primaryGroupMember.LoadAttributes();
+
+        primaryGroupMember.SetAttributeValue("Attended", "Yes");
+
+        primaryGroupMember.SaveAttributeValues(rockContext);
+
+
+    }
+
+    private async Task HandleEventBriteOrderRefunded(EventBriteRequest request)
+    {
+        EventBriteOrder orderData = await GetOrderAsync(request.api_url + "?expand=attendees");
+
+        if(orderData.attendees.Count() <= 0)
+        {
+            return;
+        }
+
+        foreach(Ticket ticket in orderData.attendees)
+        {
+            GroupMember groupMember = GetGroupMemberFromEventBriteTicket(ticket);
+            RemoveGroupMemberFromGroup(groupMember);
+        }
+
+    }
+
+    private GroupMember GetGroupMemberFromEventBriteTicket(Ticket ticket)
+    {
+        GroupMember groupMember = null;
+
         var personService = new PersonService(rockContext);
         var groupService = new GroupService(rockContext);
         var groupMemberService = new GroupMemberService(rockContext);
@@ -256,22 +292,9 @@ class EventBriteReponseAsync : IAsyncResult
             person = matches.First();
         }
 
-        GroupMember primaryGroupMember = groupMemberService.GetByGroupIdAndPersonId(requestedGroup.Id, person.Id).First();
+        groupMember = groupMemberService.GetByGroupIdAndPersonId(requestedGroup.Id, person.Id).First();
 
-        primaryGroupMember.LoadAttributes();
-
-        primaryGroupMember.SetAttributeValue("Attended", "Yes");
-
-        primaryGroupMember.SaveAttributeValues(rockContext);
-
-    }
-
-    public static void SetGroupMemberAttendance(Person person)
-    {
-        if(person == null)
-        {
-            return;
-        }
+        return groupMember;
     }
 
     public static bool RegisterPersonInGroup(AttendeeProfile attendeeProfile, int requestedGroupId)
@@ -346,6 +369,19 @@ class EventBriteReponseAsync : IAsyncResult
         }
 
         return success;
+    }
+
+    private bool RemoveGroupMemberFromGroup(GroupMember gm)
+    {
+        GroupMemberService groupMemberService = new GroupMemberService(rockContext);
+
+        string errorMessage;
+
+        if(groupMemberService.CanDelete(gm, out errorMessage)){
+            return groupMemberService.Delete(gm);
+        }
+
+        return false;
     }
 
     private static GroupMember PersonToGroupMember(RockContext rockContext, Person person, Group group)
