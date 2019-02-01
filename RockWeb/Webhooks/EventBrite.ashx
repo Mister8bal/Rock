@@ -148,6 +148,8 @@ class EventBriteReponseAsync : IAsyncResult
         {
             response.Write( "Invalid request type. Please use POST." );
 
+            response.StatusCode = HttpStatusCode.Forbidden.ConvertToInt();
+
             _completed = true;
 
             _callback( this );
@@ -167,7 +169,10 @@ class EventBriteReponseAsync : IAsyncResult
                 break;
             case "order.refunded": HandleEventBriteOrderRefunded(requestData);//handle refund order 
                 break;
-            case "attendee.updated": //handle attendee updated
+            case "attendee.updated": HandleEventBriteAttendeeUpdate(requestData); //handle attendee updated
+                break;
+            case "order.updated": HandleEventBriteOrderUpdated(requestData);
+                break;
             default:
                 break;
         }
@@ -271,6 +276,63 @@ class EventBriteReponseAsync : IAsyncResult
             GroupMember groupMember = GetGroupMemberFromEventBriteTicket(ticket);
             RemoveGroupMemberFromGroup(groupMember);
         }
+
+    }
+
+    private async Task HandleEventBriteOrderUpdated(EventBriteRequest request)
+    {
+        EventBriteOrder orderData = await GetOrderAsync(request.api_url + "?expand=attendees");
+
+        if(orderData.attendees.Count() <= 0)
+        {
+            return;
+        }
+
+
+        foreach (Ticket ticket in orderData.attendees)
+        {
+            GroupMember groupMember = GetGroupMemberFromEventBriteTicket(ticket);
+            if(ticket.cancelled || ticket.refunded)
+            {
+                RemoveGroupMemberFromGroup(groupMember);
+            }
+            
+        }
+
+
+    }
+
+    private async Task HandleEventBriteAttendeeUpdate(EventBriteRequest request)
+    {
+        Ticket ticket = await GetTicketAsync(request.api_url);
+
+        if(ticket == null)
+        {
+            return;
+        }
+
+        GroupMember groupMember = null;
+        groupMember = GetGroupMemberFromEventBriteTicket(ticket);
+
+        if (groupMember == null)
+        {
+            return;
+        }
+
+        switch (ticket.status) {
+
+            case "Not Attending":
+                RemoveGroupMemberFromGroup(groupMember);
+                break;
+
+            case "Deleted":
+                RemoveGroupMemberFromGroup(groupMember);
+                break;
+
+            default:
+                break;
+        }
+
 
     }
 
@@ -378,8 +440,10 @@ class EventBriteReponseAsync : IAsyncResult
         string errorMessage;
 
         if(groupMemberService.CanDelete(gm, out errorMessage)){
-            return groupMemberService.Delete(gm);
+            groupMemberService.Delete(gm);
         }
+
+        rockContext.SaveChanges();
 
         return false;
     }
@@ -453,6 +517,9 @@ public class Ticket
     public int quantity { get; set; }
     public AttendeeProfile profile { get; set; }
     public bool checked_in { get; set; }
+    public bool cancelled { get; set; }
+    public bool refunded { get; set; }
+    public string status;
 
 }
 
