@@ -99,10 +99,8 @@ class EventBriteReponseAsync : IAsyncResult
     Object IAsyncResult.AsyncState { get { return _state; } }
     bool IAsyncResult.CompletedSynchronously { get { return false; } }
 
-    static HttpClient client = new HttpClient();
+    static HttpClient Client = new HttpClient();
     int GroupId = 2500748;
-    RockContext rockContext = new RockContext();
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReponseAsync"/> class.
@@ -140,7 +138,7 @@ class EventBriteReponseAsync : IAsyncResult
 
 
         //Set the authorization token for Eventbrite API calls. 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
 
         response.ContentType = "text/plain";
 
@@ -156,6 +154,8 @@ class EventBriteReponseAsync : IAsyncResult
 
             return;
         }
+
+
 
         /**
          * Call appropriate handler method based on the 
@@ -206,7 +206,7 @@ class EventBriteReponseAsync : IAsyncResult
     static async Task<EventBriteOrder> GetOrderAsync(string path)
     {
         EventBriteOrder order = null;
-        HttpResponseMessage response = await client.GetAsync(path);
+        HttpResponseMessage response = await Client.GetAsync(path);
         if (response.IsSuccessStatusCode)
         {
             order = await response.Content.ReadAsAsync<EventBriteOrder>();
@@ -217,7 +217,7 @@ class EventBriteReponseAsync : IAsyncResult
     static async Task<Ticket> GetTicketAsync(string path)
     {
         Ticket ticket = null;
-        HttpResponseMessage response = await client.GetAsync(path);
+        HttpResponseMessage response = await Client.GetAsync(path);
         if (response.IsSuccessStatusCode)
         {
             ticket = await response.Content.ReadAsAsync<Ticket>();
@@ -245,6 +245,7 @@ class EventBriteReponseAsync : IAsyncResult
     {
 
         Ticket ticket = await GetTicketAsync(Endpoint + "?expand=attendees");
+        RockContext rockContext = new RockContext();
 
         if(ticket.profile == null)
         {
@@ -265,6 +266,7 @@ class EventBriteReponseAsync : IAsyncResult
     private async Task HandleEventBriteOrderRefunded(EventBriteRequest request)
     {
         EventBriteOrder orderData = await GetOrderAsync(request.api_url + "?expand=attendees");
+        RockContext rockContext = new RockContext();
 
         if(orderData.attendees.Count() <= 0)
         {
@@ -274,13 +276,16 @@ class EventBriteReponseAsync : IAsyncResult
         foreach(Ticket ticket in orderData.attendees)
         {
             GroupMember groupMember = GetGroupMemberFromEventBriteTicket(ticket);
-            RemoveGroupMemberFromGroup(groupMember);
+            RemoveGroupMemberFromGroup(groupMember, rockContext);
         }
 
     }
 
     private async Task HandleEventBriteOrderUpdated(EventBriteRequest request)
     {
+
+        var rockContext = new RockContext();
+
         EventBriteOrder orderData = await GetOrderAsync(request.api_url + "?expand=attendees");
 
         if(orderData.attendees.Count() <= 0)
@@ -294,9 +299,9 @@ class EventBriteReponseAsync : IAsyncResult
             GroupMember groupMember = GetGroupMemberFromEventBriteTicket(ticket);
             if(ticket.cancelled || ticket.refunded)
             {
-                RemoveGroupMemberFromGroup(groupMember);
+                RemoveGroupMemberFromGroup(groupMember, rockContext);
             }
-            
+
         }
 
 
@@ -305,6 +310,7 @@ class EventBriteReponseAsync : IAsyncResult
     private async Task HandleEventBriteAttendeeUpdate(EventBriteRequest request)
     {
         Ticket ticket = await GetTicketAsync(request.api_url);
+        var rockContext = new RockContext();
 
         if(ticket == null)
         {
@@ -322,11 +328,11 @@ class EventBriteReponseAsync : IAsyncResult
         switch (ticket.status) {
 
             case "Not Attending":
-                RemoveGroupMemberFromGroup(groupMember);
+                RemoveGroupMemberFromGroup(groupMember, rockContext);
                 break;
 
             case "Deleted":
-                RemoveGroupMemberFromGroup(groupMember);
+                RemoveGroupMemberFromGroup(groupMember, rockContext);
                 break;
 
             default:
@@ -340,6 +346,7 @@ class EventBriteReponseAsync : IAsyncResult
     {
         GroupMember groupMember = null;
 
+        var rockContext = new RockContext();
         var personService = new PersonService(rockContext);
         var groupService = new GroupService(rockContext);
         var groupMemberService = new GroupMemberService(rockContext);
@@ -384,7 +391,7 @@ class EventBriteReponseAsync : IAsyncResult
         {
             // Try to find person by name/email 
             var matches = personService.GetByMatch(attendeeProfile.first_name.Trim(), attendeeProfile.last_name.Trim(), attendeeProfile.email.Trim());
-            if (matches.Count() == 1)
+            if (matches.Count() >= 1)
             {
                 person = matches.First();
             }
@@ -418,7 +425,7 @@ class EventBriteReponseAsync : IAsyncResult
             // Save all changes
             rockContext.SaveChanges();
 
-            // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
+            // now, it's time to either add them to the group,
             // (Or nothing if there's no problem but they're already in the group)
             GroupMember primaryGroupMember = PersonToGroupMember(rockContext, person, requestedGroup);
 
@@ -433,7 +440,7 @@ class EventBriteReponseAsync : IAsyncResult
         return success;
     }
 
-    private bool RemoveGroupMemberFromGroup(GroupMember gm)
+    private bool RemoveGroupMemberFromGroup(GroupMember gm, RockContext rockContext)
     {
         GroupMemberService groupMemberService = new GroupMemberService(rockContext);
 
@@ -476,13 +483,6 @@ class EventBriteReponseAsync : IAsyncResult
         }
     }
 
-    private static void GetGroupMember(RockContext rockContext, GroupMember groupMember, Group group)
-    {
-        var foundMembers = group.Members.Any(m =>
-            m.PersonId == groupMember.PersonId &&
-            m.GroupRoleId == group.GroupType.DefaultGroupRole.Id);
-
-    }
 }
 
 public class EventBriteRequestConfig
