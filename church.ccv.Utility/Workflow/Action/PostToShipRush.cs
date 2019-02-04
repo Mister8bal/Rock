@@ -5,8 +5,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Xml;
 using RestSharp;
 using Rock;
 using Rock.Attribute;
@@ -21,12 +20,14 @@ namespace church.ccv.Utility.Workflow.Action
     /// Post to Shiprush API to add an order.
     /// </summary>
     [ActionCategory( "Utility" )]
-    [Description( "Uses the specified Registration Instance Id to post an order to ShipRush" )]
+    [Description( "Uses the specified Registration Instance Guid to post an order to ShipRush through their API.  The registration must have a T-ShirtSize attribute key for this to function properly." )]
     [Export( typeof( ActionComponent ) )]
     [ExportMetadata( "ComponentName", "ShipRush API Post" )]
-    [TextField( "Api Url", "The URL to use</span>", false, "", "", 1, "ApiUrl" )]
-    [TextField( "Registration Guid", "The registration Guid to generate the ShipRush order from <span class='tip tip-lava'></span>", false, "", "", 2, "RegistrationGuid" )]
-    class PostToShipRush : ActionComponent
+    [TextField( "Api Url", "The api url", true, "", "", 1, "ApiUrl" )]
+    [TextField( "Registration Guid", "The registration Guid to generate the ShipRush order from <span class='tip tip-lava'></span>", true, "", "", 2, "RegistrationGuid" )]
+    [WorkflowAttribute( "Post Response", "Attribute to assign the post response", true, "", "", 3, "PostResponse" )]
+    [WorkflowAttribute( "Post Status", "Attribute to assign the status of the post", true, "", "", 4, "PostStatus")]
+    public class PostToShipRush : ActionComponent
     {
         /// <summary>
         /// Executes the specified workflow.
@@ -42,68 +43,146 @@ namespace church.ccv.Utility.Workflow.Action
             errorMessages = new List<string>();
             var mergeFields = GetMergeFields( action );
 
-            // Get and resolve merge feilds for the registration instance guid
-            var registrationGuid = GetAttributeValue( action, "RegistrationGuid" );
+            // Get the API Url / ensure its not empty
+            string apiUrl = GetAttributeValue( action, "ApiUrl" );
+
+            if ( apiUrl.IsNullOrWhiteSpace() )
+            {
+                SetResponseAttributes( rockContext, action, false, "Missing API Url" );
+
+                return true;
+            }
+
+            // Get the registration guid / ensure its not empty
+            string registrationGuid = GetAttributeValue( action, "RegistrationGuid" );
+
             registrationGuid = registrationGuid.ResolveMergeFields( mergeFields );
 
-            // ensure registration guid is not empty before proceeding
             if ( registrationGuid.IsNullOrWhiteSpace() )
             {
-                action.AddLogEntry( "Missing Registration Guid", true );
-                errorMessages.Add( "Missing Registration Guid" );
+                SetResponseAttributes( rockContext, action, false, "Missing Registration Guid" );
 
-                return false;
+                return true;
             }
 
-            // load the registration
-            var registration = new RegistrationService( rockContext ).Get( registrationGuid.AsGuid() );
+            // load the registration / ensure its not empty
+            Registration registration = new RegistrationService( rockContext ).Get( registrationGuid.AsGuid() );
 
-            // ensure registration is not empty before proceeding
             if ( registration == null)
             {
-                action.AddLogEntry( "Registraion not found", true );
-                errorMessages.Add( "Registration not found" );
+                SetResponseAttributes( rockContext, action, false, "Registration not found" );
 
-                return false;
+                return true;
             }
 
-            var registrant = registration.Registrants.FirstOrDefault();
+            // load the registrant / ensure its not empty
+            RegistrationRegistrant registrant = registration.Registrants.FirstOrDefault();
 
-            // build ShipRushOrder from registration object
-            ShipRushOrder requestOrder = CreateShipRushOrder( registration, registrant );
+            if ( registrant == null )
+            {
+                SetResponseAttributes( rockContext, action, false, "Missing Registrant" );
 
+                return true;
+            }
+
+            // load the home address / ensure its not empty
+            Location homeAddress = new Location();
+
+            Group familyGroup = registrant.Person.GetFamily();
+
+            Guid? homeAddressGuid = Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuidOrNull();
+            if ( homeAddressGuid.HasValue )
+            {
+                DefinedValueCache homeAddressDv = DefinedValueCache.Read( homeAddressGuid.Value );
+                if ( homeAddressDv != null )
+                {
+                    GroupLocation homeLocation = familyGroup.GroupLocations.Where( a => a.GroupLocationTypeValueId == homeAddressDv.Id ).FirstOrDefault();
+
+                    if ( homeLocation != null )
+                    {
+                        homeAddress = homeLocation.Location;
+                    }
+                }
+            }
+            
+            // ensure home address is not empty
+            if ( homeAddress == null )
+            {
+                SetResponseAttributes( rockContext, action, false, "Missing registrant home address" );
+
+                return true;
+            }
+
+            // build ShipRushOrder XML from registration object
+            string requestOrder = CreateShipRushOrderXml( registration, registrant, homeAddress );
 
             // make API call
             try
             {
-                // convert object to xml
-                var requestBody = ConvertToXML( requestOrder );
-
-
                 // set up REST request
-                // var client = new RestClient( GetAttributeValue( action, "ApiUrl" ) );
-                //var request = new RestRequest( Method.POST );
+                var client = new RestClient( apiUrl );
+                var request = new RestRequest( Method.POST );
 
+                request.AddParameter( "application/xml", requestOrder, ParameterType.RequestBody );
 
+                // execute response
+                IRestResponse response = client.Execute( request );
 
+                // ensure Ok response
+                if ( response.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    SetResponseAttributes( rockContext, action, false, response.ErrorMessage );
 
+                    return true;
+                }
 
+                SetResponseAttributes( rockContext, action, true, response.Content );
 
                 return true;
             }
             catch ( Exception ex )
             {
-                action.AddLogEntry( ex.Message, true );
-                errorMessages.Add( ex.Message );
+                // something failed
+                SetResponseAttributes( rockContext, action, false, ex.Message );
 
-                return false;
+                return true;
             }
         }
 
-        private ShipRushOrder CreateShipRushOrder( Registration  registration, RegistrationRegistrant registrant )
+        /// <summary>
+        /// Set the response attributes of the workflow
+        /// </summary>
+        /// <param name="rockContext"></param>
+        /// <param name="action"></param>
+        /// <param name="responseStatus"></param>
+        /// <param name="responseMessage"></param>
+        private void SetResponseAttributes( RockContext rockContext, WorkflowAction action, bool responseStatus, string responseMessage )
+        {
+            // get the attributes to write to
+            var statusAttribute = AttributeCache.Read( GetAttributeValue( action, "PostStatus" ).AsGuid(), rockContext );
+            var responseAttribute = AttributeCache.Read( GetAttributeValue( action, "PostResponse" ).AsGuid(), rockContext );
+
+            // Set the status attribute
+            SetWorkflowAttributeValue( action, statusAttribute.Guid, responseStatus.ToString() );
+            action.AddLogEntry( string.Format( "Set '{0}' attribute to '{1}'", statusAttribute.Name, responseStatus.ToString() ), true );
+
+            // Set the response attribute
+            SetWorkflowAttributeValue( action, responseAttribute.Guid, responseMessage );
+            action.AddLogEntry( string.Format( "Set '{0}' attribute to '{1}'", responseAttribute.Name, responseMessage ), true );
+        }
+
+        /// <summary>
+        /// Build a ShipRushOrder object
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <param name="registrant"></param>
+        /// <param name="homeAddress"></param>
+        /// <returns></returns>
+        private string CreateShipRushOrderXml( Registration  registration, RegistrationRegistrant registrant, Location homeAddress )
         {
             ShipRushOrder shipRushOrder = new ShipRushOrder();
 
+            // hydrate the registrant attributes
             registrant.LoadAttributes();
 
             // order info
@@ -112,51 +191,99 @@ namespace church.ccv.Utility.Workflow.Action
 
             // person info
             shipRushOrder.FirstName = registrant.FirstName;
-            shipRushOrder.LastName = registrant.LastName;                 
+            shipRushOrder.LastName = registrant.LastName;         
 
+            // home address
+            shipRushOrder.Address1 = homeAddress.Street1;
+            shipRushOrder.Address2 = homeAddress.Street2;
+            shipRushOrder.City = homeAddress.City;
+            shipRushOrder.State = homeAddress.State;
+            shipRushOrder.PostalCode = homeAddress.PostalCode;
+            shipRushOrder.Country = homeAddress.Country;
 
+            // home phone number
+            var homePhone = registrant.Person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_HOME.AsGuid() );
+            shipRushOrder.Phone = homePhone.NumberFormatted;
 
-            // mailing address
-
-            // use address key on registration
-
-            var mailingAddress = registrant.Person.GetHomeLocation();
-
-            //shipRushOrder.Address1 = mailingAddress.Street1;
-            //shipRushOrder.Address2 = mailingAddress.Street2;
-            //shipRushOrder.City = mailingAddress.City;
-            //shipRushOrder.State = mailingAddress.State;
-            //shipRushOrder.PostalCode = mailingAddress.PostalCode;
-            //shipRushOrder.Country = mailingAddress.Country;
-
-            // phone number
-
-            // use Home Phone key on registration
-
-            //var phone = registrant.Person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_HOME.AsGuid() );
-
-            //shipRushOrder.Phone = phone.NumberFormatted;
-                                 
-            return shipRushOrder;
+            return CreateShipRushXML( shipRushOrder );
         }
 
         /// <summary>
-        /// Conver object to XML
+        /// Create Shiprush XML
         /// </summary>
-        /// <param name="requestOrder"></param>
+        /// <param name="shipRushOrder"></param>
         /// <returns></returns>
-        private string ConvertToXML( ShipRushOrder shipRushOrder )
+        private string CreateShipRushXML( ShipRushOrder shipRushOrder )
         {
-            using ( var stringWriter = new StringWriter() )
+            StringBuilder builder = new StringBuilder();
+
+            using ( var stringWriter = new StringWriterWithEncoding( builder, Encoding.UTF8 ) )
             {
-                var serializer = new XmlSerializer( shipRushOrder.GetType() );
-                serializer.Serialize( stringWriter, shipRushOrder );
+                using ( var xmlWriter = XmlWriter.Create( stringWriter ) )
+                {
+                    xmlWriter.WriteStartDocument();
+                        xmlWriter.WriteStartElement( "Request" );
+                            xmlWriter.WriteStartElement( "ShipTransaction" );
+                                xmlWriter.WriteStartElement( "Order" );
+                                    xmlWriter.WriteElementString( "OrderNumber", shipRushOrder.OrderNumber );
+                                    xmlWriter.WriteElementString( "PaymentStatus", "2" );
+                                    xmlWriter.WriteElementString( "ShipmentType", "Pending" );
+                                    xmlWriter.WriteStartElement( "ShipmentOrderItem" );
+                                        xmlWriter.WriteElementString( "Name", shipRushOrder.TShirtSize );
+                                        xmlWriter.WriteElementString( "Quantity", "1" );
+                                    xmlWriter.WriteEndElement();
+                                xmlWriter.WriteEndElement();
+                                xmlWriter.WriteStartElement( "Shipment" );
+                                    xmlWriter.WriteStartElement( "Package" );
+                                        xmlWriter.WriteElementString( "PackageReference1", shipRushOrder.OrderNumber );
+                                    xmlWriter.WriteEndElement();
+                                    xmlWriter.WriteStartElement( "DeliveryAddress" );
+                                        xmlWriter.WriteStartElement( "Address" );
+                                            xmlWriter.WriteElementString( "FirstName", shipRushOrder.FirstName + " " + shipRushOrder.LastName );
+                                            xmlWriter.WriteElementString( "Address1", shipRushOrder.Address1 );
+                                            xmlWriter.WriteElementString( "Address2", shipRushOrder.Address2 );
+                                            xmlWriter.WriteElementString( "City", shipRushOrder.City );
+                                            xmlWriter.WriteElementString( "State", shipRushOrder.State );
+                                            xmlWriter.WriteElementString( "PostalCode", shipRushOrder.PostalCode );
+                                            xmlWriter.WriteElementString( "Country", shipRushOrder.Country );
+                                            xmlWriter.WriteElementString( "Phone", shipRushOrder.Phone );
+                                        xmlWriter.WriteEndElement();
+                                    xmlWriter.WriteEndElement();
+                                xmlWriter.WriteEndElement();
+                            xmlWriter.WriteEndElement();
+                        xmlWriter.WriteEndElement();
+                    xmlWriter.WriteEndDocument();
+                }
 
                 return stringWriter.ToString();
+            }            
+        }
+
+        /// <summary>
+        /// String Writer class that overrides the Encoding property
+        /// </summary>
+        public class StringWriterWithEncoding : StringWriter
+        {
+            private readonly Encoding _encoding;
+
+            public StringWriterWithEncoding( StringBuilder sb, Encoding encoding) : base( sb )
+            {
+                this._encoding = encoding;
+            }
+
+            public override Encoding Encoding
+            {
+                get
+                {
+                    return this._encoding;
+                }
             }
         }
 
-        protected class ShipRushOrder
+        /// <summary>
+        /// ShipRush Order Object
+        /// </summary>
+        public class ShipRushOrder
         {
             public string OrderNumber { get; set; }
             public string FirstName { get; set; }
