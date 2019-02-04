@@ -48,6 +48,23 @@ h2 {
     padding: 2% 10%;
 }
 
+.general-wrapper-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.general-wrapper-flex h1 {
+    font-size: 36px;
+}
+
+.biglist a:visited {
+    color: #000;
+}
+
+.biglist li:visited {
+    color: #000;
+}
+
 @media screen and (max-width: 1024px) {
     .content-area {
         padding: 0;
@@ -59,6 +76,10 @@ h2 {
 @media screen and (max-width: 500px) {
     .general-wrapper {
         padding: 7% 3%;
+    }
+
+    .general-wrapper-flex {
+        flex-direction: column;
     }
 
     .row {
@@ -78,7 +99,7 @@ h2 {
     background-color: #e43d35;
     color: #FFFFFF;
     font-weight: normal;
-    font-family: Heebo;
+    font-family: akrobat;
     text-align: center;
     padding: 10px 0px;
     margin-bottom: 5px;
@@ -119,9 +140,17 @@ h2 {
     background-color: #e43d35;
     border: solid 1px #e43d35;
     border-radius: 6px;
-    font-family: Heebo;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;    
     font-size: 16px;
     line-height: 18px;
+}
+
+.header-login-item:hover {
+    background-color: #FFFFFF;
+    border: solid 1px  #e43d35;
+    color: #e43d35;
 }
 
 .header-login-item a {
@@ -129,6 +158,9 @@ h2 {
     justify-content: center;
     align-items: center;
     padding: 0 12px;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 
@@ -635,6 +667,15 @@ h2 {
     text-align: center;
 }
 
+.btn-info {
+    color: #ffffff;
+    background-color: #5b5b5c;
+    border-color: #5b5b5c;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;
+ }
+
 .homepage-button {
     border-radius: 0;
 	font-size: 22px;
@@ -649,16 +690,30 @@ h2 {
 }
 
 .btn-primary:hover {
-    color: #e43d35;
-    background-color: white;
-    border: solid 1px  white;
+    background-color: #FFFFFF;
+    border: solid 1px #e43d35;
     text-decoration: none;
+    color: #e43d35;
 }
 
 .btn-primary:active {
     color: #e43d35;
-    background-color: white;
-    border: solid 1px white;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
+    text-decoration: none;
+}
+
+.btn-info:hover {
+    background-color: #FFFFFF;
+    border: solid 1px #e43d35;
+    text-decoration: none;
+    color: #e43d35;
+}
+
+.btn-info:active {
+    color: #e43d35;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
     text-decoration: none;
 }
 
