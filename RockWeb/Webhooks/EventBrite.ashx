@@ -101,6 +101,9 @@ class EventBriteReponseAsync : IAsyncResult
 
     static HttpClient Client = new HttpClient();
     int GroupId = 2500748;
+    
+    // Pull the Eventbrite OAuth Token from global attributes
+    string EVB_TOKEN = GlobalAttributesCache.Read().GetValue("EventBritePersonalOAuthToken").ToString();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReponseAsync"/> class.
@@ -138,7 +141,7 @@ class EventBriteReponseAsync : IAsyncResult
 
 
         //Set the authorization token for Eventbrite API calls. 
-        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", EVB_TOKEN);
 
         response.ContentType = "text/plain";
 
@@ -202,7 +205,12 @@ class EventBriteReponseAsync : IAsyncResult
         return requestData;
     }
 
-
+    /// <summary>
+    /// Sumbit a request to the Eventbrite API to get specific order data
+    /// </summary>
+    /// <param name="path">The api endpoint to use in the request.  This should
+    /// be provided by the request to the webhook</param>
+    /// <returns>A valid Instantiated EventBriteOrder<see cref="EventBriteOrder"/></returns>
     static async Task<EventBriteOrder> GetOrderAsync(string path)
     {
         EventBriteOrder order = null;
@@ -213,7 +221,14 @@ class EventBriteReponseAsync : IAsyncResult
         }
         return order;
     }
-
+    
+    /// <summary>
+    /// Submit a request to the EventBrite Api for individual ticket / Attendee 
+    /// Info.  Eventbrite refers to tickets as attendees.  The terms are used
+    /// interchangably in this code.
+    /// </summary>
+    /// <param name="path">A valid Sventbrite API Endpoint</param>
+    /// <returns> An instantiated Eventbrite Ticket Object<see cref="Ticket"/></returns>
     static async Task<Ticket> GetTicketAsync(string path)
     {
         Ticket ticket = null;
@@ -224,7 +239,14 @@ class EventBriteReponseAsync : IAsyncResult
         }
         return ticket;
     }
-
+    
+    /// <summary>
+    /// Handles any webhook request with the action "order.placed"  
+    /// Uses the GetOrderAsync method to retreive the data from the
+    /// Eventbrite API:<see cref="GetOrderAsync(string)"/>
+    /// </summary>
+    /// <param name="Endpoint">A valid Eventbrite API endpoint url</param>
+    /// <returns>Async Task</returns>
     public async Task HandleEventBriteOrderPlaced(string Endpoint)
     {
 
@@ -240,7 +262,16 @@ class EventBriteReponseAsync : IAsyncResult
             RegisterPersonInGroup(ticket.profile, GroupId);
         }
     }
-
+    
+    /// <summary>
+    /// Handles any webhook request with the action "barcode.checked_in"  
+    /// Uses the GetTicketAsync method to retreive the data from the.  
+    /// Sets the "Attended" group attribute to true for any returned Group
+    /// Member.
+    /// Eventbrite API:<see cref="GetTicketAsync(string)"/>
+    /// </summary>
+    /// <param name="Endpoint">A valid Eventbrite API endpoint url</param>
+    /// <returns>Async Task</returns>
     public async Task HandleEventBriteCheckedIn(string Endpoint)
     {
 
@@ -260,9 +291,18 @@ class EventBriteReponseAsync : IAsyncResult
 
         primaryGroupMember.SaveAttributeValues(rockContext);
 
-
     }
 
+    /// <summary>
+    /// Handles any webhook request with the action "order.refunded"  
+    /// Uses the GetOrderAsync method to retreive the data from Eventbrite.  
+    /// If the user data provided in the Webhook request includes a
+    /// user that matches a vaild group member, that group member
+    /// will be removed.
+    /// <see cref="GetOrderAsync(string)"/>
+    /// </summary>
+    /// <param name="request">A valid EventBriteRequest object.</param>
+    /// <returns>Async Task</returns>
     private async Task HandleEventBriteOrderRefunded(EventBriteRequest request)
     {
         EventBriteOrder orderData = await GetOrderAsync(request.api_url + "?expand=attendees");
@@ -280,7 +320,17 @@ class EventBriteReponseAsync : IAsyncResult
         }
 
     }
-
+    
+    /// <summary>
+    /// Handles any webhook request with the action "order.updated"  
+    /// Uses the GetOrderAsync method to retreive the order data from Eventbrite.  
+    /// If the order contains attendees, we loop through each attendee (ticket)
+    /// and check to see if it shows as cancelled or refunded.  Removes
+    /// the associated Group member from the group.
+    /// <see cref="GetOrderAsync(string)"/>
+    /// </summary>
+    /// <param name="request">A valid EventBriteRequst object</param>
+    /// <returns>Async Task</returns>
     private async Task HandleEventBriteOrderUpdated(EventBriteRequest request)
     {
 
@@ -306,7 +356,16 @@ class EventBriteReponseAsync : IAsyncResult
 
 
     }
-
+    
+    /// <summary>
+    /// Handles any webhook request with the action "attendee.updated"  
+    /// Uses the GetTicketAsync method to retreive the attendee data from Eventbrite.  
+    /// Performs some action on an associated group member, based on 
+    /// the status attribute of the ticket(attendee) object.
+    /// Uses GetTicketAsync<see cref="GetTicketAsync(string)"/>
+    /// </summary>
+    /// <param name="request">A valid EventBriteRequst object</param>
+    /// <returns>Async Task</returns>
     private async Task HandleEventBriteAttendeeUpdate(EventBriteRequest request)
     {
         Ticket ticket = await GetTicketAsync(request.api_url);
@@ -341,7 +400,13 @@ class EventBriteReponseAsync : IAsyncResult
 
 
     }
-
+    
+    /// <summary>
+    /// Attempts to locate a GroupMember using data from a 
+    /// supplied Eventbrite Ticket object.
+    /// </summary>
+    /// <param name="ticket">A valid Ticket object</param>
+    /// <returns>A valid Group member object or null if not found<see cref="GroupMember"/></returns>
     private GroupMember GetGroupMemberFromEventBriteTicket(Ticket ticket)
     {
         GroupMember groupMember = null;
@@ -365,7 +430,13 @@ class EventBriteReponseAsync : IAsyncResult
 
         return groupMember;
     }
-
+    
+    /// <summary>
+    /// Attempts to register a person in a group.  
+    /// </summary>
+    /// <param name="attendeeProfile">A valid EventBrite attendee Profile object</param>
+    /// <param name="requestedGroupId">The id of the group to register the user in if found.</param>
+    /// <returns>Boolean: True if registration was successfull.</returns>
     public static bool RegisterPersonInGroup(AttendeeProfile attendeeProfile, int requestedGroupId)
     {
         bool success = false;
@@ -439,7 +510,12 @@ class EventBriteReponseAsync : IAsyncResult
 
         return success;
     }
-
+    /// <summary>
+    /// Removes a provided group member from the associated group.
+    /// </summary>
+    /// <param name="gm">A valid GroupMember object<see cref="GroupMember"/></param>
+    /// <param name="rockContext">The Rock context to use</param>
+    /// <returns>Boolean: True on success.</returns>
     private bool RemoveGroupMemberFromGroup(GroupMember gm, RockContext rockContext)
     {
         GroupMemberService groupMemberService = new GroupMemberService(rockContext);
@@ -454,7 +530,16 @@ class EventBriteReponseAsync : IAsyncResult
 
         return false;
     }
-
+    
+    /// <summary>
+    /// Builds a GroupMember from a vaid Rock Person.  This method simply instantiates
+    /// the object.  In order to persist the data, save must be called on the
+    /// provided rock context.
+    /// </summary>
+    /// <param name="rockContext">The rock context to use.</param>
+    /// <param name="person">A valid instantiated Person object<see cref="Rock.Model.Person"/></param>
+    /// <param name="group">A valid group object representing the group to add the the Person to.</param>
+    /// <returns></returns>
     private static GroupMember PersonToGroupMember(RockContext rockContext, Person person, Group group)
     {
         // puts a person into a group member object, so that we can pass it to a workflow
