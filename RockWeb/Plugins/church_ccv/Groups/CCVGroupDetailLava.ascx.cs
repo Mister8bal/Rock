@@ -73,8 +73,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
         protected void FinalizePresentView( Dictionary<string, object> mergeFields, bool enableDebug )
         {
             string template = GetAttributeValue( "LavaTemplate" );
-            cbEnableGroupCapacity.Checked = GetAttributeValue( "EnableGroupCapacity" ).AsBoolean();
-            SetAttributeValue( "EnableGroupCapacity", cbEnableGroupCapacity.Checked.ToString() );
+            //cbEnableGroupCapacity.Checked = GetAttributeValue( "EnableGroupCapacity" ).AsBoolean();
+            //SetAttributeValue( "EnableGroupCapacity", cbEnableGroupCapacity.Checked.ToString() );
 
             // show debug info
             if ( enableDebug && IsUserAuthorized( Authorization.EDIT ) )
@@ -397,7 +397,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
                 if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
                 {
-                    group.GroupCapacity = int.Parse( CapacityOfGroup.Text);
+                    group.GroupCapacity = CapacityOfGroup.Text.AsIntegerOrNull();           
                 }
 
 
@@ -619,9 +619,12 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
                     if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
                     {
-                       // cbEnableGroupCapacity.Enabled = true;
-                        CapacityOfGroup.Text = group.GroupCapacity.ToString();
-                  
+                        groupCapacity.Visible = true;
+                        CapacityOfGroup.Text = group.GroupCapacity.ToString();    
+                    }
+                    else
+                    {
+                        groupCapacity.Visible = false;
                     }
                     group.LoadAttributes();
                     AttributesPlaceholder.Controls.Clear();
