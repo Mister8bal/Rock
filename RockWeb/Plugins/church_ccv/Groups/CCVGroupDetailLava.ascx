@@ -29,10 +29,6 @@
                         <Rock:RockTextBox ID="groupCapacity" runat="server"  Label="Group Capacity" Visible="false" />
                             <asp:CompareValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="groupCapacity" ValidationGroup="NumericValidate" ErrorMessage="Only Numbers allowed" Operator="DataTypeCheck" Type="Integer" ValidationExpression="\d+" Display="Dynamic" CssClass="validation-error"></asp:CompareValidator>
                     </div>
-<%--                     <div class="col-sm-3">
-                        <Rock:RockCheckBox ID="cbEnableGroupCapacity" runat="server" Label="Enable Group Capacity" Help="Display the group capacity filter" Enabled="false"  />
-                    </div>--%>
-
                 </asp:Panel>
 
                 <div class="row">
