@@ -43,6 +43,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [LinkedPage( "Person Detail Page", "Page to link to for more information on a group member.", false, "", "", 0 )]
     [LinkedPage( "Roster Page", "The page to link to to view the roster.", false, "", "", 2 )]
     [LinkedPage( "Communication Page", "The communication page to use for sending emails to the group members.", false, "", "", 4 )]
+    [BooleanField( "Enable Group Capacity", "When set to true, groups will take into account the Capacity attribute set in rock.", true )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
     [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
     public partial class CCVGroupDetailLava : RockBlock
@@ -56,7 +57,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
         public Panel Schedule { get { return pnlSchedule; } }
         public DayOfWeekPicker DayOfWeekPicker { get { return dowWeekly; } }
         public TimePicker MeetingTime { get { return timeWeekly; } }
-        public NumberUpDown CapacityOfGroup { get { return groupCapacity; } }
+        public RockTextBox CapacityOfGroup { get { return groupCapacity; } }
         public Literal GroupName { get { return tbName; } }
         //public override TextBox GroupDesc { get { return tbDescription; } }
         //public override CheckBox IsActive { get { return cbIsActive; } }
@@ -72,6 +73,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
         protected void FinalizePresentView( Dictionary<string, object> mergeFields, bool enableDebug )
         {
             string template = GetAttributeValue( "LavaTemplate" );
+            cbEnableGroupCapacity.Checked = GetAttributeValue( "EnableGroupCapacity" ).AsBoolean();
+            SetAttributeValue( "EnableGroupCapacity", cbEnableGroupCapacity.Checked.ToString() );
 
             // show debug info
             if ( enableDebug && IsUserAuthorized( Authorization.EDIT ) )
@@ -378,7 +381,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 //group.Name = GroupName.Text;
                 //group.Description = GroupDesc.Text;
                 //group.IsActive = IsActive.Checked;
-
+                
                 if ( Schedule.Visible )
                 {
                     if ( group.Schedule == null )
@@ -391,14 +394,10 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     group.Schedule.WeeklyTimeOfDay = MeetingTime.SelectedTime;
                 }
 
-                // if group capacity equals null set to 0
-                if ( group.GroupCapacity == null )
+                // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
+                if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
                 {
-                    group.GroupCapacity = 0;
-                }
-                else
-                {
-                    group.GroupCapacity = CapacityOfGroup.Value;
+                    group.GroupCapacity = int.Parse( CapacityOfGroup.Text);
                 }
 
 
@@ -617,16 +616,13 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         Schedule.Visible = false;
                     }
 
-                    // if group capacity does not equal null set the value else set to 0
-                    if ( group.GroupCapacity != null )
+                    // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
+                    if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
                     {
-                        CapacityOfGroup.Value = ( int ) group.GroupCapacity;
+                       // cbEnableGroupCapacity.Enabled = true;
+                        CapacityOfGroup.Text = group.GroupCapacity.ToString();
+                  
                     }
-                    else
-                    {
-                        CapacityOfGroup.Value = 0;
-                    }
-
                     group.LoadAttributes();
                     AttributesPlaceholder.Controls.Clear();
                     Rock.Attribute.Helper.AddEditControls( group, AttributesPlaceholder, true, BlockValidationGroup, ExcludedAttribKeys );

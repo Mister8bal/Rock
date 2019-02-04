@@ -19,15 +19,21 @@
 
             <div class="row">
                 <asp:Panel ID="pnlSchedule" runat="server" Visible="false" CssClass="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <Rock:DayOfWeekPicker ID="dowWeekly" runat="server" CssClass="input-width-md" Label="Day of the Week" />
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <Rock:TimePicker ID="timeWeekly" runat="server" Label="Time of Day" />
                     </div>
-                    <div class="col-sm-4">
-                        <Rock:NumberUpDown ID="groupCapacity" runat="server"  Label="Group Capacity" />
+                    <div class="col-sm-3">
+                        <Rock:RockTextBox ID="groupCapacity" runat="server"  Label="Group Capacity" />
                     </div>
+                     <div class="col-sm-3">
+                        <Rock:RockCheckBox ID="cbEnableGroupCapacity" runat="server" Label="Enable Group Capacity" Help="Display the group capacity filter" Enabled="true"  />
+                          <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ControlToValidate="cbEnableGroupCapacity" 
+                            runat="server" ErrorMessage="Only Numbers allowed" ValidationExpression="\d+" />
+                    </div>
+
                 </asp:Panel>
 
                 <div class="row">
