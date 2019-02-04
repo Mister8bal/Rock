@@ -2,12 +2,11 @@
 .page-background {
     background-color: black;
     background-image: var(--page-background);
-    background-size: cover;
+    background-size: contain;
 }
 
 .main-feature {
     padding-top: 100px;
-    margin-bottom: 35px;
 }
 
 .series-header-image {
