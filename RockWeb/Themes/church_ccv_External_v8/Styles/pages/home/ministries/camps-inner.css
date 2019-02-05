@@ -1,0 +1,143 @@
+/**
+ * Camps Inner Styles
+ * This file contains all general styles for camps child pages.  Changes here
+ * will modify all camps child pages.  
+ *
+ * To edit specific camps child page styles, look for a for the file name of camps-inner-SPECIFIC-CAMP.css
+ */
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps.png");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 768px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps.png");
+    }
+}
+
+#section-a-bg {
+	background-color: #f3f3f3;
+	padding-bottom:48px;
+}
+
+#section-a-bg h1, #section-a-bg h2 {
+    text-align: center;
+}
+#section-a-bg h2 {
+    margin-top: 4rem;
+}
+#section-a-bg h2.no-top-margin {
+    margin-top:0;
+}
+
+#section-b-bg {
+    background-color:#f9f9f9;
+    padding: 2.8rem 0 4rem 0;
+}
+
+#section-c-bg {
+    background-color: #f3f3f3;
+}
+
+#section-d-bg {
+    background-color: #f9f9f9;
+    padding: 48px 0;
+} 
+
+#section-e-bg {
+    background-color: #f3f3f3;
+}
+
+#section-e-bg h2 {
+    padding: 3rem 0 2.8rem 0;
+}
+
+.title h1 {
+    font-size: 60px;
+    font-family: akrobat;
+    color: #FFFFFF;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-primary {
+    max-width:none;
+}
+
+.campus-selection {
+    text-align: center;
+}
+
+.campus-selection ul.contextsetter {
+    float:none;
+    display:inline-block;
+}
+
+/* Helps keep the four graphics in a 2x2 layout */
+.img-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.grid-image {
+    padding: 5px;
+}
+
+.registration-wrapper {
+    max-width:50%;
+    margin: 1rem auto;
+    text-align:center;
+}
+
+@media screen and (max-width: 500px) { 
+    .registration-wrapper{
+        max-width: none;
+    }
+}
+.registration-wrapper h3 {
+    text-transform:none;
+}
+.registration-wrapper a {
+    display:inline-block;
+    margin:0 0 .5em;
+}
+.registration-row {
+    display:flex;
+    flex-direction:row;
+    justify-content: center;
+}
+.registration-links {
+    max-width:48%;
+}
+.registration-info {
+    text-align:center;
+}
+
+.form-group {
+    text-align:left;
+}
+
+.lead-text {
+    padding: 0 10%;
+}
+
+.camps-question-form {
+    max-width: 50%;
+    margin: 0 auto;
+    text-align:center;
+}
+
+.camps-question-form .actions {
+    text-align:right;
+}
+
+.comments textarea {
+    border: 2px solid lightgrey;
+    border-radius: 5px;
+    padding: 1em;
+}
+.camps-question-form .help {
+    display:none;
+}

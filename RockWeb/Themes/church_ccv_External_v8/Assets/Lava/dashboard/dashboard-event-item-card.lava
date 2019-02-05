@@ -65,6 +65,9 @@
     {% endfor %}
 </div>
 
+<div class="text-center mtb-2rem">
+    <a href="/events" class="btn btn-primary">View All</a>
+</div>
 
 <script>
 $(document).ready(function(){

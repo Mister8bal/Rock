@@ -133,7 +133,11 @@ namespace RockWeb.Blocks.Security
                         }
                         else
                         {
-                            sbPageMarkup.Append( string.Format( "<li><a href='{0}'>{1}</a>", Page.ResolveUrl(page.Link.ResolveMergeFields(mergeFields)), page.Title ) );
+                            if(page.Title == "Give Now"){
+                                sbPageMarkup.Append( string.Format( "<li><a href='{0}' class=\"ccv-modal\" data-modal-type=\"outside-navigation\" data-modal-title=\"Attention\" data-modal-content=\"You will now be taken to our giving provider, Pushpay, to complete your transaction.\">{1}</a>", Page.ResolveUrl(page.Link.ResolveMergeFields(mergeFields)), page.Title ) );
+                            }else{
+                                sbPageMarkup.Append( string.Format( "<li><a href='{0}'>{1}</a>", Page.ResolveUrl(page.Link.ResolveMergeFields(mergeFields)), page.Title ) );
+                            }
                         }
                     }
 

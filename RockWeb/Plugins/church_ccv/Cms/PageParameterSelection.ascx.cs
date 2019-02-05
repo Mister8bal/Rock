@@ -6,7 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using RestSharp.Extensions;
 using Rock;
 using Rock.Attribute;
 
@@ -136,8 +136,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 var item = selection.Where( p => p.Value.ToString() == ddlSelection.SelectedValue ).FirstOrDefault();
 
+                // url decode so that the next step doesnt try to url encode a 2nd time
+                // Still researching what changed in Rock v7 upgrade that caused this to change.  Using this decode as bandaid
+                var decodedItemValue = item.Value.ToString().UrlDecode();
+
                 var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
-                queryString.Set( pageParameterName, item.Value.ToString() );
+                queryString.Set( pageParameterName, decodedItemValue );
                 Response.Redirect( string.Format( "{0}?{1}", Request.Url.AbsolutePath, queryString ), false );
             }
         }

@@ -22,12 +22,47 @@
 }
 
 .navigation-item.selected {
-    background-color: #ee7624;
+    background-color: #777;
     color: #FFFFFF;
+}
+
+/* User Courses */
+.course-grid {
+    border: 1px solid #ddd;
+    border-top: none;
+}
+
+.course-header, .course-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fcfaf8;
+    border-bottom: #edeae6 solid 1px;
+    padding: 10px 20px;
+}
+
+.course-header-text {
+    font-weight: 900;
+}
+
+.course-header-progress {
+    width: 400px;
 }
 
 .course-name {
     display: flex;
+    flex-wrap: wrap;
+    font-weight: 900;
+}
+
+.course-row-right {
+    display: flex;
+    align-items: center;
+    width: 400px;
+}
+
+.course-progress {
+    flex-grow: 1;
 }
 
 .expires, .expired {
@@ -38,35 +73,50 @@
     border-radius: 4px;
     color: #FFFFFF;
     margin: 0 10px;
-    font-size: 12px;
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 400;
     padding: 0 5px;
+    width: 120px;
+    height: 20px;
 }
 
 .expires {
-    background-color: #ecc759;
-    border-color: #ecc759;
+    background-color: #777;
+    border-color: #777;
 }
 
 .expired {
-    background-color: #A71315;
-    border-color: #A71315;
+    background-color: #c46565;
+    border-color: #c46565;
 }
 
-.progress-completed {
-    background-color: #0DA100;
-    border-color: #0DA100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: #FFFFFF;
-    margin: 0;
+.progress-bar {
+    background-color: #74ad91;
+    border-color: #74ad91;
 }
 
 .progress {
     min-width: 100px;
     margin: 0;
+    border: 1px solid #edeae6;
+    background-color: #FFFFFF;
+}
+
+.zero, .completed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.zero .progress-bar {
+    color: unset;
+}
+
+.completed {
+    background-color: #74ad91;
+    border-color: #74ad91;
+    color: #FFFFFF;
 }
 
 .course-action {
@@ -74,13 +124,118 @@
     justify-content: flex-end;
 }
 
-.btn-talentlms {
-    padding: 0 12px;
+.btn-talentlms,.btn-primary:focus {
     min-width: 100px;
     margin: 0 10px;
+    background-color: transparent;
+    border-color: #c2b8ab;
+    color: #6a6a6a;
 }
 
-/* Rock Theme overrides*/
-#myCourses .table-bordered>tbody>tr>td, #myCourses .table-bordered>thead>tr>th, #allCourses .table-bordered>tbody>tr>td, #allCourses .table-bordered>thead>tr>th  {
-    border: unset;
+.btn-primary:hover {
+    background-color: #f08f4d;
+    border-color: #c2b8ab;
+    color: #FFFFFF;
+}
+
+/* All Courses*/
+.collapsible {
+    background-color: #fcfaf8;
+    border-bottom: #edeae6 solid 1px;
+    padding: 12px 20px;
+    color: #6a6a6a;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 900;
+    display: flex;
+    justify-content: space-between;
+}
+
+.collapsible i {
+    margin-left: 5px;
+}
+
+.course-info {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #fcfaf8;
+    border-bottom: #edeae6 solid 1px;
+}
+
+.info-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-enroll, .course-info p {
+    margin: 10px;
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 1280px) {
+    .course-header {
+        display: none;
+    }
+
+    .course-row {
+        flex-direction: column;
+        align-items: unset;
+    }
+
+    .course-row-right {
+        width: unset;
+    }
+
+    .course-header-text, .course-text {
+        padding-bottom: 10px;
+    }
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    .navigation-item {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+    .course-name, .course-row-right {
+        flex-direction: column;
+    }
+
+    .course-row-right {
+        align-items: unset;
+    }
+
+    .course-progress {
+        padding: 10px 0;
+    }
+
+    .course-progress, .btn-talentlms {
+        width: 100%;
+        margin: 0;
+    }
+
+    .expires, .expired {
+        margin: unset;
+        padding: unset;
+    }
+
+    .btn-talentlms, .btn-enroll {
+        margin: 10px 0;
+    }
+
+    .info-wrapper {
+        flex-direction: column;
+        align-items: unset;
+    }
+
+    
 }
