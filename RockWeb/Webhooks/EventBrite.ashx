@@ -100,7 +100,7 @@ class EventBriteReponseAsync : IAsyncResult
     bool IAsyncResult.CompletedSynchronously { get { return false; } }
 
     static HttpClient Client = new HttpClient();
-    int GroupId = 2500748;
+    int GroupId = 2557652;
     
     // Pull the Eventbrite OAuth Token from global attributes
     string EVB_TOKEN = GlobalAttributesCache.Read().GetValue("EventBritePersonalOAuthToken").ToString();
