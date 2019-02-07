@@ -1,12 +1,13 @@
 
 .page-background {
     background-color: black;
-    background-image: var(--page-background);
+    /* background-image: var(--page-background); */
     background-size: contain;
 }
 
 .main-feature {
-    padding-top: 100px;
+    height: 0px;
+    padding-top: 140px;
 }
 
 .series-header-image {
