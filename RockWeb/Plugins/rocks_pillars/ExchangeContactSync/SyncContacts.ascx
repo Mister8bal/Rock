@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="SyncContacts.ascx.cs" Inherits="RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync.SyncContacts" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="SyncContacts.ascx.cs" Inherits="RockWeb.Plugins.rocks_pillars.ExchangeContactSync.SyncContacts" %>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
