@@ -102,17 +102,14 @@ TODO: Add Other Group Type leader roles
                                         <a href="/page/1751?group={{ group.Group.Id }}">
                                             <i class="mdi mdi-email dashboard-title-icon tooltip-email-group"></i>
                                         </a>
-                                    {% endif %} 
-                                    {% comment %} Hide group details dropdown if it's a Life Training Group {% endcomment %}
-                                    {% unless group.Group.GroupTypeId == 117 %}                                  
-                                        <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
-                                            {% assign chevronIcon = "mdi-chevron-down" %}
-                                            {% if forloop.first %}
-                                                {% assign chevronIcon = "mdi-chevron-up" %}
-                                            {% endif %}
-                                            <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
-                                        </button>
-                                    {% endunless %}
+                                    {% endif %}                                    
+                                    <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
+                                        {% assign chevronIcon = "mdi-chevron-down" %}
+                                        {% if forloop.first %}
+                                            {% assign chevronIcon = "mdi-chevron-up" %}
+                                        {% endif %}
+                                        <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
