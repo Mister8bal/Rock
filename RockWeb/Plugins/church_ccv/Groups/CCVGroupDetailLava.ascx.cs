@@ -73,8 +73,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
         protected void FinalizePresentView( Dictionary<string, object> mergeFields, bool enableDebug )
         {
             string template = GetAttributeValue( "LavaTemplate" );
-            //cbEnableGroupCapacity.Checked = GetAttributeValue( "EnableGroupCapacity" ).AsBoolean();
-            //SetAttributeValue( "EnableGroupCapacity", cbEnableGroupCapacity.Checked.ToString() );
 
             // show debug info
             if ( enableDebug && IsUserAuthorized( Authorization.EDIT ) )
