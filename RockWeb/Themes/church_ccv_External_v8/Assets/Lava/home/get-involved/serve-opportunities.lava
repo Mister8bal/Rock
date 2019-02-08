@@ -74,20 +74,6 @@
             </div>
         </div>
 
-        <div class="serve-card stars-override">
-            <div class="image">
-                <script src="https://fast.wistia.com/embed/medias/ly6yhr6wgq.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_ly6yhr6wgq popover=true popoverAnimateThumbnail=true videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>
-            </div>
-            <div class="header">
-                <h4>STARS Youth Sports</h4>
-            </div>
-            <div class="content">
-                <p>The STARS program is dedicated to using sports as a platform to teach strong character through building authentic relationships and healthy competition. There are many volunteer opportunities from coaching, field prep, guest services, and behind-the-scenes administrative tasks. Visit the STARS website to learn more about the many serving areas.</p>
-                <br/>
-                <a class="btn btn-primary" href="//ccvstars.com/stars-serve">Visit Website</a>
-            </div>
-        </div>
-
         <div class="serve-card">
             <div class="image">
                 <script src="https://fast.wistia.com/embed/medias/h2ttzaxugb.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_h2ttzaxugb popover=true popoverAnimateThumbnail=true videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>
@@ -99,6 +85,25 @@
                 <p>The CCV Special Needs areas are fun, high-energy environments where kids, students, and adults can grow in their understanding of God's great love. There are many volunteer opportunities that range from up-front teaching to behind-the-scenes production. Weekend opportunities available during all services.</p>
             </div>
         </div>
+
+        <div class="serve-card stars-override">
+            <div class="image">
+                <script src="https://fast.wistia.com/embed/medias/ly6yhr6wgq.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_ly6yhr6wgq popover=true popoverAnimateThumbnail=true videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>
+            </div>
+            <div class="header">
+                <h4>STARS Youth Sports</h4>
+            </div>
+            <div class="content">
+                <p>The STARS program is dedicated to using sports as a platform to teach strong character through building authentic relationships and healthy competition. There are many volunteer opportunities from coaching, field prep, guest services, and behind-the-scenes administrative tasks. Visit the STARS website to learn more about the many serving areas.</p>
+                <br/>
+                <div class="read-more link pull-right">
+                    <a href="//ccvstars.com/stars-serve">Visit Website<i class="mdi mdi-chevron-right event-card-navigation-icon"></i></a>
+                </div>
+         </div>    
+            </div>
+        </div>
+
+        
     </div>
 </div>
 
