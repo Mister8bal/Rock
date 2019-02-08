@@ -9,19 +9,16 @@
 {% if seriesObject.ContentChannelTypeId == 8 %}
     {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
 
-    <div> 
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             <div class="left">
-                    <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_31_20 }}" alt="{{ Series.Name }}">
+                    <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_16_9 }}" alt="{{ Series.Name }}">
             </div>
             <div class="right">
-
-                        <h4>{{ Series.Name }}</h4>
-                        <p>{{ Series.Description }}</p>
-                        <p class="">{{ Series.Attributes.ExtraDetails }}</p>
-                        <br/>
-
+                    <h4>{{ Series.Name }}</h4>
+                    <p>{{ Series.Description }}</p>
+                    <p class="">{{ Series.Attributes.ExtraDetails }}</p>
+                    <br/>
                     <h4>Messages in this Series</h4>
                     {% assign hasActiveMessages = false %}
                     <ol class="messages">
@@ -45,4 +42,3 @@
             {% endif %}
         </div>
     </div>
-</div>
