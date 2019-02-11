@@ -43,6 +43,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [LinkedPage( "Person Detail Page", "Page to link to for more information on a group member.", false, "", "", 0 )]
     [LinkedPage( "Roster Page", "The page to link to to view the roster.", false, "", "", 2 )]
     [LinkedPage( "Communication Page", "The communication page to use for sending emails to the group members.", false, "", "", 4 )]
+    [BooleanField( "Enable Group Capacity", "When set to true, groups will take into account the Capacity attribute set in rock.", true )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
     [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
     public partial class CCVGroupDetailLava : RockBlock
@@ -55,7 +56,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
         public Panel GroupView { get { return pnlGroupView; } }             
         public Panel Schedule { get { return pnlSchedule; } }
         public DayOfWeekPicker DayOfWeekPicker { get { return dowWeekly; } }
-        public TimePicker MeetingTime { get { return timeWeekly; } }               
+        public TimePicker MeetingTime { get { return timeWeekly; } }
+        public RockTextBox CapacityOfGroup { get { return groupCapacity; } }
         public Literal GroupName { get { return tbName; } }
         //public override TextBox GroupDesc { get { return tbDescription; } }
         //public override CheckBox IsActive { get { return cbIsActive; } }
@@ -377,7 +379,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 //group.Name = GroupName.Text;
                 //group.Description = GroupDesc.Text;
                 //group.IsActive = IsActive.Checked;
-
+                
                 if ( Schedule.Visible )
                 {
                     if ( group.Schedule == null )
@@ -390,8 +392,15 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     group.Schedule.WeeklyTimeOfDay = MeetingTime.SelectedTime;
                 }
 
-                // set attributes
-                group.LoadAttributes( rockContext );
+                // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
+                if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
+                {
+                    group.GroupCapacity = CapacityOfGroup.Text.AsIntegerOrNull();           
+                }
+
+
+            // set attributes
+            group.LoadAttributes( rockContext );
                 Rock.Attribute.Helper.GetEditValues( AttributesPlaceholder, group );
 
                 rockContext.SaveChanges();
@@ -605,6 +614,16 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         Schedule.Visible = false;
                     }
 
+                    // if the EnableGroupCapacity is enabled, use the Capacity attribute in rock
+                    if ( GetAttributeValue( "EnableGroupCapacity" ).AsBoolean() )
+                    {
+                        groupCapacity.Visible = true;
+                        CapacityOfGroup.Text = group.GroupCapacity.ToString();    
+                    }
+                    else
+                    {
+                        groupCapacity.Visible = false;
+                    }
                     group.LoadAttributes();
                     AttributesPlaceholder.Controls.Clear();
                     Rock.Attribute.Helper.AddEditControls( group, AttributesPlaceholder, true, BlockValidationGroup, ExcludedAttribKeys );
