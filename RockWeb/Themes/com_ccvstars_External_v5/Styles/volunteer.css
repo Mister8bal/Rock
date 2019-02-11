@@ -1,12 +1,4 @@
 
-#image-soccer {
-    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/hero-stars-soccer.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    min-height: 360px;
-}
-
 h2 {
     color: #000;
     font-size: 44px;
@@ -31,10 +23,6 @@ p {
     margin-bottom: 30px;
 }
 
-.img-header img {
-    min-height: 260px;
-}
-
 #zone-main, #zone-feature {
     padding: 1% 10%;
 }
@@ -54,13 +42,5 @@ p {
     
     #zone-feature {
         padding: 1% 0%;
-    }
-
-    #image-soccer {
-        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/hero-stars-soccer-mobile.jpg");
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        min-height: 260px;
     }
 }

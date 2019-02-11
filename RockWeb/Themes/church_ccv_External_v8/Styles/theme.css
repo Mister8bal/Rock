@@ -175,24 +175,34 @@
 }
 
 @font-face {
-	font-family: 'akrobat';
-	src: local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.eot');
-	src: local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
-		local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.woff') format('woff'),
-		local('akrobat'), url('../Assets/Fonts/Akrobat-Bold.ttf') format('truetype');
-	font-weight: bold;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'akrobat';
-	src: local('akrobat'), url('../Assets/Fonts/Akrobat-Black.eot');
-	src: local('akrobat'), url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
-		local('akrobat'), url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
-		local('akrobat'), url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
-	font-weight: 900;
-	font-style: normal;
-}
+    font-family: 'akrobat';
+    src: url('../Assets/Fonts/Akrobat-SemiBold.eot');
+    src: url('../Assets/Fonts/Akrobat-SemiBold.eot?#iefix') format('embedded-opentype'),
+      url('../Assets/Fonts/Akrobat-SemiBold.woff') format('woff'),
+      url('../Assets/Fonts/Akrobat-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+  
+  @font-face {
+  font-family: 'akrobat';
+  src: url('../Assets/Fonts/Akrobat-Bold.eot');
+  src: url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../Assets/Fonts/Akrobat-Bold.woff') format('woff'),
+    url('../Assets/Fonts/Akrobat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  }
+  
+  @font-face {
+  font-family: 'akrobat';
+  src: url('../Assets/Fonts/Akrobat-Black.eot');
+  src: url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
+    url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
+    url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  }
 
 [class^="note-icon-"]:before, [class*=" note-icon-"]:before {
     display: inline-block;

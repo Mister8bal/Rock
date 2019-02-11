@@ -1018,7 +1018,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 groups = groupQry.OrderBy( g => g.Name ).ToList();
             }
 
-            // Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display. 
+            // Filter groups by registration start date and end date. If the group has a registration start date that hasn't happened yet, or a registration end date that already passed, don't display. 
             if ( GetAttributeValue( "FilterByRegistrationStartDate" ).AsBoolean() )
             {
                 List<Group> groupsList = groupQry.ToList();
@@ -1031,18 +1031,24 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     group.LoadAttributes();
 
                     // Get RegistrationStartDate attribute
-                    string registration = group.GetAttributeValue( "RegistrationStartDate" );
-                    
-                    // if RegistrationStartDate attribute is not null
-                    if ( !string.IsNullOrWhiteSpace( registration ) )
+                    string registrationStart = group.GetAttributeValue( "RegistrationStartDate" );
+
+                    // Get RegistrationEndDate attribute
+                    string registrationEnd = group.GetAttributeValue( "RegistrationEndDate" );
+
+                    // if RegistrationStartDate & RegistrationEndDate attribute is not null
+                    if ( !string.IsNullOrWhiteSpace( registrationStart ) && !string.IsNullOrWhiteSpace( registrationEnd ) )
                     {
                         // Get the RegistrationStartDate attribute as Date to compare to today's date.
-                        DateTime registrationDate = DateTime.Parse( registration );
+                        DateTime registrationStartDate = DateTime.Parse( registrationStart );
 
-                        var today = RockDateTime.Now;
+                        // Get the RegistrationEndDate attribute as Date to compare to today's date.
+                        DateTime registrationEndDate = DateTime.Parse( registrationEnd );
 
-                        // If RegistrationStartDate is before today's date
-                        if ( registrationDate <= today )
+                        var today = RockDateTime.Now.Date;
+
+                        // If RegistrationStartDate is before today's date & RegistrationEndDate is before today's date
+                        if ( registrationStartDate.Date <= today && registrationEndDate.Date >= today )
                         {
                                filteredList.Add( group );
                         }

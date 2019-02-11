@@ -13,8 +13,10 @@
             </div>
             <div class="right">
                 <h3>{{ item.Title }} </h3> 
+                 {% if item.StartDateTime != '' %}
+                    <p><b>Active Date:</b> {{ item.StartDateTime }} </p> 
+                {% endif %}
                 <p>{{ item.Content }} </p> 
-
             {% if downloadLink != '' %}
                 <ol class="messages">
                     {% comment %} <li><a class="downloadLink" href="{{ downloadLink }}" download="{{ item.Title }}">{{ item.Title }}</a></li> {% endcomment %}
