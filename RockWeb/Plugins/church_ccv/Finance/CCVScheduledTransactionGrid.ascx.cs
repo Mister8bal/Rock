@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
@@ -49,6 +48,10 @@ namespace RockWeb.Plugins.church_ccv.Finance
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
             this.AddConfigurationUpdateTrigger( upPanel );
+
+            mdManageSchedule.Header.Visible = false;
+            mdManageSchedule.SaveClick += mdManageSchedule_SaveClick;
+            mdManageSchedule.CancelLinkVisible = true;
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
             if ( !Page.IsPostBack )
             {
                 BindGrid();
-            }
+            } 
         }
 
         /// <summary>
@@ -101,33 +104,33 @@ namespace RockWeb.Plugins.church_ccv.Finance
             string paymentAccount = row.Cells[3].Text;
 
             // if schedule id and amount exist, try to delete the schedule
-            if ( gatewayScheduleId.IsNotNullOrWhitespace() || amount.IsNotNullOrWhitespace())
+            if (gatewayScheduleId.IsNotNullOrWhitespace() || amount.IsNotNullOrWhitespace())
             {
-                using ( var rockContext = new RockContext() )
+                using (var rockContext = new RockContext())
                 {
-                    FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
+                    FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService(rockContext);
 
                     // get the transaction and load its attributes
-                    var selectedTransaction = transactionService.GetByScheduleId( gatewayScheduleId );
+                    var selectedTransaction = transactionService.GetByScheduleId(gatewayScheduleId);
 
                     if (selectedTransaction != null && selectedTransaction.FinancialGateway != null)
                     {
-                        selectedTransaction.FinancialGateway.LoadAttributes( rockContext );
+                        selectedTransaction.FinancialGateway.LoadAttributes(rockContext);
                     }
 
                     // try to cancel the scheduled transaction
                     string errorMessage = string.Empty;
-                    if (transactionService.Cancel ( selectedTransaction, out errorMessage))
+                    if (transactionService.Cancel(selectedTransaction, out errorMessage))
                     {
                         try
                         {
-                            transactionService.GetStatus( selectedTransaction, out errorMessage );
+                            transactionService.GetStatus(selectedTransaction, out errorMessage);
                         }
                         catch { }
 
                         // success - save changes and update message
                         rockContext.SaveChanges();
-                        nbMessage.Text = String.Format( "<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue( "TransactionLabel" ).ToLower(), amount, paymentAccount );
+                        nbMessage.Text = String.Format("<div class='alert alert-success'>Your recurring {0} of {1} for payment account {2} has been deleted.</div>", GetAttributeValue("TransactionLabel").ToLower(), amount, paymentAccount);
                         nbMessage.Visible = true;
 
                         // Rebind grid
@@ -136,7 +139,7 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     else
                     {
                         // cancel failed - update message
-                        nbMessage.Text = String.Format( "<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage );
+                        nbMessage.Text = String.Format("<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage);
                         nbMessage.Visible = true;
                     }
                 }
@@ -209,6 +212,127 @@ namespace RockWeb.Plugins.church_ccv.Finance
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Handles the Transfer event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void mdManageSchedule_SaveClick( object sender, EventArgs e)
+        {
+            using ( var rockContext = new RockContext() )
+            {
+                // services needed to get info required for pushpay
+                FinancialScheduledTransactionService transactionService = new FinancialScheduledTransactionService( rockContext );
+                FinancialScheduledTransactionDetailService transactionDetailService = new FinancialScheduledTransactionDetailService( rockContext );
+
+                // get the transaction
+                var selectedScheduleTransaction = transactionService.GetByScheduleId( hfGatewayScheduleId.Value );
+                var selectedScheduleTransactionDetail = new FinancialScheduledTransactionDetail();
+
+                // load its attributes and transaction detail
+                if ( selectedScheduleTransaction != null && selectedScheduleTransaction.FinancialGateway != null )
+                {
+                    selectedScheduleTransaction.FinancialGateway.LoadAttributes(rockContext);
+
+                    // use the first schedule transaction detail. Ignore 520 Building Fund, 1004 Disaster Relief, and 1012 Columbia funds
+                    // intentionally only went with single transaction and not concerened with which transaction
+                    selectedScheduleTransactionDetail = transactionDetailService.Get( selectedScheduleTransaction.ScheduledTransactionDetails
+                                                                                            .Where( a => a.AccountId != 520 && a.AccountId != 1004 && a.AccountId != 1012 )
+                                                                                            .FirstOrDefault().Id );
+                }
+                
+                // try to cancel the scheduled transaction
+                string errorMessage = string.Empty;
+                if ( transactionService.Cancel( selectedScheduleTransaction, out errorMessage) )
+                {
+                    try
+                    {
+                        transactionService.GetStatus( selectedScheduleTransaction, out errorMessage );
+                    }
+                    catch { }
+
+                    // success - save changes
+                    rockContext.SaveChanges();
+
+                    // build query string for pushpay
+                    var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
+
+                    // amount
+                    queryString.Set( "a", selectedScheduleTransaction.TotalAmount.ToString() );
+
+                    // frequency
+                    queryString.Set( "r", PaypalSchedFreqToPushpaySchedFreq( selectedScheduleTransaction.TransactionFrequencyValue.Value ) );
+
+                    // recurring start date - format: rsd=YYYY-MM-DD
+                    if ( selectedScheduleTransaction.NextPaymentDate != null )
+                    {
+                        queryString.Set( "rsd", string.Format( "{0}-{1}-{2}", selectedScheduleTransaction.NextPaymentDate.Value.Year, selectedScheduleTransaction.NextPaymentDate.Value.Month.ToString().PadLeft(2, '0'), selectedScheduleTransaction.NextPaymentDate.Value.Day.ToString().PadLeft( 2, '0' ) ) );
+                    }
+
+                    // fund
+                    if ( selectedScheduleTransactionDetail != null )
+                    {
+                        queryString.Set( "fnd", selectedScheduleTransactionDetail.Account.Name );
+                    }
+
+                    // person info
+                    queryString.Set( "ufn", CurrentPerson.FirstName );
+                    queryString.Set( "uln", CurrentPerson.LastName );
+                    queryString.Set( "ue", CurrentPerson.Email );
+                    queryString.Set( "up", CurrentPerson.PhoneNumbers.Where( a => a.NumberTypeValue.Guid == Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).FirstOrDefault().ToString().RemoveSpecialCharacters().RemoveSpaces() );
+
+                    // redirect to pushpay
+                    Response.Redirect( string.Format( "{0}?{1}", "https://pushpay.com/g/christchurchofthevalley", queryString ), false );                    
+                }
+                else
+                {
+                    // cancel failed - update message
+                    nbMessage.Text = String.Format( "<div class='alert alert-danger'>An error occured while deleting your scheduled transation. Message: {0}</div>", errorMessage );
+
+                    mdManageSchedule.Hide();
+                    nbMessage.Visible = true;
+                }
+            }            
+        }
+
+        /// <summary>
+        /// Handles the Manage event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void gScheduledTransactions_Manage( object sender, RowEventArgs e )
+        {
+            // get the row that triggered the event
+            GridViewRow row = gScheduledTransactions.Rows[e.RowIndex];
+
+            // set hidden field
+            hfGatewayScheduleId.Value = row.Cells[0].Text;
+
+            // show the modal
+            mdManageSchedule.Show();
+        }
+
+
+        /// <summary>
+        /// Transform Paypal schedule frequency to Pushpay schedule frequency. Defaults to "fortnightly" if a matching schedule is not found.
+        /// </summary>
+        /// <param name="frequency"></param>
+        /// <returns></returns>
+        private string PaypalSchedFreqToPushpaySchedFreq( string frequency )
+        {
+            switch ( frequency.ToLower().RemoveSpaces() )
+            {
+                case "weekly":
+                    return "weekly";
+                case "twiceamonth":
+                    return "firstandfifteenth";
+                case "monthly":
+                    return "monthly";
+                default:
+                    return "fortnightly";
             }
         }
     }
