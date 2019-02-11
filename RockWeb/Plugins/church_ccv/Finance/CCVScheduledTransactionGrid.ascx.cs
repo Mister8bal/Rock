@@ -50,7 +50,6 @@ namespace RockWeb.Plugins.church_ccv.Finance
             this.AddConfigurationUpdateTrigger( upPanel );
 
             mdManageSchedule.Header.Visible = false;
-            mdManageSchedule.SaveButtonText = "Transfer";
             mdManageSchedule.SaveClick += mdManageSchedule_SaveClick;
             mdManageSchedule.CancelLinkVisible = true;
         }
@@ -265,13 +264,19 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     queryString.Set( "a", selectedScheduleTransaction.TotalAmount.ToString() );
 
                     // frequency
-                    if ( selectedScheduleTransactionDetail != null )
+                    queryString.Set( "r", PaypalSchedFreqToPushpaySchedFreq( selectedScheduleTransaction.TransactionFrequencyValue.Value ) );
+
+                    // recurring start date - format: rsd=YYYY-MM-DD
+                    if ( selectedScheduleTransaction.NextPaymentDate != null )
                     {
-                        queryString.Set( "r", PaypalSchedFreqToPushpaySchedFreq( selectedScheduleTransaction.TransactionFrequencyValue.Value ) );
+                        queryString.Set( "rsd", string.Format( "{0}-{1}-{2}", selectedScheduleTransaction.NextPaymentDate.Value.Year, selectedScheduleTransaction.NextPaymentDate.Value.Month.ToString().PadLeft(2, '0'), selectedScheduleTransaction.NextPaymentDate.Value.Day.ToString().PadLeft( 2, '0' ) ) );
                     }
 
                     // fund
-                    queryString.Set( "fnd", selectedScheduleTransactionDetail.Account.Name );
+                    if ( selectedScheduleTransactionDetail != null )
+                    {
+                        queryString.Set( "fnd", selectedScheduleTransactionDetail.Account.Name );
+                    }
 
                     // person info
                     queryString.Set( "ufn", CurrentPerson.FirstName );
@@ -305,13 +310,6 @@ namespace RockWeb.Plugins.church_ccv.Finance
 
             // set hidden field
             hfGatewayScheduleId.Value = row.Cells[0].Text;
-
-            // get info and build detail message
-            string totalAmount = row.Cells[1].Text;
-            string paymentAccount = row.Cells[3].Text;
-            string scheduleFrequency = row.Cells[4].Text;
-
-            ltlTransferDetails.Text = string.Format( "<br />{0} {1} using {2}<br />", totalAmount, scheduleFrequency, paymentAccount );
 
             // show the modal
             mdManageSchedule.Show();
