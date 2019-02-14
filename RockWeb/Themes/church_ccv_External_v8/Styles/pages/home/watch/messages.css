@@ -10,6 +10,11 @@
     }
 }
 
+.main-feature {
+    height: 360px;
+    padding-top: 150px;
+}
+
 .messages {
     display: flex;
     flex-direction: column;
