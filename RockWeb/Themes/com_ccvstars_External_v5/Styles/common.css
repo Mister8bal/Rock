@@ -48,6 +48,23 @@ h2 {
     padding: 2% 10%;
 }
 
+.general-wrapper-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.general-wrapper-flex h1 {
+    font-size: 36px;
+}
+
+.biglist a:visited {
+    color: #000;
+}
+
+.biglist li:visited {
+    color: #000;
+}
+
 @media screen and (max-width: 1024px) {
     .content-area {
         padding: 0;
@@ -59,6 +76,10 @@ h2 {
 @media screen and (max-width: 500px) {
     .general-wrapper {
         padding: 7% 3%;
+    }
+
+    .general-wrapper-flex {
+        flex-direction: column;
     }
 
     .row {
@@ -127,9 +148,9 @@ h2 {
 }
 
 .header-login-item:hover {
-    background-color: #5b5b5c;
-    border: solid 1px  #5b5b5c;
-    color: white;
+    background-color: #FFFFFF;
+    border: solid 1px  #e43d35;
+    color: #e43d35;
 }
 
 .header-login-item a {
@@ -653,7 +674,6 @@ h2 {
     font-family: akrobat;
     font-weight: 700;
     text-transform: uppercase;
-    color: white;
  }
 
 .homepage-button {
@@ -670,17 +690,30 @@ h2 {
 }
 
 .btn-primary:hover {
-    background-color: #5b5b5c;
-    border: solid 1px  #5b5b5c;
-    color: white;
+    background-color: #FFFFFF;
+    border: solid 1px #e43d35;
     text-decoration: none;
+    color: #e43d35;
 }
 
 .btn-primary:active {
     color: #e43d35;
-    background-color: #5b5b5c;
-    border: solid 1px #5b5b5c;
-    color: white;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
+    text-decoration: none;
+}
+
+.btn-info:hover {
+    background-color: #FFFFFF;
+    border: solid 1px #e43d35;
+    text-decoration: none;
+    color: #e43d35;
+}
+
+.btn-info:active {
+    color: #e43d35;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
     text-decoration: none;
 }
 

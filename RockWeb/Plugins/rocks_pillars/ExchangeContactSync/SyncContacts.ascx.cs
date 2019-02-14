@@ -21,7 +21,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.UI;
 
-using com.minecartstudio.ExchangeContactSync.Transactions;
+using rocks.pillars.ExchangeContactSync.Transactions;
 
 using Rock;
 using Rock.Attribute;
@@ -29,13 +29,13 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI.Controls;
 
-namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
+namespace RockWeb.Plugins.rocks_pillars.ExchangeContactSync
 {
     /// <summary>
     /// Block that syncs selected people to an exchange server.
     /// </summary>
     [DisplayName( "Sync Contacts" )]
-    [Category( "Mine Cart Studio > Exchange Contact Sync" )]
+    [Category( "Pillars > Exchange Contact Sync" )]
     [Description( "Block that syncs selected people to an exchange server." )]
 
     [TextField("Admin Username", "The exchange admin's username.", true, "", "", 0)]
@@ -46,7 +46,7 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
     [SecurityRoleField( "Eligible People", "The security role that contains individuals who are allowed to sync contacts.", true, Rock.SystemGuid.Group.GROUP_STAFF_MEMBERS, "", 5 )]
     [BooleanField("Enable Trace", "Should tracing be enabled for the Exchange Web Service (helpful to debug connection issues).", false, "", 6)]
     [CodeEditorField("Business Phone Number Lava", "Lava to use for the Person object to use for formatting the business phone number?", CodeEditorMode.Lava, CodeEditorTheme.Rock, 
-        50, false, "{{ Person | PhoneNumber:'Work' }}", "", 7, "SyncBusinessPhone" )]
+        200, false, "{{ Person | PhoneNumber:'Work' }}", "", 7, "SyncBusinessPhone" )]
     public partial class SyncContacts : Rock.Web.UI.RockBlock
     {
 
@@ -66,7 +66,7 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
         {
             base.OnInit( e );
 
-            _keyPrefix = string.Format( "MineCartStudio.SyncContacts.{0}.", this.BlockId );
+            _keyPrefix = string.Format( "Pillars.SyncContacts.{0}.", this.BlockId );
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
             nbNotice.Visible = true;
 
             string message = string.Empty;
-            if ( com.minecartstudio.ExchangeContactSync.ExchangeContact.TestConnection( GetExchangeUserData(), CurrentPerson, out message ) )
+            if ( rocks.pillars.ExchangeContactSync.ExchangeContact.TestConnection( GetExchangeUserData(), CurrentPerson, out message ) )
             {
                 nbNotice.Heading = "Successful Connection";
                 nbNotice.Text = "<p>Congratulations, we were able to successfully connect to your Exchange server and we have authority to update your contacts.</p>";
@@ -212,7 +212,7 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
 
         #region Methods
 
-        private com.minecartstudio.ExchangeContactSync.UserData GetExchangeUserData()
+        private rocks.pillars.ExchangeContactSync.UserData GetExchangeUserData()
         {
             string adminUsername = GetAttributeValue( "AdminUsername" );
             string adminPassword = GetAttributeValue( "AdminPassword" );
@@ -222,7 +222,7 @@ namespace RockWeb.Plugins.com_mineCartStudio.ExchangeContactSync
             bool enableTrace = GetAttributeValue( "EnableTrace" ).AsBoolean();
             string businessPhoneNumberLava = GetAttributeValue( "SyncBusinessPhone" );
 
-            return new com.minecartstudio.ExchangeContactSync.UserData( adminUsername, adminPassword, adminDomain, exchangeVersion, autoDiscoverUrl, enableTrace, businessPhoneNumberLava );
+            return new rocks.pillars.ExchangeContactSync.UserData( adminUsername, adminPassword, adminDomain, exchangeVersion, autoDiscoverUrl, enableTrace, businessPhoneNumberLava );
         }
 
         #endregion

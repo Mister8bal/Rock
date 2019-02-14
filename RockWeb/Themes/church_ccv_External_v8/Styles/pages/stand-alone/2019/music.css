@@ -1,0 +1,199 @@
+.page-background {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-music.jpg");
+ }
+ 
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image:  url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-music-mobile.jpg");
+        background-color: black;
+    }
+}
+ 
+.main-feature {
+     height: 820px;
+     padding-top: 250px;
+}
+ 
+#subnavbar-bg {
+     display: none;
+}
+ 
+#section-a-bg {
+    background-color: #FFFFFF;
+ }
+ 
+#section-b-bg {
+    background-color: black;
+}
+
+#section-d-bg {
+    display: none;
+}
+ 
+#section-c-bg {
+     background-color: #000;
+}
+
+.center {
+    text-align: center;
+}
+
+ /* Hero Section */
+
+.title h2 {
+    color: #FFFFFF;
+    font-weight: 800;
+    font-family: akrobat;
+    font-size: 66px;
+}
+
+.title p {
+    font-family: akrobat;
+    font-size: 35px;	
+    line-height: 37px;
+    max-width: 729px;
+}
+
+.btn-row {
+    padding-top: 1%;
+}
+
+.title .btn-row a {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #000;
+}
+
+.title .btn-row a:active {
+    background-color: rgb(150, 46, 46);
+    border-color: rgb(212, 212, 212);
+}
+
+.title .btn-row a:focus {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+.title .btn-row a:hover {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+ /* End Hero Section */
+
+.img-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.img-row img {
+   width: 266px;
+   height: 204px;
+   border-radius: 10px;
+}
+
+.music-image {
+    padding: 5px;
+}
+
+.right h2 {
+    color: #000;
+}
+
+.right .btn-row a {
+    background-color: #000;
+    border-color: #000;
+    color: #FFFFFF;
+}
+
+.right .btn-row a:active {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+.right .btn-row a:focus {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+.right .btn-row a:hover {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+ /* Call to action section */
+
+.call-to-action {
+    padding-bottom: 7%;
+}
+
+.call-to-action h2 {
+    color: #FFFFFF;
+}
+
+.call-to-action p {
+    color: #FFFFFF;
+    font-size: 20px;
+}
+
+.call-to-action .btn-row a {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #000;
+}
+
+.call-to-action .btn-row a:active {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+.call-to-action .btn-row a:focus {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+.call-to-action .btn-row a:hover {
+    background-color: rgb(212, 212, 212);
+    border-color: rgb(212, 212, 212);
+}
+
+ /* End Call to action section */
+
+
+ /* Tablet Landscape Styling */
+ @media screen and (max-width: 1024px) {
+   
+ }
+ 
+ /* Tablet Portrait Styling */
+ @media screen and (max-width: 768px) {
+    
+ }
+ 
+ /* Mobile Styling */
+ @media screen and (max-width: 500px) {
+     .main-feature {
+         height: 550px;
+         padding-top: 90px;
+     }
+ 
+     .title {
+         margin-top: -10%;
+     }
+
+     .title h2 {
+        font-size: 46px;
+    }
+    
+    .title p {
+        font-size: 30px;	
+        line-height: 37px;
+        max-width: 729px;
+    }
+    
+    .img-row img {
+        width: 191px;
+        height: 166px;
+     }
+ }

@@ -84,6 +84,7 @@
     <Compile Include="SystemGuids\EmailTemplate.cs" />
     <Compile Include="SystemGuids\Group.cs" />
     <Compile Include="SystemGuids\Schedule.cs" />
+    <Compile Include="Workflow\Action\PostToShipRush.cs" />
     <Compile Include="Workflow\Action\PostWebhook.cs" />
     <Compile Include="Workflow\Action\SetPersonMobileSMSNumber.cs" />
     <Compile Include="SystemGuids\DefinedType.cs" />
