@@ -70,7 +70,7 @@ namespace church.ccv.CCVRest.CCVLive
             var person = GetPerson(attendanceModel.Email, attendanceModel.Name, rockContext);
             bool attendanceLogged = false;
 
-            AttendanceGroupId = 2567090;
+            AttendanceGroupId = 2575040;
             CampusId = 12;
 
             ResponseModel responseData = new ResponseModel()
