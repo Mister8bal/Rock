@@ -14,20 +14,16 @@
 // limitations under the License.
 // </copyright>
 //
-using System.IO;
 using System.Net.Http;
 using System.Text;
 using Rock.Model;
 using Newtonsoft.Json;
 using System.Net;
-using System.Web.Http;
-using System.Web.Routing;
 using Rock.Rest.Filters;
-using Rock.Security;
 using Rock.Data;
 using Rock;
-using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System;
 using church.ccv.CCVRest.CCVLive.Model;
 
@@ -161,8 +157,9 @@ namespace church.ccv.CCVRest.CCVLive
 
 
             var person = personQuery
-                .Queryable()
-                .Where(e => (e.Email == email) && (e.FirstName == name || e.NickName == name)).FirstOrDefault();
+                .Queryable().AsNoTracking()
+                .Where(e => (e.Email == email) && (e.FirstName == name || e.NickName == name))
+                .FirstOrDefault();
                
 
             // If we have a person, return it
