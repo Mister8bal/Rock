@@ -43,13 +43,15 @@ namespace church.ccv.CCVRest.CCVLive
 
         /// <summary>
         /// The group id to associate with any logged attendance records.
+        /// Production Value: 2575040
+        /// DEV Value: 2567090
         /// </summary>
-        int AttendanceGroupId { get; set; }
+        private const int AttendanceGroupId = 2575040;
 
         /// <summary>
         /// The campus id to associate any attendance records with.
         /// </summary>
-        int? CampusId { get; set; }
+        private const int CampusId = 12;
 
         /// <summary>
         /// Use this to log an Attendance Interaction on the CCV Live Interaction Channel 
@@ -69,9 +71,7 @@ namespace church.ccv.CCVRest.CCVLive
             var timeZoneInfo = RockDateTime.OrgTimeZoneInfo;
             var person = GetPerson(attendanceModel.Email, attendanceModel.Name, rockContext);
             bool attendanceLogged = false;
-
-            AttendanceGroupId = 2575040;
-            CampusId = 12;
+           
 
             ResponseModel responseData = new ResponseModel()
             {
