@@ -443,6 +443,21 @@ namespace Rock.SystemGuid
 
         #endregion
 
+        #region Person Search Keys
+
+        /// <summary>
+        /// Person Search Type: Email
+        /// </summary>
+        public const string PERSON_SEARCH_KEYS_EMAIL = "D6CFD200-B33B-4D01-B49F-24325E47D8B8";
+
+
+        /// <summary>
+        /// Person Search Type: Alternate Id
+        /// </summary>
+        public const string PERSON_SEARCH_KEYS_ALTERNATE_ID = "AD77CF28-E42B-44C2-8D5C-F6A0A6EE8022";
+
+        #endregion
+
         #region Map Styles
 
         /// <summary>
