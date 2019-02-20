@@ -16,8 +16,8 @@
 }
 
 .left-and-right-container .left {
-    width: 50%;
-    max-width: 50%;
+    width: 51%;
+    max-width: 51%;
 }
 
 .main-feature {
@@ -39,6 +39,10 @@
 
 .series p {
     margin: 20px 0;
+}
+
+h4 {
+    padding: 0;
 }
 
 @media screen and (max-width: 1024px) {
