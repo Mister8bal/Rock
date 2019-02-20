@@ -19,11 +19,15 @@
 
             <div class="row">
                 <asp:Panel ID="pnlSchedule" runat="server" Visible="false" CssClass="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <Rock:DayOfWeekPicker ID="dowWeekly" runat="server" CssClass="input-width-md" Label="Day of the Week" />
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <Rock:TimePicker ID="timeWeekly" runat="server" Label="Time of Day" />
+                    </div>
+                    <div class="col-sm-3">
+                        <Rock:RockTextBox ID="groupCapacity" runat="server"  Label="Group Capacity" Visible="false" />
+                            <asp:CompareValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="groupCapacity" ValidationGroup="NumericValidate" ErrorMessage="Only Numbers allowed" Operator="DataTypeCheck" Type="Integer" ValidationExpression="\d+" Display="Dynamic" CssClass="validation-error"></asp:CompareValidator>
                     </div>
                 </asp:Panel>
 

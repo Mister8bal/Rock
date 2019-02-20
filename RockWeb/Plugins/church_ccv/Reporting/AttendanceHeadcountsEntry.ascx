@@ -12,7 +12,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <Rock:CampusPicker ID="bddlCampus" runat="server" OnSelectedIndexChanged="bddlCampus_SelectionChanged" AutoPostBack="true" />
+                        <Rock:CampusPicker ID="bddlCampus" runat="server" OnSelectedIndexChanged="bddlCampus_SelectionChanged" AutoPostBack="true" IncludeInactive="false" />
                         <Rock:RockDropDownList ID="bddlWeekend" runat="server" OnSelectedIndexChanged="bddlWeekend_SelectedIndexChanged" AutoPostBack="true" Label="Weekend" />
                     </div>
                 </div>

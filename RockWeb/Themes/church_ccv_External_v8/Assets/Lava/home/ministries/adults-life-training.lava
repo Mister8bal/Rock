@@ -1,10 +1,10 @@
 <div class="main-container">
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
                 <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-marriage.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                 
                 <h2>MARRIAGE</h2>
             </div>
@@ -19,11 +19,11 @@
     </div>
 
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
             <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-sex-and-sexuality.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                
                 <h2>Sex & Sexuality</h2>
             </div>
@@ -36,11 +36,11 @@
     </div>
 
         <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
             <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-finance.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                
                 <h2>FINANCE</h2>
             </div>
@@ -52,11 +52,11 @@
     </div>
 
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
                 <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-parenting.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                 
                 <h2>PARENTING</h2>
             </div>
@@ -70,11 +70,11 @@
     </div>
 
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
                 <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-pain-and-grief.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                 
                 <h2>GRIEF</h2>
             </div>
@@ -84,17 +84,17 @@
             <div class="btn-row">
                 <a href="http://media.ccvonline.com.s3.amazonaws.com/2018/ADM/Pain_and_Grief_Final.pdf" class="btn btn-default" target="_blank">Learn More</a>
                 <a href="/ministries/adults/life-training/pastoral-care" class="btn btn-default">Talk to Someone</a>
-                <a href="/get-involved/events/detail?EventOccurrenceId=3323" class="btn btn-default">Grief Class</a>
+                <a href="/ministries/adults/life-training/grief" class="btn btn-default">Grief Class</a>
             </div>
         </div>
     </div>
 
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
                 <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-trauma-and-abuse.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                 
                 <h2>TRAUMA</h2>
             </div>
@@ -107,11 +107,11 @@
     </div>
 
     <div class="life-training-container">
-        <div class="ls-image">
+        <div class="life-training-image">
                 <img class="img img-responsive" src="~~/Assets/Images/home/ministries/feature-life-training-addiction.jpg"/>
         </div>
-        <div class="ls-section-desc">
-            <div class="ls-header">
+        <div class="life-training-section-desc">
+            <div class="life-training-header">
                 
                 <h2>ADDICTION</h2>
             </div>

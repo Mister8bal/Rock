@@ -9,7 +9,8 @@
         <div class="giving-title-row">
             <h3>GIVING</h3>
             <div class="giving-title-links">
-                <a href="/get-involved/giving/now">Give Now</a>
+                <a href="/get-involved/giving/now" class="ccv-modal" data-modal-type="outside-navigation"
+                data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">Give Now</a>
                 <a href="/dashboard/recurring-giving">Recurring Giving</a>
                 <a href="/dashboard/payment-accounts">Payment Accounts</a>
                 <a href="/dashboard/giving-history">Giving History</a>
@@ -18,7 +19,8 @@
                 <button class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Navigate<b class="fa fa-caret-down"></b></button>
                 <ul class="dropdown-menu  giving-title-links-mobile-dropdown-menu">
                     <li class="navigation-secondary-mobile-item">
-                        <a href="/get-involved/giving/now">Give Now</a>
+                        <a href="/get-involved/giving/now" class="ccv-modal" data-modal-type="outside-navigation"
+                data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">Give Now</a>
                     </li>
                     <li class="navigation-secondary-mobile-item">
                         <a href="/dashboard/recurring-giving">Recurring Giving</a>
@@ -39,8 +41,8 @@
             </div>
             <div class="giving-content-links">
                 <h5>LEARN HOW YOUR GIVING MAKES AN IMPACT</h5>
-                <a href="https://www.ccvannualreport.church/" target="_blank">
-                    <img src="/GetImage.ashx?guid=fbc8c5b0-72c4-41ed-9e35-9e8fb919b244" alt="Annual Report" />
+                <a href="https://www.ccvannualreport2018.church/" target="_blank">
+                    <img src="/Themes/church_ccv_External_v8/Assets/Images/home/about-us/feature-about-us-annual-report.jpg" alt="Annual Report" />
                 </a>
             </div>
         </div>

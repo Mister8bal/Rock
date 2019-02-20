@@ -7,8 +7,13 @@
 <div class="navigation-tertiary-desktop">
     <ul class="navigation-tertiary-items">
             {% for childPage in Page.Pages %}
-                <li class="navigation-tertiary-item{% if childPage.Current == 'true' %} active{% endif%}">
+                <li class="navigation-tertiary-item{% if childPage.Current == 'true' %} active{% endif %}">
+                    {% if childPage.Url == "/get-involved/giving/now" %}
+                    <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation"
+                data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
+                    {% else %}
                     <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                    {% endif %}
                 </li>
             {% endfor %}
     </ul>
@@ -20,7 +25,12 @@
         <ul class="navigation-tertiary-items-slick" >   
             {% for childPage in Page.Pages %}
                     <li class="navigation-tertiary-item{% if childPage.Current == 'true' %} active{% endif%}">
-                        <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                        {% if childPage.Url == "/get-involved/giving/now" %}
+						<a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation"
+					data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
+						{% else %}
+						<a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+						{% endif %}
                     </li>
             {% endfor %}
         </ul>

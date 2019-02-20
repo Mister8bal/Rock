@@ -1,0 +1,28 @@
+{% comment %}
+    {% include '~~/Assets/Lava/footer.lava' %}
+{% endcomment %}
+
+
+<div class="footer">
+    <div class="footer-logo">
+        <a href="/">
+            <img src="~~/Assets/Images/stars-logo-white.png">
+        </a>
+    </div>
+
+     <div class="footer-links">
+        <a href="/about-stars">About</a>
+        <a href="/soccer">Soccer</a>
+        <a href="/football">Football</a>
+        <a href="/basketball">Basketball</a>
+        <a href="/volunteer">Volunteer</a>
+    </div>
+
+    <div>
+        <div class="footer-social">
+            <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/twitter.png"></a>
+            <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/facebook.png"></a>
+        </div>
+        <div class="footer-copyright"><i class="fa fa-copyright"></i>2019 Christ's Church of the Valley</div>
+    </div>
+</div>

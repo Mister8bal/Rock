@@ -213,7 +213,7 @@
                     <Rock:RockLiteral ID="lMinimumDue" runat="server" Label="Minimum Due Today" />
                     
                     <div class="form-right">
-                        <Rock:CurrencyBox ID="nbAmountPaid" runat="server" CssClass="input-width-md amount-to-pay" NumberType="Currency" Label="Amount To Pay Today" Required="true" />
+                        <Rock:CurrencyBox ID="nbAmountPaid" runat="server" CssClass="input-width-md amount-to-pay" NumberType="Currency" Label="Amount To Pay Today" Required="true" MinimumValue="1"/>
                     </div>
                                  
                     <Rock:RockLiteral ID="lRemainingDue" runat="server" Label="Amount Remaining" />

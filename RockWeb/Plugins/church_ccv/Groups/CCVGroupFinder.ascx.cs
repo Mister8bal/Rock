@@ -135,7 +135,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [TextField( "ScheduleFilters", "", false, "", "CustomSetting" )]
     [BooleanField( "Display Campus Filter", "", false, "CustomSetting" )]
     [BooleanField( "Enable Campus Context", "", false, "CustomSetting" )]
-    [BooleanField( "Hide Overcapacity Groups", "When set to true, groups that are at capacity or whose default GroupTypeRole are at capacity are hidden.", true )]
+    [BooleanField( "Hide Over Capacity Groups", "When set to true, groups that are at capacity or whose default GroupTypeRole are at capacity are hidden.", true )]
+    [BooleanField( "Filter By Registration Start Date", "Filter groups by registration start date. If the group has a registration start date that hasn't happened yet, don't display.", true )]
     [AttributeField( Rock.SystemGuid.EntityType.GROUP, "Attribute Filters", "", false, true, "", "CustomSetting" )]
     [DataViewField( "DataView", "", false, "", "Rock.Model.Group", "CustomSetting" )]
 
@@ -380,6 +381,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
             }
 
             SetAttributeValue( "DisplayCampusFilter", cbFilterCampus.Checked.ToString() );
+            SetAttributeValue( "HideOverCapacityGroups", cbOverCapacityGroups.Checked.ToString() );
+            SetAttributeValue( "FilterByRegistrationStartDate", cbRegistrationStartDate.Checked.ToString() );
             SetAttributeValue( "EnableCampusContext", cbCampusContext.Checked.ToString() );
             SetAttributeValue( "AttributeFilters", cblAttributes.Items.Cast<ListItem>().Where( i => i.Selected ).Select( i => i.Value ).ToList().AsDelimited( "," ) );
 
@@ -542,6 +545,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
             dvpDataView.SetValue( dataViewVal );
 
             cbFilterCampus.Checked = GetAttributeValue( "DisplayCampusFilter" ).AsBoolean();
+            cbOverCapacityGroups.Checked = GetAttributeValue( "HideOverCapacityGroups" ).AsBoolean();
+            cbRegistrationStartDate.Checked = GetAttributeValue( "FilterByRegistrationStartDate" ).AsBoolean();
             cbCampusContext.Checked = GetAttributeValue( "EnableCampusContext" ).AsBoolean();
 
             cbShowMap.Checked = GetAttributeValue( "ShowMap" ).AsBoolean();
@@ -961,7 +966,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
             // 1) If the group has a GroupCapacity, check that we haven't met or exceeded that.
             // 2) When someone registers for a group on the front-end website, they automatically get added with the group's default
             //    GroupTypeRole. If that role exists and has a MaxCount, check that we haven't met or exceeded it yet.
-            if ( GetAttributeValue( "HideOvercapacityGroups" ).AsBoolean() )
+            if ( GetAttributeValue( "HideOverCapacityGroups" ).AsBoolean() )
             {
                 groupQry = groupQry.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
 
@@ -969,7 +974,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                      g.GroupType == null ||
                      g.GroupType.DefaultGroupRole == null ||
                      g.GroupType.DefaultGroupRole.MaxCount == null ||
-                     g.Members.Where( m => m.GroupRoleId == g.GroupType.DefaultGroupRole.Id ).Count() < g.GroupType.DefaultGroupRole.MaxCount );
+                     g.Members.Where( m => m.GroupRoleId == g.GroupType.DefaultGroupRole.Id && (m.GroupMemberStatus == GroupMemberStatus.Active || m.GroupMemberStatus == GroupMemberStatus.Pending ) ).Count() < g.GroupType.DefaultGroupRole.MaxCount );
             }
 
             // Filter query by any configured attribute filters
@@ -1011,6 +1016,45 @@ namespace RockWeb.Plugins.church_ccv.Groups
             else
             {
                 groups = groupQry.OrderBy( g => g.Name ).ToList();
+            }
+
+            // Filter groups by registration start date and end date. If the group has a registration start date that hasn't happened yet, or a registration end date that already passed, don't display. 
+            if ( GetAttributeValue( "FilterByRegistrationStartDate" ).AsBoolean() )
+            {
+                List<Group> groupsList = groupQry.ToList();
+                var filteredList = new List<Group>();
+
+                // Loop through groups
+                foreach ( var group in groupsList )
+                {
+                    // Load the groups attributes
+                    group.LoadAttributes();
+
+                    // Get RegistrationStartDate attribute
+                    string registrationStart = group.GetAttributeValue( "RegistrationStartDate" );
+
+                    // Get RegistrationEndDate attribute
+                    string registrationEnd = group.GetAttributeValue( "RegistrationEndDate" );
+
+                    // if RegistrationStartDate & RegistrationEndDate attribute is not null
+                    if ( !string.IsNullOrWhiteSpace( registrationStart ) && !string.IsNullOrWhiteSpace( registrationEnd ) )
+                    {
+                        // Get the RegistrationStartDate attribute as Date to compare to today's date.
+                        DateTime registrationStartDate = DateTime.Parse( registrationStart );
+
+                        // Get the RegistrationEndDate attribute as Date to compare to today's date.
+                        DateTime registrationEndDate = DateTime.Parse( registrationEnd );
+
+                        var today = RockDateTime.Now.Date;
+
+                        // If RegistrationStartDate is before today's date & RegistrationEndDate is before today's date
+                        if ( registrationStartDate.Date <= today && registrationEndDate.Date >= today )
+                        {
+                               filteredList.Add( group );
+                        }
+                    }
+                }
+                groups = filteredList;
             }
 
             int? fenceGroupTypeId = GetGroupTypeId( GetAttributeValue( "GeofencedGroupType" ).AsGuidOrNull() );

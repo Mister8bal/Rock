@@ -14,7 +14,6 @@
 
 <h4 class="page-header">What They Learned In Class</h4>
 <p><b>Main Point:</b> {{ viewedItem | Attribute: 'MainPoint' }}</p>
-<p><b>Memory Verses:</b> {{ viewedItem | Attribute: 'MemoryVerses' }}</p>
 <p><b>Bible Verses:</b> {{ viewedItem | Attribute: 'BibleVerses' }}</p>
 <p>{{ viewedItem | Attribute:'Summary' }}</p>
 <p>{{ viewedItem.Content }}</p>

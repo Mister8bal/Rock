@@ -20,22 +20,27 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Data.Entity;
 
+using Rock;
 using Rock.Attribute;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
 using Rock.Web.UI.Controls.Communication;
 
+//CCV CORE
+//BPT 01-16-2019 - Updated the method used to search for a person.  Added GetPerson method.
+
 namespace Rock.Communication.Medium
 {
     /// <summary>
     /// An SMS communication
     /// </summary>
-    [Description( "An SMS communication" )]
-    [Export( typeof( MediumComponent ) )]
-    [ExportMetadata( "ComponentName", "SMS" )]
-    [IntegerField( "Character Limit", "Set this to show a character limit countdown for SMS communications. Set to 0 to disable", false, 160 )]
+    [Description("An SMS communication")]
+    [Export(typeof(MediumComponent))]
+    [ExportMetadata("ComponentName", "SMS")]
+    [IntegerField("Character Limit", "Set this to show a character limit countdown for SMS communications. Set to 0 to disable", false, 160)]
     public class Sms : MediumComponent
     {
         const int TOKEN_REUSE_DURATION = 30; // number of days between token reuse
@@ -70,10 +75,10 @@ namespace Rock.Communication.Medium
         /// </summary>
         /// <param name="useSimpleMode">if set to <c>true</c> [use simple mode].</param>
         /// <returns></returns>
-        public override MediumControl GetControl( bool useSimpleMode )
+        public override MediumControl GetControl(bool useSimpleMode)
         {
             var smsControl = new Web.UI.Controls.Communication.Sms();
-            smsControl.CharacterLimit = this.GetAttributeValue( "CharacterLimit" ).AsIntegerOrNull() ?? 160;
+            smsControl.CharacterLimit = this.GetAttributeValue("CharacterLimit").AsIntegerOrNull() ?? 160;
             return smsControl;
         }
 
@@ -84,75 +89,78 @@ namespace Rock.Communication.Medium
         /// <param name="fromPhone">The phone number a message is sent from.</param>
         /// <param name="message">The message that was sent.</param>
         /// <param name="errorMessage">The error message.</param>
-        public void ProcessResponse( string toPhone, string fromPhone, string message, out string errorMessage )
+        public void ProcessResponse(string toPhone, string fromPhone, string message, out string errorMessage)
         {
             errorMessage = string.Empty;
-            
+
             string transportPhone = string.Empty;
 
-            using ( var rockContext = new RockContext() )
+            using (var rockContext = new RockContext())
             {
                 Person toPerson = null;
 
-                var mobilePhoneNumberValueId = DefinedValueCache.Read( SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ).Id;
+                var mobilePhoneNumberValueId = DefinedValueCache.Read(SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE).Id;
 
                 // get from person
-                var fromPerson = new PersonService( rockContext ).Queryable()
-                    .Where( p => p.PhoneNumbers.Any( n => ( n.CountryCode + n.Number ) == fromPhone.Replace( "+", "" ) && n.NumberTypeValueId == mobilePhoneNumberValueId ) )
-                    .OrderBy( p => p.Id ).FirstOrDefault(); // order by person id to get the oldest person to help with duplicate records of the response recipient
+                //var fromPerson = new PersonService( rockContext ).Queryable()
+                //    .Where( p => p.PhoneNumbers.Any( n => ( n.CountryCode + n.Number ) == fromPhone.Replace( "+", "" ) && n.NumberTypeValueId == mobilePhoneNumberValueId ) )
+                //    .OrderBy( p => p.Id ).FirstOrDefault(); // order by person id to get the oldest person to help with duplicate records of the response recipient
+
+                var fromPerson = GetPerson(fromPhone, rockContext);
 
                 // get recipient from defined value
-                var fromPhoneDv = FindFromPhoneDefinedValue( toPhone );
-                if ( fromPhoneDv != null )
+
+                var fromPhoneDv = FindFromPhoneDefinedValue(toPhone);
+                if (fromPhoneDv != null)
                 {
-                    var toPersonAliasGuid = fromPhoneDv.GetAttributeValue( "ResponseRecipient" ).AsGuidOrNull();
-                    if ( toPersonAliasGuid.HasValue )
+                    var toPersonAliasGuid = fromPhoneDv.GetAttributeValue("ResponseRecipient").AsGuidOrNull();
+                    if (toPersonAliasGuid.HasValue)
                     {
-                        toPerson = new PersonAliasService( rockContext )
-                            .Queryable().Where( p => p.Guid.Equals( toPersonAliasGuid.Value ) )
-                            .Select( p => p.Person )
+                        toPerson = new PersonAliasService(rockContext)
+                            .Queryable().Where(p => p.Guid.Equals(toPersonAliasGuid.Value))
+                            .Select(p => p.Person)
                             .FirstOrDefault();
                     }
                 }
 
-                if ( fromPerson != null && toPerson != null && fromPerson.PrimaryAliasId.HasValue && toPerson.PrimaryAliasId.HasValue )
+                if (fromPerson != null && toPerson != null && fromPerson.PrimaryAliasId.HasValue && toPerson.PrimaryAliasId.HasValue)
                 {
-                    if ( toPerson.Id == fromPerson.Id ) // message from the medium recipient
+                    if (toPerson.Id == fromPerson.Id) // message from the medium recipient
                     {
                         // look for response code in the message
-                        Match match = Regex.Match( message, @"@\d{3,5}" );
-                        if ( match.Success )
+                        Match match = Regex.Match(message, @"@\d{3,5}");
+                        if (match.Success)
                         {
                             string responseCode = match.ToString();
 
-                            var recipient = new CommunicationRecipientService( rockContext ).Queryable( "Communication" )
-                                                .Where( r => r.ResponseCode == responseCode )
-                                                .OrderByDescending( r => r.CreatedDateTime ).FirstOrDefault();
+                            var recipient = new CommunicationRecipientService(rockContext).Queryable("Communication")
+                                                .Where(r => r.ResponseCode == responseCode)
+                                                .OrderByDescending(r => r.CreatedDateTime).FirstOrDefault();
 
-                            if ( recipient != null && recipient.Communication.SenderPersonAliasId.HasValue )
+                            if (recipient != null && recipient.Communication.SenderPersonAliasId.HasValue)
                             {
-                                CreateCommunication( fromPerson.PrimaryAliasId.Value, fromPerson.FullName, recipient.Communication.SenderPersonAliasId.Value, message.Replace( responseCode, "" ), fromPhoneDv, "", rockContext );
+                                CreateCommunication(fromPerson.PrimaryAliasId.Value, fromPerson.FullName, recipient.Communication.SenderPersonAliasId.Value, message.Replace(responseCode, ""), fromPhoneDv, "", rockContext);
                             }
                             else // send a warning message back to the medium recipient
                             {
-                                string warningMessage = string.Format( "A conversation could not be found with the response token {0}.", responseCode );
-                                CreateCommunication( fromPerson.PrimaryAliasId.Value, fromPerson.FullName, fromPerson.PrimaryAliasId.Value, warningMessage, fromPhoneDv, "", rockContext );
+                                string warningMessage = string.Format("A conversation could not be found with the response token {0}.", responseCode);
+                                CreateCommunication(fromPerson.PrimaryAliasId.Value, fromPerson.FullName, fromPerson.PrimaryAliasId.Value, warningMessage, fromPhoneDv, "", rockContext);
                             }
                         }
                     }
                     else // response from someone other than the medium recipient
                     {
-                        string messageId = GenerateResponseCode( rockContext );
-                        message = string.Format( "-{0}-\n{1}\n( {2} )", fromPerson.FullName, message, messageId );
-                        CreateCommunication( fromPerson.PrimaryAliasId.Value, fromPerson.FullName, toPerson.PrimaryAliasId.Value, message, fromPhoneDv, messageId, rockContext );
+                        string messageId = GenerateResponseCode(rockContext);
+                        message = string.Format("-{0}-\n{1}\n( {2} )", fromPerson.FullName, message, messageId);
+                        CreateCommunication(fromPerson.PrimaryAliasId.Value, fromPerson.FullName, toPerson.PrimaryAliasId.Value, message, fromPhoneDv, messageId, rockContext);
                     }
                 }
                 else
                 {
                     var globalAttributes = GlobalAttributesCache.Read();
-                    string organizationName = globalAttributes.GetValue( "OrganizationName" );
+                    string organizationName = globalAttributes.GetValue("OrganizationName");
 
-                    errorMessage = string.Format( "Could not deliver message. This phone number is not registered in the {0} database.", organizationName );
+                    errorMessage = string.Format("Could not deliver message. This phone number is not registered in the {0} database.", organizationName);
                 }
             }
         }
@@ -167,11 +175,11 @@ namespace Rock.Communication.Medium
         /// <param name="fromPhone">From phone.</param>
         /// <param name="responseCode">The reponseCode to use for tracking the conversation.</param>
         /// <param name="rockContext">A context to use for database calls.</param>
-        private void CreateCommunication( int fromPersonAliasId, string fromPersonName, int toPersonAliasId, string message, DefinedValueCache fromPhone, string responseCode, Rock.Data.RockContext rockContext )
+        private void CreateCommunication(int fromPersonAliasId, string fromPersonName, int toPersonAliasId, string message, DefinedValueCache fromPhone, string responseCode, Rock.Data.RockContext rockContext)
         {
             // add communication for reply
             var communication = new Rock.Model.Communication();
-            communication.Name = string.Format( "From: {0}", fromPersonName );
+            communication.Name = string.Format("From: {0}", fromPersonName);
             communication.CommunicationType = CommunicationType.SMS;
             communication.SenderPersonAliasId = fromPersonAliasId;
             communication.IsBulkCommunication = false;
@@ -183,18 +191,18 @@ namespace Rock.Communication.Medium
             recipient.Status = CommunicationRecipientStatus.Pending;
             recipient.PersonAliasId = toPersonAliasId;
             recipient.ResponseCode = responseCode;
-            recipient.MediumEntityTypeId = EntityTypeCache.Read( "Rock.Communication.Medium.Sms" ).Id;
-            communication.Recipients.Add( recipient );
+            recipient.MediumEntityTypeId = EntityTypeCache.Read("Rock.Communication.Medium.Sms").Id;
+            communication.Recipients.Add(recipient);
 
-            var communicationService = new Rock.Model.CommunicationService( rockContext );
-            communicationService.Add( communication );
+            var communicationService = new Rock.Model.CommunicationService(rockContext);
+            communicationService.Add(communication);
             rockContext.SaveChanges();
 
             // queue the sending
             var transaction = new Rock.Transactions.SendCommunicationTransaction();
             transaction.CommunicationId = communication.Id;
             transaction.PersonAlias = null;
-            Rock.Transactions.RockQueue.TransactionQueue.Enqueue( transaction );
+            Rock.Transactions.RockQueue.TransactionQueue.Enqueue(transaction);
         }
 
         /// <summary>
@@ -202,39 +210,39 @@ namespace Rock.Communication.Medium
         /// </summary>
         /// <param name="rockContext">A context to use for database calls.</param>
         /// <returns>A randomized <see cref="List{T}"/> of strings that are available for use.</returns>
-        static private List<string> GenerateAvailableResponseCodeList( Rock.Data.RockContext rockContext )
+        static private List<string> GenerateAvailableResponseCodeList(Rock.Data.RockContext rockContext)
         {
-            DateTime tokenStartDate = RockDateTime.Now.Subtract( new TimeSpan( TOKEN_REUSE_DURATION, 0, 0, 0 ) );
+            DateTime tokenStartDate = RockDateTime.Now.Subtract(new TimeSpan(TOKEN_REUSE_DURATION, 0, 0, 0));
             int[] blacklist = new int[] { 666, 911 };
             int chunkSize = 100;
 
             //
             // Generate a list of codes that are currently active in the database.
             //
-            var activeCodes = new CommunicationRecipientService( rockContext ).Queryable()
-                                    .Where( c => c.ResponseCode.StartsWith( "@" ) && c.CreatedDateTime > tokenStartDate )
-                                    .Select( c => c.ResponseCode )
+            var activeCodes = new CommunicationRecipientService(rockContext).Queryable()
+                                    .Where(c => c.ResponseCode.StartsWith("@") && c.CreatedDateTime > tokenStartDate)
+                                    .Select(c => c.ResponseCode)
                                     .ToList();
 
             //
             // Starting at code 100, try to generate a list of available codes in small chunks until
             // we have a list with atleast 1 available code.
             //
-            for ( int startValue = 100; startValue < RESPONSE_CODE_MAX - chunkSize; startValue += chunkSize )
+            for (int startValue = 100; startValue < RESPONSE_CODE_MAX - chunkSize; startValue += chunkSize)
             {
-                var availableCodes = Enumerable.Range( startValue, chunkSize )
-                    .Where( i => !blacklist.Contains( i ) )
-                    .Select( i => string.Format( "@{0}", i ) )
-                    .Where( c => !activeCodes.Contains( c ) )
+                var availableCodes = Enumerable.Range(startValue, chunkSize)
+                    .Where(i => !blacklist.Contains(i))
+                    .Select(i => string.Format("@{0}", i))
+                    .Where(c => !activeCodes.Contains(c))
                     .ToList();
 
-                if ( availableCodes.Any() )
+                if (availableCodes.Any())
                 {
-                    return availableCodes.OrderBy( c => Guid.NewGuid() ).ToList();
+                    return availableCodes.OrderBy(c => Guid.NewGuid()).ToList();
                 }
             }
 
-            throw new Exception( "No available response codes." );
+            throw new Exception("No available response codes.");
         }
 
         /// <summary>
@@ -242,13 +250,13 @@ namespace Rock.Communication.Medium
         /// </summary>
         /// <param name="rockContext">A context to use for database calls.</param>
         /// <returns>String token</returns>
-        private string GenerateResponseCode( Rock.Data.RockContext rockContext )
+        private string GenerateResponseCode(Rock.Data.RockContext rockContext)
         {
-            DateTime tokenStartDate = RockDateTime.Now.Subtract( new TimeSpan( TOKEN_REUSE_DURATION, 0, 0, 0 ) );
-            var communicationRecipientService = new CommunicationRecipientService( rockContext );
+            DateTime tokenStartDate = RockDateTime.Now.Subtract(new TimeSpan(TOKEN_REUSE_DURATION, 0, 0, 0));
+            var communicationRecipientService = new CommunicationRecipientService(rockContext);
             var cache = RockMemoryCache.Default;
 
-            lock ( _responseCodesLock )
+            lock (_responseCodesLock)
             {
                 var availableResponseCodes = cache[RESPONSE_CODE_CACHE_KEY] as List<string>;
 
@@ -256,24 +264,24 @@ namespace Rock.Communication.Medium
                 // Try up to 1,000 times to find a code. This really should never go past the first
                 // loop but we will give the benefit of the doubt in case a code is issued via SQL.
                 //
-                for ( int attempts = 0; attempts < 1000; attempts++ )
+                for (int attempts = 0; attempts < 1000; attempts++)
                 {
-                    if ( availableResponseCodes == null || !availableResponseCodes.Any() )
+                    if (availableResponseCodes == null || !availableResponseCodes.Any())
                     {
-                        availableResponseCodes = GenerateAvailableResponseCodeList( rockContext );
+                        availableResponseCodes = GenerateAvailableResponseCodeList(rockContext);
                     }
 
                     var code = availableResponseCodes[0];
-                    availableResponseCodes.RemoveAt( 0 );
+                    availableResponseCodes.RemoveAt(0);
 
                     //
                     // Verify that the code is still unused.
                     //
                     var isUsed = communicationRecipientService.Queryable()
-                            .Where( c => c.ResponseCode == code && c.CreatedDateTime > tokenStartDate )
+                            .Where(c => c.ResponseCode == code && c.CreatedDateTime > tokenStartDate)
                             .Any();
 
-                    if ( !isUsed )
+                    if (!isUsed)
                     {
                         cache[RESPONSE_CODE_CACHE_KEY] = availableResponseCodes;
                         return code;
@@ -281,7 +289,7 @@ namespace Rock.Communication.Medium
                 }
             }
 
-            throw new Exception( "Could not find an available response code." );
+            throw new Exception("Could not find an available response code.");
         }
 
         /// <summary>
@@ -289,20 +297,101 @@ namespace Rock.Communication.Medium
         /// </summary>
         /// <param name="phoneNumber">The phone number.</param>
         /// <returns></returns>
-        public static DefinedValueCache FindFromPhoneDefinedValue( string phoneNumber )
+        public static DefinedValueCache FindFromPhoneDefinedValue(string phoneNumber)
         {
-            var definedType = DefinedTypeCache.Read( SystemGuid.DefinedType.COMMUNICATION_SMS_FROM.AsGuid() );
-            if ( definedType != null )
+            var definedType = DefinedTypeCache.Read(SystemGuid.DefinedType.COMMUNICATION_SMS_FROM.AsGuid());
+            if (definedType != null)
             {
-                if ( definedType.DefinedValues != null && definedType.DefinedValues.Any() )
+                if (definedType.DefinedValues != null && definedType.DefinedValues.Any())
                 {
-                    return definedType.DefinedValues.Where( v => v.Value.RemoveSpaces() == phoneNumber.RemoveSpaces() ).OrderBy( v => v.Order ).FirstOrDefault();
+                    return definedType.DefinedValues.Where(v => v.Value.RemoveSpaces() == phoneNumber.RemoveSpaces()).OrderBy(v => v.Order).FirstOrDefault();
                 }
             }
 
             return null;
         }
 
+        /// <summary>
+        /// Gets first person associated with a specific phone number. If there is more 
+        /// than one person, the oldest adult will be returned first. If no adults, the
+        /// oldest child.
+        /// </summary>
+        /// <param name="fromPhone">From phone.</param>
+        /// <param name="rockContext">The rock context.</param>
+        /// <returns></returns>
+        private static Person GetPerson(string fromPhone, RockContext rockContext)
+        {
+            var familyGroupType = GroupTypeCache.Read(Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY);
+
+            Person fromPerson = null;
+
+            var personQuery = new PersonService(rockContext).Queryable().AsNoTracking();
+            var groupMemberQuery = new GroupMemberService(rockContext).Queryable().AsNoTracking();
+
+            var peronGroupMemberQuery = from person in personQuery
+                                        join groupMember in groupMemberQuery on person.Id equals groupMember.PersonId
+                                        where groupMember.Group.GroupTypeId == familyGroupType.Id
+                                        select new
+                                        {
+                                            Person = person,
+                                            GroupRole = groupMember.GroupRole
+                                        };
+
+            var phoneNumberService = new PhoneNumberService(rockContext);
+
+            var phoneNumber = fromPhone.Replace("+", "");
+
+            // Get the person ids for people who's Mobile number matches the received From number
+            var mobilePhoneType = DefinedValueCache.Read(SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE);
+            var peopleWithMobileNumber = phoneNumberService
+                .Queryable().AsNoTracking()
+                .Where(n => (n.CountryCode ?? "") + (n.Number ?? "") == phoneNumber)
+                .Select(n => new
+                {
+                    n.PersonId,
+                    n.NumberTypeValueId
+                })
+                // Query the database using only the number, to ensure index is used and only returns minimal data
+                .ToList()
+                // then filter by type in memory
+                .Where(v => v.NumberTypeValueId == mobilePhoneType.Id)
+                .Select(v => v.PersonId)
+                .ToList();
+
+            // If there were any people found, find the first person (adults before children, and then by age)
+            if (peopleWithMobileNumber.Any())
+            {
+                fromPerson = peronGroupMemberQuery
+                    .Where(p => peopleWithMobileNumber.Contains(p.Person.Id))
+                    .OrderBy(p => p.GroupRole.Order)
+                    .ThenBy(p => p.Person.BirthDate ?? DateTime.MinValue)
+                    .Select(p => p.Person)
+                    .FirstOrDefault();
+            }
+
+            // If we have a person, return it
+            if (fromPerson != null) return fromPerson;
+
+            // Otherwise, See if a person matches by any other type of phone (other than mobile)
+            var peopleWithAnyNumber = phoneNumberService
+                .Queryable().AsNoTracking()
+                .Where(n => (n.CountryCode ?? "") + (n.Number ?? "") == phoneNumber)
+                .Select(n => n.PersonId)
+                .ToList();
+
+            if (peopleWithAnyNumber.Any())
+            {
+                fromPerson = peronGroupMemberQuery
+                    .Where(p => peopleWithAnyNumber.Contains(p.Person.Id))
+                    .OrderBy(p => p.GroupRole.Order)
+                    .ThenBy(p => p.Person.BirthDate ?? DateTime.MinValue)
+                    .Select(p => p.Person)
+                    .FirstOrDefault();
+            }
+
+            return fromPerson;
+
+        }
 
         #region Obsolete 
 
@@ -312,8 +401,8 @@ namespace Rock.Communication.Medium
         /// <param name="communication">The communication.</param>
         /// <param name="person">The person.</param>
         /// <returns></returns>
-        [Obsolete( "The GetCommunication now creates the HTML Preview directly" )]
-        public override string GetHtmlPreview( Model.Communication communication, Person person )
+        [Obsolete("The GetCommunication now creates the HTML Preview directly")]
+        public override string GetHtmlPreview(Model.Communication communication, Person person)
         {
             throw new NotSupportedException();
         }
@@ -323,8 +412,8 @@ namespace Rock.Communication.Medium
         /// </summary>
         /// <param name="communication">The communication.</param>
         /// <returns></returns>
-        [Obsolete( "The CommunicationDetail block now creates the details" )]
-        public override string GetMessageDetails( Model.Communication communication )
+        [Obsolete("The CommunicationDetail block now creates the details")]
+        public override string GetMessageDetails(Model.Communication communication)
         {
             throw new NotSupportedException();
         }
@@ -335,7 +424,7 @@ namespace Rock.Communication.Medium
         /// <value>
         /// <c>true</c> if [supports bulk communication]; otherwise, <c>false</c>.
         /// </value>
-        [Obsolete( "All mediums now support bulk communications" )]
+        [Obsolete("All mediums now support bulk communications")]
         public override bool SupportsBulkCommunication
         {
             get

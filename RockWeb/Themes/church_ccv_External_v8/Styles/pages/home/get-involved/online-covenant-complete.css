@@ -1,0 +1,19 @@
+.main-feature {
+    background-color: black;
+}
+
+@media screen and (min-width: 501px) {
+    .main-feature {
+        padding-top: 125px;
+        height: 350px;
+    }
+
+    .background-card {
+        padding-top: 75px;
+        padding-bottom: 75px;
+    }
+}
+
+#subnavbar-bg { 
+    display: none;
+}

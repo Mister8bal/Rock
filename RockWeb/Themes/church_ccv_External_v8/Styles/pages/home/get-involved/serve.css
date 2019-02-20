@@ -20,14 +20,13 @@
 .serve-cards-row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
 }
 
 .serve-card {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin: 10px 0;
+    margin: 10px 10px;
     width: 31%;
     min-height: 500px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; 
@@ -35,10 +34,6 @@
     border: unset;
     border-width: unset;
     background-color: #FFFFFF; 
-}
-
-.serve-card:last-of-type {
-    margin: 10px 0 0 0;
 }
 
 /* Laptops */

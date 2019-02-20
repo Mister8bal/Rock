@@ -9,6 +9,17 @@
     color: #7A1315;
 }
 
+.m-1rem {
+	margin: 1rem 0 !important;
+}
+
+.mb-2rem {
+	margin-bottom:2rem !important;
+}
+
+.mtb-2rem {
+	margin: 2rem 0 !important;
+}
 /* .btn-white:hover {
 TODO: 50% opacity #7a1315 background color
 } */
