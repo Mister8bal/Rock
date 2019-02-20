@@ -97,6 +97,10 @@
     position: relative;
     top: 25%;
 }
+.person-row-details {
+    min-width: 200px;
+    max-width: 200px;
+}
 
 .person-info {
     white-space: normal;
