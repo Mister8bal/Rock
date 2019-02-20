@@ -11,6 +11,15 @@
     }
 }
 
+.left-and-right-container {
+    align-items: unset;
+}
+
+.left-and-right-container .left {
+    width: 50%;
+    max-width: 50%;
+}
+
 .main-feature {
     height: 0px;
     padding-top: 140px;
@@ -52,6 +61,11 @@
 
     .series {
         margin: 0;
+    }
+
+    .left-and-right-container .left {
+         width: unset;
+         max-width: unset;
     }
 }
 
