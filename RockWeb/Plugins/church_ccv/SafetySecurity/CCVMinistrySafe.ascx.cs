@@ -64,14 +64,14 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
                 foreach ( var person in peopleList )
                 {
-                    // MinistrySafePerson roww;
+                     MinistrySafePerson roww;
 
-                    string firstName = ""; //person.FirstName;
-                    string lastName = ""; //person.LastName;
-                    string email = ""; //person.Email;
-                    int trainingScore = 5; //person.TrainingScore;
-                    string sexualAbuseAwarenessTraining = ""; // person.SexualAbuseAwarenessTraining;
-                    DateTime renewalDateSexualAbuseAwarenessTraining = DateTime.Now; //person.RenewalDateSexualAbuseAwarenessTraining;
+                    string firstName = person.FirstName;
+                    string lastName = person.LastName;
+                    string email = person.Email;
+                    int trainingScore = person.TrainingScore;
+                    string sexualAbuseAwarenessTraining = person.SexualAbuseAwarenessTraining;
+                    DateTime renewalDateSexualAbuseAwarenessTraining = person.RenewalDateSexualAbuseAwarenessTraining;
 
                     // Try to find matching person
                     var personMatches = personService.GetByMatch( firstName, lastName, email );
@@ -134,3 +134,5 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
     }
 }
+
+//  <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="LoadCsvFile" />

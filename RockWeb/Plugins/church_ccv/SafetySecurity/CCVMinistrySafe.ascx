@@ -10,7 +10,7 @@
             </div>
             <div class="panel-body">
 
-                <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="LoadCsvFile" />
+               
                 <Rock:NotificationBox ID="nbResult" runat="server" Visible="false" />
             </div>
 
