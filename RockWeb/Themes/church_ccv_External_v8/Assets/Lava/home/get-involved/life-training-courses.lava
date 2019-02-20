@@ -6,6 +6,8 @@
         <div>               
             {% for group in Groups %}
                 {% assign personIndex = forloop.index %}
+                {% assign groupSize = group.Members | Size %}
+                {% assign numberOfSpotsAvailable = group.GroupCapacity | Minus:groupSize %}
                 {% assign courseStartDate = group | Attribute: 'CourseStartDate' %}
                 {% assign courseEndDate = group | Attribute: 'CourseEndDate' %}                  
                 <a type="button" data-toggle="collapse" data-target="#personDetails{{ personIndex }}" class="person-details-toggle">
@@ -72,14 +74,20 @@
                                     <p>Distance: {{ groupdistancelist.Distance }} miles away</p>                                      
                                 {% endif %} 
                             {% endfor %}
-                            {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
-                                {% if LinkedPages.RegisterPage contains '?' %}
-                                    <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
-                                {% else %}
-                                    <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
+                            {% if numberOfSpotsAvailable >= 1 %}
+                                <P>Open Spots Available: {{ numberOfSpotsAvailable }} </p>
+                                {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
+                                    {% if LinkedPages.RegisterPage contains '?' %}
+                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
+                                    {% else %}
+                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
+                            {% else %}
+                                <p> Group Full <p>    
+                            {% endif %}   
                         </div>
+                        
                         {% for attribute in group.AttributeValues %}
                             {% if attribute.Value != empty %}
                                 {% if attribute.AttributeName == "Course Description" %}
@@ -125,4 +133,3 @@
             {% endfor %}
         </div>
     </div>
-
