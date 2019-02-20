@@ -6,12 +6,20 @@
         <asp:Panel ID="pnlView" runat="server" CssClass="panel panel-block">
 
             <div class="panel-heading">
-                <h1 class="panel-title"><i class="fa fa-flag"></i>&nbsp;Ministry Safe Import</h1>
+                <h1 class="panel-title"><i class="fa fa-cloud-upload"></i>&nbsp;Ministry Safe Import</h1>
             </div>
             <div class="panel-body">
 
-               
-                <Rock:NotificationBox ID="nbResult" runat="server" Visible="false" />
+                <%-- Start Panel --%>
+                <asp:Panel ID="pnlStart" runat="server">
+                    <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="fuImport_FileUploaded" />
+                </asp:Panel>
+
+                <%-- Done Panel --%>
+                <asp:Panel ID="pnlDone" runat="server" Visible="false">
+                    <Rock:NotificationBox ID="nbSuccess" runat="server" Title="Success" Text="n records imported" />
+                </asp:Panel>
+
             </div>
 
         </asp:Panel>
