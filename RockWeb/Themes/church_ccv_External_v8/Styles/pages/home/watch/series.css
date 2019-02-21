@@ -11,6 +11,15 @@
     }
 }
 
+.left-and-right-container {
+    align-items: unset;
+}
+
+.left-and-right-container .left {
+    width: 51%;
+    max-width: 51%;
+}
+
 .main-feature {
     height: 0px;
     padding-top: 140px;
@@ -30,6 +39,10 @@
 
 .series p {
     margin: 20px 0;
+}
+
+h4 {
+    padding-top: 0;
 }
 
 @media screen and (max-width: 1024px) {
@@ -52,6 +65,11 @@
 
     .series {
         margin: 0;
+    }
+
+    .left-and-right-container .left {
+         width: unset;
+         max-width: unset;
     }
 }
 
