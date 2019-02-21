@@ -47,14 +47,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
         }
 
-        //public class ClassMap<MinistrySafePerson>
-        //{
-        //    public ClassMap()
-        //    {
-        //        References<MinistrySafePerson.ClassMap>( m => m.Person );
-        //    }
-        //}
-
         /// <summary>
         /// Handles the FileUploaded event of the fuImport control.
         /// </summary>
@@ -114,6 +106,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue )
                             {
                                 currentPerson.LoadAttributes();
+
                                 // Get attributes in rock
                                 var ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"]; // Pass or Fail
                                 var ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"]; // Complete or Incomplete
@@ -144,6 +137,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     SetAttributeValue( ministrySafeStatus.AttributeKey, "Incomplete" );
                                     ministrySafeRenewalDate = null;
                                 }
+                            rockContext.SaveChanges();
                           }
                      }
                 }
