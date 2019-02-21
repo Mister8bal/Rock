@@ -106,7 +106,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue )
                             {
                                 currentPerson.LoadAttributes();
-
                                 // Get attributes in rock
                                 var ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"]; // Pass or Fail
                                 var ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"]; // Complete or Incomplete
@@ -127,7 +126,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     {
                                         SetAttributeValue( ministrySafeResult.AttributeKey, "Fail" );
                                         SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
-                                        ministrySafeRenewalDate = null;
+                                        SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
+                                        //ministrySafeRenewalDate = null;
                                     }
                                 }
                                 else
@@ -135,8 +135,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
                                     SetAttributeValue( ministrySafeResult.AttributeKey, "" );
                                     SetAttributeValue( ministrySafeStatus.AttributeKey, "Incomplete" );
-                                    ministrySafeRenewalDate = null;
-                                }
+                                    SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
+                                    //ministrySafeRenewalDate = null;
+                            }
                             rockContext.SaveChanges();
                           }
                      }
