@@ -10,7 +10,6 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI;
 using System.IO;
-using System.Collections.Generic;
 
 namespace RockWeb.Plugins.church_ccv.SafetySecurity
 {
@@ -20,7 +19,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [DisplayName( "CCV Ministry Safe" )]
     [Category( "CCV > Safety and Security" )]
     [Description( "Imports CCV STARS Coaches Ministry Safe Results." )]
-
     [LinkedPage( "Detail Page" )]
     public partial class CCVMinistrySafe : RockBlock
     {
@@ -39,12 +37,10 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             public string Application { get; set; }
             public string References { get; set; }
             public string Interview { get; set; }
-            public string RenewaldateSexualAbuseAwarenessTraining{ get; set; }
+            public string RenewaldateSexualAbuseAwarenessTraining{ get; set; } //Datetime?
             public string Role { get; set; }
-            public string RenewalDateCriminalBackgroundCheck { get; set; }
+            public string RenewalDateCriminalBackgroundCheck { get; set; } // Datetime?
             public int SexualAbuseAwarenessTrainingScore { get; set; }
-
-
         }
 
         /// <summary>
@@ -61,8 +57,11 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             var binaryFileService = new BinaryFileService( rockContext );
             PersonService personService = new PersonService( rockContext );
 
-
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
+
+            // Delete file? Database problems
+
+            // member status and connection status: block attributes
 
             if ( binaryFile != null )
             {
@@ -75,9 +74,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
                         Person currentPerson = null;
 
-                        foreach ( var person in peopleList )
+                        foreach ( var person in peopleList )// change person to msPerson
                         {
-                            string firstName = person.FirstName;
+                            string firstName = person.FirstName; // remove vars
                             string lastName = person.LastName;
                             string email = person.EmailAddresses;
                             int trainingScore = person.SexualAbuseAwarenessTrainingScore;
@@ -99,11 +98,16 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 currentPerson.FirstName = firstName;
                                 currentPerson.LastName = lastName;
                                 currentPerson.Email = email;
+                                // Set status web prospect
+                                // record status and connection status
+                                // as block attributes
                                 PersonService.SaveNewPerson( currentPerson, rockContext );
                             }
 
+                            // if personMatches.Count() >1 ....
+
                             // If there is a valid person with a primary alias, continue
-                            if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue )
+                            if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
                             {
                                 currentPerson.LoadAttributes();
                                 // Get attributes in rock
@@ -117,13 +121,16 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     // If the score is greater than or equal to 70.
                                     if ( trainingScore >= 70 )
                                     {
+                                        // AttributeValueService
                                         SetAttributeValue( ministrySafeResult.AttributeKey, "Pass" );
                                         SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
                                         SetAttributeValue( ministrySafeRenewalDate.ToString(), renewalDateSexualAbuseAwarenessTraining.ToString() );
                                     }
                                     // If the score is less than 70
-                                    else if ( trainingScore < 70 )
+                                    else if ( trainingScore < 70 ) // Change to else 
+                                    // make score a block setting
                                     {
+                                    // find all: set attribute is being set to null??
                                         SetAttributeValue( ministrySafeResult.AttributeKey, "Fail" );
                                         SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
                                         SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
@@ -144,6 +151,5 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 }
             }
         }
-
     }
 }
