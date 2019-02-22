@@ -29,7 +29,7 @@ namespace Rock.Migrations
         /// </summary>
         public override void Up()
         {
-            AddColumn("dbo.Interaction", "InteractionEndDateTime", c => c.DateTime(nullable: false));
+            AddColumn("dbo.Interaction", "InteractionEndDateTime", c => c.DateTime(nullable: true));
         }
         
         /// <summary>
