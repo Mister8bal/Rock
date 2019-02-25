@@ -38,22 +38,13 @@
 
                     {% assign groupIndex = forloop.index %}
                     {% assign showAdminElements = false %}
-                    {% assign showMembers = true %}
 
-                    {% comment %} Set showAdminElements and showMembers {% endcomment %}
+                    {% comment %} Check if current person is admin {% endcomment %}
                     {% for member in group.Group.Members %}
-                        {% comment %} Check if current person is admin {% endcomment %}
                         {% if member.Person.Id == CurrentPerson.Id %}
                             {% assign groupRoleId = member.GroupRoleId | ToString %}
                             {% if groupAdminIds contains groupRoleId %}
                                 {% assign showAdminElements = true %}
-                            {% endif %}
-
-                            {% comment %} Hide group members if confidential group and not a coach/admin {% endcomment %}
-                            {% if group.Group.Confidential == "Yes" %}
-                                {% if showAdminElements == false %}
-                                    {% assign showMembers = false %}
-                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endfor %}
@@ -65,26 +56,27 @@
                             <div class="group-name-row">
                                 {% comment %} Admin Header {% endcomment %}
                                 {% if showAdminElements == true %}
-                                    {% assign toolboxRoute = "" %}
-                                    {% assign toolboxCssClass = "" %}
-                                        
                                     {% comment %} 
                                     ***** Toolbox Types *****
                                         49  - CCV Group
                                         94  - Next Gen
                                         117 - Life Training
                                     {% endcomment %}
+
+                                    {% assign toolboxRoute = "" %}
+                                    {% assign toolboxCssClass = "" %}
+                                    
                                     {% case group.Group.GroupTypeId %}
-                                        {% when 49 %}
-                                            {% assign toolboxRoute = "toolbox" %}
-                                            {% assign toolboxCssClass = "tooltip-access-group-toolbox" %}
-                                        {% when 94 %}
-                                            {% assign toolboxRoute = "student-toolbox" %}
-                                            {% assign toolboxCssClass = "tooltip-access-student-toolbox" %}
-                                        {% when 117 %}
-                                            {% assign toolboxRoute = "life-training-toolbox" %}
-                                            {% assign toolboxCssClass = "tooltip-access-life-training-toolbox" %}
-                                        {% else %}
+                                    {% when 49 %}
+                                        {% assign toolboxRoute = "toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-group-toolbox" %}
+                                    {% when 94 %}
+                                        {% assign toolboxRoute = "student-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-student-toolbox" %}
+                                    {% when 117 %}
+                                        {% assign toolboxRoute = "life-training-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-life-training-toolbox" %}
+                                    {% else %}
                                     {% endcase %}
 
                                     {% unless toolboxRoute == "" %}
@@ -109,15 +101,13 @@
                                             <i class="mdi mdi-email dashboard-title-icon tooltip-email-group"></i>
                                         </a>
                                     {% endif %}
-                                    {% if showMembers == true %}                                
-                                        <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
-                                            {% assign chevronIcon = "mdi-chevron-down" %}
-                                            {% if forloop.first %}
-                                                {% assign chevronIcon = "mdi-chevron-up" %}
-                                            {% endif %}
-                                            <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
-                                        </button>
-                                    {% endif %}
+                                    <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
+                                        {% assign chevronIcon = "mdi-chevron-down" %}
+                                        {% if forloop.first %}
+                                            {% assign chevronIcon = "mdi-chevron-up" %}
+                                        {% endif %}
+                                        <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -143,9 +133,23 @@
                                 {% endif %}
                             {% endif %}
 
-                            {% if showMembers == true %}                                
-                                {% comment %} Render Group Members {% endcomment %}
-                                {% for member in group.Group.Members %}
+                            {% comment %} Render Group Members {% endcomment %}
+                            {% for member in group.Group.Members %}
+                                {% comment %} Determine if member should be shown (Always show coach/admins) {% endcomment %}
+                                {% assign showMember = false %}          
+                                {% assign isAdmin = false %}
+
+                                {% assign memberRoleId = member.GroupRoleId | ToString %}
+                                {% if groupAdminIds contains memberRoleId %}
+                                    {% assign showMember = true %}
+                                    {% assign isAdmin = true %}                                    
+                                {% endif %}
+
+                                {% unless group.Group.Confidential == "Yes" %}
+                                    {% assign showMember = true %}
+                                {% endunless %}
+
+                                {% if showMember == true %}
                                     <div class="person-row-summary">
                                         <div>
                                             <img src="{{ member.Person.PhotoUrl }}" width="60" height="60" style="border-radius: 50%;">
@@ -157,7 +161,7 @@
                                         </div>
                                         <div class="person-contact">
                                             {% comment %} Show Contact buttons for everyone if coach, otherwise just show for coach {% endcomment %}
-                                            {% if showAdminElements == true %}
+                                            {% if showAdminElements == true or isAdmin == true %}
                                                 {% assign cellPhone = member.Person | PhoneNumber:'Mobile', true %}
                                                 {% assign homePhone = member.Person | PhoneNumber:'Home' %}
 
@@ -176,8 +180,8 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                {% endfor %}
-                            {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         
                         
