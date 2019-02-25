@@ -38,9 +38,11 @@
     <div class="group-details-right">
         <div class="group-schedule">
             {% if Group.Schedule.FriendlyScheduleText %}
-                <h4 class="no-caps margin-t-none" style="padding-top: 26px;">Meets every {{Group.Schedule.FriendlyScheduleText}}</h4>
+                <h4 class="no-caps margin-t-none" style="padding-top: 26px;">Meets every {{ Group.Schedule.FriendlyScheduleText }}</h4>
             {% endif %}
-        
+            {% if Group.GroupCapacity != '' %}
+                <h5>Group Capacity: </h5> <P>{{ Group.GroupCapacity }}</P>
+            {% endif %}    
             {% for attribute in Group.AttributeValues %}
                 {% unless attribute.AttributeName == "Meeting Day" or attribute.AttributeName == "Meeting Time" or attribute.ValueFormatted == empty %}
                     {% unless attribute.AttributeName == "Family Picture" %}

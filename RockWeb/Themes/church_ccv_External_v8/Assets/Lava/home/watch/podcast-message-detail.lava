@@ -30,7 +30,7 @@ REQUIRED VARIABLES
         {% capture pageTitle %}{{ pageTitle }} (Full Service){% endcapture %}
     {% endif %}
 
-    {% capture ogImage %}http://my.ccv.church/GetImage.ashx?guid={{ Series.Attributes.HeaderImage }}{% endcapture %}
+    {% comment %} {% capture ogImage %}http://my.ccv.church/GetImage.ashx?guid={{ Series.Attributes.HeaderImage }}{% endcapture %} {% endcomment %}
 
     {{ 'photo' | AddMetaTagToHead: 'property', 'twitter:card' }}
     {{ '@ccvonline' | AddMetaTagToHead: 'property', 'twitter:site' }}

@@ -14,20 +14,16 @@
 // limitations under the License.
 // </copyright>
 //
-using System.IO;
 using System.Net.Http;
 using System.Text;
 using Rock.Model;
 using Newtonsoft.Json;
 using System.Net;
-using System.Web.Http;
-using System.Web.Routing;
 using Rock.Rest.Filters;
-using Rock.Security;
 using Rock.Data;
 using Rock;
-using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System;
 using church.ccv.CCVRest.CCVLive.Model;
 
@@ -40,10 +36,24 @@ namespace church.ccv.CCVRest.CCVLive
     /// </summary>
     public class AttendanceController : Rock.Rest.ApiControllerBase
     {
+
+        /// <summary>
+        /// The group id to associate with any logged attendance records.
+        /// Production Value: 2575040
+        /// DEV Value: 2567090
+        /// </summary>
+        private const int AttendanceGroupId = 2575040;
+
+        /// <summary>
+        /// The campus id to associate any attendance records with.
+        /// </summary>
+        private const int CampusId = 12;
+
         /// <summary>
         /// Use this to log an Attendance Interaction on the CCV Live Interaction Channel 
         /// </summary>
-        /// <param name="attendanceModel">The opject containing the attendance data to be logged with the interaction <see cref="church.ccv.CCVRest.CCVLive.Model.AttendanceModel"/>.</param>
+        /// <param name="attendanceModel">The opject containing the attendance data to be 
+        /// logged with the interaction <see cref="church.ccv.CCVRest.CCVLive.Model.AttendanceModel"/>.</param>
         /// <exception cref="System.Web.Http.HttpResponseException"></exception>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/CCVLive/Attendance")]
@@ -52,9 +62,13 @@ namespace church.ccv.CCVRest.CCVLive
         {
             var rockContext = new RockContext();
             var interactionService = new InteractionService(rockContext);
+            var personAliasService = new PersonAliasService(rockContext);
+            var attendanceService = new AttendanceService(rockContext);
             var timeZoneInfo = RockDateTime.OrgTimeZoneInfo;
             var person = GetPerson(attendanceModel.Email, attendanceModel.Name, rockContext);
-            
+            bool attendanceLogged = false;
+           
+
             ResponseModel responseData = new ResponseModel()
             {
                 Success=false,
@@ -91,7 +105,7 @@ namespace church.ccv.CCVRest.CCVLive
                 response.Content = new StringContent(JsonConvert.SerializeObject(responseData), Encoding.UTF8, "application/json");
                 return response;
             }
-    
+            
             response.StatusCode = statusCode;
 
             var dt = DateTime.Now;
@@ -110,6 +124,11 @@ namespace church.ccv.CCVRest.CCVLive
             };
 
             interactionService.Add(thisInteraction);
+
+            /**
+             * Create a new attendance record
+             */
+            attendanceLogged = CreateAttendanceRecord(person.Id, CampusId, dt, attendanceService, personAliasService, rockContext);
 
             rockContext.SaveChanges();
 
@@ -138,8 +157,9 @@ namespace church.ccv.CCVRest.CCVLive
 
 
             var person = personQuery
-                .Queryable()
-                .Where(e => (e.Email == email) && (e.FirstName == name || e.NickName == name)).FirstOrDefault();
+                .Queryable().AsNoTracking()
+                .Where(e => (e.Email == email) && (e.FirstName == name || e.NickName == name))
+                .FirstOrDefault();
                
 
             // If we have a person, return it
@@ -147,6 +167,48 @@ namespace church.ccv.CCVRest.CCVLive
 
             return null;
 
+        }
+
+        private bool CreateAttendanceRecord(
+            int personId, 
+            int? campusId, 
+            DateTime startDateTime, 
+            AttendanceService attendanceService, 
+            PersonAliasService personAliasService, 
+            RockContext rockContext
+        )
+        {
+            // if we already have an attendance record for this start time, don't count it again.
+            DateTime beginDate = startDateTime.Date;
+            DateTime endDate = beginDate.AddDays(1);
+
+            Attendance attendance = attendanceService.Queryable("Group,PersonAlias.Person")
+                .Where(a =>
+                   a.StartDateTime >= beginDate &&
+                   a.StartDateTime < endDate &&
+                   a.GroupId == AttendanceGroupId &&
+                   a.PersonAlias.PersonId == personId)
+                .FirstOrDefault();
+
+            if (attendance == null)
+            {
+                PersonAlias primaryAlias = personAliasService.GetPrimaryAlias(personId);
+                if (primaryAlias != null)
+                {
+                    attendance = rockContext.Attendances.Create();
+                    attendance.CampusId = campusId;
+                    attendance.GroupId = AttendanceGroupId;
+                    attendance.PersonAlias = primaryAlias;
+                    attendance.PersonAliasId = primaryAlias.Id;
+                    attendance.StartDateTime = startDateTime;
+                    attendance.DidAttend = true;
+                    attendanceService.Add(attendance);
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
