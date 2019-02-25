@@ -1,0 +1,216 @@
+<%@ Master Language="C#" AutoEventWireup="true" Inherits="Rock.Web.UI.RockMasterPage" %>
+<%@ Import Namespace="System.Web.Optimization" %>
+<!DOCTYPE html>
+
+<script runat="server">
+
+    // keep code below to call base class init method
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> object that contains the event data.</param>
+    protected override void OnInit( EventArgs e )
+    {
+        base.OnInit( e );
+    }
+
+</script>
+
+<html class="no-js">
+<head runat="server">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <meta charset="utf-8">
+    <title></title>
+
+    <script src="<%# ResolveRockUrl("~/Scripts/jquery-1.12.4.min.js" ) %>"></script>
+
+    <!-- Set the viewport width to device width for mobile -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <asp:ContentPlaceHolder ID="css" runat="server" />
+
+	<!-- Included CSS Files -->
+    <link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/bootstrap.css", true) %>"/>
+	<link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/theme.css", true) %>"/>
+	<link rel="stylesheet" href="<%# ResolveRockUrl("~/Styles/developer.css", true) %>"/>
+    <link rel="stylesheet" href="<%# ResolveRockUrl("~~/Styles/common.css", true) %>"/>
+
+    <script src="<%# ResolveRockUrl("~/Scripts/modernizr.js" ) %>" ></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+
+    <!-- Icons -->
+    <link rel="shortcut icon" href="<%# ResolveRockUrl("~~/Assets/Icons/favicon.ico", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-ipad-retina.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-iphone-retina.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-ipad.png", true) %>">
+    <link rel="apple-touch-icon-precomposed" href="<%# ResolveRockUrl("~~/Assets/Icons/touch-icon-iphone.png", true) %>">
+	
+	<!-- Facebook Pixel Code -->
+
+		<script>
+
+			!function(f,b,e,v,n,t,s)
+
+			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+
+			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+
+			n.queue=[];t=b.createElement(e);t.async=!0;
+
+			t.src=v;s=b.getElementsByTagName(e)[0];
+
+			s.parentNode.insertBefore(t,s)}(window,document,'script',
+
+			'https://connect.facebook.net/en_US/fbevents.js');
+
+
+			fbq('init', '967917236735581'); 
+
+			fbq('track', 'PageView');
+
+		</script>
+
+		<noscript>
+
+			<img height="1" width="1" 
+
+			src="https://www.facebook.com/tr?id=967917236735581&ev=PageView
+
+			&noscript=1"/>
+
+		</noscript>
+
+	<!-- End Facebook Pixel Code -->
+
+    <!-- Facebook Pixel Code -->
+    <script>
+
+    !function(f,b,e,v,n,t,s)
+
+
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+
+
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+
+
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+
+
+    n.queue=[];t=b.createElement(e);t.async=!0;
+
+
+    t.src=v;s=b.getElementsByTagName(e)[0];
+
+
+    s.parentNode.insertBefore(t,s)}(window,document,'script',
+
+
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+
+    fbq('init', '967917236735581');
+
+
+    fbq('track', 'PageView');
+
+    </script>
+    <noscript>
+    <img height="1" width="1"
+    src="https://www.facebook.com/tr?id=967917236735581&ev=PageView
+    &noscript=1"/>
+    </noscript>
+    <!-- End Facebook Pixel Code -->
+
+    <script>
+        function toggleNavbar(visible) {
+            var fullMenu = $(".masthead-fullmenu");
+            
+            if( visible == true ) {
+                fullMenu.removeClass("offscreen");
+            }
+            else {
+                fullMenu.addClass("offscreen");
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+
+    <form id="form1" runat="server">
+
+        <asp:ContentPlaceHolder ID="header" runat="server">
+
+        
+            <!-- Page Header -->
+            <header class="masthead" runat="server" id="masthead">
+        
+                <Rock:Zone Name="AnnouncementBar" runat="server" />
+                
+                <div class="masthead-upper">
+                    <div class="masthead-brand">
+                        <button class="navbar-toggle" type="button" onClick="toggleNavbar(true);">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <Rock:Zone Name="Header" runat="server" />
+                    </div>
+
+                    <nav class="masthead-nav">
+                        <div class="navbar-collapse js-all-collapse collapse">
+                            <Rock:Zone Name="Navigation" runat="server" />
+                        </div>
+                    </nav>
+                </div>
+                <div class="masthead-fullmenu offscreen">
+                    <Rock:Zone Name="Full Menu" runat="server" />
+                </div>
+            </header>
+
+
+
+        </asp:ContentPlaceHolder>
+
+        <asp:ContentPlaceHolder ID="feature" runat="server"></asp:ContentPlaceHolder>
+
+        <asp:ContentPlaceHolder ID="main" runat="server"></asp:ContentPlaceHolder>
+
+        <asp:ContentPlaceHolder ID="footer" runat="server">
+            <footer class="mainfooter">
+
+                <Rock:Zone Name="Footer" runat="server" />
+
+            </footer>
+        </asp:ContentPlaceHolder>
+
+
+        <%-- controls for scriptmanager and update panel --%>
+        <asp:ScriptManager ID="sManager" runat="server"/>
+        <asp:UpdateProgress id="updateProgress" runat="server" DisplayAfter="800">
+		        <ProgressTemplate>
+		            <div class="updateprogress-status">
+                        <div class="spinner">
+                          <div class="rect1"></div>
+                          <div class="rect2"></div>
+                          <div class="rect3"></div>
+                          <div class="rect4"></div>
+                          <div class="rect5"></div>
+                        </div>
+                    </div>
+                    <div class="updateprogress-bg modal-backdrop"></div>
+		        </ProgressTemplate>
+        </asp:UpdateProgress>
+
+    </form>
+
+    <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
+
+</body>
+
+</html>
