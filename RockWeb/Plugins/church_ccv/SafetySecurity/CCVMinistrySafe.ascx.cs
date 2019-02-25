@@ -10,6 +10,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI;
 using System.IO;
+using Rock.Web.Cache;
 
 namespace RockWeb.Plugins.church_ccv.SafetySecurity
 {
@@ -19,6 +20,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [DisplayName( "CCV Ministry Safe" )]
     [Category( "CCV > Safety and Security" )]
     [Description( "Imports CCV STARS Coaches Ministry Safe Results." )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when creating transactions", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
     [LinkedPage( "Detail Page" )]
     public partial class CCVMinistrySafe : RockBlock
     {
@@ -59,6 +63,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
 
+            var dvcConnectionStatus = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() );
+            var dvcRecordStatus = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() );
             // Delete file? Database problems
 
             // member status and connection status: block attributes
@@ -74,17 +80,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
                         Person currentPerson = null;
 
-                        foreach ( var person in peopleList )// change person to msPerson
+                        foreach ( var mSafePerson in peopleList )
                         {
-                            string firstName = person.FirstName; // remove vars
-                            string lastName = person.LastName;
-                            string email = person.EmailAddresses;
-                            int trainingScore = person.SexualAbuseAwarenessTrainingScore;
-                            string sexualAbuseAwarenessTraining = person.SexualAbuseAwarenessTrainingcompletedincompleted;
-                            DateTime renewalDateSexualAbuseAwarenessTraining = DateTime.Parse( person.RenewaldateSexualAbuseAwarenessTraining);
+                          
+                            int trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
+                            string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
+                            DateTime renewalDateSexualAbuseAwarenessTraining = DateTime.Parse( mSafePerson.RenewaldateSexualAbuseAwarenessTraining);
 
                             // Try to find matching person
-                            var personMatches = personService.GetByMatch( firstName, lastName, email );
+                            var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
                             if ( personMatches.Count() == 1 )
                             {
                                 // If one person with same name and email address exists, use that person
@@ -95,9 +99,23 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             else if ( personMatches.Count() == 0 )
                             {
                                 currentPerson = new Person();
-                                currentPerson.FirstName = firstName;
-                                currentPerson.LastName = lastName;
-                                currentPerson.Email = email;
+                                currentPerson.FirstName = mSafePerson.FirstName;
+                                currentPerson.LastName = mSafePerson.LastName;
+                                currentPerson.Email = mSafePerson.EmailAddresses;
+
+                                if ( dvcConnectionStatus != null )
+                                {
+                                    currentPerson.ConnectionStatusValueId = dvcConnectionStatus.Id;
+                                }
+                                if ( dvcRecordStatus != null )
+                                {
+                                    currentPerson.RecordStatusValueId = dvcRecordStatus.Id;
+                                }
+                                currentPerson.ConnectionStatusValueId = connectionStatusId;
+                                currentPerson. = recordStatusPendingId;
+                                currentPerson.RecordTypeValueId = recordTypePersonId;
+
+                                currentPerson.SystemNote = "Added by Ministry Safe";
                                 // Set status web prospect
                                 // record status and connection status
                                 // as block attributes
