@@ -22,8 +22,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [Description( "Imports CCV STARS Coaches Ministry Safe Results." )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
-    [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when creating transactions", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
-    [LinkedPage( "Detail Page" )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when imported from Ministry Safe", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
     public partial class CCVMinistrySafe : RockBlock
     {
 
@@ -44,7 +43,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             public DateTime RenewaldateSexualAbuseAwarenessTraining { get; set; } //Datetime?
             public string Role { get; set; }
             public string RenewalDateCriminalBackgroundCheck { get; set; } // Datetime?
-            public int SexualAbuseAwarenessTrainingScore { get; set; }
+            public int? SexualAbuseAwarenessTrainingScore { get; set; }
         }
 
         /// <summary>
@@ -80,7 +79,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     foreach ( var mSafePerson in peopleList )
                     {
 
-                        int trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
+                        int? trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
                         string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
                         DateTime renewalDateSexualAbuseAwarenessTraining = mSafePerson.RenewaldateSexualAbuseAwarenessTraining;
 
@@ -102,9 +101,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
                             int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
                             int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
-                            var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "DefaultConnectionStatus" ).AsGuid() );
+                            int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
 
-
+                            // create new person 
                             currentPerson = new Person();
                             currentPerson.FirstName = mSafePerson.FirstName;
                             currentPerson.LastName = mSafePerson.LastName;
@@ -112,24 +111,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             currentPerson.IsEmailActive = true;
                             currentPerson.EmailPreference = EmailPreference.EmailAllowed;
 
+                            // Set record type, record status and connection status 
                             currentPerson.RecordTypeValueId = recordTypePersonId;
                             currentPerson.RecordStatusValueId = recordStatusActiveId;
-                            currentPerson.ConnectionStatusValueId = ( connectionStatusValue != null ) ? connectionStatusValue.Id : ( int? ) null;
+                            currentPerson.ConnectionStatusValueId = connectionStatusActiveId;
 
-
-
-
-                            //if ( dvcConnectionStatus != null )
-                            //{
-                            //    currentPerson.ConnectionStatusValueId = dvcConnectionStatus.Id;
-                            //}
-                            //if ( dvcRecordStatus != null )
-                            //{
-                            //    currentPerson.RecordStatusValueId = dvcRecordStatus.Id;
-                            //}
-
+                            // note on person profile
                             currentPerson.SystemNote = "Added by Ministry Safe";
 
+                            // save
                             PersonService.SaveNewPerson( currentPerson, rockContext );
                         }
 
@@ -139,10 +129,11 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
                         {
                             currentPerson.LoadAttributes();
+
                             // Get attributes in rock
-                            var ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"]; // Pass or Fail
-                            var ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"]; // Complete or Incomplete
-                            DateTime? ministrySafeRenewalDate = currentPerson.GetAttributeValue( "MinistrySafeRenewalDate" ).AsDateTime();
+                            string ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"].Value; // Pass or Fail
+                            string ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"].Value; // Complete or Incomplete
+                            var ministrySafeRenewalDate = currentPerson.AttributeValues["MinistrySafeRenewalDate"].Value; // Date
 
                             // If the training has been completed.
                             if ( sexualAbuseAwarenessTraining == "Completed" )
@@ -151,26 +142,24 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 if ( trainingScore >= 70 )
                                 {
                                     // AttributeValueService
-                                    SetAttributeValue( ministrySafeResult.AttributeKey, "Pass" );
-                                    SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
-                                    SetAttributeValue( ministrySafeRenewalDate.ToString(), renewalDateSexualAbuseAwarenessTraining.ToString() );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "Pass" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Completed" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], renewalDateSexualAbuseAwarenessTraining.ToString() );
                                 }
                                 // If the score is less than 70
-                                else if ( trainingScore < 70 ) // Change to else 
-                                                               // make score a block setting
+                                else 
                                 {
-                                    // find all: set attribute is being set to null??
-                                    SetAttributeValue( ministrySafeResult.AttributeKey, "Fail" );
-                                    SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
-                                    SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "Fail" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Completed" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], "" );
                                 }
                             }
                             else
                             {
                                 // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
-                                SetAttributeValue( ministrySafeResult.AttributeKey, "" );
-                                SetAttributeValue( ministrySafeStatus.AttributeKey, "Incomplete" );
-                                SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
+                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "" );
+                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Incomplete" );
+                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], "" );
                             }
                             currentPerson.SaveAttributeValues( rockContext );
                             rockContext.SaveChanges();
