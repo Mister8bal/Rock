@@ -34,14 +34,14 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             public string EmailAddresses { get; set; }
             public string SexualAbuseAwarenessTrainingcompletedincompleted { get; set; }
             public string CriminalBackgroundChecklevel { get; set; }
-            public string CriminalBackgroundCheckstatus{ get; set; }
+            public string CriminalBackgroundCheckstatus { get; set; }
             public string Tag { get; set; }
             public string ClassificationEmpVol { get; set; }
             public string Charges { get; set; }
             public string Application { get; set; }
             public string References { get; set; }
             public string Interview { get; set; }
-            public string RenewaldateSexualAbuseAwarenessTraining{ get; set; } //Datetime?
+            public DateTime RenewaldateSexualAbuseAwarenessTraining { get; set; } //Datetime?
             public string Role { get; set; }
             public string RenewalDateCriminalBackgroundCheck { get; set; } // Datetime?
             public int SexualAbuseAwarenessTrainingScore { get; set; }
@@ -60,112 +60,122 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             var rockContext = new RockContext();
             var binaryFileService = new BinaryFileService( rockContext );
             PersonService personService = new PersonService( rockContext );
+            var attributeValueService = new AttributeValueService( rockContext );
 
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
 
-            var dvcConnectionStatus = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() );
-            var dvcRecordStatus = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() );
             // Delete file? Database problems
-
-            // member status and connection status: block attributes
 
             if ( binaryFile != null )
             {
                 using ( var reader = new StreamReader( binaryFile.ContentStream ) )
-                    using ( var csvReader = new CsvReader( reader ) )
+                using ( var csvReader = new CsvReader( reader ) )
+                {
+                    csvReader.Configuration.HasHeaderRecord = true;
+                    csvReader.Configuration.TrimFields = true;
+                    csvReader.Configuration.IgnoreBlankLines = true;
+                    var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
+                    Person currentPerson = null;
+
+                    foreach ( var mSafePerson in peopleList )
                     {
-                        csvReader.Configuration.HasHeaderRecord = true;
-                        csvReader.Configuration.TrimFields = true;
-                        csvReader.Configuration.IgnoreBlankLines = true;
-                        var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
-                        Person currentPerson = null;
 
-                        foreach ( var mSafePerson in peopleList )
+                        int trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
+                        string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
+                        DateTime renewalDateSexualAbuseAwarenessTraining = mSafePerson.RenewaldateSexualAbuseAwarenessTraining;
+
+
+                        //var dvcConnectionStatus = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() );
+                        //var dvcRecordStatus = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() );
+
+                        // Try to find matching person
+                        var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
+                        if ( personMatches.Count() == 1 )
                         {
-                          
-                            int trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
-                            string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
-                            DateTime renewalDateSexualAbuseAwarenessTraining = DateTime.Parse( mSafePerson.RenewaldateSexualAbuseAwarenessTraining);
+                            // If one person with same name and email address exists, use that person
+                            currentPerson = personMatches.First();
+                        }
 
-                            // Try to find matching person
-                            var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
-                            if ( personMatches.Count() == 1 )
+                        // If person was not found, create a new one
+                        else if ( personMatches.Count() == 0 )
+                        {
+
+                            int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                            int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
+                            var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "DefaultConnectionStatus" ).AsGuid() );
+
+
+                            currentPerson = new Person();
+                            currentPerson.FirstName = mSafePerson.FirstName;
+                            currentPerson.LastName = mSafePerson.LastName;
+                            currentPerson.Email = mSafePerson.EmailAddresses;
+                            currentPerson.IsEmailActive = true;
+                            currentPerson.EmailPreference = EmailPreference.EmailAllowed;
+
+                            currentPerson.RecordTypeValueId = recordTypePersonId;
+                            currentPerson.RecordStatusValueId = recordStatusActiveId;
+                            currentPerson.ConnectionStatusValueId = ( connectionStatusValue != null ) ? connectionStatusValue.Id : ( int? ) null;
+
+
+
+
+                            //if ( dvcConnectionStatus != null )
+                            //{
+                            //    currentPerson.ConnectionStatusValueId = dvcConnectionStatus.Id;
+                            //}
+                            //if ( dvcRecordStatus != null )
+                            //{
+                            //    currentPerson.RecordStatusValueId = dvcRecordStatus.Id;
+                            //}
+
+                            currentPerson.SystemNote = "Added by Ministry Safe";
+
+                            PersonService.SaveNewPerson( currentPerson, rockContext );
+                        }
+
+                        // if personMatches.Count() >1 ....
+
+                        // If there is a valid person with a primary alias, continue
+                        if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
+                        {
+                            currentPerson.LoadAttributes();
+                            // Get attributes in rock
+                            var ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"]; // Pass or Fail
+                            var ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"]; // Complete or Incomplete
+                            DateTime? ministrySafeRenewalDate = currentPerson.GetAttributeValue( "MinistrySafeRenewalDate" ).AsDateTime();
+
+                            // If the training has been completed.
+                            if ( sexualAbuseAwarenessTraining == "Completed" )
                             {
-                                // If one person with same name and email address exists, use that person
-                                currentPerson = personMatches.First();
-                            }
-
-                            // If person was not found, create a new one
-                            else if ( personMatches.Count() == 0 )
-                            {
-                                currentPerson = new Person();
-                                currentPerson.FirstName = mSafePerson.FirstName;
-                                currentPerson.LastName = mSafePerson.LastName;
-                                currentPerson.Email = mSafePerson.EmailAddresses;
-
-                                if ( dvcConnectionStatus != null )
+                                // If the score is greater than or equal to 70.
+                                if ( trainingScore >= 70 )
                                 {
-                                    currentPerson.ConnectionStatusValueId = dvcConnectionStatus.Id;
+                                    // AttributeValueService
+                                    SetAttributeValue( ministrySafeResult.AttributeKey, "Pass" );
+                                    SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
+                                    SetAttributeValue( ministrySafeRenewalDate.ToString(), renewalDateSexualAbuseAwarenessTraining.ToString() );
                                 }
-                                if ( dvcRecordStatus != null )
+                                // If the score is less than 70
+                                else if ( trainingScore < 70 ) // Change to else 
+                                                               // make score a block setting
                                 {
-                                    currentPerson.RecordStatusValueId = dvcRecordStatus.Id;
-                                }
-                                currentPerson.ConnectionStatusValueId = connectionStatusId;
-                                currentPerson. = recordStatusPendingId;
-                                currentPerson.RecordTypeValueId = recordTypePersonId;
-
-                                currentPerson.SystemNote = "Added by Ministry Safe";
-                                // Set status web prospect
-                                // record status and connection status
-                                // as block attributes
-                                PersonService.SaveNewPerson( currentPerson, rockContext );
-                            }
-
-                            // if personMatches.Count() >1 ....
-
-                            // If there is a valid person with a primary alias, continue
-                            if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
-                            {
-                                currentPerson.LoadAttributes();
-                                // Get attributes in rock
-                                var ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"]; // Pass or Fail
-                                var ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"]; // Complete or Incomplete
-                                DateTime? ministrySafeRenewalDate = currentPerson.GetAttributeValue( "MinistrySafeRenewalDate" ).AsDateTime();
-
-                                // If the training has been completed.
-                                if ( sexualAbuseAwarenessTraining == "Completed" )
-                                {
-                                    // If the score is greater than or equal to 70.
-                                    if ( trainingScore >= 70 )
-                                    {
-                                        // AttributeValueService
-                                        SetAttributeValue( ministrySafeResult.AttributeKey, "Pass" );
-                                        SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
-                                        SetAttributeValue( ministrySafeRenewalDate.ToString(), renewalDateSexualAbuseAwarenessTraining.ToString() );
-                                    }
-                                    // If the score is less than 70
-                                    else if ( trainingScore < 70 ) // Change to else 
-                                    // make score a block setting
-                                    {
                                     // find all: set attribute is being set to null??
-                                        SetAttributeValue( ministrySafeResult.AttributeKey, "Fail" );
-                                        SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
-                                        SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
-                                        //ministrySafeRenewalDate = null;
-                                    }
-                                }
-                                else
-                                {
-                                    // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
-                                    SetAttributeValue( ministrySafeResult.AttributeKey, "" );
-                                    SetAttributeValue( ministrySafeStatus.AttributeKey, "Incomplete" );
+                                    SetAttributeValue( ministrySafeResult.AttributeKey, "Fail" );
+                                    SetAttributeValue( ministrySafeStatus.AttributeKey, "Completed" );
                                     SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
-                                    //ministrySafeRenewalDate = null;
+                                }
                             }
+                            else
+                            {
+                                // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
+                                SetAttributeValue( ministrySafeResult.AttributeKey, "" );
+                                SetAttributeValue( ministrySafeStatus.AttributeKey, "Incomplete" );
+                                SetAttributeValue( ministrySafeRenewalDate.ToString(), "" );
+                            }
+                            currentPerson.SaveAttributeValues( rockContext );
                             rockContext.SaveChanges();
-                          }
-                     }
+                        }
+                    }
                 }
             }
         }
