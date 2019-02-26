@@ -83,10 +83,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
                         DateTime renewalDateSexualAbuseAwarenessTraining = mSafePerson.RenewaldateSexualAbuseAwarenessTraining;
 
-
-                        //var dvcConnectionStatus = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() );
-                        //var dvcRecordStatus = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() );
-
                         // Try to find matching person
                         var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
                         if ( personMatches.Count() == 1 )
