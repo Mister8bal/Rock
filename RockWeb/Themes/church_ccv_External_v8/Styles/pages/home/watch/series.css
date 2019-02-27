@@ -51,10 +51,11 @@ h4 {
 
  /* Share Section */
  .share-modal-header h4 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: akrobat;
     padding: 0;
+    color: rgb(85, 85, 85);
     font-size: 20px;
-    line-height: 22px;
+    font-weight: 300;
 }
 
 .item-share {
@@ -67,14 +68,18 @@ h4 {
 
 .item-share p {
     text-transform: uppercase;
-    letter-spacing: -1px;
-    font-size: 22px;
+    font-size: 18px;
     margin: 10px 0 0 0;
     color: rgb(85, 85, 85);
 }
 
+.item-share p {
+    font-size: 18px;
+    font-family: akrobat;
+}
+
 .item-share .mdi-launch {
-    font-size: 40px;
+    font-size: 35px;
 }
 
 #shareButton {
@@ -111,10 +116,11 @@ h4 {
     animation-name: slideIn;
     animation-duration: 0.4s;
     padding-bottom: 100px;
+    text-align: center;
 }
 
 .share-modal-header {
-    padding: 2px 16px;
+    padding: 9px 16px;
     background-color: #FFFFFF;
     color: white;
 }
@@ -122,8 +128,8 @@ h4 {
 .share-modal-body {
     display: flex;
     justify-content: space-around;
-    width: 100%;
     padding-top: 30px;
+    margin: 0 40%;
 }
 
 .share-sms, .share-email, .share-facebook, .share-twitter {
@@ -173,6 +179,13 @@ h4 {
     .left-and-right-container .left {
          width: unset;
          max-width: unset;
+    }
+    .share-modal-body {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 30px;
+        margin: unset;
+        width: 100%;
     }
 }
 
