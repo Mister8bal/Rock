@@ -17,20 +17,8 @@
     background-color: #F9F9F9;
 }
 
-.title img {
-    width: 350px;
-}
-
-
 @media screen and (max-width: 927px) { 
     .navigation-tertiary-items-slick {
         padding-left: 50px;
-    }
-}
-
-/* Mobile Styling */
-@media screen and (max-width: 500px) {
-    .title img {
-        width: 250px;
     }
 }

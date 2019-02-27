@@ -26,6 +26,17 @@
     display: none;
 }
 
+.title img {
+    width: 500px;
+}
+
+@media screen and (max-width: 500px) {
+    .title img {
+        width: 350px;
+        margin-bottom: 15px;
+    }
+}
+
 .special-needs-service-times {
     display: flex;
     flex-direction: column;
