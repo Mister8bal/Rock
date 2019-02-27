@@ -12,16 +12,16 @@
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             <div class="left">
-                    <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_16_9 }}" alt="{{ Series.Name }}">
+                <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_16_9 }}" alt="{{ Series.Name }}">
             </div>
             <div class="right">
-                    <h4>{{ Series.Name }}</h4>
-                    <p>{{ Series.Description }}</p>
-                    <p>{{ Series.Attributes.ExtraDetails }}</p>
-                    <br/>
-                    <h4>Messages in this Series</h4>
-                    {% assign hasActiveMessages = false %}
-                    <ol class="messages">
+                <h4>{{ Series.Name }}</h4>
+                <p>{{ Series.Description }}</p>
+                <p>{{ Series.Attributes.ExtraDetails }}</p>
+                <br/>
+                <h4>Messages in this Series</h4>
+                {% assign hasActiveMessages = false %}
+                <ol class="messages">
                     {% for Message in Series.Messages reversed %}
                         {% assign messageActiveDate = '' %}
                         {% assign messageActiveDate = Message.Date | Date:'yyyyMMdd' %}
@@ -30,14 +30,13 @@
                             {% assign hasActiveMessages = true %}
                         {% endif %}
                     {% endfor %}
-                    </ol>
+                </ol>
 
-                    {% if hasActiveMessages == false %}
-                        <p>Join us this weekend for week 1 of the message. Check back after the weekend to re-watch or download the message, or listen to the podcast.</p>
-                    {% endif %}
+                {% if hasActiveMessages == false %}
+                    <p>Join us this weekend for week 1 of the message. Check back after the weekend to re-watch or download the message, or listen to the podcast.</p>
+                {% endif %}
             </div>
         </div>    
-
         <div>
             <div class="content">
                 <div class="content-item">
@@ -55,7 +54,6 @@
                         <h4>Share via</h4>
                     </div>
                     <div class="share-modal-body">
-                    
                         <a href="sms:&body=Check%out%20this%20series%20from%20%26%20CCV!%20I%20think%20you%20will%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-comment share-sms"></i></a>
                         <a href="mailto:?subject={{Series.Name}}&body=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-envelope share-email"></i></a>
                         <a target="blank" href="https://www.facebook.com/dialog/share?app_id=495461873811179&display=page&href=https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}&quote=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it."><i class="fa fa-facebook-square share-facebook"></i></a>
@@ -65,7 +63,6 @@
             </div>
 
             <script>
-
                 // Get the modals
                 var shareModal = document.getElementById('shareModal');
 
@@ -90,8 +87,7 @@
                     if (event.target == shareModal ) {
                         shareModal.style.display = "none";
                     }
-                }    
-                
+                }            
             </script>
             </div>
         </div>
