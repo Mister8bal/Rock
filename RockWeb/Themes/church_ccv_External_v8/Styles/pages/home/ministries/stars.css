@@ -30,6 +30,25 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/background-stars-basketball.jpg");
 }
 
+.title img {
+    width: 300px;
+}
+
+@media screen and (max-width: 500px) {
+    .main-feature {
+        padding-top: 45px;
+    }
+
+    .ccv-live-spacer {
+        padding-top: 65px;
+    }
+
+    .title img {
+        width: 190px;
+        margin-bottom: 15px;
+    }
+}
+
 /* Override Standard Layout Tablet Styling (fixes graphic section padding issues) */
 @media screen and (max-width: 1024px) {
     #section-a-bg {

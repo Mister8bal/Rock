@@ -951,6 +951,7 @@ h2 {
 
 .group-name-row-content {
     display: flex;
+    align-items: center;
 }
 
 .group-header-content {
@@ -973,7 +974,7 @@ h2 {
 .group-header h5 {
     font-size: 18px; 
     margin: 0px 0px .05rem; 
-    max-width: 60%;
+    flex-grow: 1;
 }
 
 .group-header span {
@@ -984,6 +985,7 @@ h2 {
     font-weight: bold; 
     white-space: normal;
     line-height: 22px;
+    align-self: flex-start;
 }
 
 .group-details-toggle {
