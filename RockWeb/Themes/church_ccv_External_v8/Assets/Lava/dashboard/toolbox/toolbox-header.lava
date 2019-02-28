@@ -61,8 +61,8 @@
 {% assign groupId = PageParameter.GroupId | Plus: 0 %}
 
 {% group where:'Id == {{ groupId }} ' %}
-    {% for lifeTrainingGroup in groupItems %}
-            {% assign group = lifeTrainingGroup %}
+    {% for groupItem in groupItems %}
+            {% assign group = groupItem %}
     {% endfor %}
 {% endgroup %}
 

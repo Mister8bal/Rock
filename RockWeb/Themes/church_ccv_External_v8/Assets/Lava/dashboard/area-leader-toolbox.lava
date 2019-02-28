@@ -1,15 +1,16 @@
-
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/area-leader-toolbox.lava' %}  
+{% endcomment %}
 
 {% for group in Groups %}
     <div class="area-toolbox">
         <div class="back-button">
-            <a class="btn btn-primary" href="/dashboard">Back</a>
+            <a class="btn btn-primary" href="##" onClick="history.go(-1); return false;">Back</a>
         </div>
         <h4>{{ group.Group.Name }}</h4>
-
         <div class="area-toolbox-row">
-
             {% for childGroup in group.Group.Groups %}
+                {% comment %} get the geo coordinates {% endcomment %}
                 {% assign groupLat = "" %}
                 {% assign groupLong = "" %}                       
 
@@ -22,7 +23,7 @@
                     {% endif %}
                 {% endfor %}
 
-
+                {% comment %} render the group {% endcomment %}
                 <div class="area-toolbox-group-card">
                     {% if groupLat != "" and groupLong != "" %}
                         <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=13&amp;size=365x300&amp;markers=scale:2%7Cicon:http://bit.ly/2jvrYBp%7C{{ groupLat }},{{ groupLong }}&amp;sensor=false&amp;style=feature:all%7Csaturation:-100&amp;key={{ 'Global' | Attribute:'GoogleAPIKey' }}" alt="Map of Group Location">
@@ -37,9 +38,6 @@
                     </div>
                 </div>
             {% endfor %}
-
         </div>
     </div>
-
 {% endfor %}
-

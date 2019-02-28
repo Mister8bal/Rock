@@ -1050,6 +1050,11 @@ h2 {
     width: 100%;
 }
 
+/* Override for area toolbox */
+.tooltip-access-area-toolbox {
+    max-width: unset !important;
+}
+
 /* Mobile Styling Group Card */
 @media screen and (max-width: 500px){
     .group-header {

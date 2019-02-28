@@ -11,11 +11,12 @@
     51 - CCV Group Future Coach (assistant coach)
     52 - CCV Group Admin
     114 - Roster Guide
+    123 - CCV Group Sub Section Leader
     133 - Next Gen Group Coach
     134 - Next Gen Group Co-Coach
     170 - Life Training Course Leader
 {% endcomment %}
-{% assign groupAdminIds = '50,51,52,114,133,134,170' %}
+{% assign groupAdminIds = '50,51,52,114,123,133,134,170' %}
 
 {% comment %} Check if user in any groups, if not display Call To Action Serving {% endcomment %}
 {% assign numberOfGroups = Groups | Size %}
@@ -59,17 +60,21 @@
                                     {% comment %} 
                                     ***** Toolbox Types *****
                                         49  - CCV Group
+                                        85  - CCV Group Sub Section
                                         94  - Next Gen
                                         117 - Life Training
                                     {% endcomment %}
 
                                     {% assign toolboxRoute = "" %}
                                     {% assign toolboxCssClass = "" %}
-                                    
+
                                     {% case group.Group.GroupTypeId %}
                                     {% when 49 %}
                                         {% assign toolboxRoute = "toolbox" %}
                                         {% assign toolboxCssClass = "tooltip-access-group-toolbox" %}
+                                    {% when 85 %}
+                                        {% assign toolboxRoute = "area-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-area-toolbox" %}
                                     {% when 94 %}
                                         {% assign toolboxRoute = "student-toolbox" %}
                                         {% assign toolboxCssClass = "tooltip-access-student-toolbox" %}
@@ -93,7 +98,8 @@
                                     <h5>{{ group.Group.Name }}</h5>
                                 {% endif %}
                                 <div class="group-name-row-buttons">
-                                    {% if showAdminElements == true %}
+                                    {% comment %} Dont show admin buttons if its a CCV Group Sub Section - 85 {% endcomment %}
+                                    {% if showAdminElements == true and group.Group.GroupTypeId != 85 %}
                                         <a href="#" onclick="btnAddGroupMember({{ group.Group.Id }},{{ group.Group.GroupType.DefaultGroupRoleId }}); return false;">
                                             <i class="mdi mdi-account-plus dashboard-title-icon tooltip-add-group-member"></i>
                                         </a>
@@ -101,13 +107,15 @@
                                             <i class="mdi mdi-email dashboard-title-icon tooltip-email-group"></i>
                                         </a>
                                     {% endif %}
-                                    <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
-                                        {% assign chevronIcon = "mdi-chevron-down" %}
-                                        {% if forloop.first %}
-                                            {% assign chevronIcon = "mdi-chevron-up" %}
-                                        {% endif %}
-                                        <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
-                                    </button>
+                                    {% unless group.Group.GroupTypeId == 85 %}
+                                        <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
+                                            {% assign chevronIcon = "mdi-chevron-down" %}
+                                            {% if forloop.first %}
+                                                {% assign chevronIcon = "mdi-chevron-up" %}
+                                            {% endif %}
+                                            <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
+                                        </button>
+                                    {% endunless %}
                                 </div>
                             </div>
                         </div>
@@ -191,6 +199,7 @@
                         activatePopOver('.tooltip-add-group-member', 'Add Group Member');
                         activatePopOver('.tooltip-email-group', 'Email Group');
                         activatePopOver('.tooltip-access-group-toolbox', 'Access Group Toolbox');
+                        activatePopOver('.tooltip-access-area-toolbox', 'Access Area Toolbox');
                         activatePopOver('.tooltip-access-student-toolbox', 'Access Student Toolbox');
                         activatePopOver('.tooltip-access-life-training-toolbox', 'Access Life Training Toolbox');
                         activatePopOver('.tooltip-email-person', 'Email');
