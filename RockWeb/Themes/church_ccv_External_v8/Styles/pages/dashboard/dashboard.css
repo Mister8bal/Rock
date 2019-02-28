@@ -985,7 +985,6 @@ h2 {
     font-weight: bold; 
     white-space: normal;
     line-height: 22px;
-    align-self: flex-start;
 }
 
 .group-details-toggle {
