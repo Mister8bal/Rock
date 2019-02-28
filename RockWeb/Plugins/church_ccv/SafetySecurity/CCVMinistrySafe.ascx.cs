@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.UI.WebControls;
-using CsvHelper;
+using CsvHelper12;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -71,7 +71,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 using ( var csvReader = new CsvReader( reader ) )
                 {
                     csvReader.Configuration.HasHeaderRecord = true;
-                    csvReader.Configuration.TrimFields = true;
+                    //csvReader.Configuration.TrimFields = true;
                     csvReader.Configuration.IgnoreBlankLines = true;
                     var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
                     Person currentPerson = null;
