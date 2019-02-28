@@ -26,7 +26,7 @@ using System.Linq;
 using System.Data.Entity;
 using System;
 using church.ccv.CCVRest.CCVLive.Model;
-
+using church.ccv.CCVRest.Common.Model;
 
 namespace church.ccv.CCVRest.CCVLive
 {
