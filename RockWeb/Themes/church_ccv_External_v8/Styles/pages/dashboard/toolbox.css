@@ -760,13 +760,18 @@
 /* Area Leader Toolbox */
 .area-toolbox {
     z-index: 2;
-    width: 1155px;
+    max-width: 1155px;
     margin: 0 auto;
 }
-
 .area-toolbox-row {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+}
+
+.area-toolbox-groups-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 .area-toolbox-group-card {
@@ -776,11 +781,24 @@
     border: unset;
     border-width: unset;
     background-color: #FFFFFF;
-    margin: 0;
+    margin: 10px 0;
+    max-width: 365px;
+}
+
+.area-toolbox-group-image {
+    width: 365px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #d9d9d9;
 }
 
 .area-toolbox-group-link {
     padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .area-toolbox-group-link span {
@@ -788,10 +806,24 @@
     font-size: 20px;
     line-height: 22px;
     vertical-align: middle;
-
-    
+    max-width: 80%;    
 }
 
 .area-toolbox-group-link i {
     vertical-align: middle;
 }
+
+/* Mobile styling */
+@media screen and (max-width: 350px) {
+    .area-toolbox-group-image {
+        width: unset;
+        height: unset;
+        max-width: 365px;
+        min-width: 275px;
+        max-height: 300px;
+        min-height: 225px;
+    
+    }
+}
+
+/* End Area Toolbox */
