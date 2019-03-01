@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    public class PersonModel
+    public class MobileAppPersonModel
     {
         // Person Info
+
+        // NOTE - Although this is a nullable field on a person, it cannot actually be null in practice.
         public int PrimaryAliasId;
 
         public string FirstName;
@@ -26,19 +28,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
 
         // Family Info
-        [Serializable]
-        public class FamilyMember
-        {
-            public int PrimaryAliasId;
-
-            public string FirstName;
-
-            public string LastName;
-
-            public int? PhotoId;
-        }
         public int FamilyId;
-        public List<FamilyMember> FamilyMembers;
+        public List<FamilyMemberModel> FamilyMembers;
         
 
         // Address Info

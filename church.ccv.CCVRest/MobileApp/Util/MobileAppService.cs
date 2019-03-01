@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using church.ccv.Actions;
 using church.ccv.CCVRest.MobileApp.Model;
 using Rock;
@@ -11,17 +9,14 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
 
-namespace church.ccv.CCVRest.MobileApp.Util
+namespace church.ccv.CCVRest.MobileApp
 {
-    public class Util
+    public class MobileAppService
     {
-        public static PersonModel GetPersonModel( int personId )
+        public static MobileAppPersonModel GetMobileAppPerson( int personId )
         {
             RockContext rockContext = new RockContext();
             PersonService personService = new PersonService( rockContext );
-            GroupService groupService = new GroupService( rockContext );
-            UserLoginService userLoginService = new UserLoginService( rockContext );
-
 
             // start by getting the person. if we can't do that, we should fail
             Person person = personService.Queryable().Include( a => a.PhoneNumbers ).Include( a => a.Aliases )
@@ -32,10 +27,10 @@ namespace church.ccv.CCVRest.MobileApp.Util
                 return null;
             }
 
-            PersonModel personModel = new PersonModel();
+            MobileAppPersonModel personModel = new MobileAppPersonModel();
 
             // first get their basic info
-            personModel.PrimaryAliasId = person.PrimaryAliasId ?? person.Id;
+            personModel.PrimaryAliasId = person.PrimaryAliasId.Value; //See definition of PersonModel - person.PrimaryAliasId can never actually be null.
             personModel.FirstName = person.NickName;
             personModel.LastName = person.LastName;
             personModel.Email = person.Email;
@@ -56,12 +51,12 @@ namespace church.ccv.CCVRest.MobileApp.Util
             Group family = person.GetFamily();
             personModel.FamilyId = family.Id;
 
-            personModel.FamilyMembers = new List<PersonModel.FamilyMember>();
+            personModel.FamilyMembers = new List<FamilyMemberModel>();
             foreach ( GroupMember groupMember in family.Members )
             {
                 if ( groupMember.Person.Id != personId )
                 {
-                    PersonModel.FamilyMember familyMember = new PersonModel.FamilyMember
+                    FamilyMemberModel familyMember = new FamilyMemberModel
                     {
                         PrimaryAliasId = groupMember.Person.PrimaryAliasId ?? groupMember.Person.Id,
                         FirstName = groupMember.Person.FirstName,
@@ -167,6 +162,66 @@ namespace church.ccv.CCVRest.MobileApp.Util
             }
 
             return personModel;
+        }
+
+        public static bool RegisterNewPerson( NewUserModel newUserModel )
+        {
+            RockContext rockContext = new RockContext();
+
+            // get all required values and make sure they exist
+            DefinedValueCache connectionStatusWebProspect = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT );
+            DefinedValueCache recordStatusPending = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING );
+            DefinedValueCache recordTypePerson = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON );
+
+            if ( connectionStatusWebProspect == null || recordStatusPending == null || recordTypePerson == null )
+            {
+                return false;
+            }
+
+            // create a new person, which will give us a new Id
+            Person person = new Person();
+
+            // for new people, copy the stuff sent by the Mobile App
+            person.FirstName = newUserModel.FirstName.Trim();
+            person.LastName = newUserModel.LastName.Trim();
+
+            person.Email = newUserModel.Email.Trim();
+            person.IsEmailActive = string.IsNullOrWhiteSpace( person.Email ) == false ? true : false;
+            person.EmailPreference = EmailPreference.EmailAllowed;
+
+            // now set values so it's a Person Record Type, and pending web prospect.
+            person.ConnectionStatusValueId = connectionStatusWebProspect.Id;
+            person.RecordStatusValueId = recordStatusPending.Id;
+            person.RecordTypeValueId = recordTypePerson.Id;
+
+            // now, save the person so that all the extra stuff (known relationship groups) gets created.
+            Group newFamily = PersonService.SaveNewPerson( person, rockContext );
+
+            // save all changes
+            person.SaveAttributeValues( rockContext );
+            rockContext.SaveChanges();
+
+
+            // and now create the login for this person
+            try
+            {
+                UserLogin login = UserLoginService.Create(
+                                rockContext,
+                                person,
+                                Rock.Model.AuthenticationServiceType.Internal,
+                                EntityTypeCache.Read( Rock.SystemGuid.EntityType.AUTHENTICATION_DATABASE.AsGuid() ).Id,
+                                newUserModel.Username,
+                                newUserModel.Password,
+                                true,
+                                false );
+
+                return true;
+            }
+            catch
+            {
+                // fail on exception
+                return false;
+            }
         }
     }
 }

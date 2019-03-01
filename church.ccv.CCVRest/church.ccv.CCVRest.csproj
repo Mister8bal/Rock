@@ -97,9 +97,14 @@
     <Compile Include="CCVLive\AttendanceController.cs" />
     <Compile Include="CCVLive\Model\AttendanceModel.cs" />
     <Compile Include="Common\Model\ResponseModel.cs" />
-    <Compile Include="MobileApp\MobileAppController.cs" />
-    <Compile Include="MobileApp\Model\PersonModel.cs" />
-    <Compile Include="MobileApp\Util\Util.cs" />
+    <Compile Include="Common\Util\Util.cs" />
+    <Compile Include="MobileApp\Controllers\AccountMAController.cs" />
+    <Compile Include="MobileApp\Controllers\PersonMAController.cs" />
+    <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />
+    <Compile Include="MobileApp\Model\LoginModel.cs" />
+    <Compile Include="MobileApp\Model\MobileAppPersonModel.cs" />
+    <Compile Include="MobileApp\Model\NewUserModel.cs" />
+    <Compile Include="MobileApp\Util\MobileAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
