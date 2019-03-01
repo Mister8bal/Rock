@@ -78,7 +78,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     {
                         int? trainingScore = mSafePerson.TrainingScore;
                         string trainingStatus = mSafePerson.TrainingStatus;
-                        DateTime? renewalDate = DateTime.Parse(mSafePerson.RenewalDate );
+                        DateTime renewalDate;
+                        DateTime.TryParse(mSafePerson.RenewalDate, out renewalDate );
 
                         // Try to find matching person
                         var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
@@ -89,33 +90,41 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         }
 
                         // If person was not found, create a new one
-                        else if ( personMatches.Count() == 0 )
+                        else
                         {
-                            int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-                            int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
-                            int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
-
                             // create new person 
                             currentPerson = new Person();
                             currentPerson.FirstName = mSafePerson.FirstName;
                             currentPerson.LastName = mSafePerson.LastName;
                             currentPerson.Email = mSafePerson.EmailAddresses;
-                            currentPerson.IsEmailActive = true;
-                            currentPerson.EmailPreference = EmailPreference.EmailAllowed;
+
+                            int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                            int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
+                            int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
 
                             // Set record type, record status and connection status 
                             currentPerson.RecordTypeValueId = recordTypePersonId;
                             currentPerson.RecordStatusValueId = recordStatusActiveId;
                             currentPerson.ConnectionStatusValueId = connectionStatusActiveId;
 
-                            // note on person profile
-                            currentPerson.SystemNote = "Added by Ministry Safe";
+                            if ( personMatches.Count() > 1 )
+                            {
+                                // Write note saying that two people matches were found so we created a new person instead. Make sure to put note on persons profile stating this.
 
-                            // save
-                            PersonService.SaveNewPerson( currentPerson, rockContext );
+
+                            }
+
+                            else
+                            {
+                                // Else just write a regular note on person profile saying "added by ministry safe"
+                                currentPerson.SystemNote = "Added by Ministry Safe";
+                            }
                         }
+                       
 
-                        // if personMatches.Count() >1 ....
+                        // save
+                        PersonService.SaveNewPerson( currentPerson, rockContext );
+
 
                         // If there is a valid person with a primary alias, continue
                         if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
