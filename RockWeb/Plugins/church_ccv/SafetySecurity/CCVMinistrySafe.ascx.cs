@@ -13,6 +13,7 @@ using Rock.Model;
 using Rock.Web.UI;
 using System.IO;
 using Rock.Web.Cache;
+using CsvHelper12.Configuration.Attributes;
 
 namespace RockWeb.Plugins.church_ccv.SafetySecurity
 {
@@ -30,22 +31,18 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
         public class MinistrySafePerson
         {
+            [Name("First Name")]
             public string FirstName { get; set; }
+            [Name( "Last Name" )]
             public string LastName { get; set; }
+            [Name( "Email Addresses" )]
             public string EmailAddresses { get; set; }
-            public string SexualAbuseAwarenessTrainingcompletedincompleted { get; set; }
-            public string CriminalBackgroundChecklevel { get; set; }
-            public string CriminalBackgroundCheckstatus { get; set; }
-            public string Tag { get; set; }
-            public string ClassificationEmpVol { get; set; }
-            public string Charges { get; set; }
-            public string Application { get; set; }
-            public string References { get; set; }
-            public string Interview { get; set; }
-            public DateTime RenewaldateSexualAbuseAwarenessTraining { get; set; } //Datetime?
-            public string Role { get; set; }
-            public string RenewalDateCriminalBackgroundCheck { get; set; } // Datetime?
-            public int? SexualAbuseAwarenessTrainingScore { get; set; }
+            [Name( "Sexual Abuse Awareness Training completed/incompleted" )]
+            public string TrainingStatus { get; set; }
+            [Name( "Renewal Date (Criminal Background Check)" )]
+            public string RenewalDate { get; set; } //Datetime?
+            [Name( "Sexual Abuse Awareness Training Score" )]
+            public int? TrainingScore { get; set; }
         }
 
         /// <summary>
@@ -70,20 +67,18 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             if ( binaryFile != null )
             {
                 using ( var reader = new StreamReader( binaryFile.ContentStream ) )
-                using ( var csvReader = new CsvReader( reader ) )
+                using ( var csvReader = new CsvHelper12.CsvReader( reader ) )
                 {
                     csvReader.Configuration.HasHeaderRecord = true;
-                    //csvReader.Configuration.TrimFields = true;
                     csvReader.Configuration.IgnoreBlankLines = true;
                     var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
                     Person currentPerson = null;
 
                     foreach ( var mSafePerson in peopleList )
                     {
-
-                        int? trainingScore = mSafePerson.SexualAbuseAwarenessTrainingScore;
-                        string sexualAbuseAwarenessTraining = mSafePerson.SexualAbuseAwarenessTrainingcompletedincompleted;
-                        DateTime renewalDateSexualAbuseAwarenessTraining = mSafePerson.RenewaldateSexualAbuseAwarenessTraining;
+                        int? trainingScore = mSafePerson.TrainingScore;
+                        string trainingStatus = mSafePerson.TrainingStatus;
+                        DateTime? renewalDate = DateTime.Parse(mSafePerson.RenewalDate );
 
                         // Try to find matching person
                         var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
@@ -96,7 +91,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         // If person was not found, create a new one
                         else if ( personMatches.Count() == 0 )
                         {
-
                             int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
                             int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
                             int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
@@ -131,10 +125,10 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             // Get attributes in rock
                             string ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"].Value; // Pass or Fail
                             string ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"].Value; // Complete or Incomplete
-                            var ministrySafeRenewalDate = currentPerson.AttributeValues["MinistrySafeRenewalDate"].Value; // Date
+                            var MinistrySafeRenewalDate = currentPerson.AttributeValues["MinistrySafeRenewalDate"].Value; // Date
 
                             // If the training has been completed.
-                            if ( sexualAbuseAwarenessTraining == "Completed" )
+                            if ( trainingStatus == "Completed" )
                             {
                                 // If the score is greater than or equal to 70.
                                 if ( trainingScore >= 70 )
@@ -142,7 +136,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     // AttributeValueService
                                     Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "Pass" );
                                     Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Completed" );
-                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], renewalDateSexualAbuseAwarenessTraining.ToString() );
+                                    Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], renewalDate.ToString() );
                                 }
                                 // If the score is less than 70
                                 else 
