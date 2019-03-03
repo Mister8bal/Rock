@@ -121,9 +121,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
                             if ( personMatches.Count() > 1 )
                             {
-                                // Write note saying that two people matches were found so we created a new person instead.
+                                foreach ( var peeps in personMatches )
+                                {
+                                    // Write note saying that two people matches were found so we created a new person instead.
+                                    note.Text = string.Format( "<a href=/Person/" + personMatches.First().Id + ">" + personMatches.First().FullName + "</a>" );
+                                }
 
-                                note.Text = string.Format( "Two matches were found while importing from Ministry Safe: {0} and {1}", personMatches.First().FirstName, personMatches.Last().FirstName );
                             }
 
                             else
