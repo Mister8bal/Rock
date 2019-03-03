@@ -52,67 +52,10 @@ namespace RockWeb.Plugins.church_ccv.Workflow
     {
         #region Fields
 
-        private RockContext _rockContext = null;
-        private WorkflowService _workflowService = null;
-
-        private WorkflowTypeCache _workflowType = null;
-        private WorkflowActionTypeCache _actionType = null;
-        private Rock.Model.Workflow _workflow = null;
-        private WorkflowActivity _activity = null;
-        private WorkflowAction _action = null;
-
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the workflow type identifier.
-        /// </summary>
-        /// <value>
-        /// The workflow type identifier.
-        /// </value>
-        public int? WorkflowTypeId
-        {
-            get { return ViewState["WorkflowTypeId"] as int?; }
-            set { ViewState["WorkflowTypeId"] = value; }
-        }
-
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the workflow type was set by attribute.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [configured type]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ConfiguredType
-        {
-            get { return ViewState["ConfiguredType"] as bool? ?? false; }
-            set { ViewState["ConfiguredType"] = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the workflow identifier.
-        /// </summary>
-        /// <value>
-        /// The workflow identifier.
-        /// </value>
-        public int? WorkflowId
-        {
-            get { return ViewState["WorkflowId"] as int?; }
-            set { ViewState["WorkflowId"] = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the action type identifier.
-        /// </summary>
-        /// <value>
-        /// The action type identifier.
-        /// </value>
-        public int? ActionTypeId
-        {
-            get { return ViewState["ActionTypeId"] as int?; }
-            set { ViewState["ActionTypeId"] = value; }
-        }
         #endregion
 
         #region Base Control Methods
@@ -128,30 +71,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
             this.AddConfigurationUpdateTrigger( upnlContent );
-
-            // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
-            this.BlockUpdated += Block_BlockUpdated;
-            this.AddConfigurationUpdateTrigger( upnlContent );
-
-            if ( _workflowType != null && !ConfiguredType )
-            {
-                RockPage.PageTitle = _workflowType.Name;
-
-                // we can only override if the page does not have a icon
-                if ( string.IsNullOrWhiteSpace( RockPage.PageIcon ) && !string.IsNullOrWhiteSpace( _workflowType.IconCssClass ) )
-                {
-                    RockPage.PageIcon = _workflowType.IconCssClass;
-                }
-            }
-            if ( _workflowType != null )
-            {
-                lTitle.Text = string.Format( "{0} Entry", _workflowType.WorkTerm );
-
-                if ( !string.IsNullOrWhiteSpace( _workflowType.IconCssClass ) )
-                {
-                    lIconHtml.Text = string.Format( "<i class='{0}' ></i>", _workflowType.IconCssClass );
-                }
-            }
         }
 
         /// <summary>
@@ -206,16 +125,28 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                 using ( var rockContext = new RockContext() )
                 {
+
+                    WorkflowService workflowService = new WorkflowService( rockContext );
+
                     List<WorkflowAction> actions = null;
-                    if ( role == "1" )
+
+                    // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
+                    if ( !GetAttributeValue( "WorkflowType" ).AsBoolean())
                     {
-                        actions = GetWorkflows( rockContext );
+                        actions = GetWorkflowByType( rockContext );
                     }
+                   
                     else
                     {
-                        actions = GetActions( rockContext );
+                        if ( role == "1" )
+                        {
+                            actions = GetWorkflows( rockContext );
+                        }
+                        else
+                        {
+                            actions = GetActions( rockContext );
+                        }
                     }
-
                     var mergeFields = new Dictionary<string, object>();
                     mergeFields.Add( "Role", role );
                     mergeFields.Add( "Actions", actions.OrderByDescending( a => a.CreatedDateTime ) );
@@ -233,17 +164,61 @@ namespace RockWeb.Plugins.church_ccv.Workflow
             }
         }
 
+        private List<WorkflowAction> GetWorkflowByType( RockContext rockContext )
+        {
+            var actions = new List<WorkflowAction>();
+
+            if ( CurrentPerson != null )
+            {
+
+                var workflowTypes = GetWorkflowTypes( rockContext );
+
+                var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
+                    .Where( w =>
+                        w.ActivatedDateTime.HasValue && 
+                        w.InitiatorPersonAlias.PersonId == CurrentPerson.Id ); // && !w.CompletedDateTime.HasValue
+
+                if ( workflowTypes.Any() )
+                {
+                    qry = qry
+                        .Where( w =>
+                            w.WorkflowType.CategoryId.HasValue &&
+                            workflowTypes.Contains( w.WorkflowType.Guid ) );
+                }
+
+                foreach ( var workflow in qry.OrderBy( w => w.ActivatedDateTime ) )
+                {
+                    var activity = new WorkflowActivity();
+                    activity.Workflow = workflow;
+
+                    var action = new WorkflowAction();
+                    action.Activity = activity;
+
+                    actions.Add( action );
+                }
+            }
+
+            return actions;
+        }
+
+        private List<Guid> GetWorkflowTypes( RockContext rockContext )
+        {
+            int entityTypeId = EntityTypeCache.Read( typeof( Rock.Model.WorkflowType ) ).Id;
+
+            var selectedWorkflows = new List<Guid>();
+            GetAttributeValue( "WorkflowType" ).SplitDelimitedValues().ToList().ForEach( c => selectedWorkflows.Add( c.AsGuid() ) );
+
+            return selectedWorkflows;
+        }
+
         private List<WorkflowAction> GetWorkflows( RockContext rockContext )
         {
-           
             var actions = new List<WorkflowAction>();
 
             if ( CurrentPerson != null )
             {
 
                 var categoryIds = GetCategories( rockContext );
-
-             //   var workflowTypes = LoadWorkflowType( rockContext );
 
                 var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
                     .Where( w =>
@@ -261,52 +236,14 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                 foreach ( var workflow in qry.OrderBy( w => w.ActivatedDateTime ) )
                 {
+                    var activity = new WorkflowActivity();
+                    activity.Workflow = workflow;
 
-                    // Get the workflow type id (initial page request)
-                    if ( !WorkflowTypeId.HasValue )
-                    {
-                        // Get workflow type set by attribute value
-                        Guid workflowTypeguid = GetAttributeValue( "WorkflowType" ).AsGuid();
-                        if ( !workflowTypeguid.IsEmpty() )
-                        {
-                            _workflowType = WorkflowTypeCache.Read( workflowTypeguid );
-                        }
+                    var action = new WorkflowAction();
+                    action.Activity = activity;
 
-                        // If an attribute value was not provided, check for query/route value
-                        if ( _workflowType != null )
-                        {
-                            WorkflowTypeId = _workflowType.Id;
-                            ConfiguredType = true;
-                        }
-                        else
-                        {
-                            WorkflowTypeId = PageParameter( "WorkflowTypeId" ).AsIntegerOrNull();
-                            ConfiguredType = false;
-                        }
-                    }
-
-                    // Get the workflow type 
-                    if ( _workflowType == null && WorkflowTypeId.HasValue )
-                    {
-                        _workflowType = WorkflowTypeCache.Read( WorkflowTypeId.Value );
-                    }
-
-                    if ( workflow.WorkflowTypeId == WorkflowTypeId )
-                    {
-
-                        var activity = new WorkflowActivity();
-                        activity.Workflow = workflow;
-
-                        var action = new WorkflowAction();
-                        action.Activity = activity;
-
-                        actions.Add( action );
-                    }
+                    actions.Add( action );
                 }
-
-
-
-
             }
 
             return actions;
@@ -339,14 +276,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
         private List<WorkflowAction> GetActiveForms( RockContext rockContext )
         {
-
-            var test = new WorkflowService( rockContext );
-
-            var workflow = test.Get(guid)
-
-
-
-
             var formActions = RockPage.GetSharedItem( "ActiveForms" ) as List<WorkflowAction>;
             if ( formActions == null )
             {
