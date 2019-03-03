@@ -107,24 +107,38 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             currentPerson.RecordStatusValueId = recordStatusActiveId;
                             currentPerson.ConnectionStatusValueId = connectionStatusActiveId;
 
+                            // Create Note and Person Service
+                            var noteService = new NoteService( rockContext );
+                            var personAliasService = new PersonAliasService( rockContext );
+
+                            var note = new Note();
+                            note.NoteTypeId = 8;
+                            note.IsSystem = false;
+                            note.IsAlert = false;
+                            note.IsPrivateNote = false;
+                            note.EntityId = currentPerson.Id;
+                            note.Caption = string.Empty;
+
                             if ( personMatches.Count() > 1 )
                             {
-                                // Write note saying that two people matches were found so we created a new person instead. Make sure to put note on persons profile stating this.
+                                // Write note saying that two people matches were found so we created a new person instead.
 
-
+                                note.Text = string.Format( "Two matches were found while importing from Ministry Safe: {0} and {1}", personMatches.First().FirstName, personMatches.Last().FirstName );
                             }
 
                             else
                             {
                                 // Else just write a regular note on person profile saying "added by ministry safe"
-                                currentPerson.SystemNote = "Added by Ministry Safe";
+                                note.Text = "Added by Ministry Safe.";
                             }
+
+                            // Add note to persons profile
+                            noteService.Add( note );
                         }
                        
 
                         // save
                         PersonService.SaveNewPerson( currentPerson, rockContext );
-
 
                         // If there is a valid person with a primary alias, continue
                         if ( currentPerson != null && currentPerson.PrimaryAliasId.HasValue ) // remove after refactor
