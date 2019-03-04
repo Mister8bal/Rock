@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVCaptivePortal.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Security.CCVCaptivePortal" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVCaptivePortalForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Security.CCVCaptivePortalForm" %>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
@@ -7,7 +7,9 @@
         <asp:ValidationSummary ID="valCaptivePortal" runat="server" HeaderText="Please correct the following:" CssClass="alert alert-validation" ValidationGroup="CaptivePortal" />
         <asp:Panel ID="pnlDetails" CssClass="panel panel-block captive-portal-form" runat="server">
 
-            <asp:Label ID="lblTitleText" runat="server" Text="Thank you for joining us" CssClass="captive-portal-title-text" />
+            <h3>
+                <asp:Label ID="lblTitleText" runat="server" Text="Thank you for joining us" CssClass="captive-portal-title-text" />
+            </h3>
 
             <div class="login-form">
                 <div class="person-name">
@@ -24,10 +26,7 @@
                     <asp:LinkButton ID="btnConnect" runat="server" Text="Connect To WiFi" CssClass="btn btn-primary" OnClick="btnConnect_Click" style="width:100%;" ValidationGroup="CaptivePortal" />
                 </div>
             </div>
-            <div class="terms-conditions">
-                <asp:Literal ID="litLegalNotice" runat="server"></asp:Literal>
-            </div>
-                
+            
         </asp:Panel>
     </ContentTemplate>
 </asp:UpdatePanel>

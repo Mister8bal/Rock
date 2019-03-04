@@ -7,38 +7,25 @@
     padding-top: 62px;
 }
 
-#subnavbar-bg {
+#subnavbar-bg, #subnavbar-bg, #section-c-bg {
     display: none;
 }
 
-.wifi-terms {
-    margin: 0;
+#section-b-bg {
+    background-color: #ebebeb;
 }
 
-.wifi-terms h2 {
-    font-size: 42px;
-    line-height: 50px;
-    font-weight: 400;
+.captive-portal-form {
+    padding-bottom: 40px;
 }
 
-.wifi-terms-section {
-    border-bottom: 2px solid #EEEEEE;
-    padding: 10px 0;
+.terms-conditions {
+    padding-bottom: 40px;
 }
 
-.wifi-terms-section p,.wifi-terms-section li {
-    font-family: heebo;
-    font-size: 14px;
-    line-height: 26px;
-    color: #707270;
-}
+    .terms-conditions p {
+        color: #535353;
+        font-size: 12px;
+        line-height: 14px;
 
-#ternavbar-bg {
-    display: none;
-}
-/* Mobile Styling */
-@media screen and (max-width: 500px) {
-    .wifi-terms {
-        margin: 0;
     }
-}
