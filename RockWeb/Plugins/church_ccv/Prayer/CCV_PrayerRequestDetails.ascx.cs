@@ -274,7 +274,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             DescriptionList descriptionList = new DescriptionList();
             if ( prayerRequest.RequestedByPersonAlias != null )
             {
-                descriptionList.Add( "Requested By", "<a href=/Person/" + prayerRequest.RequestedByPersonAlias + ">" + prayerRequest.RequestedByPersonAlias.Person.FullName + "</a>" );
+                descriptionList.Add( "Requested By", "<a href=/Person/" + prayerRequest.RequestedByPersonAlias.PersonId + ">" + prayerRequest.RequestedByPersonAlias.Person.FullName + "</a>" );
             }
 
             descriptionList.Add( "Name", prayerRequest.FullName );
