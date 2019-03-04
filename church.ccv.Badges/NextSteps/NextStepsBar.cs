@@ -4,6 +4,8 @@ using Rock.Web.Cache;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using Rock.Model;
+using Rock.Web.UI;
 
 namespace church.ccv.Badges.NextSteps
 {
@@ -29,7 +31,7 @@ namespace church.ccv.Badges.NextSteps
         /// </summary>
         /// <param name="badge">The badge.</param>
         /// <param name="writer">The writer.</param>
-        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             int baptismRegistrationPageId = GetPageIdFromLinkedPageAttribute( "BaptismRegistrationPage", badge);
             int connectionGroupRegistrationPageId = GetPageIdFromLinkedPageAttribute( "ConnectionGroupRegistrationPage", badge );
@@ -66,15 +68,15 @@ namespace church.ccv.Badges.NextSteps
                 </a>
             </div>", 
                 badge.Id // 0
-                , Person.NickName.EncodeHtml() // 1
-                , Person.Guid // 2
+                , person.NickName.EncodeHtml() // 1
+                , person.Guid // 2
                 , GetAttributeValue(badge, "BaptismEventId") // 3
                 , baptismRegistrationPageId // 4
                 , connectionGroupRegistrationPageId // 5
                 , servingConnectionPageId // 6
                 , nextStepGroupRegistrationPageId // 7
                 , sharedStoryWorkflowTypeId // 8
-                , Person.Id // 9
+                , person.Id // 9
             ) );
             
             writer.Write( string.Format(
@@ -461,9 +463,9 @@ namespace church.ccv.Badges.NextSteps
     }});
 }});
                     </script>",
-                 Person.NickName.EncodeHtml(), // 0
-                 Person.Guid.ToString(), // 1
-                 Person.Id, // 2
+                 person.NickName.EncodeHtml(), // 0
+                 person.Guid.ToString(), // 1
+                 person.Id, // 2
                  badge.Id, // 3  
                  servingConnectionPageId, // 4
                  connectionGroupRegistrationPageId, // 5

@@ -4,7 +4,7 @@ using Rock.Model;
 using Rock.Web.Cache;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
-using System.Web.UI;
+using Rock.Web.UI;
 
 namespace church.ccv.Badges.Bio
 {
@@ -19,7 +19,7 @@ namespace church.ccv.Badges.Bio
     [TextField( "Badge Color", "The color of the badge (#ffffff).", true, "#ee7624" )]
     class Coaches : Rock.PersonProfile.BadgeComponent
     {
-        public override void Render( PersonBadgeCache badge, HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             string label = GetAttributeValue( badge, "Label" );
             string badgeColor = GetAttributeValue( badge, "BadgeColor" );
@@ -65,7 +65,7 @@ namespace church.ccv.Badges.Bio
                     </script>
                 
                     ",
-                     Person.Id.ToString(),
+                     person.Id.ToString(),
                      badge.Id,
                      label ) );
             }
