@@ -28,7 +28,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when imported from Ministry Safe", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
     public partial class CCVMinistrySafe : RockBlock
     {
-
         public class MinistrySafePerson
         {
             [Name("First Name")]
@@ -112,7 +111,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             var personAliasService = new PersonAliasService( rockContext );
 
                             var note = new Note();
-                            note.NoteTypeId = 8;
+                            note.NoteTypeId = 36;
                             note.IsSystem = false;
                             note.IsAlert = false;
                             note.IsPrivateNote = false;
@@ -124,9 +123,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 foreach ( var peeps in personMatches )
                                 {
                                     // Write note saying that two people matches were found so we created a new person instead.
-                                    note.Text = string.Format( "<a href=/Person/" + personMatches.First().Id + ">" + personMatches.First().FullName + "</a>" );
+                                    note.Text = string.Format( "Person might exist already: " + "<a href=/Person/" + personMatches.First().Id + ">" + personMatches.First().FullName + "</a> . If it's not them, please discard note."  );
                                 }
-
                             }
 
                             else
@@ -139,7 +137,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             noteService.Add( note );
                         }
                        
-
                         // save
                         PersonService.SaveNewPerson( currentPerson, rockContext );
 
