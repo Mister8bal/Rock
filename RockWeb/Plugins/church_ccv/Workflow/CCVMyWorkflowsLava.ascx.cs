@@ -52,6 +52,8 @@ namespace RockWeb.Plugins.church_ccv.Workflow
     {
         #region Fields
 
+        PersonAlias personAlias;
+
         #endregion
 
         #region Properties
@@ -138,9 +140,11 @@ namespace RockWeb.Plugins.church_ccv.Workflow
                    
                     else
                     {
+                        // Activate Initatied By
                         if ( role == "1" )
                         {
                             actions = GetWorkflows( rockContext );
+
                         }
                         else
                         {
@@ -176,7 +180,7 @@ namespace RockWeb.Plugins.church_ccv.Workflow
                 var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
                     .Where( w =>
                         w.ActivatedDateTime.HasValue && 
-                        w.InitiatorPersonAlias.PersonId == CurrentPerson.Id ); // && !w.CompletedDateTime.HasValue
+                        w.InitiatorPersonAlias.PersonId == personAlias.Id ); // && !w.CompletedDateTime.HasValue
 
                 if ( workflowTypes.Any() )
                 {
