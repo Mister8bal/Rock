@@ -1,5 +1,14 @@
 .page-background {   
-    background-color: #616161;
+    background-color: #000;
+}
+
+.main-feature {
+    height: unset;
+    padding-top: 62px;
+}
+
+#subnavbar-bg {
+    display: none;
 }
 
 .wifi-terms {
