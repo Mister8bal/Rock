@@ -8,6 +8,19 @@
 
 {% if seriesObject.ContentChannelTypeId == 8 %}
     {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+	
+	{% capture twitterImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
+	{{ 'summary' | AddMetaTagToHead: 'property', 'twitter:card' }}
+    {{ '@ccvonline' | AddMetaTagToHead: 'property', 'twitter:site' }}
+	{{ twitterImage | AddMetaTagToHead: 'property', 'twitter:image' }}
+
+    {{ Series.Name | AddMetaTagToHead: 'property', 'og:title' }}
+    {{ Series.Description | AddMetaTagToHead: 'property', 'og:description' }}
+	
+	{% capture ogImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
+    {{ ogImage | AddMetaTagToHead: 'property', 'og:image' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:width' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:height' }}
 
     <div class="infoSection background-card">
         <div class="left-and-right-container">
