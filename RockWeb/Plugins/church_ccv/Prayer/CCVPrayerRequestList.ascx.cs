@@ -623,6 +623,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 }
             }
 
+            // Filter by initiated/assigned person
             Person person;
             if ( !string.IsNullOrWhiteSpace( PageParameter( "PersonId" ) ) )
             {
@@ -639,36 +640,17 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 role = "0";
             }
 
-            // Activate Initatied By
+            // If Initatied by then get all prayer requests that were initiated by person 
             if ( role == "1" )
             {
                 prayerRequests = prayerRequests.Where( a => a.RequestedByPersonAlias.PersonId == person.Id ); // CurrentPersonAlias.PersonId
             }
 
-            // Requested By 
+            // Else get all prayer requests assigned to person 
             else
             {
-                // Get persons profile
-                var personContext = this.ContextEntity<Person>();
-
-                if ( personContext != null )
-                {
-                    prayerRequests = prayerRequests.Where( a => a. RequestedByPersonAlias.PersonId == personContext.Id );
-                    
-                }
+                prayerRequests = prayerRequests.Where( a => a. CreatedByPersonAlias.PersonId == person.Id );
             }
-
-
-
-
-
-        
-
-           
-
-
-
-
 
             if ( sortProperty != null )
             {

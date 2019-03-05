@@ -6,7 +6,6 @@
           <div class="panel-heading">
                         <h1 class="panel-title">
                             <asp:Literal ID="lIconHtml" runat="server" ><i class="fa fa-gear"></i></asp:Literal>
-                            <asp:Literal ID="lTitle" runat="server" >Workflow Entry</asp:Literal>
                         </h1>
                         <div class="panel-labels">
                             <Rock:HighlightLabel ID="hlblWorkflowId" runat="server" LabelType="Info" />
