@@ -23,6 +23,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [DisplayName( "CCV Ministry Safe" )]
     [Category( "CCV > Safety and Security" )]
     [Description( "Imports CCV STARS Coaches Ministry Safe Results." )]
+    [IntegerField( "Passing Score", "The score needed on Ministry Safe assesment to be considered passing", true, 70, "", 1 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when imported from Ministry Safe", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
@@ -53,13 +54,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         {
             pnlStart.Visible = false;
             pnlDone.Visible = false;
-
             var rockContext = new RockContext();
-            rockContext.Database.CommandTimeout = 20000;
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
-
-            //  temp file in ascx
 
             if ( binaryFile != null )
             {
@@ -83,6 +80,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 string trainingStatus = mSafePerson.TrainingStatus;
                                 DateTime renewalDate;
                                 DateTime.TryParse( mSafePerson.RenewalDate, out renewalDate );
+                                
+                                // Get passing score from rock
+                                int passingTrainingScore = GetAttributeValue( "PassingScore" ).AsInteger();
 
                                 // Try to find matching person
                                 var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
@@ -135,7 +135,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 if ( trainingStatus == "Completed" )
                                 {
                                     // If the score is greater than or equal to 70.
-                                    if ( trainingScore >= 70 ) // make block setting
+                                    if ( trainingScore >= passingTrainingScore ) // make block setting
                                     {
                                         // AttributeValueService
                                         Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeResult"], "Pass" );

@@ -12,7 +12,7 @@
 
                 <%-- Start Panel --%>
                 <asp:Panel ID="pnlStart" runat="server">
-                    <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="fuImport_FileUploaded" />
+                    <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="fuImport_FileUploaded" UploadAsTemporary ="true" />
                 </asp:Panel>
 
                 <%-- Done Panel --%>
