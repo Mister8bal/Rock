@@ -623,9 +623,15 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 }
             }
 
-
-
-
+            Person person;
+            if ( !string.IsNullOrWhiteSpace( PageParameter( "PersonId" ) ) )
+            {
+                person = new PersonService( new RockContext() ).Get( PageParameter( "PersonId" ).AsInteger() );
+            }
+            else
+            {
+                person = null;
+            }
 
             string role = GetAttributeValue( "Role" );
             if ( string.IsNullOrWhiteSpace( role ) )
@@ -636,7 +642,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             // Activate Initatied By
             if ( role == "1" )
             {
-                prayerRequests = prayerRequests.Where( a => a.in  .PersonId == personContext.Id );
+                prayerRequests = prayerRequests.Where( a => a.RequestedByPersonAlias.PersonId == person.Id ); // CurrentPersonAlias.PersonId
             }
 
             // Requested By 
@@ -651,14 +657,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                     
                 }
             }
-
-
-
-            if ( ppRequestor.PersonId.HasValue )
-            {
-                prayerRequest.RequestedByPersonAliasId = ppRequestor.PersonAliasId;
-            }
-
 
 
 

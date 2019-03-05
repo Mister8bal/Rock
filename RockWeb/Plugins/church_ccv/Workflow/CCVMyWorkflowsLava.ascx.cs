@@ -52,8 +52,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
     {
         #region Fields
 
-        PersonAlias personAlias;
-
         #endregion
 
         #region Properties
@@ -127,30 +125,46 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                 using ( var rockContext = new RockContext() )
                 {
+                    Person person;
 
-                    WorkflowService workflowService = new WorkflowService( rockContext );
+                    if ( !string.IsNullOrWhiteSpace( PageParameter( "PersonId" ) ) )
+                    {
+                        person = new PersonService( new RockContext() ).Get( PageParameter( "PersonId" ).AsInteger() );
+                    }
+                    else
+                    {
+                        person = null;
+                    }
 
                     List<WorkflowAction> actions = null;
 
-                    // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
-                    if ( !GetAttributeValue( "WorkflowType" ).AsBoolean())
+                    // Activate Initatied By
+                    if ( role == "1" )
                     {
-                        actions = GetWorkflowByType( rockContext );
-                    }
-                   
-                    else
-                    {
-                        // Activate Initatied By
-                        if ( role == "1" )
+                        // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
+                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        {
+                            actions = GetWorkflowByType( rockContext, person );
+                        }
+                        else
                         {
                             actions = GetWorkflows( rockContext );
-
+                        }
+                    }
+                    // Requested By
+                    else
+                    {
+                        // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
+                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        {
+                            actions = GetWorkflowByType( rockContext, person );
                         }
                         else
                         {
                             actions = GetActions( rockContext );
                         }
                     }
+
                     var mergeFields = new Dictionary<string, object>();
                     mergeFields.Add( "Role", role );
                     mergeFields.Add( "Actions", actions.OrderByDescending( a => a.CreatedDateTime ) );
@@ -159,7 +173,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                     lContents.Text = contents.ResolveMergeFields( mergeFields );
                 }
-
             }
             catch ( Exception ex )
             {
@@ -168,11 +181,11 @@ namespace RockWeb.Plugins.church_ccv.Workflow
             }
         }
 
-        private List<WorkflowAction> GetWorkflowByType( RockContext rockContext )
+        private List<WorkflowAction> GetWorkflowByType( RockContext rockContext, Person p )
         {
             var actions = new List<WorkflowAction>();
 
-            if ( CurrentPerson != null )
+            if ( p != null )
             {
 
                 var workflowTypes = GetWorkflowTypes( rockContext );
@@ -180,7 +193,7 @@ namespace RockWeb.Plugins.church_ccv.Workflow
                 var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
                     .Where( w =>
                         w.ActivatedDateTime.HasValue && 
-                        w.InitiatorPersonAlias.PersonId == personAlias.Id ); // && !w.CompletedDateTime.HasValue
+                        w.InitiatorPersonAlias.PersonId == p.Id ); // && !w.CompletedDateTime.HasValue
 
                 if ( workflowTypes.Any() )
                 {
@@ -221,7 +234,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
             if ( CurrentPerson != null )
             {
-
                 var categoryIds = GetCategories( rockContext );
 
                 var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
@@ -259,7 +271,6 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
             if ( CurrentPerson != null )
             {
-
                 // Get all of the active form actions that user is assigned to and authorized to view
                 formActions = GetActiveForms( rockContext );
 
