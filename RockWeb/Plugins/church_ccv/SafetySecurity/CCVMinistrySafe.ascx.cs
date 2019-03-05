@@ -26,7 +26,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     [IntegerField( "Passing Score", "The score needed on Ministry Safe assesment to be considered passing", true, 70, "", 1 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
-    [DefinedValueField( Rock.SystemGuid.DefinedType.FINANCIAL_SOURCE_TYPE, "Source", "The Financial Source Type to use when imported from Ministry Safe", false, false, Rock.SystemGuid.DefinedValue.FINANCIAL_SOURCE_TYPE_WEBSITE, "", 2 )]
     public partial class CCVMinistrySafe : RockBlock
     {
         public class MinistrySafePerson
@@ -39,8 +38,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             public string EmailAddresses { get; set; }
             [Name( "Sexual Abuse Awareness Training completed/incompleted" )]
             public string TrainingStatus { get; set; }
-            [Name( "Renewal Date (Criminal Background Check)" )]
-            public string RenewalDate { get; set; } //Datetime?
+            [Name( "Renewal date (Sexual Abuse Awareness Training)" )]
+            public string RenewalDate { get; set; }
             [Name( "Sexual Abuse Awareness Training Score" )]
             public int? TrainingScore { get; set; }
         }
@@ -55,11 +54,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             pnlStart.Visible = false;
             pnlDone.Visible = false;
             var rockContext = new RockContext();
-            rockContext.Database.CommandTimeout = 8000;
+
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
 
-            //  temp file in ascx
+            string connectionStatusBlockValue = GetAttributeValue( "ConnectionStatus" );
+            string recordStatusBlockValue = GetAttributeValue( "RecordStatus" );
 
             if ( binaryFile != null )
             {
@@ -71,6 +71,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         csvReader.Configuration.IgnoreBlankLines = true;
                         var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
                         Person ministrySafePerson = null;
+                        bool importErrors = false;
 
                         foreach ( var mSafePerson in peopleList )
                         {
@@ -85,7 +86,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 int? trainingScore = mSafePerson.TrainingScore;
                                 string trainingStatus = mSafePerson.TrainingStatus;
                                 DateTime renewalDate;
-                                DateTime.TryParse( mSafePerson.RenewalDate, out renewalDate );
+                                bool renewalDateParseResult = DateTime.TryParse( mSafePerson.RenewalDate, out renewalDate );
 
                                 // Try to find matching person
                                 var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
@@ -103,14 +104,10 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     ministrySafePerson.LastName = mSafePerson.LastName;
                                     ministrySafePerson.Email = mSafePerson.EmailAddresses;
 
-                                    int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-                                    int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
-                                    int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
-
                                     // Set record type, record status and connection status 
-                                    ministrySafePerson.RecordTypeValueId = recordTypePersonId;
-                                    ministrySafePerson.RecordStatusValueId = recordStatusActiveId;
-                                    ministrySafePerson.ConnectionStatusValueId = connectionStatusActiveId;
+                                    ministrySafePerson.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                                    ministrySafePerson.RecordStatusValueId = DefinedValueCache.Read( recordStatusBlockValue.AsGuid() ).Id;
+                                    ministrySafePerson.ConnectionStatusValueId = DefinedValueCache.Read( connectionStatusBlockValue.AsGuid() ).Id;
 
                                     // save
                                     PersonService.SaveNewPerson( ministrySafePerson, personRockContext );
@@ -138,12 +135,22 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 if ( trainingStatus == "Completed" )
                                 {
                                     // If the score is greater than or equal to 70.
-                                    if ( trainingScore >= passingTrainingScore ) // make block setting
+                                    if ( trainingScore >= passingTrainingScore )
                                     {
                                         // AttributeValueService
                                         Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeResult"], "Pass" );
                                         Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeStatus"], "Completed" );
-                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], renewalDate.ToString() );
+
+                                        // IF the renewal date from ministry safe is not blank then set and save the attribute to the persons profile.
+                                        if ( renewalDateParseResult )
+                                        {
+                                            Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], renewalDate.ToString() );
+                                        }
+                                        // We set to true to show that renewal date was empty and shouldn't be
+                                        else
+                                        {
+                                            importErrors = true;
+                                        }  
                                     }
                                     // If the score is less than 70
                                     else
@@ -161,6 +168,14 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], "" );
                                 }
                             }
+                        }
+                        if ( importErrors )
+                        {
+                            pnlError.Visible = true;
+                        }
+                        else
+                        {
+                            pnlDone.Visible = true;
                         }
                     }
                 }

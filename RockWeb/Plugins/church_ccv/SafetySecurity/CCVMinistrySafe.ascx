@@ -12,12 +12,16 @@
 
                 <%-- Start Panel --%>
                 <asp:Panel ID="pnlStart" runat="server">
-                    <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="fuImport_FileUploaded" />
+                    <Rock:FileUploader ID="fuImport" runat="server" Label="Import File" OnFileUploaded="fuImport_FileUploaded" UploadAsTemporary="true"/>
                 </asp:Panel>
 
                 <%-- Done Panel --%>
                 <asp:Panel ID="pnlDone" runat="server" Visible="false">
-                    <Rock:NotificationBox ID="nbSuccess" runat="server" Title="Success" Text="n records imported" />
+                    <Rock:NotificationBox ID="nbSuccess" runat="server" CssClass="alert alert-success" Title="Success" Text="Import Complete. Thank You!" />
+                </asp:Panel>
+                <%-- Error Panel --%>
+                <asp:Panel ID="pnlError" runat="server" Visible="false">
+                    <Rock:NotificationBox ID="nbFail" runat="server" CssClass="alert alert-warning" Title="Warning" Text="Import Completed with errors." />
                 </asp:Panel>
 
             </div>
