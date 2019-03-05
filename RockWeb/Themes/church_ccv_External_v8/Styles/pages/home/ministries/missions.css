@@ -23,6 +23,16 @@
 	background-color: #FFFFFF;
 }
 
+.title img {
+    width: 500px;
+}
+
+@media screen and (max-width: 500px) {
+    .title img {
+        width: 300px;
+        margin-bottom: 15px;
+    }
+}
 
 .mission-stories {
     margin-bottom: 10px;

@@ -862,7 +862,8 @@
 /* Start Feature Styling */
 .title img {
     margin: 0 auto;
-    width: 500px;
+    margin-bottom: 25px;
+    width: 300px;
     display: block;
 }
 
@@ -886,6 +887,10 @@
 }
 
 @media screen and (max-width: 500px) {
+    .ccv-live-spacer {
+        padding-top: 20px;
+    }
+    
     .title h3 {
         padding-top: 0;
         font-size: 36px;
@@ -900,7 +905,8 @@
     .title img {
         padding-top: 0;
         margin: 0 auto;
-        width: 250px;
+        margin-bottom: 20px;
+        width: 200px;
     }
 }
 
@@ -1208,7 +1214,6 @@
 .event-card .link a span {
     position: relative; 
     padding-left: 16px; 
-    vertical-align: middle; 
     letter-spacing: 0px; 
     text-transform: uppercase; 
     font-weight: bold; 

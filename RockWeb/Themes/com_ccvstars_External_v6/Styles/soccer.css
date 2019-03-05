@@ -1,0 +1,66 @@
+
+#image-soccer {
+    background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/hero-stars-soccer.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 360px;
+}
+
+h2 {
+    color: #000;
+    font-size: 44px;
+    line-height: 42px;
+}
+
+h3 {
+    color: #000;
+    font-family: akrobat;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 36px;
+}
+
+p {
+    color: #000;
+    font-family: heebo;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 22px;
+    color: #333333;
+    margin-bottom: 30px;
+}
+
+.img-header img {
+    min-height: 260px;
+}
+
+#zone-main, #zone-feature {
+    padding: 1% 10%;
+}
+
+#zone-main {
+    padding-bottom: 50px;
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    #zone-main {
+        margin-right: auto;
+        margin-left: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    #zone-feature {
+        padding: 1% 0%;
+    }
+
+    #image-soccer {
+        background-image: url("/Themes/com_ccvstars_External_v5/Assets/Images/hero-stars-soccer-mobile.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        min-height: 260px;
+    }
+}

@@ -11,19 +11,12 @@
     51 - CCV Group Future Coach (assistant coach)
     52 - CCV Group Admin
     114 - Roster Guide
+    123 - CCV Group Sub Section Leader
     133 - Next Gen Group Coach
     134 - Next Gen Group Co-Coach
-TODO: Add Other Group Type leader roles
+    170 - Life Training Course Leader
 {% endcomment %}
-{% assign groupAdminIds = '50,51,52,114,133,134,170' %}
-
-{% comment %} 
-***** Coach ID's *****
-50 - CCV Group Coach
-114 - Roster Guide
-133 - Next Gen Group Coach
-{% endcomment %}
-{% assign groupCoachIds = '50,114,133,170' %}
+{% assign groupAdminIds = '50,51,52,114,123,133,134,170' %}
 
 {% comment %} Check if user in any groups, if not display Call To Action Serving {% endcomment %}
 {% assign numberOfGroups = Groups | Size %}
@@ -40,18 +33,15 @@ TODO: Add Other Group Type leader roles
         {% include '~~/Assets/Lava/dashboard/_group-card-header.lava' %}
         <div class="content">
             {% for group in Groups %}
-                {% comment %} Used for show/hide the admin elements (IE contact, add person...) {% endcomment %}
-                {% assign showAdminElements = false %}
-                {% assign isCoach = false %}
-
                 {% comment %} Exclude Utility Groups {% endcomment %}
-                {% assign groupId = group.Group.Id | ToString %}
-                {% assign groupIndex = forloop.index %}
+                {% assign groupId = group.Group.Id | ToString %}                
                 {% unless excludeGroups contains groupId %}
-                    
-                    {% comment %} Set showAdminElements {% endcomment %}
+
+                    {% assign groupIndex = forloop.index %}
+                    {% assign showAdminElements = false %}
+
+                    {% comment %} Check if current person is admin {% endcomment %}
                     {% for member in group.Group.Members %}
-                        {% comment %} Check if current person is admin {% endcomment %}
                         {% if member.Person.Id == CurrentPerson.Id %}
                             {% assign groupRoleId = member.GroupRoleId | ToString %}
                             {% if groupAdminIds contains groupRoleId %}
@@ -66,23 +56,36 @@ TODO: Add Other Group Type leader roles
                         <div class="group-header">
                             <div class="group-name-row">
                                 {% comment %} Admin Header {% endcomment %}
-                                {% if showAdminElements == true %}    
-                                    {% if group.Group.GroupTypeId == 49 %}                            
-                                        <a href="/toolbox?GroupId={{ group.Group.Id }}" class="tooltip-access-toolbox">
-                                            <div class="group-name-row-content">
-                                                <span>{{ group.Group.Name }}</span>
-                                                <i class="mdi mdi-chevron-right group-header-icon"></i>
-                                            </div>
-                                        </a>
-                                    {% elseif group.Group.GroupTypeId == 117 %}                            
-                                        <a href="/life-training-toolbox?GroupId={{ group.Group.Id }}" class="tooltip-access-toolbox">
-                                            <div class="group-name-row-content">
-                                                <span>{{ group.Group.Name }}</span>
-                                                <i class="mdi mdi-chevron-right group-header-icon"></i>
-                                            </div>
-                                        </a>    
-                                    {% elseif group.Group.GroupTypeId == 94 %}
-                                        <a href="/student-toolbox?GroupId={{ group.Group.Id }}" class="tooltip-access-student-toolbox">
+                                {% if showAdminElements == true %}
+                                    {% comment %} 
+                                    ***** Toolbox Types *****
+                                        49  - CCV Group
+                                        85  - CCV Group Sub Section
+                                        94  - Next Gen
+                                        117 - Life Training
+                                    {% endcomment %}
+
+                                    {% assign toolboxRoute = "" %}
+                                    {% assign toolboxCssClass = "" %}
+
+                                    {% case group.Group.GroupTypeId %}
+                                    {% when 49 %}
+                                        {% assign toolboxRoute = "toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-group-toolbox" %}
+                                    {% when 85 %}
+                                        {% assign toolboxRoute = "area-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-area-toolbox" %}
+                                    {% when 94 %}
+                                        {% assign toolboxRoute = "student-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-student-toolbox" %}
+                                    {% when 117 %}
+                                        {% assign toolboxRoute = "life-training-toolbox" %}
+                                        {% assign toolboxCssClass = "tooltip-access-life-training-toolbox" %}
+                                    {% else %}
+                                    {% endcase %}
+
+                                    {% unless toolboxRoute == "" %}
+                                        <a href="/{{ toolboxRoute }}?GroupId={{ group.Group.Id }}" class="{{ toolboxCssClass }}">
                                             <div class="group-name-row-content">
                                                 <span>{{ group.Group.Name }}</span>
                                                 <i class="mdi mdi-chevron-right group-header-icon"></i>
@@ -90,94 +93,82 @@ TODO: Add Other Group Type leader roles
                                         </a>
                                     {% else %}
                                         <h5>{{ group.Group.Name }}</h5>
-                                    {% endif %}
+                                    {% endunless %}
                                 {% else %}
                                     <h5>{{ group.Group.Name }}</h5>
                                 {% endif %}
                                 <div class="group-name-row-buttons">
-                                    {% if showAdminElements == true %}
+                                    {% comment %} Dont show admin buttons if its a CCV Group Sub Section - 85 {% endcomment %}
+                                    {% if showAdminElements == true and group.Group.GroupTypeId != 85 %}
                                         <a href="#" onclick="btnAddGroupMember({{ group.Group.Id }},{{ group.Group.GroupType.DefaultGroupRoleId }}); return false;">
                                             <i class="mdi mdi-account-plus dashboard-title-icon tooltip-add-group-member"></i>
                                         </a>
                                         <a href="/page/1751?group={{ group.Group.Id }}">
                                             <i class="mdi mdi-email dashboard-title-icon tooltip-email-group"></i>
                                         </a>
-                                    {% endif %}                                    
-                                    <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
-                                        {% assign chevronIcon = "mdi-chevron-down" %}
-                                        {% if forloop.first %}
-                                            {% assign chevronIcon = "mdi-chevron-up" %}
-                                        {% endif %}
-                                        <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
-                                    </button>
+                                    {% endif %}
+                                    {% unless group.Group.GroupTypeId == 85 %}
+                                        <button type="button" data-toggle="collapse" data-target="#groupDetails{{ groupIndex }}" class="group-details-toggle">
+                                            {% assign chevronIcon = "mdi-chevron-down" %}
+                                            {% if forloop.first %}
+                                                {% assign chevronIcon = "mdi-chevron-up" %}
+                                            {% endif %}
+                                            <i id="groupDetailsToggle{{ groupIndex }}" class="mdi {{ chevronIcon }} group-header-icon tooltip-group-details"></i>
+                                        </button>
+                                    {% endunless %}
                                 </div>
                             </div>
                         </div>
                         <div id="groupDetails{{ groupIndex }}" class="collapse {% if forloop.first %}in{% endif %}">
 
-                            {% comment %} Show Coach Video if Admin and group is a CCV group {% endcomment %}
-                            {% if showAdminElements == true %}
-                                {% comment %} Temporarily Hiding {% endcomment %}
-                                {% if group.Group.GroupTypeId == 99999 %}
-                                    <div class="group-header">
-                                        <div class="coach-video-row">
-                                            <div class="coach-video">
-                                                <a href="//fast.wistia.net/embed/playlists/ukdxoyinc8?autoAdvance=false&media_0_0%5BautoPlay%5D=true&media_0_0%5BcontrolsVisibleOnLoad%5D=false&popover=true&version=v1&videoFoam=false&videoOptions%5BautoPlay%5D=false&videoOptions%5BinlineOptionsOnly%5D=true&videoOptions%5BplayerColor%5D=7A1315&videoOptions%5Bversion%5D=v1&videoOptions%5BvideoHeight%5D=720&videoOptions%5BvideoWidth%5D=1280&videoOptions%5BvolumeControl%5D=true" class="wistia-popover[height=720,playerColor=7A1315,width=1280]"><img src="//embed-ssl.wistia.com/deliveries/49d1624d91f5d9e4cd8bd1fcaec0561e83efa730.jpg?image_play_button=true&image_play_button_color=7A1315e0&image_crop_resized=70x50" alt="" /></a>
-                                                <script charset="ISO-8859-1" src="//fast.wistia.com/assets/external/popover-v1.js"></script>
+                            {% comment %} Render Group Members {% endcomment %}
+                            {% for member in group.Group.Members %}
+                                {% comment %} Determine if member should be shown (Always show coach/admins) {% endcomment %}
+                                {% assign showMember = false %}          
+                                {% assign isAdmin = false %}
+
+                                {% assign memberRoleId = member.GroupRoleId | ToString %}
+                                {% if groupAdminIds contains memberRoleId %}
+                                    {% assign showMember = true %}
+                                    {% assign isAdmin = true %}                                    
+                                {% endif %}
+
+                                {% unless group.Group.Confidential == "Yes" %}
+                                    {% assign showMember = true %}
+                                {% endunless %}
+
+                                {% if showMember == true %}
+                                    <div class="person-row-summary">
+                                        <div>
+                                            <img src="{{ member.Person.PhotoUrl }}" width="60" height="60" style="border-radius: 50%;">
+                                        </div>
+                                        <div class="person-info">
+                                            <div>
+                                                <h5>{{ member.Person.FullName }}</h5>
                                             </div>
-                                            <div class="coach-video-text">
-                                                <h5>Upcoming Coach Video</h5>
-                                                <div class="coach-video-text-seperator"></div>
-                                                <h5>Upcoming Coach Guide</h5>
-                                            </div>
+                                        </div>
+                                        <div class="person-contact">
+                                            {% comment %} Show Contact buttons for everyone if coach, otherwise just show for coach {% endcomment %}
+                                            {% if showAdminElements == true or isAdmin == true %}
+                                                {% assign cellPhone = member.Person | PhoneNumber:'Mobile', true %}
+                                                {% assign homePhone = member.Person | PhoneNumber:'Home' %}
+
+                                                {% if cellPhone %}
+                                                    <a href="tel:{{cellPhone}}">
+                                                        <i class="mdi mdi-phone dashboard-icon tooltip-phone-person"></i>
+                                                    </a>
+                                                {% elseif homePhone %}
+                                                    <a href="tel:{{homePhone}}">
+                                                        <i class="mdi mdi-phone dashboard-icon tooltip-phone-person"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <a href="/page/1751?person={{ member.Person.Id }}">
+                                                    <i class="mdi mdi-email dashboard-icon tooltip-email-person"></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endif %}
-                            {% endif %}
-                                
-
-                            {% comment %} Render Group Members {% endcomment %}
-                            {% for member in group.Group.Members %}
-
-                                {% comment %} Check for Coach {% endcomment %}
-                                {% assign memberGroupRoleId = member.GroupRoleId | ToString %}
-                                {% if groupCoachIds contains memberGroupRoleId %}
-                                    {% assign isCoach = true %}
-                                {% else %}
-                                    {% assign isCoach = false %}
-                                {% endif %}
-
-                                        <div class="person-row-summary">
-                                            <div>
-                                                <img src="{{ member.Person.PhotoUrl }}" width="60" height="60" style="border-radius: 50%;">
-                                            </div>
-                                            <div class="person-info">
-                                                <div>
-                                                    <h5>{{ member.Person.FullName }}</h5>
-                                                </div>
-                                            </div>
-                                            <div class="person-contact">
-                                                {% comment %} Show Contact buttons for everyone if coach, otherwise just show for coach {% endcomment %}
-                                                {% if isCoach == true or showAdminElements == true %}
-                                                    {% assign cellPhone = member.Person | PhoneNumber:'Mobile', true %}
-                                                    {% assign homePhone = member.Person | PhoneNumber:'Home' %}
-
-                                                    {% if cellPhone %}
-                                                        <a href="tel:{{cellPhone}}">
-                                                            <i class="mdi mdi-phone dashboard-icon tooltip-phone-person"></i>
-                                                        </a>
-                                                    {% elseif homePhone %}
-                                                        <a href="tel:{{homePhone}}">
-                                                            <i class="mdi mdi-phone dashboard-icon tooltip-phone-person"></i>
-                                                        </a>
-                                                    {% endif %}
-                                                    <a href="/page/1751?person={{ member.Person.Id }}">
-                                                        <i class="mdi mdi-email dashboard-icon tooltip-email-person"></i>
-                                                    </a>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
                             {% endfor %}
                         </div>
                         
@@ -187,8 +178,10 @@ TODO: Add Other Group Type leader roles
                         // Activate Popover Tooltips
                         activatePopOver('.tooltip-add-group-member', 'Add Group Member');
                         activatePopOver('.tooltip-email-group', 'Email Group');
-                        activatePopOver('.tooltip-access-toolbox', 'Access Group Toolbox');
+                        activatePopOver('.tooltip-access-group-toolbox', 'Access Group Toolbox');
+                        activatePopOver('.tooltip-access-area-toolbox', 'Access Area Toolbox');
                         activatePopOver('.tooltip-access-student-toolbox', 'Access Student Toolbox');
+                        activatePopOver('.tooltip-access-life-training-toolbox', 'Access Life Training Toolbox');
                         activatePopOver('.tooltip-email-person', 'Email');
                         activatePopOver('.tooltip-phone-person', 'Call');
                         activatePopOver('.tooltip-group-details', 'Group Details');

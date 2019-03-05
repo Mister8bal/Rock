@@ -18,6 +18,17 @@
     background-color: #FFFFFF;
 }
 
+.title img {
+    width: 500px;
+}
+
+@media screen and (max-width: 500px) {
+    .title img {
+        width: 300px;
+        margin-bottom: 15px;
+    }
+}
+
 .students-service-times {
     display: flex;
     flex-direction: column;
