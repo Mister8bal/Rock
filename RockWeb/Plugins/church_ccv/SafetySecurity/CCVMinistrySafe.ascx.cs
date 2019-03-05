@@ -55,8 +55,11 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             pnlStart.Visible = false;
             pnlDone.Visible = false;
             var rockContext = new RockContext();
+            rockContext.Database.CommandTimeout = 8000;
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
+
+            //  temp file in ascx
 
             if ( binaryFile != null )
             {
@@ -73,6 +76,9 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         {
                             using ( var personRockContext = new RockContext() )
                             {
+                                // Get passing score from rock
+                                int passingTrainingScore = GetAttributeValue( "PassingScore" ).AsInteger();
+
                                 PersonService personService = new PersonService( personRockContext );
                                 var attributeValueService = new AttributeValueService( personRockContext );
 
@@ -80,9 +86,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                 string trainingStatus = mSafePerson.TrainingStatus;
                                 DateTime renewalDate;
                                 DateTime.TryParse( mSafePerson.RenewalDate, out renewalDate );
-                                
-                                // Get passing score from rock
-                                int passingTrainingScore = GetAttributeValue( "PassingScore" ).AsInteger();
 
                                 // Try to find matching person
                                 var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
