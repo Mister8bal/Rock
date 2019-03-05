@@ -57,111 +57,108 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             var rockContext = new RockContext();
             rockContext.Database.CommandTimeout = 20000;
             var binaryFileService = new BinaryFileService( rockContext );
-            PersonService personService = new PersonService( rockContext );
-            var attributeValueService = new AttributeValueService( rockContext );
-
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
 
-            // Delete file? Database problems
+            //  temp file in ascx
 
             if ( binaryFile != null )
             {
                 using ( var reader = new StreamReader( binaryFile.ContentStream ) )
-                using ( var csvReader = new CsvHelper12.CsvReader( reader ) )
                 {
-                    csvReader.Configuration.HasHeaderRecord = true;
-                    csvReader.Configuration.IgnoreBlankLines = true;
-                    var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
-                    Person currentPerson = null;
-
-                    foreach ( var mSafePerson in peopleList )
+                    using ( var csvReader = new CsvHelper12.CsvReader( reader ) )
                     {
-                        int? trainingScore = mSafePerson.TrainingScore;
-                        string trainingStatus = mSafePerson.TrainingStatus;
-                        DateTime renewalDate;
-                        DateTime.TryParse(mSafePerson.RenewalDate, out renewalDate );
+                        csvReader.Configuration.HasHeaderRecord = true;
+                        csvReader.Configuration.IgnoreBlankLines = true;
+                        var peopleList = csvReader.GetRecords<MinistrySafePerson>().ToList();
+                        Person ministrySafePerson = null;
 
-                        // Try to find matching person
-                        var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
-                        if ( personMatches.Count() == 1 )
+                        foreach ( var mSafePerson in peopleList )
                         {
-                            // If one person with same name and email address exists, use that person
-                            currentPerson = personMatches.First();
-                        }
-
-                        // If person was not found, create a new one
-                        else
-                        {
-                            // create new person 
-                            currentPerson = new Person();
-                            currentPerson.FirstName = mSafePerson.FirstName;
-                            currentPerson.LastName = mSafePerson.LastName;
-                            currentPerson.Email = mSafePerson.EmailAddresses;
-
-                            int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-                            int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
-                            int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
-
-                            // Set record type, record status and connection status 
-                            currentPerson.RecordTypeValueId = recordTypePersonId;
-                            currentPerson.RecordStatusValueId = recordStatusActiveId;
-                            currentPerson.ConnectionStatusValueId = connectionStatusActiveId;
-
-                            // Create Note and Person Service
-                            var noteService = new NoteService( rockContext );
-
-                            // save
-                            PersonService.SaveNewPerson( currentPerson, rockContext );
-
-                            var note = new Note();
-                            note.NoteTypeId = 8; // Change to 36 when moved to production
-                            note.IsSystem = false;
-                            note.IsAlert = false;
-                            note.IsPrivateNote = false;
-                            note.EntityId = currentPerson.Id;
-                            note.Caption = string.Empty;
-                            note.Text = "Added by Ministry Safe.";
-
-                            // Add note to persons profile
-                            noteService.Add( note );
-                        }
-                       
-
-                        currentPerson.LoadAttributes();
-
-                        // Get attributes in rock
-                        string ministrySafeResult = currentPerson.AttributeValues["MinistrySafeResult"].Value; // Pass or Fail
-                        string ministrySafeStatus = currentPerson.AttributeValues["MinistrySafeStatus"].Value; // Complete or Incomplete
-                        var MinistrySafeRenewalDate = currentPerson.AttributeValues["MinistrySafeRenewalDate"].Value; // Date
-
-                        // If the training has been completed.
-                        if ( trainingStatus == "Completed" )
-                        {
-                            // If the score is greater than or equal to 70.
-                            if ( trainingScore >= 70 )
+                            using ( var personRockContext = new RockContext() )
                             {
-                                // AttributeValueService
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "Pass" );
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Completed" );
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], renewalDate.ToString() );
-                            }
-                            // If the score is less than 70
-                            else 
-                            {
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "Fail" );
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Completed" );
-                                Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], "" );
+                                PersonService personService = new PersonService( personRockContext );
+                                var attributeValueService = new AttributeValueService( personRockContext );
+
+                                int? trainingScore = mSafePerson.TrainingScore;
+                                string trainingStatus = mSafePerson.TrainingStatus;
+                                DateTime renewalDate;
+                                DateTime.TryParse( mSafePerson.RenewalDate, out renewalDate );
+
+                                // Try to find matching person
+                                var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
+                                if ( personMatches.Count() == 1 )
+                                {
+                                    // If one person with same name and email address exists, use that person
+                                    ministrySafePerson = personMatches.First();
+                                }
+                                // If person was not found, create a new one
+                                else
+                                {
+                                    // create new person 
+                                    ministrySafePerson = new Person();
+                                    ministrySafePerson.FirstName = mSafePerson.FirstName;
+                                    ministrySafePerson.LastName = mSafePerson.LastName;
+                                    ministrySafePerson.Email = mSafePerson.EmailAddresses;
+
+                                    int recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                                    int recordStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() ).Id;
+                                    int connectionStatusActiveId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() ).Id;
+
+                                    // Set record type, record status and connection status 
+                                    ministrySafePerson.RecordTypeValueId = recordTypePersonId;
+                                    ministrySafePerson.RecordStatusValueId = recordStatusActiveId;
+                                    ministrySafePerson.ConnectionStatusValueId = connectionStatusActiveId;
+
+                                    // save
+                                    PersonService.SaveNewPerson( ministrySafePerson, personRockContext );
+
+                                    // Create Note
+                                    var noteService = new NoteService( personRockContext );
+
+                                    var note = new Note();
+                                    note.NoteTypeId = 8; // Change to 36 when moved to production
+                                    note.IsSystem = false;
+                                    note.IsAlert = false;
+                                    note.IsPrivateNote = false;
+                                    note.EntityId = ministrySafePerson.Id;
+                                    note.Caption = string.Empty;
+                                    note.Text = "Added by Ministry Safe import.";
+
+                                    // Add note to persons profile
+                                    noteService.Add( note );
+                                }
+
+                                // Load Attributes
+                                ministrySafePerson.LoadAttributes();
+
+                                // If the training has been completed.
+                                if ( trainingStatus == "Completed" )
+                                {
+                                    // If the score is greater than or equal to 70.
+                                    if ( trainingScore >= 70 ) // make block setting
+                                    {
+                                        // AttributeValueService
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeResult"], "Pass" );
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeStatus"], "Completed" );
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], renewalDate.ToString() );
+                                    }
+                                    // If the score is less than 70
+                                    else
+                                    {
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeResult"], "Fail" );
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeStatus"], "Completed" );
+                                        Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], "" );
+                                    }
+                                }
+                                else
+                                {
+                                    // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
+                                    Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeResult"], "" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeStatus"], "Incomplete" );
+                                    Rock.Attribute.Helper.SaveAttributeValue( ministrySafePerson, ministrySafePerson.Attributes["MinistrySafeRenewalDate"], "" );
+                                }
                             }
                         }
-                        else
-                        {
-                            // If training is not complete, mark status Incomplete, and both result and renewal date fields will be blank
-                            Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeResult"], "" );
-                            Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeStatus"], "Incomplete" );
-                            Rock.Attribute.Helper.SaveAttributeValue( currentPerson, currentPerson.Attributes["MinistrySafeRenewalDate"], "" );
-                        }
-                        //currentPerson.SaveAttributeValues( rockContext );
-                        rockContext.SaveChanges();
                     }
                 }
             }
