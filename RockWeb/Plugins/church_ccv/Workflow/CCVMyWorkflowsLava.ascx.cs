@@ -138,11 +138,13 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                     List<WorkflowAction> actions = null;
 
+                    var selectedWorkflowType = GetAttributeValue( "WorkflowType" );
+
                     // Activate Initatied By
                     if ( role == "1" )
                     {
                         // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
-                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        if ( selectedWorkflowType != null )
                         {
                             actions = GetWorkflowByType( rockContext, person, role );
                         }
@@ -155,7 +157,7 @@ namespace RockWeb.Plugins.church_ccv.Workflow
                     else
                     {
                         // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
-                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        if ( selectedWorkflowType != null )
                         {
                             actions = GetWorkflowByType( rockContext, person, role );
                         }

@@ -40,7 +40,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 
     [SecurityAction( Authorization.APPROVE, "The roles and/or users that have access to approve prayer requests and comments." )]
 
-    [CustomRadioListField( "Role", "Display the active workflows that the current user Initiated, or is currently Assigned To.", "0^Assigned To,1^Initiated", false, "0", "", 0 )]
+    [CustomRadioListField( "Role", "Display the active Prayer Requests that the current user Initiated, or is currently Assigned To.", "0^Assigned To,1^Initiated", false, "0", "", 0 )]
     [LinkedPage( "Detail Page", "", false, Order = 0 )]
     [IntegerField( "Expires After (Days)", "Number of days until the request will expire.", false, 14, "", 1, "ExpireDays" )]
     [BooleanField( "Show Prayer Count", "If enabled, the block will show the current prayer count for each request in the list.", false, "", 2 )]
