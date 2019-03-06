@@ -3,7 +3,7 @@ using Rock.PersonProfile;
 using Rock.Web.Cache;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
-using System.Web.UI;
+using Rock.Web.UI;
 
 namespace church.ccv.Badges.Bio
 {
@@ -20,7 +20,7 @@ namespace church.ccv.Badges.Bio
         /// </summary>
         /// <param name="person">The person.</param>
         /// <returns></returns>
-        public override void Render( PersonBadgeCache badge, HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             writer.Write( string.Format(
                 "<span class='label label-campus badge-campuswithleaders badge-id-{0}' style='display:none' ></span>",
@@ -60,7 +60,7 @@ namespace church.ccv.Badges.Bio
                 </script>
                 
                 ",
-                    Person.Id.ToString(),
+                    person.Id.ToString(),
                     badge.Id ) );
         }
     }

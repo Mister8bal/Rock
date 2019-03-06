@@ -3,6 +3,8 @@ using Rock.Web.Cache;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using Rock.Model;
+using Rock.Web.UI;
 
 namespace church.ccv.Badges.NextSteps
 {
@@ -11,13 +13,13 @@ namespace church.ccv.Badges.NextSteps
     [ExportMetadata( "ComponentName", "NextSteps Taken" )]
     public class NextStepsTaken : Rock.PersonProfile.BadgeComponent
     {
-        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             writer.Write( string.Format( @"<div class='badge badge-stepstaken badge-icon badge-id-{0}' data-toggle='tooltip' data-original-title='{1} has not taken any steps'>
                     <i class='fa fa-road'></i><div class='steps-thisyear'></div><div class='steps-52weeks'></div>
             </div>", 
                 badge.Id // 0
-                , Person.NickName.EncodeHtml() // 1
+                , person.NickName.EncodeHtml() // 1
             ) );
 
             writer.Write( string.Format(
@@ -56,9 +58,9 @@ namespace church.ccv.Badges.NextSteps
                     </script>
                 
                     ",
-                     Person.Guid, // 0
+                     person.Guid, // 0
                      badge.Id, // 1
-                     Person.NickName.EncodeHtml(), // 2
+                     person.NickName.EncodeHtml(), // 2
                      RockDateTime.Now.Year //3
                     ));
         }
