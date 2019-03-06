@@ -1,0 +1,80 @@
+﻿
+.schedule-a-visit {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+
+/* Progress Header */
+.form-progress {
+    display: flex;
+    justify-content: center;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 10px 0 10px;
+}
+
+.step-number {
+    border-bottom: none;
+    background-color: #999999;
+    color: #FFFFFF;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.active {
+    background-color: #7A1315;
+}
+
+.step h5 {
+    color: #999999;
+}
+
+/* Form */
+
+.form-header {
+    text-align: center;
+}
+
+.required-key {
+    align-self: flex-end;
+}
+
+.required-key:before {
+    margin-right: 4px;
+    font-family: FontAwesome;
+    font-size: 4px;
+    color: #eca9a7;
+    vertical-align: super;
+    content: '\f111';
+}
+
+
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-field, .input-group.input-width-md {
+    width: 100%;
+}
+
+.form-field:nth-child(2), .form-field:nth-child(3) {
+    margin-left: 20px;
+}
+
+
+
+.form-navigation {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
