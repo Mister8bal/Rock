@@ -427,6 +427,11 @@ namespace Rock.SystemGuid
         /// </summary>
         public const string PERSONAL_DEVICE_TYPE_MOBILE = "5A8F264F-3BE6-4F15-912A-3CE93A98E8F6";
 
+        /// <summary>
+        /// Computer personal device type
+        /// </summary>
+        public const string PERSONAL_DEVICE_TYPE_COMPUTER = "828ADECE-EFE7-49DF-BA8C-B3F132509A95";
+
         #endregion
 
         #region Personal Device Platform
@@ -435,6 +440,21 @@ namespace Rock.SystemGuid
         /// A default personal device platform
         /// </summary>
         public const string PERSONAL_DEVICE_PLATFORM_OTHER = "13091A2D-C483-46FA-B489-E5D230B353C8";
+
+        #endregion
+
+        #region Person Search Keys
+
+        /// <summary>
+        /// Person Search Type: Email
+        /// </summary>
+        public const string PERSON_SEARCH_KEYS_EMAIL = "D6CFD200-B33B-4D01-B49F-24325E47D8B8";
+
+
+        /// <summary>
+        /// Person Search Type: Alternate Id
+        /// </summary>
+        public const string PERSON_SEARCH_KEYS_ALTERNATE_ID = "AD77CF28-E42B-44C2-8D5C-F6A0A6EE8022";
 
         #endregion
 

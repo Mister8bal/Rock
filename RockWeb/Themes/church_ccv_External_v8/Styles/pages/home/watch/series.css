@@ -45,14 +45,123 @@ h4 {
     padding-top: 0;
 }
 
-@media screen and (max-width: 1024px) {
-    .main-feature {
-        height: 620px;
-    }
+.infoSection {
+    display: block;
 }
 
+ /* Share Section */
+ .share-modal-header h4 {
+    font-family: akrobat;
+    padding: 0;
+    color: rgb(85, 85, 85);
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.item-share {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+}
+
+.item-share p {
+    text-transform: uppercase;
+    font-size: 18px;
+    margin: 10px 0 0 0;
+    color: rgb(85, 85, 85);
+}
+
+.item-share p {
+    font-size: 18px;
+    font-family: akrobat;
+}
+
+.item-share .mdi-launch {
+    font-size: 35px;
+}
+
+#shareButton {
+    cursor: pointer;
+    color: #7A1315;
+}
+
+/* Modals */
+.share-modal {
+    display: none; 
+    position: fixed;
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+    -webkit-animation-name: fadeIn; 
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s;
+}
+
+/* Share Modal Content */
+.share-modal-content {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s;
+    padding-bottom: 100px;
+    text-align: center;
+}
+
+.share-modal-header {
+    padding: 9px 16px;
+    background-color: #FFFFFF;
+    color: white;
+}
+
+.share-modal-body {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 30px;
+    margin: 0 40%;
+}
+
+.share-sms, .share-email, .share-facebook, .share-twitter {
+    font-size: 32px;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0} 
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+/* End Share Section */
+
+
 /* Tablet Styling */
-@media screen and (max-width: 768px){
+@media screen and (max-width: 760px){
     #section-a-bg {
         padding-bottom: 20px;
     }
@@ -70,6 +179,13 @@ h4 {
     .left-and-right-container .left {
          width: unset;
          max-width: unset;
+    }
+    .share-modal-body {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 30px;
+        margin: unset;
+        width: 100%;
     }
 }
 

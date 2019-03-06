@@ -8,20 +8,33 @@
 
 {% if seriesObject.ContentChannelTypeId == 8 %}
     {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+	
+	{% capture twitterImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
+	{{ 'summary' | AddMetaTagToHead: 'property', 'twitter:card' }}
+    {{ '@ccvonline' | AddMetaTagToHead: 'property', 'twitter:site' }}
+	{{ twitterImage | AddMetaTagToHead: 'property', 'twitter:image' }}
+
+    {{ Series.Name | AddMetaTagToHead: 'property', 'og:title' }}
+    {{ Series.Description | AddMetaTagToHead: 'property', 'og:description' }}
+	
+	{% capture ogImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
+    {{ ogImage | AddMetaTagToHead: 'property', 'og:image' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:width' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:height' }}
 
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             <div class="left">
-                    <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_16_9 }}" alt="{{ Series.Name }}">
+                <img class="rounded-edge-img img-responsive" src="/GetImage.ashx?guid={{ Series.Attributes.Image_16_9 }}" alt="{{ Series.Name }}">
             </div>
             <div class="right">
-                    <h4>{{ Series.Name }}</h4>
-                    <p>{{ Series.Description }}</p>
-                    <p class="">{{ Series.Attributes.ExtraDetails }}</p>
-                    <br/>
-                    <h4>Messages in this Series</h4>
-                    {% assign hasActiveMessages = false %}
-                    <ol class="messages">
+                <h4>{{ Series.Name }}</h4>
+                <p>{{ Series.Description }}</p>
+                <p>{{ Series.Attributes.ExtraDetails }}</p>
+                <br/>
+                <h4>Messages in this Series</h4>
+                {% assign hasActiveMessages = false %}
+                <ol class="messages">
                     {% for Message in Series.Messages reversed %}
                         {% assign messageActiveDate = '' %}
                         {% assign messageActiveDate = Message.Date | Date:'yyyyMMdd' %}
@@ -30,15 +43,66 @@
                             {% assign hasActiveMessages = true %}
                         {% endif %}
                     {% endfor %}
-                    </ol>
+                </ol>
 
-                    {% if hasActiveMessages == false %}
-                        <p>Join us this weekend for week 1 of the message. Check back after the weekend to re-watch or download the message, or listen to the podcast.</p>
-                    {% endif %}
+                {% if hasActiveMessages == false %}
+                    <p>Join us this weekend for week 1 of the message. Check back after the weekend to re-watch or download the message, or listen to the podcast.</p>
+                {% endif %}
+            </div>
+        </div>    
+        <div>
+            <div class="content">
+                <div class="content-item">
+                    <div class="item-share">
+                        <p>Share this Series:</p>
+                        <span id="shareButton" class="mdi mdi-launch"></span>
+                    </div>
                 </div>
-
             </div>
 
-            {% endif %}
+            <!-- The Modal -->
+            <div id="shareModal" class="share-modal">
+                <div class="share-modal-content">
+                    <div class="share-modal-header">
+                        <h4>Share via:</h4>
+                    </div>
+                    <div class="share-modal-body">
+                        <a href="sms:&body=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you%20will%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-comment share-sms"></i></a>
+                        <a href="mailto:?subject={{Series.Name}}&body=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-envelope share-email"></i></a>
+                        <a target="blank" href="https://www.facebook.com/dialog/share?app_id=495461873811179&display=page&href=https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}&quote=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it."><i class="fa fa-facebook-square share-facebook"></i></a>
+                        <a target="blank" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}&text=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it."><i class="fa fa-twitter-square share-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Get the modals
+                var shareModal = document.getElementById('shareModal');
+
+                // Get the buttons that opens the modals
+                var shareButton = document.getElementById('shareButton');
+
+                // When the user clicks the button, open the modal 
+                shareButton.onclick = function() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: '{{ Series.Name }}',
+                            text: 'Check out this series from CCV! I think you will like it.',
+                            url: 'https://ccv.church/watch/series?SeriesId={{Series.Id}}',
+                        })
+                    } else {
+                        shareModal.style.display = "block";
+                    }
+                }
+
+                // When the user clicks anywhere outside of the modals, close them
+                window.onclick = function(event) {
+                    if (event.target == shareModal ) {
+                        shareModal.style.display = "none";
+                    }
+                }            
+            </script>
+            </div>
         </div>
     </div>
+{% endif %}
