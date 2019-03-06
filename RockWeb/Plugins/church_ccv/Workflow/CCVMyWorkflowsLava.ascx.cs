@@ -138,26 +138,28 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                     List<WorkflowAction> actions = null;
 
+                    var selectedWorkflowType = GetAttributeValue( "WorkflowType" );
+
                     // Activate Initatied By
                     if ( role == "1" )
                     {
                         // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
-                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        if ( selectedWorkflowType != null )
                         {
-                            actions = GetWorkflowByType( rockContext, person );
+                            actions = GetWorkflowByType( rockContext, person, role );
                         }
                         else
                         {
                             actions = GetWorkflows( rockContext );
                         }
                     }
-                    // Requested By
+                    // Requested/Assigned
                     else
                     {
                         // If a workflow type is selected, display only this. Otherwise check role type (Initiated by or assigned to).
-                        if ( !GetAttributeValue( "WorkflowType" ).AsBoolean() )
+                        if ( selectedWorkflowType != null )
                         {
-                            actions = GetWorkflowByType( rockContext, person );
+                            actions = GetWorkflowByType( rockContext, person, role );
                         }
                         else
                         {
@@ -181,19 +183,30 @@ namespace RockWeb.Plugins.church_ccv.Workflow
             }
         }
 
-        private List<WorkflowAction> GetWorkflowByType( RockContext rockContext, Person p )
+        private List<WorkflowAction> GetWorkflowByType( RockContext rockContext, Person p, string personRole )
         {
             var actions = new List<WorkflowAction>();
 
             if ( p != null )
             {
-
                 var workflowTypes = GetWorkflowTypes( rockContext );
-
                 var qry = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
                     .Where( w =>
-                        w.ActivatedDateTime.HasValue && 
-                        w.InitiatorPersonAlias.PersonId == p.Id ); // && !w.CompletedDateTime.HasValue
+                        w.ActivatedDateTime.HasValue);
+
+                // If Initatied by then get all workflows that were initiated by person 
+                if ( personRole == "1" )
+                {
+                    qry = qry
+                        .Where( w => w.InitiatorPersonAlias.PersonId == p.Id );
+                }
+                // Else get all workflows assigned to person 
+                else
+                {
+                    qry = qry
+                    .Where( w => w.CreatedByPersonAlias.PersonId == p.Id ); // && !w.CompletedDateTime.HasValue
+
+                }
 
                 if ( workflowTypes.Any() )
                 {

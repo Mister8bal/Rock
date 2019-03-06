@@ -40,7 +40,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 
     [SecurityAction( Authorization.APPROVE, "The roles and/or users that have access to approve prayer requests and comments." )]
 
-    [CustomRadioListField( "Role", "Display the active workflows that the current user Initiated, or is currently Assigned To.", "0^Assigned To,1^Initiated", false, "0", "", 0 )]
+    [CustomRadioListField( "Role", "Display the active Prayer Requests that the current user Initiated, or is currently Assigned To.", "0^Assigned To,1^Initiated", false, "0", "", 0 )]
     [LinkedPage( "Detail Page", "", false, Order = 0 )]
     [IntegerField( "Expires After (Days)", "Number of days until the request will expire.", false, 14, "", 1, "ExpireDays" )]
     [BooleanField( "Show Prayer Count", "If enabled, the block will show the current prayer count for each request in the list.", false, "", 2 )]
@@ -623,6 +623,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 }
             }
 
+            // Filter by initiated/assigned person
             Person person;
             if ( !string.IsNullOrWhiteSpace( PageParameter( "PersonId" ) ) )
             {
@@ -639,36 +640,17 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 role = "0";
             }
 
-            // Activate Initatied By
+            // If Initatied by then get all prayer requests that were initiated by person 
             if ( role == "1" )
             {
                 prayerRequests = prayerRequests.Where( a => a.RequestedByPersonAlias.PersonId == person.Id ); // CurrentPersonAlias.PersonId
             }
 
-            // Requested By 
+            // Else get all prayer requests assigned to person 
             else
             {
-                // Get persons profile
-                var personContext = this.ContextEntity<Person>();
-
-                if ( personContext != null )
-                {
-                    prayerRequests = prayerRequests.Where( a => a. RequestedByPersonAlias.PersonId == personContext.Id );
-                    
-                }
+                prayerRequests = prayerRequests.Where( a => a. CreatedByPersonAlias.PersonId == person.Id );
             }
-
-
-
-
-
-        
-
-           
-
-
-
-
 
             if ( sortProperty != null )
             {
