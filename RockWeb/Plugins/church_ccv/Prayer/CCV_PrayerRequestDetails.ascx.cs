@@ -270,10 +270,11 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             SetEditMode( false );
             lActionTitle.Text = string.Format( "{0} Prayer Request", prayerRequest.FullName ).FormatAsHtmlTitle();
 
+
             DescriptionList descriptionList = new DescriptionList();
             if ( prayerRequest.RequestedByPersonAlias != null )
             {
-                descriptionList.Add( "Requested By", prayerRequest.RequestedByPersonAlias.Person.FullName );
+                descriptionList.Add( "Requested By", "<a href=/Person/" + prayerRequest.RequestedByPersonAlias.PersonId + ">" + prayerRequest.RequestedByPersonAlias.Person.FullName + "</a>" );
             }
 
             descriptionList.Add( "Name", prayerRequest.FullName );
@@ -294,6 +295,10 @@ namespace RockWeb.Plugins.church_ccv.Prayer
         /// <param name="prayerRequest">The prayer request.</param>
         private void ShowEditDetails( PrayerRequest prayerRequest )
         {
+
+            var rockContext = new RockContext();
+            PersonService personService = new PersonService( rockContext );
+
             SetEditMode( true );
 
             if ( prayerRequest.Id > 0 )
@@ -327,7 +332,18 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             }
             else
             {
-                ppRequestor.SetValue( null );
+                // If the Prayer Request does not have a Requester set, Try to find the person in rock to set them as requester.
+                var personMatches = personService.GetByMatch( prayerRequest.FirstName, prayerRequest.LastName, prayerRequest.Email );
+                if ( personMatches.Count() == 1 )
+                {
+                    // If one person with same name and email address exists, set that person as requester
+                    ppRequestor.SetValue( personMatches.First());
+                }
+
+                else
+                {
+                    ppRequestor.SetValue( null );
+                }
             }
 
             // If no expiration date is set, then use the default setting.
