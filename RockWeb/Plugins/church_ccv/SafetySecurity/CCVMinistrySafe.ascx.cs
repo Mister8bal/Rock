@@ -116,7 +116,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                     var noteService = new NoteService( personRockContext );
 
                                     var note = new Note();
-                                    note.NoteTypeId = 8; // Change to 36 when moved to production
+                                    note.NoteTypeId = 8;
                                     note.IsSystem = false;
                                     note.IsAlert = false;
                                     note.IsPrivateNote = false;
