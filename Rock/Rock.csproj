@@ -1154,7 +1154,6 @@
     <Compile Include="Model\PersonBadgeService.partial.cs" />
     <Compile Include="Model\PersonDuplicate.cs" />
     <Compile Include="Model\PersonPreviousName.cs" />
-    <Compile Include="Model\PersonService.Partial.v8.cs" />
     <Compile Include="Model\PersonService.Partial.cs" />
     <Compile Include="Model\PersonToken.cs" />
     <Compile Include="Model\PersonTokenService.Partial.cs" />
