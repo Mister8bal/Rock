@@ -815,7 +815,6 @@
     <Compile Include="Model\CodeGenerated\AttributeMatrixItemService.cs" />
     <Compile Include="Model\CodeGenerated\AttributeMatrixService.cs" />
     <Compile Include="Model\CodeGenerated\AttributeMatrixTemplateService.cs" />
-    <Compile Include="Model\CodeGenerated\PersonSearchKeyService.cs" />
     <Compile Include="Model\CommunicationTemplateAttachment.cs" />
     <Compile Include="Model\CommunicationAttachment.cs" />
     <Compile Include="Model\CodeGenerated\PageShortLinkService.cs" />
@@ -1155,8 +1154,7 @@
     <Compile Include="Model\PersonBadgeService.partial.cs" />
     <Compile Include="Model\PersonDuplicate.cs" />
     <Compile Include="Model\PersonPreviousName.cs" />
-    <Compile Include="Model\PersonSearchKey.cs" />
-    <Compile Include="Model\PersonSearchKeyService.Partial.cs" />
+    <Compile Include="Model\PersonService.Partial.v8.cs" />
     <Compile Include="Model\PersonService.Partial.cs" />
     <Compile Include="Model\PersonToken.cs" />
     <Compile Include="Model\PersonTokenService.Partial.cs" />
