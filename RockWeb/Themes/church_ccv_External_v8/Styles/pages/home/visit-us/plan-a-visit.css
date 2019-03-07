@@ -1,0 +1,42 @@
+.page-background {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-plan-a-visit.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-plan-a-visit.jpg");
+    }
+}
+
+#ternavbar-bg {
+    display: flex;
+}
+
+#section-a-bg {
+    background-color: #ffffff;
+}
+
+#section-b-bg {
+    background-color: #ebebeb;
+}
+
+#section-c-bg {
+    background-color: #ffffff;
+}
+
+#section-d-bg {
+    background-color: #ebebeb;
+}
+
+#section-e-bg {
+    background-color: #ffffff;
+}
+
+#section-f-bg {
+    background-color: #ebebeb;
+}
+
+#section-g-bg {
+    background-color: #ffffff;
+}
