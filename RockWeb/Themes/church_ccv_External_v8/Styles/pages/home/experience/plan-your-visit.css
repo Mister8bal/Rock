@@ -9,6 +9,11 @@
     }
 }
 
+.main-feature {
+    height: 380px;
+    padding-top: 150px;
+}
+
 #ternavbar-bg {
     display: flex;
 }
@@ -39,4 +44,12 @@
 
 #section-g-bg {
     background-color: #ffffff;
+}
+
+/* use the expanded main feature only for tablet and larger */
+@media screen and (max-width: 500px) {
+    .main-feature {
+        height: 240px;
+        padding-top: 90px;
+    }
 }
