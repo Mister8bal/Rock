@@ -1,11 +1,11 @@
 .page-background {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-plan-a-visit.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/hero-plan-your-visit.jpg");
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-plan-a-visit.jpg");
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/hero-mobile-plan-your-visit.jpg");
     }
 }
 
