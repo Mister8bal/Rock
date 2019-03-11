@@ -73,10 +73,12 @@
     <Compile Include="Jobs\SendConnectionReport.cs" />
     <Compile Include="Jobs\CreateFirstVisitWorkflows.cs" />
     <Compile Include="Jobs\GroupMemberFollowUpNotifications.cs" />
+    <Compile Include="Lava\RockFilters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\DataView\Name.cs" />
     <Compile Include="Search\Report\Name.cs" />
     <Compile Include="Search\WorkflowType\Name.cs" />
+    <Compile Include="Startup.cs" />
     <Compile Include="SystemGuids\Attribute.cs" />
     <Compile Include="SystemGuids\BinaryFileType.cs" />
     <Compile Include="SystemGuids\Category.cs" />
