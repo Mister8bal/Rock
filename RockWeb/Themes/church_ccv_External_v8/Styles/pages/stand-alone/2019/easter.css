@@ -1,0 +1,417 @@
+.page-background {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
+}
+
+#subnavbar-bg {
+    display: none;
+}
+
+.main-feature {
+    padding-top: 100px;
+}
+
+#zone-feature {
+    margin: 0 auto;
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
+    }
+
+    .main-feature {
+        height: unset !important;
+        padding-top: 75px !important;
+    }
+}
+
+/* Feature Title Section */
+
+.title {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+}
+
+.title img {
+    margin: 0 auto;
+    width: unset;
+    width: 80%;
+}
+
+.title h3 {
+    font-size: 36px;
+    line-height: 38px;
+}
+
+.title-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    padding-bottom: 20px;
+}
+
+.title-button {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #1653a3;
+    font-family: Akrobat;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+    width: 253.53px;
+    max-width: unset;
+    height: 53.03px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5.64px;
+    margin: 0 20px;
+}
+
+.title-button:hover {
+    text-decoration: none;
+    background-color: #1653a3;
+    border-color: #1653a3;
+    color: #FFFFFF;
+}
+
+@media screen and (max-width: 768px) {
+    .title-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .title-button {
+        margin: 10px 20px;
+    }
+
+    .title img {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .title-button {
+        width: 100%;
+    }
+
+    .title h3 {
+        font-size: 26px;
+        line-height: 28px;
+    }
+}
+
+/* End Feature Title Section */
+
+/* Map Section */
+
+#section-a-bg {
+    padding: 0;
+}
+
+#zone-sectiona {
+    max-width: 100%;
+    margin: unset;
+}
+
+.our-campuses-map-window {
+    background: #777;
+}
+ 
+.our-campuses-map {
+    min-height: 550px;
+}
+
+/* End Map Section */
+
+/* Campus Card Section */
+#zone-sectionb {
+    margin: 0 auto;
+}
+
+.service-times-title {
+    color: #1653a3;
+    font-family: Akrobat;
+    font-weight: bold;
+    text-align: center;
+}
+
+.campus-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.campus-card {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px 20px 10px;
+    width: 345px;
+    min-width: 345px;
+    max-width: 345px;
+    height: 375px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+    border: unset;
+    border-width: unset;
+    background-color: #FFFFFF;
+    z-index: 1;
+    overflow: hidden;
+}
+ 
+ 
+.campus-card .image img {
+    object-fit: cover;
+    width: 100%;
+    height: 200px;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 10px 16px;
+}
+ 
+.campus-card .content {
+    height: auto;
+}
+
+.campus-card .header {
+    display: flex;
+    flex-direction: column;
+}
+ 
+.campus-card .link {
+    align-self: unset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+ 
+.campus-card .link a {
+    height: unset;
+    line-height: unset;
+    color: #FFFFFF;
+    margin: unset;
+}
+
+.contact-phone {
+    color: #1653a3 !important;
+    background-color: unset !important;
+    border-color: unset !important;
+}
+ 
+.campus-card .service-times {
+    color: #777777;
+}
+
+.icon-details {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.icon-desc p {
+    font-size: 12px;
+    line-height: 14px;
+    color: #777777;
+}
+
+/* Campus Card Responsive Styling */
+@media screen and (max-width: 760px) {
+    .campus-cards-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .campus-card {
+        height: 400px;
+    }
+
+    .campus-card .link {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .contact-phone {
+        margin-bottom: 10px !important;
+    }
+
+    .icon-details {
+        margin-top: 5px;
+    }
+
+    .btn-primary {
+        min-width: 100%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .campus-card {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+}
+
+/* End Campus Card Section */
+
+/* Baptisms section */
+
+#section-c-bg {
+    background-color: #ffffff;
+}
+
+/* End Baptisms Section */
+
+/* Baptisms section */
+
+#section-d-bg {
+    background-color: #f3f3f3;
+}
+
+/* End Baptisms Section */
+
+/* Kids / Students section */
+
+#zone-sectione {
+    margin: 0 -15px;
+    max-width: unset;
+}
+
+.kids-students {
+    display: flex;
+    width: 100%;
+}
+
+.kids {
+    background-image: url(/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-kids.jpg);
+    width: 50%;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.kids img {
+    max-width: 250px;
+}
+
+.kids-students .btn {
+    margin-top: 30px;
+}
+
+.students {
+    background-image: url(/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-students.jpg);
+    width: 50%;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.students img {
+    max-width: 450px;
+}
+
+/* End Kids / Students Section */
+
+/* Share Section */
+
+#section-f-bg {
+    background-color: #f3f3f3;
+}
+
+.share {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* End Share Section */
+
+/* FAQ section */
+#section-g-bg {
+    background-color: #FFFFFF;
+}
+
+.faq-title {
+    text-align: center;
+}
+
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+  }
+  
+  .active, .accordion:hover {
+    background-color: #ccc;
+  }
+  
+  .accordion:after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+  }
+  
+  .active:after {
+    content: "\2212";
+  }
+  
+  .panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+  }
+
+/* End FAQ Section */
+
+ /* Overrides */
+ h2, h3, h4 {
+     color: #1653a3;
+}
+
+a:focus {
+    outline: none;
+}
+
+.btn-primary, .contextsetter-campus .dropdown {
+    background-color: #1653a3;
+    border-color: #1653a3;
+    border-radius: 5px;
+} 
+
+.btn-white {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #7A1315;
+}
+
+@media screen and (max-width: 768px) {
+    .btn {
+        width: unset;
+        max-width: 200px;
+        margin: 5px 0;
+    }
+}
+
+/* End Overrides */
