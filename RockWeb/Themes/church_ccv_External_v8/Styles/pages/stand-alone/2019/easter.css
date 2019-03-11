@@ -1,5 +1,5 @@
 .page-background {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-easter.jpg") !important;
 }
 
 #subnavbar-bg {
@@ -17,7 +17,7 @@
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2018/hero-christmas.jpg") !important;
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-easter.jpg") !important;
     }
 
     .main-feature {
@@ -55,7 +55,7 @@
 .title-button {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
-    color: #1653a3;
+    color: #0e568e;
     font-family: Akrobat;
     font-size: 20px;
     font-weight: 600;
@@ -73,8 +73,8 @@
 
 .title-button:hover {
     text-decoration: none;
-    background-color: #1653a3;
-    border-color: #1653a3;
+    background-color: #0e568e;
+    border-color: #0e568e;
     color: #FFFFFF;
 }
 
@@ -132,8 +132,12 @@
     margin: 0 auto;
 }
 
+#section-b-bg {
+    background-color: #ebebeb;
+}
+
 .service-times-title {
-    color: #1653a3;
+    color: #0e568e;
     font-family: Akrobat;
     font-weight: bold;
     text-align: center;
@@ -201,7 +205,7 @@
 }
 
 .contact-phone {
-    color: #1653a3 !important;
+    color: #0e568e !important;
     background-color: unset !important;
     border-color: unset !important;
 }
@@ -273,7 +277,7 @@
 /* Baptisms section */
 
 #section-d-bg {
-    background-color: #f3f3f3;
+    background-color: #ebebeb;
 }
 
 /* End Baptisms Section */
@@ -327,7 +331,7 @@
 /* Share Section */
 
 #section-f-bg {
-    background-color: #f3f3f3;
+    background-color: #ebebeb;
 }
 
 .share {
@@ -358,15 +362,15 @@ a:focus {
 }
 
 .btn-primary, .contextsetter-campus .dropdown {
-    background-color: #1653a3;
-    border-color: #1653a3;
+    background-color: #0e568e;
+    border-color: #0e568e;
     border-radius: 5px;
 } 
 
 .btn-white {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
-    color: #7A1315;
+    color: #0e568e;
 }
 
 @media screen and (max-width: 768px) {
