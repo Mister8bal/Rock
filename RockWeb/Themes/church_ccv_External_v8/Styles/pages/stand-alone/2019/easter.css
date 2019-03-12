@@ -146,16 +146,16 @@
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
 }
 
 .campus-card {
     display: flex;
     flex-direction: column;
-    margin: 0 10px 20px 10px;
-    width: 345px;
-    min-width: 345px;
-    max-width: 345px;
+    justify-content: flex-start;
+    margin: 10px;
+    width: 31%;
+    min-height: 500px;
+    min-height: 545px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     border-radius: 5px;
     border: unset;
@@ -231,52 +231,42 @@
     color: #777777;
 }
 
-/* Campus Card Responsive Styling */
-@media screen and (max-width: 760px) {
-    .campus-cards-row {
-        flex-direction: column;
-        align-items: center;
-    }
-
+/* Laptops */
+@media screen and (max-width: 1024px) {
     .campus-card {
-        height: 400px;
+        width: 45%;
+        padding-bottom: 15px;
     }
+}
 
-    .campus-card .link {
-        flex-direction: column;
+/* Tablet */
+@media screen and (max-width: 768px) {
+    .campus-card {
+        width: 45%;
+        padding-bottom: 15px;
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 500px) {
+    .campus-cards-row {
         justify-content: center;
     }
 
-    .contact-phone {
-        margin-bottom: 10px !important;
-    }
-
-    .icon-details {
-        margin-top: 5px;
-    }
-
-    .btn-primary {
-        min-width: 100%;
-    }
-}
-
-@media screen and (max-width: 320px) {
     .campus-card {
-        width: 300px;
-        min-width: 300px;
-        max-width: 300px;
+        width: 100%;
+        padding-bottom: 15px;
     }
 }
-
 /* End Campus Card Section */
 
-/* Baptisms section */
+/* Plan Your Visit section */
 
 #section-c-bg {
     background-color: #ffffff;
 }
 
-/* End Baptisms Section */
+/* Plan Your Visit Section */
 
 /* Baptisms section */
 
@@ -389,14 +379,6 @@ a:focus {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
     color: #0e568e;
-}
-
-@media screen and (max-width: 768px) {
-    .btn {
-        width: unset;
-        max-width: 200px;
-        margin: 5px 0;
-    }
 }
 
 /* End Overrides */
