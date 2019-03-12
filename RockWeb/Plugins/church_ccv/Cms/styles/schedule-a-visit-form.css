@@ -78,3 +78,88 @@
     justify-content: center;
     padding: 40px 0;
 }
+
+.form-navigation .btn {
+    margin: 0 10px;
+}
+
+.header-centered {
+    text-align: center;
+}
+
+
+/* Children Form */
+.child-optional {
+    background-color: #ebebeb;
+    padding: 0 10px 20px 10px;
+}
+
+#rblAllergies, #rblGender {
+    display: flex;
+}
+
+#rblAllergies .radio-inline:first-of-type, #rblGender .radio-inline:first-of-type {
+    margin-right: 10px;
+}
+
+#rblAllergies label, #rblGender label, #rblSurvey label {
+    font-family: heebo;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: normal;
+    white-space: normal;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    border: 2px solid #b8b8b8;
+    text-transform: uppercase;
+    color: #000000;
+}
+
+#rblAllergies label, #rblGender label {
+    height: 50px;
+    width: 120px;
+    padding: 12px;
+}
+
+#rblSurvey label {
+    width: 300px;
+    margin: 0;
+    padding: 12px;
+    font-size: 16px;
+    line-height: 16px;
+    margin: 5px 3px;
+}
+
+#rblAllergies input[type="radio"], #rblGender input[type="radio"], #rblSurvey input[type="radio"] {
+    width: 0px;
+    height: 0px;
+    display: none;
+}
+
+.child-optional .form-row {
+    padding: 20px 10px;
+}
+
+.field-allergies textarea {
+    background-color: #FFFFFF;
+    border-bottom: none;
+    border-radius: 4px;
+}
+
+.field-grade {
+    width: 20%;
+    margin-right: 50px;
+}
+
+/* Confirm Your Visit */
+.visit-details {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.confirm-detail {
+    padding: 5px 0;
+}
+

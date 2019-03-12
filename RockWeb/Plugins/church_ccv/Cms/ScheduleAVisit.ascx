@@ -41,7 +41,7 @@
                 </div>
 
                 <%-- Adults Form --%>
-                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults">
+                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="true">
 
                     <div class="form-header">
                         <h2>Let us know you're coming</h2>
@@ -68,20 +68,22 @@
                         </div>
                         <div class="form-row">
                             <div class="form-field">
-                                <Rock:DatePicker ID="dpVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" />
+                                <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlCampus_SelectedIndexChanged" AutoPostBack="true" />
+
                             </div>
                             <div class="form-field">
-                                <div id="campusPicker" class="hidden">
-                                    <Rock:CampusPicker ID="cpCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" />
+                                <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
+                                    <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlVisitDate_SelectedIndexChanged" AutoPostBack="true" />
+    
                                 </div>
                             </div>
                             <div class="form-field">
-                                <div id="serviceTime" class="hidden">
+                                <div id="divServiceTime" runat="server" ClientIDMode="Static" class="hidden">
                                     <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" />
                                 </div>
                             </div>
                         </div>
-                        <div id="spouse" class="hidden">
+                        <div id="divSpouse" runat="server" ClientIDMode="Static" class="hidden">
                             <h4>Your spouse (optional)</h4>
                             <div class="form-row">
                                 <div class="form-field">
@@ -104,7 +106,17 @@
                 <%-- Children Form --%>
                 <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="false">
 
-                    <div class="children-form">
+                    <div id="divChildrenQuestion" class="children-question">
+                        <div class="form-header">
+                            <h2>Will you be bringing children?</h2>
+                        </div>
+                        <div class="form-navigation">
+                            <asp:Button ID="btnChildrenYes" runat="server" OnClientClick="ShowChildrenForm(); return false;" Text="Yes" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnChildrenNo" runat="server" OnClick="btnChildrenNext_Click" Text="No" CssClass="btn btn-primary" />
+                        </div>
+                    </div>
+
+                    <div id="divChildrenForm" class="children-form hidden">
 
                         <div class="form-header">
                             <h2>Child Pre-Register</h2>
@@ -112,36 +124,53 @@
                         </div>
 
                         <div class="form">
-                            <div class="children-header">
-                                <p>required</p>
+                            <div class="form-row">
+                                <div></div>
+                                <p class="required-key">required</p>
                             </div>
                             <div class="form-row">
-                                <Rock:RockTextBox ID="tbMobileNumber" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required" />
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbMobileNumber" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required" />
+                                </div>
+
                             </div>
                             <div class="form-row">
-                                <Rock:RockTextBox ID="tbChildFirstName" runat="server" Label="Child's First Name" CssClass="required" />
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbChildFirstName" runat="server" Label="Child's First Name" CssClass="required" />
+                                </div>
+
                             </div>
                             <div class="form-row">
-                                <Rock:RockTextBox ID="tbChildLastName" runat="server" Label="Child's Last Name" CssClass="required" />
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbChildLastName" runat="server" Label="Child's Last Name" CssClass="required" />  
+                                </div>
                             </div>
                             <div class="form-row">
-                                <Rock:DatePartsPicker ID="dppChildBDay" runat="server" Label="Birthday" OnSelectedDatePartsChanged="dppChildBDay_SelectedDatePartsChanged" />
+                                <div class="form-field">
+                                    <Rock:DatePartsPicker ID="dppChildBDay" runat="server" Label="Birthday" OnSelectedDatePartsChanged="dppChildBDay_SelectedDatePartsChanged" />
+                                </div>
                             </div>
+                            <h4 class="header-centered">Optional:</h4>
                             <div class="child-optional">
                                 <div class="form-row">
-                                    <div class="optional-button-group">
-
-
+                                    <div class="form-field">
+                                        <Rock:RockRadioButtonList ID="rblAllergies" runat="server" Label="Allergies" RepeatDirection="Horizontal" ClientIDMode="Static">
+                                            <asp:ListItem Text="Yes" Value="Yes" />
+                                            <asp:ListItem Text="No" Value="No" />
+                                        </Rock:RockRadioButtonList>
                                     </div>
-                                    <div class="optional-button-group">
-
+                                    <div class="form-field">
+                                        <Rock:RockRadioButtonList ID="rblGender" runat="server" Label="Gender" RepeatDirection="Horizontal" ClientIDMode="Static">
+                                            <asp:ListItem Text="Boy" Value="Boy" />
+                                            <asp:ListItem Text="Girl" Value="Girl" />
+                                        </Rock:RockRadioButtonList>
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-field">
-                                        <Rock:RockTextBox ID="tbAllergies" runat="server" Placeholder="List Allergies:" CssClass="allergies hidden" />
+                                    <div class="form-field field-allergies">                                        
+                                        <Rock:RockTextBox ID="tbAllergies" runat="server" Placeholder="List Allergies:" CssClass="allergies" TextMode="MultiLine" Rows="3" />
                                     </div>
-                                    <div class="form-field">
+                                    <div class="form-field field-grade">
                                         <Rock:RockDropDownList ID="ddlChildGrade" runat="server" Label="Grade" />
                                     </div>
                                 </div>
@@ -150,9 +179,9 @@
                     </div>
 
                     <div class="form-navigation">
-                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnChildrenBack_Click" Text="Back" CssClass="btn" />                       
-                        <asp:Button ID="btnChildrenAddAnother" runat="server" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn" />
-                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary" />
+                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnChildrenBack_Click" Text="Back" CssClass="btn btn-default" />                       
+                        <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn btn-default hidden" />
+                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary hidden" />
                     </div>
 
                 </asp:Panel>
@@ -161,27 +190,32 @@
                 <asp:Panel ID="pnlSubmit" runat="server" ClientIDMode="Static" CssClass="panel-submit" Visible="false">
 
                      <div class="submit-form">
-
                         <div class="form-header">
                             <h2>Confirm Your Visit</h2>
                             <p>Make sure to visit the New to CCV table when you arrive!</p>
                         </div>
-
                         <div class="visit-details">
-                            
+                            <div class="confirm-detail">
+                                <asp:Label ID="lblVisitDate" runat="server" Text="Visit Date" />
+                            </div>
+                            <div class="confirm-detail">
+                                <asp:Label ID="lblCampus" runat="server" Text="Campus" />
+                            </div>
+                            <div class="confirm-detail">
+                                <asp:Label ID="lblServiceTime" runat="server" Text="Service Time" />
+                            </div>
                             <asp:LinkButton ID="lbEditVisitDetails" runat="server" Text="Edit details" />
                         </div>
-
-                         <div class="submit-survey">
-                             <h4>How did you hear about CCV?</h4>
-                             <div class="survey-buttons">
-                                 <div>Drive By / New to area</div>
-                                 <div>Current Member</div>
-                                 <div>Online Search</div>
-                                 <div>Advertising</div>
-                                 <div>Stars sports program</div>
-                                 <div>Other</div>
-                             </div>
+                        <div class="submit-survey header-centered">
+                            <h4>How did you hear about CCV?</h4>
+                            <Rock:RockRadioButtonList ID="rblSurvey" runat="server" RepeatLayout="Flow" RepeatDirection="Horizontal" ClientIDMode="Static">
+                                <asp:ListItem>Drive By / New to area</asp:ListItem>
+                                <asp:ListItem>Current Member</asp:ListItem>
+                                <asp:ListItem>Online Search</asp:ListItem>
+                                <asp:ListItem>Advertising</asp:ListItem>
+                                <asp:ListItem>Stars sports program</asp:ListItem>
+                                <asp:ListItem>Other</asp:ListItem>
+                             </Rock:RockRadioButtonList>
                          </div>
 
                         <div class="form-navigation">
@@ -198,7 +232,14 @@
         </asp:Panel>
 
         <asp:Panel ID="pnlSuccess" runat="server" Visible="false">
-            success
+            
+            <div class="form-header">
+                <h2>Thank you!</h2>
+                <p>You will be receiving a confirmation email with helpful information, including a map link to make getting to <asp:Label ID="lblCampusVisit" runat="server" Text="Campus" /> a breeze</p>
+            </div>
+            <div class="form-navigation">
+                <a href="" class="btn btn-primary">Back to home</a>
+            </div>
 
         </asp:Panel>
 
