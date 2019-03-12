@@ -247,15 +247,10 @@ namespace Rock.Model
 
             if ( searchParameters.Email.IsNotNullOrWhiteSpace() )
             {
-                var searchTypeValueId = DefinedValueCache.Read( SystemGuid.DefinedValue.PERSON_SEARCH_KEYS_EMAIL.AsGuid() ).Id;
-
-                // OR query for email or previous email
-                var previousEmailQry = new PersonSearchKeyService( this.Context as RockContext ).Queryable();
                 Queryable( includeDeceased, includeBusinesses )
                     .AsNoTracking()
                     .Where(
-                        p => ( p.Email != String.Empty && p.Email != null && p.Email == searchParameters.Email ) ||
-                        previousEmailQry.Any( a => a.PersonAlias.PersonId == p.Id && a.SearchValue == searchParameters.Email && a.SearchTypeValueId == searchTypeValueId )
+                        p => ( p.Email != String.Empty && p.Email != null && p.Email == searchParameters.Email ) 
                     )
                     .Select( p => new PersonSummary()
                     {

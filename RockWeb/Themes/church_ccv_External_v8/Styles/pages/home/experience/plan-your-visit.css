@@ -1,0 +1,54 @@
+.page-background {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/hero-plan-your-visit.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/hero-mobile-plan-your-visit.jpg");
+    }
+}
+
+.main-feature {
+    height: 380px;
+    padding-top: 150px;
+}
+
+#ternavbar-bg {
+    display: flex;
+}
+
+#section-a-bg {
+    background-color: #ffffff;
+}
+
+#section-b-bg {
+    background-color: #ebebeb;
+}
+
+#section-c-bg {
+    background-color: #ffffff;
+}
+
+#section-d-bg {
+    background-color: #ebebeb;
+}
+
+#section-e-bg {
+    background-color: #ffffff;
+}
+
+#section-f-bg {
+    background-color: #ebebeb;
+}
+
+#section-g-bg {
+    background-color: #ffffff;
+}
+
+@media screen and (max-width: 500px) {
+    .main-feature {
+        height: 240px;
+        padding-top: 90px;
+    }
+}
