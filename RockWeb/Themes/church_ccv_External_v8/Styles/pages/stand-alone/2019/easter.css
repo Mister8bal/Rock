@@ -321,6 +321,10 @@
 }
 
 @media screen and (max-width: 500px) {
+    #zone-sectione {
+        margin: 0;
+    }
+
     .kids-students {
         flex-direction: column;
     }
@@ -345,6 +349,29 @@
 .share {
     text-align: center;
     padding: 40px 20px;
+    width: 50%;
+    margin: auto;
+}
+
+.share-icons {
+    height: 80px;
+    width: 80px;
+}
+
+.share-icons-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+@media screen and (max-width: 500px) {
+    .share {
+        width: 100%;
+    }
+
+    .share-icons {
+        height: 60px;
+        width: 60px;
+    }
 }
 
 /* End Share Section */
@@ -381,7 +408,6 @@ a:focus {
     color: white;
     border-radius: 5px;
 } 
-
 
 .btn-white {
     background-color: #FFFFFF;
