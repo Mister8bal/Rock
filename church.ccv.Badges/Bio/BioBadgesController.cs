@@ -45,7 +45,13 @@ namespace church.ccv.Badges.Bio
                     var campus = Rock.Web.Cache.CampusCache.Read( campusId );
 
                     campusNames.Add( campus.Name );
-                    campusLeaders.Add( new PersonAliasService( rockContext ).GetPerson( (int)campus.LeaderPersonAliasId ).FullName );
+
+                    // guard against the campus not having a pastor set
+                    // this could happen for new, inactive campuses
+                    if ( campus.LeaderPersonAliasId.HasValue )
+                    {
+                        campusLeaders.Add( new PersonAliasService( rockContext ).GetPerson( ( int ) campus.LeaderPersonAliasId ).FullName );
+                    }
                 }
 
                 info.CampusNames = campusNames.ToList().AsDelimited( ", " );
