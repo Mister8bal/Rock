@@ -69,18 +69,18 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlCampus_SelectedIndexChanged" AutoPostBack="true" />
+                                    <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" />
 
                                 </div>
                                 <div class="form-field">
                                     <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
-                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlVisitDate_SelectedIndexChanged" AutoPostBack="true" />
+                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
     
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <div id="divServiceTime" runat="server" ClientIDMode="Static" class="hidden">
-                                        <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" />
+                                        <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" />
                                     </div>
                                 </div>
                             </div>
@@ -217,15 +217,15 @@
                         <div class="visit-details">
                             <div class="confirm-detail">
                                 <asp:Label ID="lblSubmitCampus" runat="server" Text="Campus" />
-                                <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditCampus_SelectedIndexChanged" Required="true" />
+                                <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
                             <div class="confirm-detail">
                              <div class="confirm-detail">
                                 <asp:Label ID="lblSubmitVisitDate" runat="server" Text="Visit Date" />
-                                <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditVisitDate_SelectedIndexChanged" Required="true" />
+                                <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
                                 <asp:Label ID="lblSubmitServiceTime" runat="server" Text="Service Time" />
-                                <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditServiceTime_SelectedIndexChanged" Required="true" />
+                                <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
 
                             <asp:Button ID="btnEditVisitDetails" runat="server" Text="Edit details" OnClick="lbEditVisitDetails_Click" />

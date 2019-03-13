@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -88,7 +89,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             BindCampuses();
         }
 
-        #region Global Navigation Events
+        #region Global Events
 
         /// <summary>
         /// Handles the Back button control event
@@ -105,64 +106,86 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Panel mainPanel = FindControl( panels[0] ) as Panel;
             Panel subPanel = new Panel();
 
-            // if childrens panel need to determine whether to show form or question
-            if ( panels[0] == "pnlChildren")
+            switch ( panels[0] )
             {
-                if (_visit.BringingChildren)
-                {
-                    // show form
-                    subPanel = pnlChildrenForm;
-                }
-                else
-                {
-                    // show question
-                    subPanel = pnlChildrenQuestion;
-                }
+                case "pnlAdults":
+                    _visit.ActiveTab = FormTab.Adults;
+                    subPanel = FindControl( panels[1] ) as Panel;
+                    break;
+                case "pnlChildren":
+                    _visit.ActiveTab = FormTab.Children;
+                    if ( _visit.BringingChildren )
+                    {
+                        // show form
+                        subPanel = pnlChildrenForm;
+                    }
+                    else
+                    {
+                        // show question
+                        subPanel = pnlChildrenQuestion;
+                    }
+                    break;
+                default:
+                    subPanel = FindControl( panels[1] ) as Panel;
+                    break;
             }
-            else
-            {
-                // not the children panel, use panel specified
-                subPanel = FindControl( panels[1] ) as Panel;
-            }
+
+            WriteVisitToViewState();
 
             if ( mainPanel.IsNotNull() )
             {
+                SetProgressButtonsState();
+
                 ShowFormPanel( mainPanel, subPanel );
             }
         }
 
-        #endregion
-
-        #region Adult Panel Events
-
         /// <summary>
-        /// Handles SelectedIndexChanged event of the campus dropdown
+        /// Handles a campus drop down selection change event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void ddlCampus_SelectedIndexChanged( object sender, EventArgs e )
+        protected void CampusDropDown_SelectedIndexChanged( object sender, EventArgs e )
         {
-            // check for selection            
-            if ( ddlCampus.SelectedValue.IsNotNullOrWhitespace() )
+            // convert sender to object
+            RockDropDownList campusDropDownList = sender as RockDropDownList;
+
+            // determine the tab we are on by the sender Id
+            FormTab? currentTab = GetCurrentTab( campusDropDownList.ID );
+
+            // campus changed, visit date and service time dropdowns are no longer valid
+            ResetVisitDropDowns( false, true, true );
+
+            //  ensure selection and current tab known         
+            if ( campusDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null )
             {
-                // selection found, set campusId in _visit and update viewstate
-                _visit.CampusId = ddlCampus.SelectedValue;
-
-                WriteVisitToViewState();
-
-                // convert campusId to int
-                int campusId = _visit.CampusId.AsInteger();
-
                 // check for valid campus
-                if ( campusId != 0 )
+                if ( campusDropDownList.SelectedValue.AsInteger() != 0 )
                 {
-                    // sync value to edit drop down
-                    ddlEditCampus.SelectedValue = ddlCampus.SelectedValue;
-
                     // get selected campus
-                    CampusCache campus = CampusCache.Read( campusId );
+                    CampusCache campus = CampusCache.Read( campusDropDownList.SelectedValue.AsInteger() );
 
-                    // bind future weekend dates to VisitDate dropdown
+                    // set submit label 
+                    lblSubmitCampus.Text = campusDropDownList.SelectedItem.Text;
+
+                    // sync value to other campus drop down
+                    switch ( currentTab )
+                    {
+                        case FormTab.Adults:
+                            ddlEditCampus.SelectedValue = campusDropDownList.SelectedValue;
+                            break;
+                        case FormTab.Submit:
+                            ddlCampus.SelectedValue = campusDropDownList.SelectedValue;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // set campusId in _visit and update viewstate
+                    _visit.CampusId = campusDropDownList.SelectedValue;
+                    WriteVisitToViewState();
+
+                    // bind future weekend dates to VisitDate dropdowns
                     BindVisitDateDropDowns( campus );
 
                     // show the visit date dropdown
@@ -170,62 +193,164 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 }
                 else
                 {
-                    // invalid campus, hide visit date dropdown
+                    // invalid campus, hide visit date dropdowns on adults tab
                     divVisitDate.Attributes["class"] = "hidden";
                     divServiceTime.Attributes["class"] = "hidden";
                 }
             }
             else
             {
-                // no selection, hide visit date dropdown
+                // no selection or couldnt determine tab
+                // clear campus dropdown selections
+                ddlEditCampus.ClearSelection();
+                ddlCampus.ClearSelection();
+
+                // hide visit date dropdown
                 divVisitDate.Attributes["class"] = "hidden";
                 divServiceTime.Attributes["class"] = "hidden";
+
+                // TODO: display error?
+
             }
         }
 
         /// <summary>
-        /// Handles SelectedIndexChanged event of the visit date dropdown
+        /// Handles visit date dropdown selection change event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void ddlVisitDate_SelectedIndexChanged( object sender, EventArgs e )
+        protected void VisitDateDropDown_SelectedIndexChanged( object sender, EventArgs e )
         {
-            // check for selection value
-            if ( ddlVisitDate.SelectedValue.IsNotNullOrWhitespace() )
+            // convert sender to object
+            RockDropDownList visitDateDropDownList = sender as RockDropDownList;
+
+            // determine the tab we are on by the sender Id
+            FormTab? currentTab = GetCurrentTab( visitDateDropDownList.ID );
+
+            // visit date changed, service time dropdown is no longer valid
+            ResetVisitDropDowns( false, false, true );
+
+            // get the day selected, strip off date
+            string day = "";
+            int index = visitDateDropDownList.SelectedItem.Text.IndexOf( "," );
+
+            if ( index > 0 )
             {
-                if ( ProcessVisitDateDropdownSelection( ddlVisitDate ) )
+                day = visitDateDropDownList.SelectedItem.Text.Substring( 0, index );
+            }
+
+            // ensure selection, current tab known, campus selected, and day exists
+            if ( visitDateDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null || ddlCampus.SelectedValue.IsNotNullOrWhitespace() || day.IsNotNullOrWhitespace() )
+            {
+                // check for valid campus
+                if ( ddlCampus.SelectedValue.AsInteger() != 0 )
                 {
-                    // set the values on the submit tab
-                    lblSubmitVisitDate.Text = ddlVisitDate.SelectedItem.Text;
-                    ddlEditVisitDate.SelectedValue = ddlVisitDate.SelectedValue;
+                    CampusCache campus = CampusCache.Read( ddlCampus.SelectedValue.AsInteger() );
 
-                    // reset service time selections in case visit date changed
-                    ddlServiceTime.ClearSelection();
-                    ddlEditServiceTime.ClearSelection();
+                    // set submit label
+                    lblSubmitVisitDate.Text = visitDateDropDownList.SelectedItem.Text;
 
-                    // unhide service time
+                    // sync value to other campus drop down
+                    switch ( currentTab )
+                    {
+                        case FormTab.Adults:
+                            ddlEditVisitDate.SelectedValue = visitDateDropDownList.SelectedValue;
+                            break;
+                        case FormTab.Submit:
+                            ddlVisitDate.SelectedValue = visitDateDropDownList.SelectedValue;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // set VisitDate in _visit
+                    _visit.VisitDate = visitDateDropDownList.SelectedValue;
+                    WriteVisitToViewState();
+                    
+                    // bind service times to dropdowns                                               
+                    BindServiceTimeDropDowns( campus, day );
+
+                    // show service time dropdown
                     divServiceTime.Attributes["class"] = "";
                 }
                 else
                 {
-                    // something failed, reset visit dropdowns
-                    ResetVisitDropDowns();
+                    // invalid campus, hide visit date dropdowns on adults tab
+                    divVisitDate.Attributes["class"] = "hidden";
+                    divServiceTime.Attributes["class"] = "hidden";
                 }
             }
             else
             {
-                // no visit date selected
-                // clear service time dropdown selections
-                ddlServiceTime.ClearSelection();
-                ddlEditServiceTime.ClearSelection();
+                // no visit date selected or couldnt determine current tab
+                // clear visit date selections
+                ddlEditVisitDate.ClearSelection();
+                ddlVisitDate.ClearSelection();
 
                 // hide service time dropdown on adult form
                 divServiceTime.Attributes["class"] = "hidden";
+
+                // TODO: display error?
+
+            }
+        }
+
+        /// <summary>
+        /// Handles service time dropdown selection change event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void ServiceTimeDropDown_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            // convert sender to object
+            RockDropDownList rockDropDownList = sender as RockDropDownList;
+
+            // determine the tab we are on by the sender Id
+            FormTab? currentTab = GetCurrentTab( rockDropDownList.ID );
+
+            // check for selection value
+            if ( rockDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null )
+            {                    
+                // sync value to other service time drop down
+                switch ( currentTab )
+                {
+                    case FormTab.Adults:
+                        ddlEditServiceTime.SelectedValue = rockDropDownList.SelectedValue;
+
+                        // unhide spouse form fields
+                        divSpouse.Attributes["class"] = "";
+                        break;
+                    case FormTab.Submit:
+                        ddlServiceTime.SelectedValue = rockDropDownList.SelectedValue;
+                        break;
+                    default:
+                        break;
+                }
+
+                // set submit labal
+                lblSubmitServiceTime.Text = rockDropDownList.SelectedItem.Text;
+
+                // set service time in _visit
+                _visit.ServiceTime = rockDropDownList.SelectedValue;
+                WriteVisitToViewState();
+            }
+            else
+            {
+                // no service time selection or couldnt determine current tab
+                // clear service time selections
+                ddlEditServiceTime.ClearSelection();
+                ddlServiceTime.ClearSelection();
+
+                // TODO: display error?
+
             }
         }
 
 
+        #endregion
 
+        #region Adult Panel Events
+                                 
         protected void btnAdultsNext_Click( object sender, EventArgs e )
         {
             // default to new person
@@ -277,7 +402,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
             lblSubmitServiceTime.Text = ddlServiceTime.SelectedItem.Text;
             ddlEditServiceTime.SelectedValue = ddlServiceTime.SelectedValue;
 
+            // enable adults progress button
+            SetProgressButtonsState();
 
+            // show next form panel
             if (newPerson)
             {
                 if ( _visit.BringingChildren)
@@ -370,56 +498,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             ShowFormPanel( pnlSuccess, null );
         }
 
-        protected void ddlEditCampus_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            // check for selection value
-            if (ddlEditCampus.SelectedValue.IsNotNullOrWhitespace() )
-            {
 
-            }
-            else
-            {
-                // no campus selected, clear visit date / service time dropdowns
-                ResetVisitDropDowns();
 
-                // hide visit date and service time on adults panel
-                divVisitDate.Attributes["class"] = "hidden";
-                divServiceTime.Attributes["class"] = "hidden";
-            }
-        }
-
-        protected void ddlEditVisitDate_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            // check for selection value
-            if ( ddlEditVisitDate.SelectedValue.IsNotNullOrWhitespace() )
-            {
-                if ( ProcessVisitDateDropdownSelection( ddlEditVisitDate ) )
-                {
-                    // set the values on the adults tab
-                    ddlVisitDate.SelectedValue = ddlEditVisitDate.SelectedValue;
-                }
-                else
-                {
-                    // something failed, clear dropdowns
-                    ResetVisitDropDowns();
-                }
-            }
-            else
-            {
-                // no visit date selected
-                // clear service time dropdown selections
-                ddlServiceTime.ClearSelection();
-                ddlEditServiceTime.ClearSelection();
-
-                // hide service time dropdown on adult form
-                divServiceTime.Attributes["class"] = "hidden";
-            }
-        }
-
-        protected void ddlEditServiceTime_SelectedIndexChanged( object sender, EventArgs e )
-        {
-
-        }
 
         #endregion
 
@@ -458,7 +538,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="campus"></param>
         private void BindVisitDateDropDowns( CampusCache campus )
         {
-            // reset visit date dropdowns before populating
+            // ensure dropdowns are reset
             ddlVisitDate.Items.Clear();
             ddlVisitDate.Items.Add( new ListItem( "", "" ) );
             ddlEditVisitDate.Items.Clear();
@@ -467,6 +547,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // check for sat or sun service times
             bool hasSaturday = campus.RawServiceTimes.Contains( "Saturday" );
             bool hasSunday = campus.RawServiceTimes.Contains( "Sunday" );
+
+            // TODO: Check for Easter / Christmas service times and handle
 
             // get next sat and sunday date
             DateTime today = DateTime.Today;
@@ -508,7 +590,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// Bind available service times for campus / day selected
         /// </summary>
         /// <param name="campus"></param>
-        private void BindServiceTimeDropDowns( CampusCache campus )
+        private void BindServiceTimeDropDowns( CampusCache campus, string day )
         {
             // reset dropdowns before populating
             ddlServiceTime.Items.Clear();
@@ -519,11 +601,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // add each service time for the campus
             foreach ( var serviceTime in campus.ServiceTimes )
             {
-                // split the visit date value to get the day
-                string[] ddlVisitdateArray = ddlVisitDate.SelectedValue.Split( ',' );
-
-                // if service time day matches visit date selection add time
-                if ( serviceTime.Day == ddlVisitdateArray[0])
+                // if service time day matches passed day
+                if ( serviceTime.Day == day)
                 {
                     // remove special characters used for special needs, hearing impaired, etc
                     string time = serviceTime.Time.Replace( "%", "" ).Replace( "*", "" );
@@ -602,7 +681,24 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// </summary>
         private void RestoreFormState()
         {
-            // ran into weird issues trying to restore form fields, for now just unhiding things. will circle back
+            // set state of progress buttons
+            switch ( _visit.ActiveTab )
+            {
+                case FormTab.Adults:
+                    btnProgressAdults.Enabled = false;
+                    btnProgressChildren.Enabled = false;
+                    break;
+                case FormTab.Children:
+                    btnProgressAdults.Enabled = true;
+                    btnProgressChildren.Enabled = false;
+                    break;
+                case FormTab.Submit:
+                    btnProgressAdults.Enabled = true;
+                    btnProgressChildren.Enabled = true;
+                    break;
+                default:
+                    break;
+            }
 
             if ( ddlServiceTime.SelectedValue.IsNotNullOrWhitespace())
             {
@@ -613,6 +709,31 @@ namespace RockWeb.Plugins.church_ccv.Cms
             {
                 btnChildrenAddAnother.Visible = true;
                 btnChildrenNext.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// Restore progress buttons enabled state
+        /// </summary>
+        private void SetProgressButtonsState()
+        {
+            // set state of progress buttons
+            switch ( _visit.ActiveTab )
+            {
+                case FormTab.Adults:
+                    btnProgressAdults.Enabled = false;
+                    btnProgressChildren.Enabled = false;
+                    break;
+                case FormTab.Children:
+                    btnProgressAdults.Enabled = true;
+                    btnProgressChildren.Enabled = false;
+                    break;
+                case FormTab.Submit:
+                    btnProgressAdults.Enabled = true;
+                    btnProgressChildren.Enabled = true;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -628,57 +749,113 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         /// <summary>
-        /// Process Visit Date selected in a visit date dropdown
+        /// Process Campus selected in campus dropdown
         /// </summary>
-        /// <param name="dropDownList"></param>
+        /// <param name="campusId"></param>
         /// <returns></returns>
-        private bool ProcessVisitDateDropdownSelection( RockDropDownList visitDateDropDownList )
-        {
-            // set VisitDate in _visit
-            _visit.VisitDate = visitDateDropDownList.SelectedValue;
+        //private void ProcessCampusDropDownSelection( string campusName, int campusId, FormTab? currentTab )
+        //{
+        //    // check for valid campus
+        //    if ( campusId != 0 )
+        //    {
+        //        // get selected campus
+        //        CampusCache campus = CampusCache.Read( campusId );
 
-            WriteVisitToViewState();
+        //        // set submit label 
+        //        lblSubmitCampus.Text = campusName;
 
-            // update service time dropdown with times available for visit date selected
-            int campusId = _visit.CampusId.AsInteger();
+        //        // sync value to other campus drop down
+        //        switch ( currentTab )
+        //        {
+        //            case FormTab.Adults:
+        //                ddlEditCampus.SelectedValue = campusId.ToString();
+        //                break;
+        //            case FormTab.Submit:
+        //                ddlCampus.SelectedValue = campusId.ToString();
+        //                break;
+        //            default:
+        //                break;
+        //        }
 
-            if ( campusId != 0 )
-            {
-                CampusCache campus = CampusCache.Read( campusId );
+        //        // set campusId in _visit and update viewstate
+        //        _visit.CampusId = campusId.ToString();
+        //        WriteVisitToViewState();
 
-                BindServiceTimeDropDowns( campus );
+        //        // bind future weekend dates to VisitDate dropdowns
+        //        BindVisitDateDropDowns( campus );
 
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //        // show the visit date dropdown
+        //        divVisitDate.Attributes["class"] = "";
+        //    }
+        //    else
+        //    {
+        //        // invalid campus, hide visit date dropdowns on adults tab
+        //        divVisitDate.Attributes["class"] = "hidden";
+        //        divServiceTime.Attributes["class"] = "hidden";
+        //    }
+        //}
+
 
         /// <summary>
         /// Clear selections on all Visit Date related dropdowns
         /// </summary>
-        private void ResetVisitDropDowns()
+        private void ResetVisitDropDowns(bool campus, bool visitDate, bool serviceTime )
         {
-            // clear submit details
-            lblSubmitCampus.Text = "";
-            lblSubmitVisitDate.Text = "";
-            lblSubmitServiceTime.Text = "";
+            // Campus dropdowns
+            if ( campus )
+            {
+                lblSubmitCampus.Text = "";
+                ddlCampus.ClearSelection();
+                ddlEditCampus.ClearSelection();
+            }
 
-            // adults panel
-            ddlCampus.ClearSelection();
-            ddlVisitDate.Items.Clear();
-            ddlServiceTime.Items.Clear();
+            // Visit Date Dropdowns - force reset if campus was reset
+            if ( visitDate || campus )
+            {
+                lblSubmitVisitDate.Text = "";
+                ddlVisitDate.Items.Clear();
+                ddlEditVisitDate.Items.Clear();
 
-            // submit panel
-            ddlEditCampus.ClearSelection();
-            ddlEditVisitDate.Items.Clear();
-            ddlEditServiceTime.Items.Clear();
+                // hide visit date dropdown on adults page
+                divVisitDate.Attributes["class"] = "hidden";
+            }
 
-            // hide visit date / service times dropdowns on adults page
-            divVisitDate.Attributes["class"] = "hidden";
-            divServiceTime.Attributes["class"] = "hidden";
+            // Service Time Dropdowns - force reset if campus or visit date was reset
+            if ( serviceTime || visitDate || campus )
+            {
+                lblSubmitServiceTime.Text = "";
+                ddlServiceTime.Items.Clear();
+                ddlEditServiceTime.Items.Clear();
+
+                // hide service time dropdown on adults page
+                divServiceTime.Attributes["class"] = "hidden";
+            }
+        }
+
+        /// <summary>
+        /// Returns current form tab using dropdownlist id
+        /// </summary>
+        /// <param name="dropDownListId"></param>
+        /// <returns></returns>
+        private FormTab? GetCurrentTab( string dropDownListId )
+        {
+            switch ( dropDownListId )
+            {
+                case "ddlCampus":
+                    return FormTab.Adults;
+                case "ddlVisitDate":
+                    return FormTab.Adults;
+                case "ddlServiceTime":
+                    return FormTab.Adults;
+                case "ddlEditCampus":
+                    return FormTab.Submit;
+                case "ddlEditVisitDate":
+                    return FormTab.Submit;
+                case "ddlEditServiceTime":
+                    return FormTab.Submit;
+                default:
+                    return null;
+            }
         }
 
         #endregion
