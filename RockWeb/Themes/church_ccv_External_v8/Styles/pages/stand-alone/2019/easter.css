@@ -375,6 +375,14 @@ a:focus {
     border-radius: 5px;
 } 
 
+.btn-primary:hover, .btn-primary:active {
+    background-color: #0e3757;
+    border-color: #0e3757;
+    color: white;
+    border-radius: 5px;
+} 
+
+
 .btn-white {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
