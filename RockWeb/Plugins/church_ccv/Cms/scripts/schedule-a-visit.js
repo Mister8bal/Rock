@@ -18,9 +18,3 @@ function pageLoad() {
     });
 }
 
-function ShowChildrenForm() {
-    $('#divChildrenQuestion').toggleClass('hidden');
-    $('#divChildrenForm').toggleClass('hidden');
-    $('#btnChildrenAddAnother').toggleClass('hidden');
-    $('#btnChildrenNext').toggleClass('hidden');
-}

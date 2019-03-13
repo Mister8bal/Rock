@@ -21,13 +21,13 @@
                 <div class="form-progress">
                     <div class="step">
 
-                        <asp:Button ID="btnProgressAdults" runat="server" ClientIDMode="Static" OnClick="btnProgressAdults_Click" Text="1" CssClass="step-number active" Enabled="false" />
+                        <asp:Button ID="btnProgressAdults" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="1" CssClass="step-number active" Enabled="false" />
 
                         <h5>Adults</h5>
                     </div>
                     <div class="step">
 
-                        <asp:Button ID="btnProgressChildren" runat="server" ClientIDMode="Static" OnClick="btnProgressChildren_Click" Text="2" CssClass="step-number" Enabled="false" />
+                        <asp:Button ID="btnProgressChildren" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren," Text="2" CssClass="step-number" Enabled="false" />
 
                         <h5>Children</h5>
                     </div>
@@ -43,80 +43,99 @@
                 <%-- Adults Form --%>
                 <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="true">
 
-                    <div class="form-header">
-                        <h2>Let us know you're coming</h2>
-                        <p>We want to make your first visit as smooth and enjoyable as possible</p>
-                    </div>
+                    <asp:Panel ID="pnlAdultsForm" runat="server">
+                        <div class="form-header">
+                            <h2>Let us know you're coming</h2>
+                            <p>We want to make your first visit as smooth and enjoyable as possible</p>
+                        </div>
 
-                    <div class="form">
-                        <div class="form-row">
-                            <h4>Your name</h4>
-                            <p class="required-key">required</p>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-field">
-                                <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" />
+                        <div class="form">
+                            <div class="form-row">
+                                <h4>Your name</h4>
+                                <p class="required-key">required</p>
                             </div>
-                            <div class="form-field">
-                                <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-field">
-                                <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-field">
-                                <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlCampus_SelectedIndexChanged" AutoPostBack="true" />
-
-                            </div>
-                            <div class="form-field">
-                                <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
-                                    <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlVisitDate_SelectedIndexChanged" AutoPostBack="true" />
-    
-                                </div>
-                            </div>
-                            <div class="form-field">
-                                <div id="divServiceTime" runat="server" ClientIDMode="Static" class="hidden">
-                                    <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" />
-                                </div>
-                            </div>
-                        </div>
-                        <div id="divSpouse" runat="server" ClientIDMode="Static" class="hidden">
-                            <h4>Your spouse (optional)</h4>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbSpouseFirstName" runat="server" Label="First" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbSpouseLastName" runat="server" Label="Last" />
+                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" />
                                 </div>
                             </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlCampus_SelectedIndexChanged" AutoPostBack="true" />
+
+                                </div>
+                                <div class="form-field">
+                                    <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
+                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ddlVisitDate_SelectedIndexChanged" AutoPostBack="true" />
+    
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <div id="divServiceTime" runat="server" ClientIDMode="Static" class="hidden">
+                                        <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divSpouse" runat="server" ClientIDMode="Static" class="hidden">
+                                <h4>Your spouse (optional)</h4>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <Rock:RockTextBox ID="tbSpouseFirstName" runat="server" Label="First" />
+                                    </div>
+                                    <div class="form-field">
+                                        <Rock:RockTextBox ID="tbSpouseLastName" runat="server" Label="Last" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <asp:Button ID="btnAdultsNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsNext_Click" Text="Next" CssClass="btn btn-primary" />                       
+                        </div>
+                    </asp:Panel>
+
+                    <asp:Panel ID="pnlAdultsExisting" runat="server" Visible="false">
+
+                        <div class="form-header">
 
                         </div>
-                    </div>
 
-                    <div class="form-navigation">
-                        <asp:Button ID="btnAdultsNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsNext_Click" Text="Next" CssClass="btn btn-primary" />                       
-                    </div>
+                        <div class="form">
+
+                        </div>
+
+                        <div class="form-navigation">
+                            <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="Back" CssClass="btn btn-default" />
+                            <asp:Button ID="btnAdultsExistingNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsExistingNext_Click" Text="Next" CssClass="btn btn-primary" />                       
+                        </div>
+
+                    </asp:Panel>
 
                 </asp:Panel>
 
                 <%-- Children Form --%>
                 <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="false">
 
-                    <div id="divChildrenQuestion" class="children-question">
+                    <asp:Panel ID="pnlChildrenQuestion" runat="server" CssClass="children-question">
                         <div class="form-header">
                             <h2>Will you be bringing children?</h2>
                         </div>
                         <div class="form-navigation">
-                            <asp:Button ID="btnChildrenYes" runat="server" OnClientClick="ShowChildrenForm(); return false;" Text="Yes" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnChildrenYes" runat="server" OnClick="btnChildrenYes_Click" Text="Yes" CssClass="btn btn-primary" />
                             <asp:Button ID="btnChildrenNo" runat="server" OnClick="btnChildrenNext_Click" Text="No" CssClass="btn btn-primary" />
                         </div>
-                    </div>
+                    </asp:Panel>
 
-                    <div id="divChildrenForm" class="children-form hidden">
+                    <asp:Panel ID="pnlChildrenForm" runat="server" CssClass="children-form" Visible="false">
 
                         <div class="form-header">
                             <h2>Child Pre-Register</h2>
@@ -176,12 +195,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    </asp:Panel>
 
                     <div class="form-navigation">
-                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnChildrenBack_Click" Text="Back" CssClass="btn btn-default" />                       
-                        <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn btn-default hidden" />
-                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary hidden" />
+                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="Back" CssClass="btn btn-default" />                       
+                        <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn btn-default" Visible="false" />
+                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary" Visible="false" />
                     </div>
 
                 </asp:Panel>
@@ -196,15 +216,19 @@
                         </div>
                         <div class="visit-details">
                             <div class="confirm-detail">
-                                <asp:Label ID="lblVisitDate" runat="server" Text="Visit Date" />
+                                <asp:Label ID="lblSubmitCampus" runat="server" Text="Campus" />
+                                <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditCampus_SelectedIndexChanged" Required="true" />
                             </div>
                             <div class="confirm-detail">
-                                <asp:Label ID="lblCampus" runat="server" Text="Campus" />
+                             <div class="confirm-detail">
+                                <asp:Label ID="lblSubmitVisitDate" runat="server" Text="Visit Date" />
+                                <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditVisitDate_SelectedIndexChanged" Required="true" />
                             </div>
-                            <div class="confirm-detail">
-                                <asp:Label ID="lblServiceTime" runat="server" Text="Service Time" />
+                                <asp:Label ID="lblSubmitServiceTime" runat="server" Text="Service Time" />
+                                <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ddlEditServiceTime_SelectedIndexChanged" Required="true" />
                             </div>
-                            <asp:LinkButton ID="lbEditVisitDetails" runat="server" Text="Edit details" />
+
+                            <asp:Button ID="btnEditVisitDetails" runat="server" Text="Edit details" OnClick="lbEditVisitDetails_Click" />
                         </div>
                         <div class="submit-survey header-centered">
                             <h4>How did you hear about CCV?</h4>
@@ -219,10 +243,9 @@
                          </div>
 
                         <div class="form-navigation">
-                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnSubmitBack_Click" Text="Back" CssClass="btn" />                       
+                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren," Text="Back" CssClass="btn" />                       
                             <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" OnClientClick="btnNext_OnClick('pnlSubmit'); return false;" Text="Submit" CssClass="btn btn-primary" />
                         </div>
-
 
                 </asp:Panel>
 
