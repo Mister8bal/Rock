@@ -41,8 +41,16 @@
 }
 
 .title h3 {
-    font-size: 36px;
-    line-height: 38px;
+    font-size: 44px;
+    line-height: 46px;
+    font-weight: 700;
+}
+
+.title p {
+    font-size: 34px;
+    line-height: 36px;
+    font-family: Akrobat;
+    font-weight: 500;
 }
 
 .title-buttons {
@@ -55,7 +63,7 @@
 .title-button {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
-    color: #0e568e;
+    color: #0057ac;
     font-family: Akrobat;
     font-size: 20px;
     font-weight: 600;
@@ -73,8 +81,8 @@
 
 .title-button:hover {
     text-decoration: none;
-    background-color: #0e568e;
-    border-color: #0e568e;
+    background-color: #0057ac;
+    border-color: #0057ac;
     color: #FFFFFF;
 }
 
@@ -137,15 +145,17 @@
 }
 
 .service-times-title {
-    color: #0e568e;
+    color: #0c4e8d;
     font-family: Akrobat;
-    font-weight: bold;
+    font-size: 34px;
+    font-weight: 700;
     text-align: center;
 }
 
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
+    margin: 20px 0px;
 }
 
 .campus-card {
@@ -302,10 +312,6 @@
     max-width: 250px;
 }
 
-.kids-students .btn {
-    margin-top: 30px;
-}
-
 .students {
     background-image: url(/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/background-small-students.jpg);
     width: 50%;
@@ -318,6 +324,20 @@
 
 .students img {
     max-width: 450px;
+}
+
+.students p {
+    width: 50%;
+    text-align: center;
+    margin-top: 20px;
+    color: #FFFFFF
+}
+
+.kids p {
+    width: 50%;
+    text-align: center;
+    margin-top: 20px;
+    color: #FFFFFF
 }
 
 @media screen and (max-width: 500px) {
@@ -363,6 +383,11 @@
     justify-content: space-around;
 }
 
+.share p{
+    font-size: 15px;
+    color: #535353;
+}
+
 @media screen and (max-width: 500px) {
     .share {
         width: 100%;
@@ -392,6 +417,10 @@
      color: #1653a3;
 }
 
+.right p {
+    color: #535353;
+}
+
 a:focus {
     outline: none;
 }
@@ -412,7 +441,7 @@ a:focus {
 .btn-white {
     background-color: #FFFFFF;
     border-color: #FFFFFF;
-    color: #0e568e;
+    color: #e43d35;
 }
 
 /* End Overrides */
