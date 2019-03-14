@@ -36,11 +36,10 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 {
     [DisplayName( "CCV Prayer Request List" )]
     [Category( "CCV > Prayer" )]
-    [Description( "Displays a list of prayer requests for the configured top-level group category." )]
+    [Description( "Displays a list of prayer requests that were initiated by a certain person." )]
 
     [SecurityAction( Authorization.APPROVE, "The roles and/or users that have access to approve prayer requests and comments." )]
 
-    [CustomRadioListField( "Role", "Display the active Prayer Requests that the current user Initiated, or is currently Assigned To.", "0^Assigned To,1^Initiated", false, "0", "", 0 )]
     [LinkedPage( "Detail Page", "", false, Order = 0 )]
     [IntegerField( "Expires After (Days)", "Number of days until the request will expire.", false, 14, "", 1, "ExpireDays" )]
     [BooleanField( "Show Prayer Count", "If enabled, the block will show the current prayer count for each request in the list.", false, "", 2 )]
@@ -48,8 +47,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
     [BooleanField( "Show Grid Filter", "If enabled, the grid filter will be visible.", true, "", 4 )]
     [BooleanField( "Show Public Only", "If enabled, it will limit the list only to the prayer requests that are public.", false, order: 5 )]
 
-    [ContextAware( typeof( Rock.Model.Person ) )]
-    public partial class CCVPrayerRequestList : RockBlock, ICustomGridColumns
+    public partial class CCVPrayerRequestList : PersonBlock, ICustomGridColumns
     {
         #region Fields
 
@@ -92,7 +90,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             public static readonly string ActiveStatus = "Active Status";
             public static readonly string PublicStatus = "Public/Private";
             public static readonly string Comments = "Comments";
-            public static readonly string ShowExpired = "Show Expired";
         }
         #endregion
 
@@ -111,19 +108,13 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             gfFilter.Visible = this.GetAttributeValue( "ShowGridFilter" ).AsBooleanOrNull() ?? true;
 
             gPrayerRequests.DataKeyNames = new string[] { "Id" };
-            gPrayerRequests.Actions.AddClick += gPrayerRequests_Add;
             gPrayerRequests.GridRebind += gPrayerRequests_GridRebind;
 
             // Block Security and special attributes (RockPage takes care of View)
             _canApprove = IsUserAuthorized( "Approve" );
             _canAddEditDelete = IsUserAuthorized( Authorization.EDIT );
-            gPrayerRequests.Actions.ShowAdd = _canAddEditDelete;
             gPrayerRequests.IsDeleteEnabled = _canAddEditDelete;
-
-            // if there is a Person as the ContextEntity, there is no need to show the Name column
             gPrayerRequests.Columns.GetColumnByHeaderText( "Name" ).Visible = this.ContextEntity<Rock.Model.Person>() == null;
-
-
             gPrayerRequests.Columns.GetColumnByHeaderText( "Prayer Count" ).Visible = GetAttributeValue( "ShowPrayerCount" ).AsBoolean();
             gPrayerRequests.Columns.GetColumnByHeaderText( "Approved?" ).Visible = GetAttributeValue( "ShowApprovedColumn" ).AsBoolean();
         }
@@ -151,8 +142,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             base.LoadViewState( savedState );
 
             AvailableAttributes = ViewState["AvailableAttributes"] as List<AttributeCache>;
-
-            //AddDynamicControls();
         }
 
         /// <summary>
@@ -208,9 +197,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             cpPrayerCampusFilter.Campuses = CampusCache.All( false );
             cpPrayerCampusFilter.SetValue( new CampusService( new RockContext() ).Get( selectedPrayerCampusId ) );
 
-            // Set the Show Expired filter
-            cbShowExpired.Checked = gfFilter.GetUserPreference( FilterSetting.ShowExpired ).AsBooleanOrNull() ?? false;
-
             BindAttributes();
             AddDynamicControls();
         }
@@ -224,7 +210,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
         {
             gfFilter.SaveUserPreference( FilterSetting.DateRange, drpDateRange.DelimitedValues );
 
-            // only save settings that are not the default "all" preference...
             if ( ddlApprovedFilter.SelectedValue == "all" )
             {
                 gfFilter.SaveUserPreference( FilterSetting.ApprovalStatus, string.Empty );
@@ -272,8 +257,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 
             gfFilter.SaveUserPreference( FilterSetting.PrayerCategory, catpPrayerCategoryFilter.SelectedValue == Rock.Constants.None.IdValue ? string.Empty : catpPrayerCategoryFilter.SelectedValue );
             gfFilter.SaveUserPreference( FilterSetting.PrayerCampus, cpPrayerCampusFilter.SelectedValue == Rock.Constants.None.IdValue ? string.Empty : cpPrayerCampusFilter.SelectedValue );
-
-            gfFilter.SaveUserPreference( FilterSetting.ShowExpired, cbShowExpired.Checked ? "True" : string.Empty );
 
             if ( AvailableAttributes != null )
             {
@@ -579,12 +562,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                 prayerRequests = prayerRequests.Where( a => a.EnteredDateTime < endDate );
             }
 
-            // Don't show expired prayer requests.
-            if ( !cbShowExpired.Checked )
-            {
-                prayerRequests = prayerRequests.Where( a => a.ExpirationDate == null || RockDateTime.Today <= a.ExpirationDate );
-            }
-
             // Filter query by any configured attribute filters
             if ( AvailableAttributes != null && AvailableAttributes.Any() )
             {
@@ -622,35 +599,9 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                     }
                 }
             }
-
-            // Filter by initiated/assigned person
-            Person person;
-            if ( !string.IsNullOrWhiteSpace( PageParameter( "PersonId" ) ) )
-            {
-                person = new PersonService( new RockContext() ).Get( PageParameter( "PersonId" ).AsInteger() );
-            }
-            else
-            {
-                person = null;
-            }
-
-            string role = GetAttributeValue( "Role" );
-            if ( string.IsNullOrWhiteSpace( role ) )
-            {
-                role = "0";
-            }
-
-            // If Initatied by then get all prayer requests that were initiated by person 
-            if ( role == "1" )
-            {
-                prayerRequests = prayerRequests.Where( a => a.RequestedByPersonAlias.PersonId == person.Id ); // CurrentPersonAlias.PersonId
-            }
-
-            // Else get all prayer requests assigned to person 
-            else
-            {
-                prayerRequests = prayerRequests.Where( a => a. CreatedByPersonAlias.PersonId == person.Id );
-            }
+          
+            // Get all prayer requests that were initiated by person 
+            prayerRequests = prayerRequests.Where( a => a.RequestedByPersonAlias.PersonId == Person.Id );
 
             if ( sortProperty != null )
             {
@@ -663,16 +614,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 
             gPrayerRequests.EntityTypeId = EntityTypeCache.Read<PrayerRequest>().Id;
             gPrayerRequests.DataBind();
-        }
-
-        /// <summary>
-        /// Handles the Add event of the gPrayerRequests control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        protected void gPrayerRequests_Add( object sender, EventArgs e )
-        {
-            NavigateToDetailPage( 0 );
         }
 
         /// <summary>
@@ -689,10 +630,9 @@ namespace RockWeb.Plugins.church_ccv.Prayer
         {
             var queryParms = new Dictionary<string, string> { { _PrayerRequestKeyParameter, requestId.ToString() } };
 
-            var personContext = ContextEntity<Person>();
-            if ( personContext != null )
+            if ( Person != null )
             {
-                queryParms.Add( "PersonId", personContext.Id.ToString() );
+                queryParms.Add( "PersonId", Person.Id.ToString() );
             }
 
             NavigateToLinkedPage( "DetailPage", queryParms );
@@ -763,8 +703,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
 
             if ( prayerRequest != null )
             {
-                DeleteAllRelatedNotes( prayerRequest, rockContext );
-
                 string errorMessage;
                 if ( !prayerRequestService.CanDelete( prayerRequest, out errorMessage ) )
                 {
@@ -777,24 +715,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
             }
 
             BindGrid();
-        }
-
-        /// <summary>
-        /// Deletes all related notes.
-        /// </summary>
-        /// <param name="prayerRequest">The prayer request.</param>
-        private void DeleteAllRelatedNotes( PrayerRequest prayerRequest, RockContext rockContext )
-        {
-            var noteTypeService = new NoteTypeService( rockContext );
-            var noteType = noteTypeService.Get( Rock.SystemGuid.NoteType.PRAYER_COMMENT.AsGuid() );
-            var noteService = new NoteService( rockContext );
-            var prayerComments = noteService.Get( noteType.Id, prayerRequest.Id );
-            foreach ( Note prayerComment in prayerComments )
-            {
-                noteService.Delete( prayerComment );
-            }
-
-            rockContext.SaveChanges();
         }
 
         /// <summary>
