@@ -36,7 +36,6 @@ namespace church.ccv.Steps
     /// Sends eRA potential loss email
     /// </summary>
     [TextField("Warning Email Addresses", "Comma-separated list of email addresses to warn when required metrics are not present.", false)]
-    [IntegerField("Weekend Attendance Metric Id", "The metric id of the metric that will provide the weekend attendance counts.")]
     [SystemEmailField( "Warning Email Template", "The system email to use when metrics don't exist.", false )]
     [GroupTypeField("Neighborhood Area Group Type")]
 
@@ -56,7 +55,6 @@ namespace church.ccv.Steps
         const int _studentUpperGrade = 12;
         
         List<int> _campusIds = new List<int>();
-        int _attendanceMetricId = -1;
         string _warningEmailAddresses = string.Empty;
         Guid _warningEmailTemplate = Guid.Empty;
 
@@ -94,7 +92,6 @@ namespace church.ccv.Steps
 
             // load list of active campuses
             _campusIds = new CampusService( rockContext ).Queryable().Where( c => c.IsActive == true ).Select( c => c.Id ).ToList();
-            _attendanceMetricId = dataMap.GetIntFromString( "WeekendAttendanceMetricId" );
             _warningEmailAddresses = dataMap.GetString( "WarningEmailAddresses" );
             _warningEmailTemplate = dataMap.GetString( "WarningEmailTemplate" ).AsGuid();
 
@@ -170,37 +167,8 @@ namespace church.ccv.Steps
 
             using ( RockContext rockContext = new RockContext( ) )
             {
-                // check if the metrics we need exist, if not send warning email and stop
-                List<MetricValue> metricValues = new MetricValueService( rockContext ).Queryable().Where( m => m.MetricValueDateTime == sundayDate && m.MetricId == _attendanceMetricId ).ToList();
-
                 int entityTypeCampusId = EntityTypeCache.GetId<Campus>() ?? 0;
-
-                // ensure that all campuses have metrics
-                var metricCampusIds = metricValues.SelectMany(m => m.MetricValuePartitions ).Where(a => a.MetricPartition.EntityTypeId == entityTypeCampusId && a.EntityId.HasValue).Select(a => a.EntityId.Value).ToList();
-                if ( !ContainsAllItems( _campusIds, metricCampusIds ) )
-                {
-                    // send warning email
-                    if ( !string.IsNullOrWhiteSpace( _warningEmailAddresses ) && _warningEmailTemplate != Guid.Empty )
-                    {
-                        List<RecipientData> recipients = new List<RecipientData>();
-
-                        List<string> emails = _warningEmailAddresses.Split( ',' ).ToList();
-
-                        var mergeObjects = new Dictionary<string, object>();
-                        mergeObjects.Add( "SundayDate", sundayDate );
-
-                        var emailMessage = new RockEmailMessage( _warningEmailTemplate );
-                        foreach ( var email in emails )
-                        {
-                            emailMessage.AddRecipient( new RecipientData( email, mergeObjects ) );
-                        }
-                        emailMessage.Send();
-
-                        message = string.Format( "Could not process {0} due to missing metric values.", sundayDate.ToShortDateString( ) );
-                    }
-                    return false;
-                }
-
+                
                 // get the pastor responsible for each region
                 DatamartNeighborhoodService datamartNeighborhoodService = new DatamartNeighborhoodService(rockContext);
                 var regionList = datamartNeighborhoodService.Queryable()
@@ -280,7 +248,6 @@ namespace church.ccv.Steps
                         SaveMetrics_Dependencies metricDependencies = new SaveMetrics_Dependencies( )
                         {
                             SundayDate = sundayDate,
-                            MetricValues = metricValues,
                             CampusTotals_Adult = campusTotals_Adult,
                             CampusTotals_Student = campusTotals_Student
                         };
@@ -311,7 +278,6 @@ namespace church.ccv.Steps
         internal class SaveMetrics_Dependencies
         {
             public DateTime SundayDate;
-            public List<MetricValue> MetricValues;
             public List<CampusAdultCount> CampusTotals_Adult;
             public List<CampusStudentCount> CampusTotals_Student;
         }
@@ -358,20 +324,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _baptismMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _baptismMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
 
         private void ProcessMembership( SaveMetrics_Dependencies metricDependencies, 
@@ -414,21 +367,8 @@ namespace church.ccv.Steps
                                                                                     }).ToList( );
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
-                
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _membershipMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            
+            SaveMetrics( _membershipMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
         
         private void ProcessAttending( SaveMetrics_Dependencies metricDependencies, 
@@ -472,20 +412,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _attendingMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _attendingMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
         
         private void ProcessGiving( SaveMetrics_Dependencies metricDependencies, 
@@ -529,20 +456,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _givingMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _givingMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
         
         private void ProcessCoaching( SaveMetrics_Dependencies metricDependencies, 
@@ -586,20 +500,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _coachingMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _coachingMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
 
         private void ProcessConnection( SaveMetrics_Dependencies metricDependencies, 
@@ -643,20 +544,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _connectionMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _connectionMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
 
         private void ProcessServing( SaveMetrics_Dependencies metricDependencies, 
@@ -700,20 +588,7 @@ namespace church.ccv.Steps
             // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
             // Someday we'll need to add support for that.
                 
-                
-            // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-            // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-            var measureCountsByCampusAll = measureCountsByCampusAdults
-                                            .Join( measureCountsByCampusStudents,
-                                                    adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                    new CampusMeasure
-                                                    {
-                                                        CampusId = a.CampusId,
-                                                        MeasureValue = a.MeasureValue + s.MeasureValue
-                                                    } )
-                                            .ToList();
-
-            SaveMetrics( _servingMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+            SaveMetrics( _servingMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
         }
 
         private void ProcessSharing( SaveMetrics_Dependencies metricDependencies, 
@@ -759,26 +634,13 @@ namespace church.ccv.Steps
                 // NOTE: Even tho students are in Regions, they aren't evaluated by region. They're evaluated according to NG groups and whoever is over that group.
                 // Someday we'll need to add support for that.
                 
-                
-                // TOTAL ADULTS + STUDENTS (Used for Weekend Attendance)
-                // to get this, join the tables on the campus ID, and then create a CampusMeasure object with the sum of the campus totals for adult/student
-                var measureCountsByCampusAll = measureCountsByCampusAdults
-                                                .Join( measureCountsByCampusStudents,
-                                                        adult => adult.CampusId, student => student.CampusId, ( a, s ) =>
-                                                        new CampusMeasure
-                                                        {
-                                                            CampusId = a.CampusId,
-                                                            MeasureValue = a.MeasureValue + s.MeasureValue
-                                                        } )
-                                                .ToList();
-
-                SaveMetrics( _sharingMeasureId, metricDependencies, measureCountsByCampusAll, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
+                SaveMetrics( _sharingMeasureId, metricDependencies, measureCountsByCampusAdults, measureCountsByCampusStudents, measureCountsByRegionAdult );
             }
         }
 
         #region Utilities
 
-        private void SaveMetrics( int measureId, SaveMetrics_Dependencies metricDependencies, List<CampusMeasure> campusAllMeasures, List<CampusMeasure> campusAdultMeasures, List<CampusMeasure> campusStudentMeasures, List<RegionMeasure> regionAdultMeasures )
+        private void SaveMetrics( int measureId, SaveMetrics_Dependencies metricDependencies, List<CampusMeasure> campusAdultMeasures, List<CampusMeasure> campusStudentMeasures, List<RegionMeasure> regionAdultMeasures )
         {
             int entityTypeCampusId = EntityTypeCache.GetId<Campus>() ?? 0;
 
@@ -789,26 +651,12 @@ namespace church.ccv.Steps
                 foreach ( int campusId in _campusIds )
                 {
                     // get counts 
-                    int weekendAttendance = metricDependencies.MetricValues.Where( m => m.MetricValuePartitions.Any( x => x.MetricPartition.EntityTypeId == entityTypeCampusId && x.EntityId == campusId )).Select( m => m.YValue ).FirstOrDefault() != null ? 
-                        Decimal.ToInt16( metricDependencies.MetricValues.Where( m => m.MetricValuePartitions.Any( x => x.MetricPartition.EntityTypeId == entityTypeCampusId && x.EntityId == campusId )).Select( m => m.YValue ).FirstOrDefault().Value ) : 0;
-
                     int activeAdults = metricDependencies.CampusTotals_Adult.Where( c => c.CampusId == campusId ).Select( c => c.AdultCount ).Count() != 0 ? metricDependencies.CampusTotals_Adult.Where( c => c.CampusId == campusId ).Select( c => c.AdultCount ).FirstOrDefault() : 0;
                     int activeStudents = metricDependencies.CampusTotals_Student.Where( c => c.CampusId == campusId ).Select( c => c.StudentCount ).Count() != 0 ? metricDependencies.CampusTotals_Student.Where( c => c.CampusId == campusId ).Select( c => c.StudentCount ).FirstOrDefault() : 0;
 
-                    int measureCountAll = campusAllMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).Count() != 0 ? campusAllMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).FirstOrDefault() : 0;
                     int measureCountAdults = campusAdultMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).Count() != 0 ? campusAdultMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).FirstOrDefault() : 0;
                     int measureCountStudents = campusStudentMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).Count() != 0 ? campusStudentMeasures.Where( b => b.CampusId == campusId ).Select( b => b.MeasureValue ).FirstOrDefault() : 0;
-
-                    // save metric all count / weekend attendance
-                    StepMeasureValue measureValueAll = new StepMeasureValue();
-                    measureValueAll.StepMeasureId = measureId;
-                    measureValueAll.SundayDate = metricDependencies.SundayDate;
-                    measureValueAll.Value = measureCountAll;
-                    measureValueAll.CampusId = campusId;
-                    measureValueAll.WeekendAttendance = weekendAttendance;
-
-                    stepMeasureValueService.Add( measureValueAll );
-
+                    
                     // save metric adult count / campus adult count
                     StepMeasureValue measureValueAdults = new StepMeasureValue();
                     measureValueAdults.StepMeasureId = measureId;
