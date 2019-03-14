@@ -155,7 +155,7 @@
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
-    margin: 20px 0px;
+    padding: 20px 0px;
 }
 
 .campus-card {
