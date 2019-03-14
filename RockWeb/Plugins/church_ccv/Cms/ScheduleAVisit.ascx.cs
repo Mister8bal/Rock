@@ -147,7 +147,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e"></param>
         protected void CampusDropDown_SelectedIndexChanged( object sender, EventArgs e )
         {
-            // convert sender to object
             RockDropDownList campusDropDownList = sender as RockDropDownList;
 
             // determine the tab we are on by the sender Id
@@ -156,13 +155,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // campus changed, visit date and service time dropdowns are no longer valid
             ResetVisitDropDowns( false, true, true );
 
-            //  ensure selection and current tab known         
             if ( campusDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null )
             {
-                // check for valid campus
                 if ( campusDropDownList.SelectedValue.AsInteger() != 0 )
                 {
-                    // get selected campus
                     CampusCache campus = CampusCache.Read( campusDropDownList.SelectedValue.AsInteger() );
 
                     // set submit label 
@@ -185,7 +181,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.CampusId = campusDropDownList.SelectedValue;
                     WriteVisitToViewState();
 
-                    // bind future weekend dates to VisitDate dropdowns
                     BindVisitDateDropDowns( campus );
 
                     // show the visit date dropdown
@@ -221,7 +216,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e"></param>
         protected void VisitDateDropDown_SelectedIndexChanged( object sender, EventArgs e )
         {
-            // convert sender to object
             RockDropDownList visitDateDropDownList = sender as RockDropDownList;
 
             // determine the tab we are on by the sender Id
@@ -239,10 +233,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 day = visitDateDropDownList.SelectedItem.Text.Substring( 0, index );
             }
 
-            // ensure selection, current tab known, campus selected, and day exists
             if ( visitDateDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null || ddlCampus.SelectedValue.IsNotNullOrWhitespace() || day.IsNotNullOrWhitespace() )
             {
-                // check for valid campus
                 if ( ddlCampus.SelectedValue.AsInteger() != 0 )
                 {
                     CampusCache campus = CampusCache.Read( ddlCampus.SelectedValue.AsInteger() );
@@ -267,7 +259,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.VisitDate = visitDateDropDownList.SelectedValue;
                     WriteVisitToViewState();
                     
-                    // bind service times to dropdowns                                               
                     BindServiceTimeDropDowns( campus, day );
 
                     // show service time dropdown
@@ -302,13 +293,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e"></param>
         protected void ServiceTimeDropDown_SelectedIndexChanged( object sender, EventArgs e )
         {
-            // convert sender to object
             RockDropDownList rockDropDownList = sender as RockDropDownList;
 
             // determine the tab we are on by the sender Id
             FormTab? currentTab = GetCurrentTab( rockDropDownList.ID );
 
-            // check for selection value
             if ( rockDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null )
             {                    
                 // sync value to other service time drop down
@@ -351,6 +340,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
         #region Adult Panel Events
                                  
+        /// <summary>
+        /// Handles btnAdultsNext click event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void btnAdultsNext_Click( object sender, EventArgs e )
         {
             // default to new person
@@ -359,22 +353,32 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // Check if person exists
             PersonService personService = new PersonService( new RockContext() );
 
-            Person person = personService.FindPerson( tbAdultFirstName.Text, tbAdultLastName.Text, tbAdultEmail.Text, false, false, false );
-            
-            // Populate visit object
-            if ( person != null)
+            var personQry = personService.GetByMatch( tbAdultFirstName.Text, tbAdultLastName.Text, tbAdultEmail.Text, false, false );
+
+            if ( personQry.Count() > 0)
             {
-                // person exists
+                // person(s) with matching info found
                 newPerson = false;
 
-                _visit.PersonId = person.Id;
-                _visit.FirstName = person.FirstName;
-                _visit.LastName = person.LastName;
-                _visit.Email = person.Email;
+                // reset radio button list
+                rblExisting.Items.Clear();
+                rblExisting.Required = true;
 
-            } else
+                // add matching people to radio button list
+                foreach ( var prsn in personQry )
+                {
+                    string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, prsn.Email );
+
+                    rblExisting.Items.Add( new ListItem( itemText, prsn.Id.ToString() ) );
+                }
+               
+                // add none item
+                rblExisting.Items.Add( new ListItem( "None of these people are me", "none" ) );
+            }
+            
+            if ( newPerson == true )
             {
-                // new person
+                // new person - populate visit object
                 _visit.FirstName = tbAdultFirstName.Text;
                 _visit.LastName = tbAdultLastName.Text;
                 _visit.Email = tbAdultEmail.Text;
@@ -383,31 +387,18 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 _visit.ActiveTab = FormTab.Children;
             }
 
-            _visit.CampusId = ddlCampus.SelectedValue;
-            _visit.VisitDate = ddlVisitDate.SelectedValue;
-            _visit.ServiceTime = ddlServiceTime.SelectedValue;
-
             _visit.SpouseFirstName = tbSpouseFirstName.Text;
             _visit.SpouseLastName = tbSpouseLastName.Text;
 
-            WriteVisitToViewState();
-
-            // set submit details values
-            lblSubmitCampus.Text = ddlCampus.SelectedItem.Text;
-            ddlEditCampus.SelectedValue = ddlCampus.SelectedValue;
-
-            lblSubmitVisitDate.Text = ddlVisitDate.SelectedItem.Text;
-            ddlEditVisitDate.SelectedValue = ddlVisitDate.SelectedValue;
-
-            lblSubmitServiceTime.Text = ddlServiceTime.SelectedItem.Text;
-            ddlEditServiceTime.SelectedValue = ddlServiceTime.SelectedValue;
-
-            // enable adults progress button
-            SetProgressButtonsState();
 
             // show next form panel
             if (newPerson)
             {
+                _visit.ActiveTab = FormTab.Children;
+
+                // enable adults progress button
+                SetProgressButtonsState();
+
                 if ( _visit.BringingChildren)
                 {
                     // show children form
@@ -424,6 +415,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // show existing person panel
                 ShowFormPanel( pnlAdults, pnlAdultsExisting );
             }
+
+            WriteVisitToViewState();
         }
 
         protected void btnAdultsExistingNext_Click( object sender, EventArgs e )

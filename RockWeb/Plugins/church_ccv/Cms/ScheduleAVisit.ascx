@@ -106,11 +106,17 @@
                     <asp:Panel ID="pnlAdultsExisting" runat="server" Visible="false">
 
                         <div class="form-header">
-
+                            <h2>Whoops, it looks like you may already be in our system.</h2>
+                            <p>
+                                The following shares your last name and email.<br />
+                                Are you one of these people?
+                            </p>
                         </div>
 
                         <div class="form">
-
+                            <div class="form-row">
+                                <Rock:RockRadioButtonList ID="rblExisting" runat="server" ClientIDMode="Static" CssClass="existing-people" />
+                            </div>
                         </div>
 
                         <div class="form-navigation">

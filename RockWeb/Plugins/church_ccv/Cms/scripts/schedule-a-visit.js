@@ -13,8 +13,7 @@ function pageLoad() {
         }
     });
 
-//    $('#ddlServiceTime').on('change', function () {
-  //      $('#divSpouse').removeClass('hidden');
-    //});
+
+
 }
 

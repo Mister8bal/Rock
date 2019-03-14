@@ -87,6 +87,41 @@
     text-align: center;
 }
 
+/* Adults Form */
+.existing-people {
+    width: 75%;
+    margin: 0 auto;
+}
+
+#rblExisting {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#rblExisting .radio:last-child {
+    align-self: center;
+}
+
+#rblExisting .radio label {
+    width: 100%;
+}
+
+.existing-person {
+    display: flex;
+    justify-content: space-between;
+}
+
+.existing-person p {
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.existing-person-name {
+    color: #000;
+    font-weight: 900;
+}
+
 
 /* Children Form */
 .child-optional {
