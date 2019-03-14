@@ -41,7 +41,7 @@ namespace RockWeb.Plugins.church_ccv.Workflow
     [Category( "CCV > Workflow" )]
     [Description( "Block to display Pastoral Care Workflows submitted by a user." )]
 
-    [CodeEditorField( "Contents", @"The Lava template to use for displaying activities assigned to current user.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, false, @"{% include '~/Plugins/church_ccv/LifeTraining/CCVPastoralCareWorkflowList.lava' %}", "", 3 )]
+    [CodeEditorField( "Contents", @"The Lava template to use for displaying the workflows.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, false, @"{% include '~/Plugins/church_ccv/LifeTraining/CCVPastoralCareWorkflowList.lava' %}", "", 3 )]
     public partial class CCVPastoralCareWorkflowList : PersonBlock
     {
         #region Properties
@@ -109,12 +109,10 @@ namespace RockWeb.Plugins.church_ccv.Workflow
 
                 using ( var rockContext = new RockContext() )
                 {
-                    List<WorkflowAction> actions = null;
-                    
-                    actions = GetWorkflowActions( rockContext );
+                    List<Rock.Model.Workflow> workflowList = GetWorkflowActions( rockContext );
 
                     var mergeFields = new Dictionary<string, object>();
-                    mergeFields.Add( "Actions", actions.OrderByDescending( a => a.CreatedDateTime ) );
+                    mergeFields.Add( "Workflows", workflowList.OrderByDescending( a => a.CreatedDateTime ) );
 
                     lContents.Text = contents.ResolveMergeFields( mergeFields );
                 }
@@ -126,10 +124,8 @@ namespace RockWeb.Plugins.church_ccv.Workflow
             }
         }
 
-        private List<WorkflowAction> GetWorkflowActions( RockContext rockContext )
+        private List<Rock.Model.Workflow> GetWorkflowActions( RockContext rockContext )
         {
-            var actions = new List<WorkflowAction>();
-
             // get all pastoral care workflow instances
             var workflowQuery = new WorkflowService( rockContext ).Queryable( "WorkflowType" )
                 .Where( w =>
@@ -152,18 +148,7 @@ namespace RockWeb.Plugins.church_ccv.Workflow
                                             .OrderBy( w => w.ActivatedDateTime )
                                             .ToList();
 
-            foreach ( var workflow in workflowList )
-            {
-                var activity = new WorkflowActivity();
-                activity.Workflow = workflow;
-
-                var action = new WorkflowAction();
-                action.Activity = activity;
-
-                actions.Add( action );
-            }
-
-            return actions;
+            return workflowList;
         }
         #endregion
     }

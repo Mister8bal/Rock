@@ -2,7 +2,7 @@
 
   <div class='panel panel-block'>
     
-    {% if Actions.size > 0 %}
+    {% if Workflows.size > 0 %}
     <table class="table sortable">
       <thead>
         <tr>
@@ -11,13 +11,13 @@
         </tr>
       </thead>
       <tbody>
-        {% for action in Actions %}
+        {% for workflow in Workflows %}
         <tr>
-          <td data-dateformat="M/D/YY">{{ action.Activity.Workflow.CreatedDateTime | Date:'M/d/yy' }}</td>
+          <td data-dateformat="M/D/YY">{{ workflow.CreatedDateTime | Date:'M/d/yy' }}</td>
           <td>
-            <a href='/MyDashboard{% if Role == '0' %}WorkflowEntry/{{ action.Activity.Workflow.WorkflowTypeId }}{% else %}Workflow{% endif %}/{{ action.Activity.Workflow.Id }}'>Pastoral Care Request{% if role == '0' %} ({{ action.Activity.ActivityType.Name }}){% endif %}</a>
-            {% if action.Activity.Workflow.Status != 'Active' %}
-            <span class='label label-info'>{{ action.Activity.Workflow.Status }}</span>
+            <a href='/MyDashboardWorkflowEntry/{{ workflow.WorkflowTypeId }}/{{ workflow.Id }}'>Pastoral Care Request</a>
+            {% if workflow.Status != 'Active' %}
+            <span class='label label-info'>{{ workflow.Status }}</span>
             {% endif %}
           </td>
         </tr>
