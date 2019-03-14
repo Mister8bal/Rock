@@ -110,6 +110,12 @@
         font-size: 26px;
         line-height: 28px;
     }
+
+    .title p {
+        font-size: 16px;
+        line-height: 18px;
+    }
+    
 }
 
 /* End Feature Title Section */
@@ -355,6 +361,18 @@
 
     .kids-students .btn {
         width: 85%;
+    }
+
+    .students img {
+        max-width: 350px;
+    }
+
+    .students p {
+        width: 100%;
+    }
+    
+    .kids p {
+        width: 100%;
     }
 }
 
