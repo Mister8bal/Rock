@@ -21,7 +21,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [KeyValueListField( "Selection", "A list of parameter names and values.", true, "", "Name", "Value", "", "" )]
     public partial class PageParameterSelection : Rock.Web.UI.RockBlock
     {
-        private string pageParameterName;
+        #region Fields
+
+        private string _pageParameterName;
+
+        #endregion
 
         #region Base Control Methods
 
@@ -33,12 +37,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
         {
             base.OnInit( e );
 
-            pageParameterName = GetAttributeValue( "PageParameterName" ).ToString();
+            _pageParameterName = GetAttributeValue( "PageParameterName" ).ToString();
 
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
             this.AddConfigurationUpdateTrigger( upnlContent );
-
         }
 
         /// <summary>
@@ -81,21 +84,23 @@ namespace RockWeb.Plugins.church_ccv.Cms
             return new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Loads the drop downs.
+        /// </summary>
         private void LoadDropDowns()
         {
-            var selections = GetSelectionList();
-
             ddlSelection.Items.Clear();
             
             // First item should be blank
             ddlSelection.Items.Add( new ListItem() );
 ;
+            var selections = GetSelectionList();
             foreach ( var selection in selections )
             {
                 ddlSelection.Items.Add( new ListItem( selection.Key, selection.Value.ToString() ) );
             }
 
-            var selectionString = Request.QueryString[pageParameterName];
+            var selectionString = Request.QueryString[_pageParameterName];
             if ( selectionString != null )
             {
                 ddlSelection.SetValue( selectionString );
@@ -130,7 +135,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 var item = selection.Where( p => p.Value.ToString() == ddlSelection.SelectedValue ).FirstOrDefault();
 
                 var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
-                queryString.Set( pageParameterName, item.Value );
+                queryString.Set( _pageParameterName, item.Value );
                 Response.Redirect( string.Format( "{0}?{1}", Request.Url.AbsolutePath, queryString ), false );
             }
         }
