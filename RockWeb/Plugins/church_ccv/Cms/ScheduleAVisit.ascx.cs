@@ -235,6 +235,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 day = visitDateDropDownList.SelectedItem.Text.Substring( 0, index );
             }
 
+            // Pretty sure this needs to be &&
+
             if ( visitDateDropDownList.SelectedValue.IsNotNullOrWhitespace() || currentTab != null || ddlCampus.SelectedValue.IsNotNullOrWhitespace() || day.IsNotNullOrWhitespace() )
             {
                 if ( ddlCampus.SelectedValue.AsInteger() != 0 )
@@ -783,7 +785,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     break;
                 case FormTab.Children:
                     btnProgressAdults.Enabled = true;
+
                     btnProgressChildren.Enabled = false;
+                    btnProgressChildren.Attributes.Add( "class", "active" );
+
                     break;
                 case FormTab.Submit:
                     btnProgressAdults.Enabled = true;
@@ -876,6 +881,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             {
                 maskedEmail += "*";
             }
+
+            // TODO Handle multiple sub domains aka dots
 
             maskedEmail += ".";
 
@@ -983,17 +990,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Children,
             Submit
         }
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }
