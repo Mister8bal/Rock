@@ -114,9 +114,14 @@
                         </div>
 
                         <div class="form">
-                            <div class="form-row">
+                            <div class="form-row form-group">
                                 <Rock:RockRadioButtonList ID="rblExisting" runat="server" ClientIDMode="Static" CssClass="existing-people" />
                             </div>
+                        </div>
+
+                        <div class="form-alerts">
+                            <Rock:NotificationBox ID="nbAlertExisting" runat="server" />
+
                         </div>
 
                         <div class="form-navigation">

@@ -136,6 +136,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             {
                 SetProgressButtonsState();
 
+                ClearErrorNotifications();
+
                 ShowFormPanel( mainPanel, subPanel );
             }
         }
@@ -362,14 +364,15 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 // reset radio button list
                 rblExisting.Items.Clear();
-                rblExisting.Required = true;
 
                 // add matching people to radio button list
                 foreach ( var prsn in personQry )
                 {
-                    string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, prsn.Email );
+                    string maskedEmail = MaskEmail( prsn.Email );
 
-                    rblExisting.Items.Add( new ListItem( itemText, prsn.Id.ToString() ) );
+                    string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, maskedEmail );
+
+                    rblExisting.Items.Add( new ListItem( itemText, prsn.Guid.ToString() ) );
                 }
                
                 // add none item
@@ -419,8 +422,69 @@ namespace RockWeb.Plugins.church_ccv.Cms
             WriteVisitToViewState();
         }
 
+        
+
         protected void btnAdultsExistingNext_Click( object sender, EventArgs e )
         {
+            bool hasError = true;
+
+            // get the person info
+            PersonService personService = new PersonService( new RockContext() );
+
+            Person person = null;
+
+            if ( rblExisting.SelectedValue.IsNotNullOrWhitespace() && rblExisting.SelectedValue != "none" )
+            {
+                person = personService.Get( rblExisting.SelectedValue.AsGuid() );
+
+                if ( person != null )
+                {
+                    // populate visit object
+                    _visit.FirstName = person.FirstName;
+                    _visit.LastName = person.LastName;
+                    _visit.Email = person.Email;
+
+                    hasError = false;
+                }
+            } 
+
+            // couldnt load person, proceed using new person
+            if ( rblExisting.SelectedValue.IsNotNullOrWhitespace() && ( rblExisting.SelectedValue == "none" || person == null ) )
+            {
+                // new person - populate visit object
+                _visit.FirstName = tbAdultFirstName.Text;
+                _visit.LastName = tbAdultLastName.Text;
+                _visit.Email = tbAdultEmail.Text;
+
+                hasError = false;
+            }
+
+            if ( !hasError )
+            {
+                // Navigate to children tab
+                _visit.ActiveTab = FormTab.Children;
+
+                // enable adults progress button
+                SetProgressButtonsState();
+
+                if ( _visit.BringingChildren )
+                {
+                    // show children form
+                    ShowFormPanel( pnlChildren, pnlChildrenForm );
+                }
+                else
+                {
+                    // show children question
+                    ShowFormPanel( pnlChildren, pnlChildrenQuestion );
+                }
+
+                nbAlertExisting.Text = "";
+            }
+            else
+            {
+                nbAlertExisting.NotificationBoxType = NotificationBoxType.Danger;
+                nbAlertExisting.Text = "error";
+            }
 
         }
 
@@ -741,54 +805,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             return ( ( int ) dayOfWeek - ( int ) today.DayOfWeek + 7 ) % 7;
         }
 
-        /// <summary>
-        /// Process Campus selected in campus dropdown
-        /// </summary>
-        /// <param name="campusId"></param>
-        /// <returns></returns>
-        //private void ProcessCampusDropDownSelection( string campusName, int campusId, FormTab? currentTab )
-        //{
-        //    // check for valid campus
-        //    if ( campusId != 0 )
-        //    {
-        //        // get selected campus
-        //        CampusCache campus = CampusCache.Read( campusId );
-
-        //        // set submit label 
-        //        lblSubmitCampus.Text = campusName;
-
-        //        // sync value to other campus drop down
-        //        switch ( currentTab )
-        //        {
-        //            case FormTab.Adults:
-        //                ddlEditCampus.SelectedValue = campusId.ToString();
-        //                break;
-        //            case FormTab.Submit:
-        //                ddlCampus.SelectedValue = campusId.ToString();
-        //                break;
-        //            default:
-        //                break;
-        //        }
-
-        //        // set campusId in _visit and update viewstate
-        //        _visit.CampusId = campusId.ToString();
-        //        WriteVisitToViewState();
-
-        //        // bind future weekend dates to VisitDate dropdowns
-        //        BindVisitDateDropDowns( campus );
-
-        //        // show the visit date dropdown
-        //        divVisitDate.Attributes["class"] = "";
-        //    }
-        //    else
-        //    {
-        //        // invalid campus, hide visit date dropdowns on adults tab
-        //        divVisitDate.Attributes["class"] = "hidden";
-        //        divServiceTime.Attributes["class"] = "hidden";
-        //    }
-        //}
-
-
+  
         /// <summary>
         /// Clear selections on all Visit Date related dropdowns
         /// </summary>
@@ -823,6 +840,61 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // hide service time dropdown on adults page
                 divServiceTime.Attributes["class"] = "hidden";
             }
+        }
+
+        /// <summary>
+        /// Mask an email address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        private string MaskEmail( string email )
+        {
+            string maskedEmail = "";
+
+            // split email into parts
+            string[] emailParts = email.Split( '@' );
+
+            // split domain into parts
+            string[] domainParts = emailParts[1].Split( '.' );
+
+            // add first letter of local-part
+            maskedEmail = emailParts[0].Substring( 0, 1 );
+
+            // add * for remaining characters in local-part
+            for ( int i = 0; i < emailParts[0].Length - 1; i++ )
+            {
+                maskedEmail += "*";
+            }
+
+            maskedEmail += "@";
+
+            // add first letter of domain
+            maskedEmail += domainParts[0].Substring( 0, 1 );
+
+            // add * for remaining characters in first part of domain
+            for ( int i = 0; i < domainParts[0].Length - 1; i++ )
+            {
+                maskedEmail += "*";
+            }
+
+            maskedEmail += ".";
+
+            // add * for remaining characters in second part of domain
+            for ( int i = 0; i < domainParts[1].Length; i++ )
+            {
+                maskedEmail += "*";
+            }
+
+            return maskedEmail;
+        }
+
+        /// <summary>
+        /// Clear all error notification boxes
+        /// </summary>
+        private void ClearErrorNotifications()
+        {
+            nbMessage.Text = "";
+            nbAlertExisting.Text = "";
         }
 
         /// <summary>
