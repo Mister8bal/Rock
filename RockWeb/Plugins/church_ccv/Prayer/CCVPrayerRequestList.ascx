@@ -47,8 +47,6 @@
                             <Rock:CategoryPicker ID="catpPrayerCategoryFilter" runat="server" Label="Category" EntityTypeName="Rock.Model.PrayerRequest"/>
                             <Rock:CampusPicker ID="cpPrayerCampusFilter" runat="server" />
 
-                            <Rock:RockCheckBox ID="cbShowExpired" runat="server" Label="Show Expired Requests?" />
-
                             <asp:PlaceHolder ID="phAttributeFilters" runat="server" />
 
                         </Rock:GridFilter>
