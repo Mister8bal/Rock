@@ -41,7 +41,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
     [SecurityAction( Authorization.APPROVE, "The roles and/or users that have access to approve prayer requests and comments." )]
 
     [LinkedPage( "Detail Page", "", false, Order = 0 )]
-    [IntegerField( "Expires After (Days)", "Number of days until the request will expire.", false, 14, "", 1, "ExpireDays" )]
     [BooleanField( "Show Prayer Count", "If enabled, the block will show the current prayer count for each request in the list.", false, "", 2 )]
     [BooleanField( "Show 'Approved' column", "If enabled, the Approved column will be shown with a Yes/No toggle button.", true, "", 3, "ShowApprovedColumn" )]
     [BooleanField( "Show Grid Filter", "If enabled, the grid filter will be visible.", true, "", 4 )]
@@ -629,12 +628,7 @@ namespace RockWeb.Plugins.church_ccv.Prayer
         private void NavigateToDetailPage( int requestId )
         {
             var queryParms = new Dictionary<string, string> { { _PrayerRequestKeyParameter, requestId.ToString() } };
-
-            if ( Person != null )
-            {
-                queryParms.Add( "PersonId", Person.Id.ToString() );
-            }
-
+            queryParms.Add( "PersonId", Person.Id.ToString() );
             NavigateToLinkedPage( "DetailPage", queryParms );
         }
 
@@ -673,9 +667,6 @@ namespace RockWeb.Plugins.church_ccv.Prayer
                         {
                             prayerRequest.FlagCount = 0;
                         }
-
-                        var expireDays = Convert.ToDouble( GetAttributeValue( "ExpireDays" ) );
-                        prayerRequest.ExpirationDate = RockDateTime.Now.AddDays( expireDays );
                     }
 
                     rockContext.SaveChanges();
@@ -762,6 +753,24 @@ namespace RockWeb.Plugins.church_ccv.Prayer
         }
 
         #endregion
+
+        /// <summary>
+        /// Deletes all related notes.
+        /// </summary>
+        /// <param name="prayerRequest">The prayer request.</param>
+        private void DeleteAllRelatedNotes( PrayerRequest prayerRequest, RockContext rockContext )
+        {
+            var noteTypeService = new NoteTypeService( rockContext );
+            var noteType = noteTypeService.Get( Rock.SystemGuid.NoteType.PRAYER_COMMENT.AsGuid() );
+            var noteService = new NoteService( rockContext );
+            var prayerComments = noteService.Get( noteType.Id, prayerRequest.Id );
+            foreach ( Note prayerComment in prayerComments )
+            {
+                noteService.Delete( prayerComment );
+            }
+
+            rockContext.SaveChanges();
+        }
 
         /// <summary>
         /// Handles the ClearFilterClick event of the gfFilter control.
