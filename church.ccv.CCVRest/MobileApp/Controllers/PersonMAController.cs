@@ -11,6 +11,12 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public partial class NewMobileAppController : Rock.Rest.ApiControllerBase
     {
+        public enum PersonResponse
+        {
+            Success,
+            PersonNotFound
+        }
+
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/Person" )]
         [Authenticate, Secured]
@@ -31,10 +37,10 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 MobileAppPersonModel personModel = MobileAppService.GetMobileAppPerson( personId.Value );
 
-                return Common.Util.GenerateResponse( true, string.Empty, personModel );
+                return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
 
-            return Common.Util.GenerateResponse( false, "Person not found", null );
+            return Common.Util.GenerateResponse( false, PersonResponse.PersonNotFound.ToString( ), null );
         }
 
         [System.Web.Http.HttpGet]
@@ -52,10 +58,10 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 MobileAppPersonModel personModel = MobileAppService.GetMobileAppPerson( personAlias.PersonId );
 
-                return Common.Util.GenerateResponse( true, string.Empty, personModel );
+                return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
 
-            return Common.Util.GenerateResponse( false, "Person not found", null );
+            return Common.Util.GenerateResponse( false, PersonResponse.PersonNotFound.ToString( ), null );
         }
     }
 }

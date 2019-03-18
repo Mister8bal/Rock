@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -12,6 +13,20 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public partial class NewMobileAppController : Rock.Rest.ApiControllerBase
     {
+        [Serializable]
+        public enum LoginResponse
+        {
+            Success,
+
+            InvalidModel,
+            InvalidLoginType,
+
+            InvalidUsername,
+            InvalidPassword,
+
+            AccountUnconfirmed
+        }
+
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route( "api/NewMobileApp/Login" )]
         [Authenticate, Secured]
@@ -22,7 +37,7 @@ namespace church.ccv.CCVRest.MobileApp
             // require login parameters
             if ( loginModel == null )
             {
-                return Common.Util.GenerateResponse( false, "Invalid login model", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.InvalidModel.ToString( ), null );
             }
 
 
@@ -31,26 +46,26 @@ namespace church.ccv.CCVRest.MobileApp
             var userLogin = userLoginService.GetByUserName( loginModel.Username );
             if ( userLogin == null || userLogin.EntityType == null )
             {
-                return Common.Util.GenerateResponse( false, "Invalid username", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.InvalidUsername.ToString( ), null );
             }
 
             // verify their password
             var component = AuthenticationContainer.GetComponent( userLogin.EntityType.Name );
             if ( component == null || component.IsActive == false )
             {
-                return Common.Util.GenerateResponse( false, "Invalid login type", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.InvalidLoginType.ToString( ), null );
             }
 
             if ( component.Authenticate( userLogin, loginModel.Password ) == false )
             {
-                return Common.Util.GenerateResponse( false, "Invalid password", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.InvalidPassword.ToString( ), null );
             }
 
 
             // ensure there's a person associated with this login.
             if ( userLogin.PersonId.HasValue == false )
             {
-                return Common.Util.GenerateResponse( false, "Invalid login type", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.InvalidLoginType.ToString( ), null );
             }
 
 
@@ -58,10 +73,25 @@ namespace church.ccv.CCVRest.MobileApp
             // trying to do a password reset on a stolen email address.
             if ( userLogin.IsConfirmed == false )
             {
-                return Common.Util.GenerateResponse( false, "Account unconfirmed", null );
+                return Common.Util.GenerateResponse( false, LoginResponse.AccountUnconfirmed.ToString( ), null );
             }
 
-            return Common.Util.GenerateResponse( true, "", null );
+            return Common.Util.GenerateResponse( true, LoginResponse.Success.ToString( ), null );
+        }
+
+
+        [Serializable]
+        public enum RegisterNewUserResponse
+        {
+            Success,
+
+            InvalidModel,
+            CreationError,
+
+            UsernameAlreadyExists,
+
+            PersonHasUsername,
+            PersonAlreadyExists
         }
 
         [System.Web.Http.HttpPost]
@@ -71,7 +101,7 @@ namespace church.ccv.CCVRest.MobileApp
         {
             if ( newUserModel == null )
             {
-                return Common.Util.GenerateResponse( false, "Invalid user model", null );
+                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.InvalidModel.ToString( ), null );
             }
 
             RockContext rockContext = new RockContext();
@@ -81,7 +111,7 @@ namespace church.ccv.CCVRest.MobileApp
             UserLogin userLogin = userLoginService.GetByUserName( newUserModel.Username );
             if ( userLogin != null )
             {
-                return Common.Util.GenerateResponse( false, "Username already exists", null );
+                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.UsernameAlreadyExists.ToString( ), null );
             }
 
             // Now make sure the person doesn't already exist
@@ -104,11 +134,11 @@ namespace church.ccv.CCVRest.MobileApp
                 // the person exists AND has a username, so say that
                 if ( personHasUsername == true )
                 {
-                    return Common.Util.GenerateResponse( false, "Person already has a username", null );
+                    return Common.Util.GenerateResponse( false, RegisterNewUserResponse.PersonHasUsername.ToString( ), null );
                 }
 
                 // otherwise let them know the person already exists
-                return Common.Util.GenerateResponse( false, "Person already exists", null );
+                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.PersonAlreadyExists.ToString( ), null );
             }
 
 
@@ -116,11 +146,11 @@ namespace church.ccv.CCVRest.MobileApp
             // create the person with their login
             if ( MobileAppService.RegisterNewPerson( newUserModel ) == false )
             {
-                return Common.Util.GenerateResponse( false, "Failed to create person", null );
+                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.CreationError.ToString( ), null );
             }
 
             // everything went ok!
-            return Common.Util.GenerateResponse( true, "", null );
+            return Common.Util.GenerateResponse( true, RegisterNewUserResponse.Success.ToString( ), null );
         }
     }
 }
