@@ -21,7 +21,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [KeyValueListField( "Selection", "A list of parameter names and values.", true, "", "Name", "Value", "", "" )]
     public partial class PageParameterSelection : Rock.Web.UI.RockBlock
     {
-        private string pageParameterName;
+        #region Fields
+
+        private string _pageParameterName;
+
+        #endregion
 
         #region Base Control Methods
 
@@ -33,12 +37,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
         {
             base.OnInit( e );
 
-            pageParameterName = GetAttributeValue( "PageParameterName" ).ToString();
+            _pageParameterName = GetAttributeValue( "PageParameterName" ).ToString();
 
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
             this.AddConfigurationUpdateTrigger( upnlContent );
-
         }
 
         /// <summary>
@@ -66,43 +69,38 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// Gets the selection as a dictionary to be included in the Lava.
         /// </summary>
         /// <returns>A dictionary of Titles with their Links.</returns>
-        private Dictionary<string, object> GetSelectionList()
+        private Dictionary<string, string> GetSelectionList()
         {
-            var properties = new Dictionary<string, object>();
-
             var selectionString = GetAttributeValue( "Selection" );
-
             if ( !string.IsNullOrWhiteSpace( selectionString ) )
             {
-                selectionString = selectionString.TrimEnd( '|' );
-                var selections = selectionString.Split( '|' )
-                                .Select( s => s.Split( '^' ) )
-                                .Select( p => new { Name = p[0], Value = p[1] } );
-
-                StringBuilder sbPageMarkup = new StringBuilder();
-                foreach ( var selection in selections )
+                var keyValues = selectionString.AsDictionaryOrNull();
+                if ( keyValues != null )
                 {
-                    properties.Add( selection.Name, selection.Value );
+                    return keyValues;
                 }
             }
-            return properties;
+
+            return new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Loads the drop downs.
+        /// </summary>
         private void LoadDropDowns()
         {
-            var selections = GetSelectionList();
-
             ddlSelection.Items.Clear();
             
             // First item should be blank
             ddlSelection.Items.Add( new ListItem() );
 ;
+            var selections = GetSelectionList();
             foreach ( var selection in selections )
             {
                 ddlSelection.Items.Add( new ListItem( selection.Key, selection.Value.ToString() ) );
             }
 
-            var selectionString = Request.QueryString[pageParameterName];
+            var selectionString = Request.QueryString[_pageParameterName];
             if ( selectionString != null )
             {
                 ddlSelection.SetValue( selectionString );
@@ -136,12 +134,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 var item = selection.Where( p => p.Value.ToString() == ddlSelection.SelectedValue ).FirstOrDefault();
 
-                // url decode so that the next step doesnt try to url encode a 2nd time
-                // Still researching what changed in Rock v7 upgrade that caused this to change.  Using this decode as bandaid
-                var decodedItemValue = item.Value.ToString().UrlDecode();
-
                 var queryString = HttpUtility.ParseQueryString( Request.QueryString.ToStringSafe() );
-                queryString.Set( pageParameterName, decodedItemValue );
+                queryString.Set( _pageParameterName, item.Value );
                 Response.Redirect( string.Format( "{0}?{1}", Request.Url.AbsolutePath, queryString ), false );
             }
         }
