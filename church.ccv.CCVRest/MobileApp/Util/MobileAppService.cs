@@ -5,8 +5,10 @@ using System.Linq;
 using church.ccv.Actions;
 using church.ccv.CCVRest.MobileApp.Model;
 using Rock;
+using Rock.Communication;
 using Rock.Data;
 using Rock.Model;
+using Rock.Security;
 using Rock.Web.Cache;
 
 namespace church.ccv.CCVRest.MobileApp
@@ -222,6 +224,70 @@ namespace church.ccv.CCVRest.MobileApp
                 // fail on exception
                 return false;
             }
+        }
+
+        public static bool SendForgotPasswordEmail( string personEmail )
+        {
+            // Define our constant values here in the function to keep them organized
+            // Note that even tho this function is "ForgotPassword", technically it sends them a list of Usernames in an email,
+            // which is why we use a Username Email Template
+            const string ForgotUserNamesEmailTemplateGuid = "113593FF-620E-4870-86B1-7A0EC0409208";
+            const string ConfirmAccountUrlRoute = "ConfirmAccount";
+
+            // setup merge fields
+            var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null, null );
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            mergeFields.Add( "ConfirmAccountUrl", publicAppRoot + ConfirmAccountUrlRoute );
+            var results = new List<IDictionary<string, object>>();
+
+            var rockContext = new RockContext();
+            var personService = new PersonService( rockContext );
+            var userLoginService = new UserLoginService( rockContext );
+
+            // get all the accounts associated with the person(s) using this email address
+            bool hasAccountWithPasswordResetAbility = false;
+            List<string> accountTypes = new List<string>();
+
+            foreach ( Person person in personService.GetByEmail( personEmail )
+                .Where( p => p.Users.Any() ) )
+            {
+                var users = new List<UserLogin>();
+                foreach ( UserLogin user in userLoginService.GetByPersonId( person.Id ) )
+                {
+                    if ( user.EntityType != null )
+                    {
+                        var component = AuthenticationContainer.GetComponent( user.EntityType.Name );
+                        if ( component.SupportsChangePassword )
+                        {
+                            users.Add( user );
+                            hasAccountWithPasswordResetAbility = true;
+                        }
+
+                        accountTypes.Add( user.EntityType.FriendlyName );
+                    }
+                }
+
+                var resultsDictionary = new Dictionary<string, object>();
+                resultsDictionary.Add( "Person", person );
+                resultsDictionary.Add( "Users", users );
+                results.Add( resultsDictionary );
+            }
+
+            // if we found user accounts that were valid, send the email
+            if ( results.Count > 0 && hasAccountWithPasswordResetAbility )
+            {
+                mergeFields.Add( "Results", results.ToArray() );
+
+                var emailMessage = new RockEmailMessage( new Guid( ForgotUserNamesEmailTemplateGuid ) );
+                emailMessage.AddRecipient( new RecipientData( personEmail, mergeFields ) );
+                emailMessage.CreateCommunicationRecord = false;
+                emailMessage.Send();
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

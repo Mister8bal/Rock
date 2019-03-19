@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using church.ccv.CCVRest.MobileApp.Model;
+using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
@@ -151,6 +152,36 @@ namespace church.ccv.CCVRest.MobileApp
 
             // everything went ok!
             return Common.Util.GenerateResponse( true, RegisterNewUserResponse.Success.ToString( ), null );
+        }
+
+
+        [Serializable]
+        public enum ForgotPasswordResponse
+        {
+            Success,
+            EmailNotFound,
+            InvalidEmail
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/ForgotPassword" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage ForgotPassword( string emailAddress )
+        {
+            // Ignore blank  or invalid email addresses
+            if ( string.IsNullOrWhiteSpace( emailAddress ) == true || emailAddress.IsValidEmail( ) == false )
+            {
+                return Common.Util.GenerateResponse( false, ForgotPasswordResponse.InvalidEmail.ToString(), null );
+            }
+
+            // try building and sending the email--if it isn't found, this will return false
+            if ( MobileAppService.SendForgotPasswordEmail( emailAddress ) )
+            {
+                return Common.Util.GenerateResponse( false, ForgotPasswordResponse.Success.ToString(), null );
+            }
+
+            // notify them this email wasn't attached to any logins
+            return Common.Util.GenerateResponse( false, ForgotPasswordResponse.EmailNotFound.ToString(), null );
         }
     }
 }

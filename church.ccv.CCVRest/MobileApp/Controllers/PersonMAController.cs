@@ -32,7 +32,6 @@ namespace church.ccv.CCVRest.MobileApp
                 .Select( a => a.PersonId )
                 .FirstOrDefault();
 
-            ResponseModel response = new ResponseModel();
             if ( personId.HasValue )
             {
                 MobileAppPersonModel personModel = MobileAppService.GetMobileAppPerson( personId.Value );
