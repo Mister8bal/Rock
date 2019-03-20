@@ -57,21 +57,29 @@ Non Standard Service Times - Grid style (Christmas / Easter)
 
 	{% for time in times %}
 		{% assign timekv = time | PropertyToKeyValue %}
+        {% assign split = timekv.Key | Split: ' ' %}
 
-		{% case timekv.Key %}
+		{% case split[0] %}
 			{% when 'Monday' %}
-				{% assign mondayTimesString = mondayTimesString | Append:timekv.Value | Append:';' %}
+				{% assign mondayDate = timekv.Key %}
+                {% assign mondayTimesString = mondayTimesString | Append:timekv.Value | Append:';' %}
 			{% when 'Tuesday' %}
+                {% assign tuesdayDate = timekv.Key %}
 				{% assign tuesdayTimesString = tuesdayTimesString | Append:timekv.Value | Append:';' %}
             {% when 'Wednesday' %}
+                {% assign wednesdayDate = timekv.Key %}
                 {% assign wednesdayTimesString = wednesdayTimesString | Append:timekv.Value | Append:';' %}
 			{% when 'Thursday' %}
+                {% assign thursdayDate = timekv.Key %}
                 {% assign thursdayTimesString = thursdayTimesString | Append:timekv.Value | Append:';' %}
 			{% when 'Friday' %}
+                {% assign fridayDate = timekv.Key %} 
                 {% assign fridayTimesString = fridayTimesString | Append:timekv.Value | Append:';' %}       
 			{% when 'Saturday' %}
+                {% assign saturdayDate = timekv.Key %}
                 {% assign saturdayTimesString = saturdayTimesString | Append:timekv.Value | Append:';' %}
 			{% when 'Sunday' %}
+                {% assign sundayDate = timekv.Key %}
                 {% assign sundayTimesString = sundayTimesString | Append:timekv.Value | Append:';' %}
         {% endcase %}
     {% endfor %}
@@ -81,7 +89,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endcomment %}
 
     {% if thursdayTimesString != '' %}
-        <strong>Thursday, 12/20</strong>
+        <strong>{{ thursdayDate }}</strong>
         <ul class="list-inline">
             {% assign thursdayTimes = thursdayTimesString | Split:';' %}
             {% for thursdayTime in thursdayTimes %}
@@ -91,7 +99,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if fridayTimesString != '' %}
-        <strong>Friday, 12/21</strong>
+        <strong>{{ fridayDate }}</strong>
         <ul class="list-inline">
             {% assign fridayTimes = fridayTimesString | Split:';' %}
             {% for fridayTime in fridayTimes %}
@@ -101,7 +109,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if saturdayTimesString != '' %}
-        <strong>Saturday, 12/22</strong>
+        <strong>{{ saturdayDate }}</strong>
         <ul class="list-inline">
             {% assign saturdayTimes = saturdayTimesString | Split:';' %}
             {% for saturdayTime in saturdayTimes %}
@@ -111,7 +119,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if sundayTimesString != '' %}
-        <strong>Sunday, 12/23</strong>
+        <strong>{{ sundayDate }}</strong>
         <ul class="list-inline">
             {% assign sundayTimes = sundayTimesString | Split:';' %}
             {% for sundayTime in sundayTimes %}
@@ -121,7 +129,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
         {% if mondayTimesString != '' %}
-        <strong>Monday, 12/24</strong>
+        <strong>{{ mondayDate }}</strong>
         <ul class="list-inline">
             {% assign mondayTimes = mondayTimesString | Split:';' %}
             {% for mondayTime in mondayTimes %}
@@ -131,7 +139,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if tuesdayTimesString != '' %}
-        <strong>Tuesday</strong>
+        <strong>{{ tuesdayDate }}</strong>
         <ul class="list-inline">
             {% assign tuesdayTimes = tuesdayTimesString | Split:';' %}
             {% for tuesdayTime in tuesdayTimes  %}
@@ -141,7 +149,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endif %}
 
     {% if wednesdayTimesString != '' %}
-        <strong>Wednesday</strong>
+        <strong>{{ wednesdayDate }}</strong>
         <ul class="list-inline">
         {% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
             {% for wednesdayTime in wednesdayTimes %}
