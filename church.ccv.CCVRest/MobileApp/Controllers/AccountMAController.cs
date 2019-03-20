@@ -177,7 +177,7 @@ namespace church.ccv.CCVRest.MobileApp
             // try building and sending the email--if it isn't found, this will return false
             if ( MobileAppService.SendForgotPasswordEmail( emailAddress ) )
             {
-                return Common.Util.GenerateResponse( false, ForgotPasswordResponse.Success.ToString(), null );
+                return Common.Util.GenerateResponse( true, ForgotPasswordResponse.Success.ToString(), null );
             }
 
             // notify them this email wasn't attached to any logins

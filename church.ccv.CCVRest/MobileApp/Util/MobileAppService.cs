@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using church.ccv.Actions;
+using church.ccv.CCVRest.Common;
 using church.ccv.CCVRest.MobileApp.Model;
 using Rock;
 using Rock.Communication;
@@ -288,6 +289,132 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return false;
+        }
+
+        // This is the Id for the attendance group created in the Check-In system within Rock. It should never change.
+        const int Attendance_GroupId_CCVMobileAttendance = 2592301;
+
+        public static bool HasAttendanceRecord( PersonAlias personAlias )
+        {
+            RockContext rockContext = new RockContext();
+            AttendanceService attendanceService = new AttendanceService( rockContext );
+
+            var dt = DateTime.Now;
+            dt = TimeZoneInfo.ConvertTime( dt, RockDateTime.OrgTimeZoneInfo );
+
+            return Common.Util.HasAttendanceRecord( personAlias.PersonId, Attendance_GroupId_CCVMobileAttendance, dt, attendanceService, rockContext );
+        }
+
+        public static bool SaveAttendanceRecord( PersonAlias personAlias, int? campusId, string host, string userAgent )
+        {
+            RockContext rockContext = new RockContext();
+            AttendanceService attendanceService = new AttendanceService( rockContext );
+            PersonAliasService paService = new PersonAliasService( rockContext );
+
+            var dt = DateTime.Now;
+            dt = TimeZoneInfo.ConvertTime( dt, RockDateTime.OrgTimeZoneInfo );
+
+            // attempt to save the record. if we did, this will return true
+            if ( Util.CreateAttendanceRecord( personAlias.PersonId, campusId, Attendance_GroupId_CCVMobileAttendance, dt, attendanceService, paService, rockContext ) )
+            {
+                // log the interaction
+                AddMobileAppAttendanceInteraction( personAlias, dt, host, userAgent, rockContext );
+
+                rockContext.SaveChanges();
+
+                return true;
+            }
+            // if a record already existed, false will be returned
+            else
+            {
+                return false;
+            }
+        }
+
+        private static void AddMobileAppAttendanceInteraction( PersonAlias personAlias, DateTime interactionDateTime, string host, string userAgent, RockContext rockContext )
+        {
+            // Interactions work as follows:
+            // 1. Create an Interaction Medium (or pick an existing one) in the Defined Type here: https://rock.ccv.church/page/119?definedTypeId=510
+            // 2. In SQL, create an Interaction Channel (ensure you set UsesSession to 1) that is bound to the Medium in Step 1.
+            // 3. In SQL, create an Interaction Component that is bound to the Interaction Channel in Step 2.
+            // 4. Make note of the InteractionComponent Id in Step 3.
+
+            // To use:
+            // The relationship is as follows:
+            // Interaction points to an InteractionComponent (created above) and an InteractionSession that's created with each Interaction.
+            // The InteractionSession points to an InteractionDeviceType, which can either be an existing one, or new, depending on whether an appropriate DeviceType can be found.
+            // Typically each new Interaction use case (like this Mobile App Attendance Interaction) defines its own format for the InteractionDeviceType, so they'll be unique within the scope of
+            // the interaction use case.
+            //
+            // What follows is a typical example of recording one.
+            // 1. Check for a useable InteractionDeviceType. If one isn't found, create it.
+            // 2. Create the InteractionSession and give it the InteractionDeviceType. This will always happen.
+            // 3. Create the Interaction and give it the InteractionSession and InteractionComponent. (The InteractionComponent Id should be hardcoded)
+
+
+            // Hardcode constant values we use for Mobile App attendance interaction. 
+            // There isn't a place in Rock that centralizes this stuff, so this is as close to centralized as is possible.
+            const string InteractionDeviceType_Name = "Mobile App";
+            const string InteractionDeviceType_ClientType = "Mobile";
+            const string InteractionDeviceType_Application = "CCV Mobile App";
+
+            const string InteractionSession_SessionData = "Mobile App Attendance";
+
+            const string Interaction_Operation = "Attend";
+
+            const int InteractionComponent_Id = 154114;
+
+            // first, see if there's already a device type matching this requester - We store device types 
+            // with our defined InteractionDeviceTypeData above, and the userAgent string. That's it.
+            InteractionDeviceTypeService interactionDeviceTypeService = new InteractionDeviceTypeService( rockContext );
+            var interactionDeviceType = interactionDeviceTypeService.Queryable()
+                                                                    .Where( a =>
+                                                                            a.Name == InteractionDeviceType_Name &&
+                                                                            a.ClientType == InteractionDeviceType_ClientType &&
+                                                                            a.DeviceTypeData == userAgent &&
+                                                                            a.Application == InteractionDeviceType_Application &&
+                                                                            a.OperatingSystem == null )
+                                                                    .FirstOrDefault();
+
+            // if we didn't get one back, create one.
+            if ( interactionDeviceType == null )
+            {
+                interactionDeviceType = new InteractionDeviceType
+                {
+                    Name = InteractionDeviceType_Name,
+                    ClientType = InteractionDeviceType_ClientType,
+                    DeviceTypeData = userAgent,
+                    Application = InteractionDeviceType_Application,
+                    CreatedByPersonAliasId = personAlias.Id
+                };
+
+                interactionDeviceTypeService.Add( interactionDeviceType );
+            }
+
+
+            // now create the interaction session
+            InteractionSessionService interactionSessionService = new InteractionSessionService( rockContext );
+            InteractionSession interactionSession = new InteractionSession
+            {
+                SessionData = InteractionSession_SessionData,
+                DeviceTypeId = interactionDeviceType.Id,
+                IpAddress = host,
+                CreatedByPersonAliasId = personAlias.Id
+            };
+            interactionSessionService.Add( interactionSession );
+
+
+            // finally, add the interaction itself
+            InteractionService interactionService = new InteractionService( rockContext );
+            Interaction thisInteraction = new Interaction()
+            {
+                Operation = Interaction_Operation,
+                InteractionDateTime = interactionDateTime,
+                PersonAliasId = personAlias.Id,
+                InteractionComponentId = InteractionComponent_Id,
+                InteractionSessionId = interactionSession.Id
+            };
+            interactionService.Add( thisInteraction );
         }
     }
 }
