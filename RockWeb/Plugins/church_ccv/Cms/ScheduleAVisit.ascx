@@ -41,7 +41,7 @@
                 </div>
 
                 <%-- Adults Form --%>
-                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="true">
+                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="false">
 
                     <asp:Panel ID="pnlAdultsForm" runat="server">
                         <div class="form-header">
@@ -56,15 +56,15 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="lunchbox" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="henderson" />
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" Text="l@safety.netz" />
                                 </div>
                             </div>
                             <div class="form-row">
@@ -134,19 +134,43 @@
                 </asp:Panel>
 
                 <%-- Children Form --%>
-                <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="false">
+                <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="true">
 
-                    <asp:Panel ID="pnlChildrenQuestion" runat="server" CssClass="children-question">
+                    <asp:Panel ID="pnlChildrenExisting" runat="server" Visible="false">
+                        <div class="form-header">
+                            <h2>The following children are currently associated with you</h2>
+                            <p>Need different content text</p>
+                        </div>
+                        <div class="existing-children-vertical">
+
+                            <asp:Literal ID="ltlExistingChildrenVertical" runat="server" />
+
+                        </div>
+                        <div class="form">
+                            <div class="form-row row-centered">
+                                <div class="form-field existing-children-buttons">
+                                    <asp:Button ID="btnAddAnotherChild" runat="server" OnClick="ShowChildrenForm_Click" Text="Add another child?" CssClass="btn btn-default" />
+                                    <asp:Button ID="btnNotMyChildren" runat="server" OnClick="ShowChildrenForm_Click" Text="Not my children" CssClass="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </asp:Panel>
+
+
+                    <asp:Panel ID="pnlChildrenQuestion" runat="server" CssClass="children-question" Visible="false">
                         <div class="form-header">
                             <h2>Will you be bringing children?</h2>
                         </div>
                         <div class="form-navigation">
-                            <asp:Button ID="btnChildrenYes" runat="server" OnClick="btnChildrenYes_Click" Text="Yes" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnChildrenYes" runat="server" OnClick="ShowChildrenForm_Click" Text="Yes" CssClass="btn btn-primary" />
                             <asp:Button ID="btnChildrenNo" runat="server" OnClick="btnChildrenNext_Click" Text="No" CssClass="btn btn-primary" />
                         </div>
                     </asp:Panel>
 
-                    <asp:Panel ID="pnlChildrenForm" runat="server" CssClass="children-form" Visible="false">
+                    <asp:Panel ID="pnlChildrenForm" runat="server" CssClass="children-form" Visible="true">
+
+                        <asp:HiddenField ID="hfAllergiesFormState" runat="server" ClientIDMode="Static" />
+                        <asp:HiddenField ID="hfGenderFormState" runat="server" ClientIDMode="Static" />
 
                         <div class="form-header">
                             <h2>Child Pre-Register</h2>
@@ -154,6 +178,11 @@
                         </div>
 
                         <div class="form">
+                            <div class="form-row">
+                                <div class="existing-children-horizontal">
+                                    <asp:Literal ID="ltlExistingChildrenHorizontal" runat="server" />
+                                </div>
+                            </div>
                             <div class="form-row">
                                 <div></div>
                                 <p class="required-key">required</p>
@@ -177,10 +206,16 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:DatePartsPicker ID="dppChildBDay" runat="server" Label="Birthday" OnSelectedDatePartsChanged="dppChildBDay_SelectedDatePartsChanged" />
+                                    <Rock:RockDropDownList ID="ddlChildBdayYear" runat="server" Label="Year" ClientIDMode="Static" OnSelectedIndexChanged="ddlChildBdayYear_SelectedIndexChanged" AutoPostBack="true" />
                                 </div>
+                                <div class="form-field">
+                                    <Rock:RockDropDownList ID="ddlChildBdayMonth" runat="server" Label="Month" OnSelectedIndexChanged="ddlChildBdayMonth_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
+                                </div>
+                                <div class="form-field">
+                                    <Rock:RockDropDownList ID="ddlChildBdayDay" runat="server" Label="Day" ClientIDMode="Static" Visible="false" />
+                                 </div>
                             </div>
-                            <h4 class="header-centered">Optional:</h4>
+                            <h4 class="row-centered">Optional:</h4>
                             <div class="child-optional">
                                 <div class="form-row">
                                     <div class="form-field">
@@ -198,10 +233,10 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-field field-allergies">                                        
-                                        <Rock:RockTextBox ID="tbAllergies" runat="server" Placeholder="List Allergies:" CssClass="allergies" TextMode="MultiLine" Rows="3" />
+                                        <Rock:RockTextBox ID="tbAllergies" runat="server" ClientIDMode="Static" Placeholder="List Allergies:" CssClass="allergies hidden" TextMode="MultiLine" Rows="3" />
                                     </div>
                                     <div class="form-field field-grade">
-                                        <Rock:RockDropDownList ID="ddlChildGrade" runat="server" Label="Grade" />
+                                        <Rock:GradePicker ID="gpChildGrade" runat="server" Label="Grade" />
                                     </div>
                                 </div>
                             </div>
@@ -241,7 +276,7 @@
 
                             <asp:Button ID="btnEditVisitDetails" runat="server" Text="Edit details" OnClick="lbEditVisitDetails_Click" />
                         </div>
-                        <div class="submit-survey header-centered">
+                        <div class="submit-survey row-centered">
                             <h4>How did you hear about CCV?</h4>
                             <Rock:RockRadioButtonList ID="rblSurvey" runat="server" RepeatLayout="Flow" RepeatDirection="Horizontal" ClientIDMode="Static">
                                 <asp:ListItem>Drive By / New to area</asp:ListItem>
@@ -285,5 +320,52 @@
     </ContentTemplate>
 </asp:UpdatePanel>
 
-<script src="<%= RockPage.ResolveRockUrl( "~/Plugins/church_ccv/Cms/scripts/schedule-a-visit.js", true ) %>"></script>
+<script>
+    function pageLoad() {
+        restoreFormState();
+
+        $('#rblAllergies').on('change', function () {
+            // get selected value
+            var value = $('#rblAllergies input:checked').val();
+
+            // hide/show text box depending on selected val
+            if (value == "Yes") {
+                $('#tbAllergies').removeClass('hidden');
+                $('#hfAllergiesFormState').attr('value', 'Yes');
+            }
+            else {
+                $('#tbAllergies').addClass('hidden');
+                $('#hfAllergiesFormState').attr('value', 'No');
+
+            }
+
+            // toggle active class to change color of selected item
+            $('#rblAllergies input[type="radio"]:checked').parents('label').addClass('active');
+            $('#rblAllergies input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+        });
+
+        $('#rblGender').on('change', function () {
+            // toggle active class to change color of selected item
+            $('#rblGender input[type="radio"]:checked').parents('label').addClass('active');
+            $('#rblGender input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+        });
+    }
+
+    function restoreFormState() {
+        var allergiesValue = $('#hfAllergiesFormState').val();
+
+        if (allergiesValue == 'Yes') {
+            $('#tbAllergies').removeClass('hidden');
+        }
+        else if (allergiesValue == 'No') {
+            $('#tbAllergies').addClass('hidden');
+        }
+
+        $('#rblAllergies input[type="radio"]:checked').parents('label').addClass('active');
+        $('#rblAllergies input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+
+        $('#rblGender input[type="radio"]:checked').parents('label').addClass('active');
+        $('#rblGender input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+    }
+</script>
 

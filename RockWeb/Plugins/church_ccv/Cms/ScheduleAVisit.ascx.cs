@@ -53,11 +53,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
             if ( !Page.IsPostBack )
             {
                 _visit = new Visit();
+                _visit.Children = new List<Child>();
 
                 WriteVisitToViewState();
 
-                // bind campuses using block setting
+                // bind dropdowns
                 BindCampuses();
+                BindBirthdayDropDowns();
             }
             else
             {
@@ -77,6 +79,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 nbMessage.Text = "Error loading visit information from viewstate.";
             }
         }
+
+
 
         /// <summary>
         /// Handles the BlockUpdated event of the control.
@@ -361,15 +365,21 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             if ( personQry.Count() > 0)
             {
-                // person(s) with matching info found
-                newPerson = false;
-
                 // reset radio button list
                 rblExisting.Items.Clear();
 
                 // add matching people to radio button list
                 foreach ( var prsn in personQry )
                 {
+                    if (prsn.Age < 18)
+                    {
+                        // person found is under the age of 18, skip
+                        continue;
+                    }
+
+                    // person(s) with matching info found
+                    newPerson = false;
+
                     string maskedEmail = MaskEmail( prsn.Email );
 
                     string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, maskedEmail );
@@ -388,13 +398,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 _visit.LastName = tbAdultLastName.Text;
                 _visit.Email = tbAdultEmail.Text;
 
+                _visit.SpouseFirstName = tbSpouseFirstName.Text;
+                _visit.SpouseLastName = tbSpouseLastName.Text;
+
                 // set active tab to children
                 _visit.ActiveTab = FormTab.Children;
             }
-
-            _visit.SpouseFirstName = tbSpouseFirstName.Text;
-            _visit.SpouseLastName = tbSpouseLastName.Text;
-
 
             // show next form panel
             if (newPerson)
@@ -423,9 +432,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             WriteVisitToViewState();
         }
-
         
-
+        /// <summary>
+        /// Handles btnAdultsExistingNext click event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void btnAdultsExistingNext_Click( object sender, EventArgs e )
         {
             bool hasError = true;
@@ -445,6 +457,59 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.FirstName = person.FirstName;
                     _visit.LastName = person.LastName;
                     _visit.Email = person.Email;
+                    _visit.MobileNumber = person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
+
+                    // populate spouse info
+                    _visit.SpouseFirstName = person.GetSpouse().FirstName;
+                    _visit.SpouseLastName = person.GetSpouse().LastName;
+
+                    // populate children if any
+                    var familyMembers = person.GetFamilyMembers( false, null );
+
+                    if (familyMembers.Count() > 0 )
+                    {
+                        string childNames = "";
+
+                        foreach ( var familyMember in familyMembers )
+                        {
+                            // check if they are a child
+                            var groupTypeRole = familyMember.Person.GetFamilyRole();
+
+                            if ( groupTypeRole != null && groupTypeRole.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD.AsGuid() )
+                            {
+                                // child found
+                                Person child = familyMember.Person;
+                                child.LoadAttributes();
+
+                                // add child to existing children ui control
+                                childNames += String.Format("<div class=\"existing-child\"><span>{0}</span ></div>", child.NickName);
+
+                                // populate new child object
+                                Child newChild = new Child();
+
+                                newChild.PersonId = child.Id;
+                                newChild.FirstName = child.FirstName;
+                                newChild.LastName = child.LastName;
+                                newChild.Gender = child.Gender;
+                                newChild.Birthday = child.BirthDate;
+                                newChild.Grade = child.GradeFormatted;
+                                newChild.Allergies = child.GetAttributeValue( "Allergy" );
+
+                                // add child to visit
+                                _visit.Children.Add( newChild );
+
+                                // hide bringing children question
+                                _visit.BringingChildren = true;
+                            }
+                        }
+
+                        if (childNames.IsNotNullOrWhitespace())
+                        {
+                            // add childnames to existing children panel control
+                            ltlExistingChildrenVertical.Text = childNames;
+                            ltlExistingChildrenHorizontal.Text = childNames;
+                        }
+                    }
 
                     hasError = false;
                 }
@@ -458,6 +523,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 _visit.LastName = tbAdultLastName.Text;
                 _visit.Email = tbAdultEmail.Text;
 
+                _visit.SpouseFirstName = tbSpouseFirstName.Text;
+                _visit.SpouseLastName = tbSpouseLastName.Text;
+
                 hasError = false;
             }
 
@@ -466,19 +534,34 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // Navigate to children tab
                 _visit.ActiveTab = FormTab.Children;
 
+                // set children question panel as default
+                Panel panelToShow = pnlChildrenQuestion;
+
                 // enable adults progress button
                 SetProgressButtonsState();
 
                 if ( _visit.BringingChildren )
                 {
-                    // show children form
-                    ShowFormPanel( pnlChildren, pnlChildrenForm );
+                    if ( _visit.Children.Count > 0)
+                    {
+                        // show next button in children panel
+                        btnChildrenNext.Visible = true;
+
+                        // ensure the add another child in bottom nav is hidden
+                        btnChildrenAddAnother.Visible = false;
+
+                        // show existing children panel
+                        panelToShow = pnlChildrenExisting;
+                    }
+                    else
+                    {
+                        // show children form
+                        panelToShow = pnlChildrenForm;
+                    }
                 }
-                else
-                {
-                    // show children question
-                    ShowFormPanel( pnlChildren, pnlChildrenQuestion );
-                }
+ 
+                // show children question
+                ShowFormPanel( pnlChildren, panelToShow );
 
                 nbAlertExisting.Text = "";
             }
@@ -488,45 +571,147 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 nbAlertExisting.Text = "error";
             }
 
+            WriteVisitToViewState();
         }
 
         #endregion
 
         #region Children Panel Events
 
-        protected void btnChildrenYes_Click( object sender, EventArgs e )
+        protected void ShowChildrenForm_Click( object sender, EventArgs e )
         {
-            // update visit object and save it to viewstate
-            _visit.BringingChildren = true;
+            Button button = sender as Button;
 
-            WriteVisitToViewState();
+            // default to children form in case something goes wrong
+            Panel panelToShow = pnlChildrenForm;
+
+            if (button == btnNotMyChildren )
+            {
+                if (_visit.Children != null)
+                {
+                    // personclicked not my child, clear out child list to build new list
+                    _visit.Children.Clear();
+                }
+
+                // change to children question panel
+                panelToShow = pnlChildrenQuestion;
+                btnChildrenAddAnother.Visible = false;
+                btnChildrenNext.Visible = false;
+            }
+            else
+            {
+                // update visit object and save it to viewstate
+                _visit.BringingChildren = true;
+            }
 
             // unhide nav buttons
             btnChildrenAddAnother.Visible = true;
             btnChildrenNext.Visible = true;
 
-            ShowFormPanel( pnlChildren, pnlChildrenForm );
+            ShowFormPanel( pnlChildren, panelToShow );
+
+            WriteVisitToViewState();
         }
 
+        protected void btnChildrenAddAnother_Click( object sender, EventArgs e )
+        {
+            // update mobile number in visit object
+            _visit.MobileNumber = tbMobileNumber.Text;
 
+            Child newChild = new Child();
+
+            newChild.FirstName = tbChildFirstName.Text;
+            newChild.LastName = tbChildLastName.Text;
+            //newChild.Birthday = dppChildBDay.SelectedDate;
+
+            if ( rblAllergies.SelectedValue == "Yes" )
+            {
+                newChild.Allergies = tbAllergies.Text;
+            }
+
+            if (rblGender.SelectedValue.IsNotNullOrWhitespace())
+            {
+                switch ( rblGender.SelectedValue )
+                {
+                    case "Boy":
+                        newChild.Gender = Gender.Male;
+                        break;
+                    case "Girl":
+                        newChild.Gender = Gender.Female;
+                        break;
+                    default:
+                        newChild.Gender = Gender.Unknown;
+                        break;
+                }
+            }
+
+            newChild.Grade = gpChildGrade.SelectedValue;
+
+            _visit.Children.Add( newChild );
+
+            ltlExistingChildrenHorizontal.Text += String.Format( "<div class=\"existing-child\"><span>{0}</span ></div>", newChild.FirstName );
+
+            // clear the form
+            tbChildFirstName.Text = "";
+            tbChildLastName.Text = "";
+            //dppChildBDay.SelectedDate = "";
+            rblAllergies.ClearSelection();
+            rblAllergies.Items[0].Attributes.Add( "class", "radio-inline" );
+            rblAllergies.Items[1].Attributes.Add( "class", "radio-inline" );
+            tbAllergies.Text = "";
+            rblGender.ClearSelection();
+            gpChildGrade.ClearSelection();
+        }
 
         protected void btnChildrenNext_Click( object sender, EventArgs e )
         {
+            Button button = sender as Button;
 
+            if ( button == btnChildrenNo)
+            {
+                // update visit 
+                _visit.BringingChildren = false;
+            }
+
+            WriteVisitToViewState();
 
             // change to submit
             ShowFormPanel( pnlSubmit, null );
         }
 
-        protected void btnChildrenAddAnother_Click( object sender, EventArgs e )
+        protected void ddlChildBdayYear_SelectedIndexChanged( object sender, EventArgs e )
         {
-
+            if ( ddlChildBdayYear.SelectedValue.IsNotNullOrWhitespace())
+            {
+                ddlChildBdayMonth.Visible = true;
+            }
+            else
+            {
+                ddlChildBdayMonth.Visible = false;
+                ddlChildBdayDay.Visible = false;
+            }
         }
 
-        protected void dppChildBDay_SelectedDatePartsChanged( object sender, EventArgs e )
+        protected void ddlChildBdayMonth_SelectedIndexChanged( object sender, EventArgs e )
         {
+            // TODO: Figure out if leap year is working
 
+
+            // reset day drop down
+            ddlChildBdayDay.Items.Clear();
+            ddlChildBdayDay.Items.Add( new ListItem( "" ) );
+
+            // get days in month      
+            int daysInMonth = DateTime.DaysInMonth( ddlChildBdayYear.SelectedValue.AsInteger(), ddlChildBdayMonth.SelectedValue.AsInteger() );
+
+            for ( int i = 1; i <= daysInMonth; i++ )
+            {
+                ddlChildBdayDay.Items.Add( new ListItem( i.ToString() ) );
+            }
+
+            ddlChildBdayDay.Visible = true;
         }
+
 
         #endregion
 
@@ -675,6 +860,33 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
         }
 
+        private void BindBirthdayDropDowns()
+        {
+            // reset the dropdownlists
+            ddlChildBdayMonth.Items.Clear();
+            ddlChildBdayMonth.Items.Add( new ListItem("") );
+            ddlChildBdayDay.Items.Clear();
+            ddlChildBdayDay.Items.Add( new ListItem( "" ) );
+            ddlChildBdayYear.Items.Clear();
+            ddlChildBdayYear.Items.Add( new ListItem( "" ) );
+
+            // create date object to work with, year/day doesnt matter, just need January)
+            DateTime date = new DateTime( 2019, 1, 1 );
+
+            // add months to dropdown
+            for ( int i = 0; i < 12; i++ )
+            {
+                ddlChildBdayMonth.Items.Add( new ListItem( date.ToString( "MMMM" ), date.Month.ToString() ) );
+                date = date.AddMonths( 1 );
+            }
+
+            // add past 50 years to year dropdown..overkill? lol
+            for ( int i = 0; i < 50; i++ )
+            {
+                ddlChildBdayYear.Items.Add( new ListItem( DateTime.Now.AddYears(-i).Year.ToString() ) );
+            }
+        }
+
         #endregion
 
         #region Helper Methods
@@ -705,6 +917,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             pnlAdultsForm.Visible = false;
             pnlAdultsExisting.Visible = false;
             pnlChildren.Visible = false;
+            pnlChildrenExisting.Visible = false;
             pnlChildrenQuestion.Visible = false;
             pnlChildrenForm.Visible = false;
             pnlSubmit.Visible = false;
@@ -764,11 +977,17 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 divSpouse.Attributes["class"] = "";
             }
 
+            // set state of children form
             if ( _visit.BringingChildren )
             {
                 btnChildrenAddAnother.Visible = true;
                 btnChildrenNext.Visible = true;
             }
+            else
+            {
+                btnChildrenAddAnother.Visible = false;
+                btnChildrenNext.Visible = false;
+            }               
         }
 
         /// <summary>
@@ -972,9 +1191,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public int PersonId { get; set; }
-            public string Birthday { get; set; }
+            public DateTime? Birthday { get; set; }
             public string Allergies { get; set; }
-            public string Gender { get; set; }
+            public Gender Gender { get; set; }
             public string Grade { get; set; }
 
             public Child()
@@ -990,6 +1209,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Children,
             Submit
         }
+
+
 
     }
 }

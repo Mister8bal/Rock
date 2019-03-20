@@ -29,8 +29,11 @@
     border-radius: 50%;
 }
 
+/* !important needed to override some id targetted styling*/
 .active {
-    background-color: #7A1315;
+    background-color: #7A1315 !important;
+    border-color: #7A1315 !important;
+    color: #FFFFFF !important;
 }
 
 .step h5 {
@@ -83,7 +86,7 @@
     margin: 0 10px;
 }
 
-.header-centered {
+.row-centered {
     text-align: center;
 }
 
@@ -124,6 +127,36 @@
 
 
 /* Children Form */
+.existing-children-vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.existing-children-vertical .existing-child {
+    font-family: heebo;
+    color: #7c7c7c;
+    font-weight: 900;
+    padding: 10px 0;
+}
+
+.existing-children-buttons {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0 10px 0;
+}
+
+.existing-children-horizontal {
+    display: flex;
+}
+
+.existing-children-horizontal .existing-child {
+    background-color: #ebebeb;
+    padding: 0 10px;
+    border-radius: 4px;
+}
+
 .child-optional {
     background-color: #ebebeb;
     padding: 0 10px 20px 10px;
@@ -134,7 +167,7 @@
 }
 
 #rblAllergies .radio-inline:first-of-type, #rblGender .radio-inline:first-of-type {
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 #rblAllergies label, #rblGender label, #rblSurvey label {
@@ -154,6 +187,12 @@
     height: 50px;
     width: 120px;
     padding: 12px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0;
+
 }
 
 #rblSurvey label {
@@ -196,5 +235,12 @@
 
 .confirm-detail {
     padding: 5px 0;
+}
+
+
+/* overrides */
+.btn {
+    min-width: 150px;
+    margin: 0 10px;
 }
 
