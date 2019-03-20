@@ -114,12 +114,12 @@ namespace church.ccv.CCVRest.CCVLive
 
             /** 
              * Instantiate the interaction
-             */ 
+             */
             Interaction thisInteraction = new Interaction()
             {
                 Operation = attendanceModel.Operation,
                 InteractionDateTime = dt,
-                PersonAliasId = person.Id,
+                PersonAliasId = person.PrimaryAliasId,
                 InteractionComponentId = attendanceModel.InteractionComponentId,
                 InteractionSessionId = attendanceModel.InteractionSessionId
             };
