@@ -234,6 +234,10 @@
     color: #777777;
 }
 
+.service-times strong {
+    font-weight: 700;
+}
+
 .icon-details {
     display: flex;
     justify-content: space-around;
