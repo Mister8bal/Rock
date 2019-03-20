@@ -37,7 +37,7 @@
 .title img {
     margin: 0 auto;
     width: unset;
-    width: 80%;
+    width: 70%;
 }
 
 .title h3 {
@@ -320,6 +320,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-left: 5px;
 }
 
 .kids img {
@@ -334,6 +335,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-right: 5px;
 }
 
 .students img {
@@ -363,12 +365,20 @@
         flex-direction: column;
     }
 
+    .kids {
+        margin-left: 0;
+    }
+
     .kids, .students {
         width: 100%;
     }
 
     .kids-students .btn {
         width: 85%;
+    }
+
+    .students {
+        margin-right: 0;
     }
 
     .students img {
@@ -395,7 +405,7 @@
 .share {
     text-align: center;
     padding: 40px 20px;
-    width: 50%;
+    width: 40%;
     margin: auto;
 }
 
