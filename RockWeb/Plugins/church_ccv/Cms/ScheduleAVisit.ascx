@@ -21,13 +21,13 @@
                 <div class="form-progress">
                     <div class="step">
 
-                        <asp:Button ID="btnProgressAdults" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="1" CssClass="step-number active" Enabled="false" />
+                        <asp:Button ID="btnProgressAdults" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="1" CssClass="step-number active" Enabled="false" />
 
                         <h5>Adults</h5>
                     </div>
                     <div class="step">
 
-                        <asp:Button ID="btnProgressChildren" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren," Text="2" CssClass="step-number" Enabled="false" />
+                        <asp:Button ID="btnProgressChildren" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren" Text="2" CssClass="step-number" Enabled="false" />
 
                         <h5>Children</h5>
                     </div>
@@ -56,7 +56,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="lunchbox" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="lunchbo" />
                                 </div>
                                 <div class="form-field">
                                     <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="henderson" />
@@ -69,13 +69,32 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" />
-
+                                    <Rock:RockTextBox ID="tbAdultAddress" runat="server" Label="Address" Required="false" Text="123 test st" />
                                 </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbAdultCity" runat="server" Label="City" Required="false" Text="Testertown" />
+                                </div>
+                                <div class="form-field">
+                                    <Rock:RockDropDownList ID="ddlAdultState" runat="server" Label="State" Required="false" />
+                                </div>
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbAdultPostalCode" runat="server" Label="Zipcode" Required="false" Text="12345" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbAdultFormMobile" runat="server" Label="Mobile" Required="false" Text="6231234576" />
+                                </div>
+                                <div class="form-field">
+                                     <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" />
+                                </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-field">
                                     <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
                                         <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
-    
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -124,7 +143,7 @@
                         </div>
 
                         <div class="form-navigation">
-                            <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="Back" CssClass="btn btn-default" />
+                            <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />
                             <asp:Button ID="btnAdultsExistingNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsExistingNext_Click" Text="Next" CssClass="btn btn-primary" />                       
                         </div>
 
@@ -188,7 +207,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbMobileNumber" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required" />
+                                    <Rock:RockTextBox ID="tbChildrenFormMobile" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required" />
                                 </div>
 
                             </div>
@@ -248,7 +267,7 @@
                     </asp:Panel>
 
                     <div class="form-navigation">
-                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults,pnlAdultsForm" Text="Back" CssClass="btn btn-default" />                       
+                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />                       
                         <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn btn-default" Visible="false" />
                         <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary" Visible="false" />
                     </div>
@@ -269,10 +288,10 @@
                                 <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
                             <div class="confirm-detail">
-                             <div class="confirm-detail">
                                 <asp:Label ID="lblSubmitVisitDate" runat="server" Text="Visit Date" />
                                 <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
+                             <div class="confirm-detail">
                                 <asp:Label ID="lblSubmitServiceTime" runat="server" Text="Service Time" />
                                 <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
                             </div>
@@ -292,7 +311,7 @@
                          </div>
 
                         <div class="form-navigation">
-                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren," Text="Back" CssClass="btn" />                       
+                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren" Text="Back" CssClass="btn btn-default" />                       
                             <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" OnClientClick="btnNext_OnClick('pnlSubmit'); return false;" Text="Submit" CssClass="btn btn-primary" />
                         </div>
 
@@ -353,6 +372,12 @@
             $('#rblGender input[type="radio"]:not(:checked)').parents('label').removeClass('active');
         });
 
+        $('#rblSurvey').on('change', function () {
+            // toggle active class to change color of selected item
+            $('#rblSurvey input[type="radio"]:checked').parents('label').addClass('active');
+            $('#rblSurvey input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+        });
+
         // error checking
         $('.has-error').on('change', function () {
             var value = "";
@@ -407,6 +432,9 @@
 
         $('#rblGender input[type="radio"]:checked').parents('label').addClass('active');
         $('#rblGender input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+
+        $('#rblSurvey input[type="radio"]:checked').parents('label').addClass('active');
+        $('#rblSurvey input[type="radio"]:not(:checked)').parents('label').removeClass('active');
     }
 </script>
 
