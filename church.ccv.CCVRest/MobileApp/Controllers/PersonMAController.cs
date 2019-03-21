@@ -77,7 +77,7 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route( "api/NewMobileApp/Attendance" )]
         [Authenticate, Secured]
-        public HttpResponseMessage Attendance( int primaryAliasId, int? campusId )
+        public HttpResponseMessage Attendance( int primaryAliasId, int? campusId = null )
         {
             RockContext rockContext = new RockContext();
 
