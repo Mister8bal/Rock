@@ -99,6 +99,7 @@
     <Compile Include="Common\Model\ResponseModel.cs" />
     <Compile Include="Common\Util\Util.cs" />
     <Compile Include="MobileApp\Controllers\AccountMAController.cs" />
+    <Compile Include="MobileApp\Controllers\ApplicationMAController.cs" />
     <Compile Include="MobileApp\Controllers\PersonMAController.cs" />
     <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />
     <Compile Include="MobileApp\Model\LoginModel.cs" />
@@ -115,6 +116,10 @@
     <ProjectReference Include="..\church.ccv.Actions\church.ccv.Actions.csproj">
       <Project>{aeb3ebf4-253a-4438-a380-ecff89c6bdda}</Project>
       <Name>church.ccv.Actions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\church.ccv.PersonalizationEngine\church.ccv.PersonalizationEngine.csproj">
+      <Project>{a193e434-dd3e-488b-81e5-bb9ee446a6fe}</Project>
+      <Name>church.ccv.PersonalizationEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotLiquid\DotLiquid.csproj">
       <Project>{00edcb8d-ef33-459c-ad62-02876bd24dff}</Project>
