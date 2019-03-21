@@ -26,6 +26,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public DateTime? Birthdate;
 
+        public int? CampusId;
+
 
         // Family Info
         public int FamilyId;

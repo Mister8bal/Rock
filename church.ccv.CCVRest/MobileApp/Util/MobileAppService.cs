@@ -54,6 +54,9 @@ namespace church.ccv.CCVRest.MobileApp
             Group family = person.GetFamily();
             personModel.FamilyId = family.Id;
 
+            // set their campus
+            personModel.CampusId = family.CampusId;
+
             personModel.FamilyMembers = new List<FamilyMemberModel>();
             foreach ( GroupMember groupMember in family.Members )
             {
