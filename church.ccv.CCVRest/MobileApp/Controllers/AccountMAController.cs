@@ -82,6 +82,46 @@ namespace church.ccv.CCVRest.MobileApp
 
 
         [Serializable]
+        public enum FacebookLoginResponse
+        {
+            Success,
+
+            InvalidModel,
+
+            Failed
+        }
+
+        [HttpPost]
+        [System.Web.Http.Route( "api/NewMobileApp/FacebookLogin" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage FacebookLogin( [FromBody]Rock.Security.ExternalAuthentication.Facebook.FacebookUser facebookUser )
+        {
+            if ( facebookUser == null )
+            {
+                return Common.Util.GenerateResponse( false, FacebookLoginResponse.InvalidModel.ToString(), null );
+            }
+
+            // Rock associates Facebook by creating a Login for the person where the "Username" is
+            // "FACEBOOK_FACEBOOKID" Ex: FACEBOOK_112383238
+            //
+            // Given that, GetFacebookUserName  will attempt 3 things:
+            // 1. Find a person in Rock with this Facebook ID as a username
+            // 2. Find a person in Rock whose First Name, Last Name and Email match what's in facebookUser. It will then create a new FACEBOOK_ID username for them.
+            // 3. Create a person in Rock using the facebookUser data, and then attach a new FACEBOOK_ID username to them.
+            string userName = Rock.Security.ExternalAuthentication.Facebook.GetFacebookUserName( facebookUser );
+            if ( !string.IsNullOrWhiteSpace( userName ) && userName.Length > "FACEBOOK_".Length )
+            {
+                // on success, pass back success and the username so the caller knows what to use to reference this person in the future.
+                return Common.Util.GenerateResponse( true, FacebookLoginResponse.Success.ToString( ), userName );
+            }
+            else
+            {
+                return Common.Util.GenerateResponse( false, FacebookLoginResponse.Failed.ToString(), null );
+            }
+        }
+
+
+        [Serializable]
         public enum RegisterNewUserResponse
         {
             Success,
