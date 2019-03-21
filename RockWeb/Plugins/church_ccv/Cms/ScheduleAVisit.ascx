@@ -41,7 +41,7 @@
                 </div>
 
                 <%-- Adults Form --%>
-                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="false">
+                <asp:Panel ID="pnlAdults" runat="server" ClientIDMode="Static" CssClass="panel-adults" Visible="true">
 
                     <asp:Panel ID="pnlAdultsForm" runat="server">
                         <div class="form-header">
@@ -121,7 +121,6 @@
 
                         <div class="form-alerts">
                             <Rock:NotificationBox ID="nbAlertExisting" runat="server" />
-
                         </div>
 
                         <div class="form-navigation">
@@ -134,7 +133,7 @@
                 </asp:Panel>
 
                 <%-- Children Form --%>
-                <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="true">
+                <asp:Panel ID="pnlChildren" runat="server" ClientIDMode="Static" CssClass="panel-children" Visible="false">
 
                     <asp:Panel ID="pnlChildrenExisting" runat="server" Visible="false">
                         <div class="form-header">
@@ -167,7 +166,7 @@
                         </div>
                     </asp:Panel>
 
-                    <asp:Panel ID="pnlChildrenForm" runat="server" CssClass="children-form" Visible="true">
+                    <asp:Panel ID="pnlChildrenForm" runat="server" CssClass="children-form" Visible="false">
 
                         <asp:HiddenField ID="hfAllergiesFormState" runat="server" ClientIDMode="Static" />
                         <asp:HiddenField ID="hfGenderFormState" runat="server" ClientIDMode="Static" />
@@ -240,6 +239,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-alerts">
+                            <Rock:NotificationBox ID="nbAlertChildForm" runat="server" />
                         </div>
 
                     </asp:Panel>
@@ -348,6 +351,44 @@
             // toggle active class to change color of selected item
             $('#rblGender input[type="radio"]:checked').parents('label').addClass('active');
             $('#rblGender input[type="radio"]:not(:checked)').parents('label').removeClass('active');
+        });
+
+        // error checking
+        $('.has-error').on('change', function () {
+            var value = "";
+
+            // error check for text boxes
+            if ($(this).hasClass('rock-text-box')) {
+                // always reset value to ""
+                value = "";
+                value = $(this).children('div').children('input').val();
+
+                if (value != "") {
+                    // has value
+                    $(this).removeClass('has-error');
+                }
+                else {
+                    // no value
+                    $(this).addClass('has-error');
+                }
+            }
+
+            // error check for dropdowns (that dont use postbacks)
+            if ($(this).hasClass('rock-drop-down-list')) {
+                // always reset value to ""
+                value = "";
+                value = $(this).find(':selected').val();
+
+                if (value != "") {
+                    // has value
+                    $(this).removeClass('has-error');
+                }
+                else {
+                    // no value
+                    $(this).addClass('has-error');
+                }
+            }
+
         });
     }
 
