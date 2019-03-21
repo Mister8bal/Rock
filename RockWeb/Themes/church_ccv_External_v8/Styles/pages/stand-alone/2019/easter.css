@@ -51,6 +51,7 @@
     line-height: 36px;
     font-family: Akrobat;
     font-weight: 500;
+    max-width: 865px;
 }
 
 .title-buttons {
@@ -151,7 +152,7 @@
 }
 
 .service-times-title {
-    color: #0c4e8d;
+    color: #0057ac;
     font-family: Akrobat;
     font-size: 34px;
     font-weight: 700;
@@ -225,7 +226,7 @@
 }
 
 .contact-phone {
-    color: #7a1315 !important;
+    color: #0e568e !important;
     background-color: unset !important;
     border-color: unset !important;
 }
@@ -243,6 +244,10 @@
     justify-content: space-around;
     align-items: center;
     margin-top: 20px;
+}
+
+.header h4 {
+    color: #0e568e;
 }
 
 .icon-desc p {
@@ -300,101 +305,71 @@
 
 /* End Baptisms Section */
 
-/* Kids / Students section */
+/* Sunrise Service section */
 
 #zone-sectione {
     margin: 0 -15px;
     max-width: unset;
 }
 
-.kids-students {
-    display: flex;
-    width: 100%;
+#section-e-bg {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/feature-sunrise-strip.jpg");
 }
 
-.kids {
-    background-image: url(/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/background-small-kids.jpg);
-    width: 50%;
-    height: 600px;
+.sunrise-section {
+    min-height: 502px;
+    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    margin-left: 5px;
 }
 
-.kids img {
-    max-width: 250px;
-}
-
-.students {
-    background-image: url(/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/background-small-students.jpg);
-    width: 50%;
-    height: 600px;
+.sunrise-button {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #0057ac;
+    font-family: Akrobat;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+    width: 253.53px;
+    max-width: unset;
+    height: 53.03px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-right: 5px;
+    border-radius: 5.64px;
+    margin: 0 auto;
 }
 
-.students img {
-    max-width: 450px;
+.sunrise-button:hover {
+    text-decoration: none;
+    background-color: #0057ac;
+    border-color: #0057ac;
+    color: #FFFFFF;
 }
 
-.students p {
-    width: 50%;
-    text-align: center;
-    margin-top: 20px;
-    color: #FFFFFF
+.sunrise-section p {
+    color: white;
+    font-family: Heebo;
+    font-size: 14px;
+    margin: 0px 35% 1% 35%;
 }
 
-.kids p {
-    width: 50%;
-    text-align: center;
-    margin-top: 20px;
-    color: #FFFFFF
+.sunrise-section h2 {
+    color: white;
+    font-family: Akrobat;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 46px;
 }
 
 @media screen and (max-width: 500px) {
-    #zone-sectione {
-        margin: 0;
-    }
-
-    .kids-students {
-        flex-direction: column;
-    }
-
-    .kids {
-        margin-left: 0;
-    }
-
-    .kids, .students {
-        width: 100%;
-    }
-
-    .kids-students .btn {
-        width: 85%;
-    }
-
-    .students {
-        margin-right: 0;
-    }
-
-    .students img {
-        max-width: 350px;
-    }
-
-    .students p {
-        width: 100%;
-    }
-    
-    .kids p {
-        width: 100%;
-    }
+   
 }
 
-/* End Kids / Students Section */
+/* Sunrise Service Section */
 
 /* Share Section */
 
@@ -407,6 +382,7 @@
     padding: 40px 20px;
     width: 40%;
     margin: auto;
+    padding-bottom: 50px;
 }
 
 .share-icons {
