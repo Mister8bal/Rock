@@ -67,7 +67,7 @@ namespace church.ccv.CCVRest.MobileApp
 
 
         [Serializable]
-        public enum AttendanceResponse
+        public enum RecordAttendanceResponse
         {
             Success,
             PersonNotFound,
@@ -75,9 +75,10 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route( "api/NewMobileApp/Attendance" )]
+        [System.Web.Http.Route( "api/NewMobileApp/Attendance" )] //REMOVE AFTER MA PULL REQUEST IS ACCEPTED
+        [System.Web.Http.Route( "api/NewMobileApp/RecordAttendance" )]
         [Authenticate, Secured]
-        public HttpResponseMessage Attendance( int primaryAliasId, int? campusId = null )
+        public HttpResponseMessage RecordAttendance( int primaryAliasId, int? campusId = null )
         {
             RockContext rockContext = new RockContext();
 
@@ -90,19 +91,19 @@ namespace church.ccv.CCVRest.MobileApp
                 // try saving the attendance record--if it returns true we did, if not they've already marked attendance this weekend.
                 if ( MobileAppService.SaveAttendanceRecord( personAlias, campusId, Request.Headers.Host, Request.Headers.UserAgent.ToString( ) ) )
                 {
-                    return Common.Util.GenerateResponse( true, AttendanceResponse.Success.ToString(), null );
+                    return Common.Util.GenerateResponse( true, RecordAttendanceResponse.Success.ToString(), null );
                 }
                 else
                 {
-                    return Common.Util.GenerateResponse( false, AttendanceResponse.AlreadyAttended.ToString(), null );
+                    return Common.Util.GenerateResponse( false, RecordAttendanceResponse.AlreadyAttended.ToString(), null );
                 }
             }
 
-            return Common.Util.GenerateResponse( false, AttendanceResponse.PersonNotFound.ToString(), null );
+            return Common.Util.GenerateResponse( false, RecordAttendanceResponse.PersonNotFound.ToString(), null );
         }
 
         [Serializable]
-        public enum AttendedResponse
+        public enum CheckAttendanceResponse
         {
             Attended,
             NotAttended,
@@ -110,9 +111,10 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [System.Web.Http.HttpGet]
-        [System.Web.Http.Route( "api/NewMobileApp/Attended" )]
+        [System.Web.Http.Route( "api/NewMobileApp/Attended" )] //REMOVE AFTER MA PULL REQUEST IS ACCEPTED
+        [System.Web.Http.Route( "api/NewMobileApp/CheckAttendance" )]
         [Authenticate, Secured]
-        public HttpResponseMessage Attended( int primaryAliasId )
+        public HttpResponseMessage CheckAttendance( int primaryAliasId )
         {
             RockContext rockContext = new RockContext();
 
@@ -124,15 +126,15 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 if ( MobileAppService.HasAttendanceRecord( personAlias ) )
                 {
-                    return Common.Util.GenerateResponse( true, AttendedResponse.Attended.ToString(), null );
+                    return Common.Util.GenerateResponse( true, CheckAttendanceResponse.Attended.ToString(), null );
                 }
                 else
                 {
-                    return Common.Util.GenerateResponse( true, AttendedResponse.NotAttended.ToString(), null );
+                    return Common.Util.GenerateResponse( true, CheckAttendanceResponse.NotAttended.ToString(), null );
                 }
             }
 
-            return Common.Util.GenerateResponse( false, AttendedResponse.PersonNotFound.ToString(), null );
+            return Common.Util.GenerateResponse( false, CheckAttendanceResponse.PersonNotFound.ToString(), null );
         }
     }
 }
