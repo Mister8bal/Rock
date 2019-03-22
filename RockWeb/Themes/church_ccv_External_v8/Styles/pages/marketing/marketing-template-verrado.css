@@ -411,21 +411,30 @@ ul.feature-list {
 .sunrise-section p {
     color: white;
     font-family: Heebo;
-    font-size: 14px;
+    font-size: 16px;
     margin: 0px 25% 1% 25%;
 }
 
 .sunrise-section h2 {
     color: white;
     font-family: Akrobat;
-    font-size: 44px;
+    font-size: 61px;
     font-weight: 700;
     line-height: 46px;
 }
 
 @media screen and (max-width: 500px) {
     .sunrise-section p {
+        font-size: 12px;
         margin: unset;
+    }
+
+    .sunrise-section h2 {
+        color: white;
+        font-family: Akrobat;
+        font-size: 29px;
+        font-weight: 700;
+        line-height: 46px;
     }
 }
 
@@ -491,7 +500,7 @@ ul.feature-list {
     #section-e-bg {
         background-image: var(--section-e-bg-mobile);
         height: var(--section-e-height-mobile); /* 600px; */
-        background-attachment: fixed;
+        background-attachment: unset;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -561,7 +570,7 @@ ul.feature-list {
 
     .leftsidepicture, .rightsidepicture {
         width: 100%;
-        height: var(--section-e-height-mobile-and-desktop);
+        height: var(--section-f-height-mobile-and-desktop);
     }
 
     #zone-sectionf {
@@ -596,14 +605,14 @@ ul.feature-list {
     #section-g-bg {
         background-image: var(--section-g-bg-mobile);
         height: var(--section-g-height-mobile); /* 700px; */
-        background-attachment: fixed;
+        background-attachment: unset;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
     }
 
     .sectionG {
-        padding-top: var(--section-f-padding-top-mobile);
+        padding-top: var(--section-g-padding-top-mobile);
     }
 }
 
