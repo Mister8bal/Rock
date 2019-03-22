@@ -421,7 +421,6 @@ ul.feature-list {
     font-family: Akrobat;
     font-size: 61px;
     font-weight: 700;
-    line-height: 46px;
 }
 
 @media screen and (max-width: 500px) {
@@ -602,7 +601,11 @@ ul.feature-list {
 }
 
 .sectionG .centerText p {
-    margin: 1% 25%;
+    margin: 0% 25%;
+}
+
+.sectionG .centerText a {
+    margin-top: 10px;
 }
 
 /* Mobile Styling */
@@ -616,9 +619,9 @@ ul.feature-list {
         background-size: cover;
     }
 
-    /* .sectionG {
+    .sectionG {
         padding-top: var(--section-g-padding-top-mobile);
-    } */
+    }
 
     .sectionG .centerText p {
         margin: unset;

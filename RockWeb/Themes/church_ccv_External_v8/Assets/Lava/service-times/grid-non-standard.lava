@@ -94,8 +94,8 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign thursdayTimes = thursdayTimesString | Split:';' %}
             {% for thursdayTime in thursdayTimes %}
                 {% if thursdayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
-                    <li class="{{ cssClass }}">{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                    {% assign cssClass = customCSSClass %}
+                    <li id="time{{ thursdayTime }}" class="{{ cssClass }}">{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %}
                     <li>{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
                 {% endif %}
@@ -109,7 +109,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign fridayTimes = fridayTimesString | Split:';' %}
             {% for fridayTime in fridayTimes %}
                 {% if fridayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %} 
                     <li>{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
@@ -124,7 +124,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign saturdayTimes = saturdayTimesString | Split:';' %}
             {% for saturdayTime in saturdayTimes %}
                 {% if saturdayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %}  
                     <li>{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>   
@@ -139,7 +139,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign sundayTimes = sundayTimesString | Split:';' %}
             {% for sundayTime in sundayTimes %}
                 {% if sundayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %}  
                     <li>{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>  
@@ -154,7 +154,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign mondayTimes = mondayTimesString | Split:';' %}
             {% for mondayTime in mondayTimes %}
 				{% if mondayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %}
                     <li>{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>    
@@ -169,7 +169,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
             {% assign tuesdayTimes = tuesdayTimesString | Split:';' %}
             {% for tuesdayTime in tuesdayTimes  %}
                 {% if tuesdayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %} 
                     <li>{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>   
@@ -184,7 +184,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         {% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
             {% for wednesdayTime in wednesdayTimes %}
                 {% if wednesdayTime | Contains:'$' %}
-                    {% assign cssClass = {{ customCSSClass }} %}
+                    {% assign cssClass = customCSSClass %}
                     <li class="{{ cssClass }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
                 {%else %}    
                     <li>{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
