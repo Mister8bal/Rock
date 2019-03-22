@@ -66,18 +66,8 @@
     border-color: #FFFFFF;
     color: #0057ac;
     font-family: Akrobat;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 24px;
-    text-transform: uppercase;
-    width: 253.53px;
-    max-width: unset;
-    height: 53.03px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5.64px;
-    margin: 0 20px;
+    min-width: 200px;
+    max-width: 200px;
 }
 
 .title-button:hover {
@@ -115,8 +105,7 @@
     .title p {
         font-size: 16px;
         line-height: 18px;
-    }
-    
+    }   
 }
 
 /* End Feature Title Section */
@@ -331,16 +320,9 @@
     font-family: Akrobat;
     font-size: 20px;
     font-weight: 600;
-    line-height: 24px;
-    text-transform: uppercase;
-    width: 253.53px;
-    max-width: unset;
-    height: 53.03px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5.64px;
-    margin: 0 auto;
+    min-width: 200px;
+    max-width: 200px;
+    font-family: akrobat;
 }
 
 .sunrise-button:hover {
@@ -354,7 +336,7 @@
     color: white;
     font-family: Heebo;
     font-size: 14px;
-    margin: 0px 35% 1% 35%;
+    margin: 0px 25% 1% 25%;
 }
 
 .sunrise-section h2 {
@@ -513,6 +495,9 @@ a:focus {
     background-color: #0e568e;
     border-color: #0e568e;
     border-radius: 5px;
+    margin: 0 auto;
+    min-width: 200px;
+    max-width: 200px;
 } 
 
 .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
