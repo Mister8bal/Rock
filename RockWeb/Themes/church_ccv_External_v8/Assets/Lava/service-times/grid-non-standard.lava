@@ -89,71 +89,106 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% endcomment %}
 
     {% if thursdayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ thursdayDate }}</strong>
         <ul class="list-inline">
             {% assign thursdayTimes = thursdayTimesString | Split:';' %}
             {% for thursdayTime in thursdayTimes %}
-                <li>{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if thursdayTime | Contains:'32423' %}
+                    <li>{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', ' ' }}</li>
+                {%else %}
+                    <li>{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if fridayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ fridayDate }}</strong>
         <ul class="list-inline">
             {% assign fridayTimes = fridayTimesString | Split:';' %}
             {% for fridayTime in fridayTimes %}
-                <li>{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if fridayTime | Contains:'42342' %}
+                    <li>{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', ' ' }}</li>
+                {%else %} 
+                    <li>{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if saturdayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ saturdayDate }}</strong>
         <ul class="list-inline">
             {% assign saturdayTimes = saturdayTimesString | Split:';' %}
             {% for saturdayTime in saturdayTimes %}
-                <li>{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if saturdayTime | Contains:'23423' %}
+                    <li>{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', ' ' }}</li>
+                {%else %}  
+                    <li>{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>   
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if sundayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ sundayDate }}</strong>
         <ul class="list-inline">
             {% assign sundayTimes = sundayTimesString | Split:';' %}
             {% for sundayTime in sundayTimes %}
-                <li>{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if sundayTime | Contains:'2342' %}
+                    <li class="sunrise-service-color">{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', 'TEMP' }}</li>
+                {%else %}  
+                    <li class="title-button">{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>  
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
         {% if mondayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ mondayDate }}</strong>
         <ul class="list-inline">
             {% assign mondayTimes = mondayTimesString | Split:';' %}
             {% for mondayTime in mondayTimes %}
-				<li>{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+				{% if mondayTime | Contains:'#' %}
+                    <li>{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', '' }}</li>
+                {%else %}
+                    <li>{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>    
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if tuesdayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ tuesdayDate }}</strong>
         <ul class="list-inline">
             {% assign tuesdayTimes = tuesdayTimesString | Split:';' %}
             {% for tuesdayTime in tuesdayTimes  %}
-                <li>{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if tuesdayTime | Contains:'#' %}
+                    <li>{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', '' }}</li>
+                {%else %} 
+                    <li>{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>   
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if wednesdayTimesString != '' %}
+        {% assign cssCLass = "" %}
         <strong>{{ wednesdayDate }}</strong>
         <ul class="list-inline">
         {% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
             {% for wednesdayTime in wednesdayTimes %}
-                <li>{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% if wednesdayTime | Contains:'#' %}
+                    <li>{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', '' }}</li>
+                {%else %}    
+                    <li>{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
