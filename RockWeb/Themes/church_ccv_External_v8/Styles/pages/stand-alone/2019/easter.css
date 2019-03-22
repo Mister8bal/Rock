@@ -308,7 +308,7 @@
 /* Sunrise Service section */
 
 #zone-sectione {
-    margin: 0 -15px;
+    margin: 0 5%;
     max-width: unset;
 }
 
@@ -366,7 +366,9 @@
 }
 
 @media screen and (max-width: 500px) {
-   
+    .sunrise-section p{
+        margin: unset;
+    }
 }
 
 /* Sunrise Service Section */
