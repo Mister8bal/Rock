@@ -386,10 +386,19 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // Check if person exists
             PersonService personService = new PersonService( new RockContext() );
 
-            var personQry = personService.GetByMatch( tbAdultFirstName.Text, tbAdultLastName.Text, tbAdultEmail.Text, false, false );
+            // first look for matching people
+            PersonService.PersonMatchQuery searchParameters = new PersonService.PersonMatchQuery( 
+                firstName: tbAdultFirstName.Text,
+                lastName: tbAdultLastName.Text,
+                email: tbAdultEmail.Text,
+                mobilePhone: tbAdultFormMobile.Text );
+
+            var personQry = personService.FindPersons( searchParameters, false, false );
 
             if ( personQry.Count() > 0)
             {
+                // matches found
+
                 // reset radio button list
                 rblExisting.Items.Clear();
 
@@ -407,9 +416,28 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     // person(s) with matching info found
                     newPerson = false;
 
-                    string maskedEmail = MaskEmail( prsn.Email );
+                    // scrub identifier 
+                    string maskedIdentifier = "";
 
-                    string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, maskedEmail );
+                    // scrub mobile phone if exists
+                    string prsnMobile = prsn.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
+
+                    if ( prsnMobile.IsNotNullOrWhitespace() )
+                    {
+                        maskedIdentifier = MaskPhoneNumber( prsnMobile );
+                    }
+                    // no mobile phone, scrub email if exists
+                    else if ( prsn.Email.IsNotNullOrWhitespace() )
+                    {
+                        maskedIdentifier = MaskEmail( prsn.Email );
+                    }
+                    // no contact info found
+                    else
+                    {
+                        maskedIdentifier = "No contact info on file";
+                    }
+
+                    string itemText = String.Format( "<div class=\"existing-person\"><p class=\"existing-person-name\">{0}</p><p>{1}</p></div>", prsn.FullName, maskedIdentifier );
 
                     rblExisting.Items.Add( new ListItem( itemText, prsn.Guid.ToString() ) );
 
@@ -424,14 +452,14 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // add none item
                 rblExisting.Items.Add( new ListItem( "None of these people are me", "none" ) );
 
-                // select person if already selected
+                // select person if was previously selected
                 if ( selectedRadioIndex > -1 )
                 {
                     rblExisting.SelectedIndex = selectedRadioIndex;
                 }
-                else if ( _visit.PersonId == -50 )
+                // select none if was previosly selected
+                else if ( _visit.NoneRadioSelected == true )
                 {
-                    // "none" was previosly selected, reselect
                     rblExisting.SelectedIndex = rblExisting.Items.Count - 1;
                 }
             }
@@ -442,9 +470,21 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 _visit.FirstName = tbAdultFirstName.Text;
                 _visit.LastName = tbAdultLastName.Text;
                 _visit.Email = tbAdultEmail.Text;
-
+                _visit.Address = tbAdultAddress.Text;
+                _visit.City = tbAdultCity.Text;
+                _visit.State = ddlAdultState.SelectedValue;
+                _visit.PostalCode = tbAdultPostalCode.Text;
                 _visit.SpouseFirstName = tbSpouseFirstName.Text;
                 _visit.SpouseLastName = tbSpouseLastName.Text;
+
+
+                if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace())
+                {
+                    _visit.MobileNumber = tbAdultFormMobile.Text;
+
+                    // update mobile field on children form
+                    tbChildrenFormMobile.Text = tbAdultFormMobile.Text;
+                }
             }
 
             // show next form panel
@@ -496,12 +536,20 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.FirstName = person.FirstName;
                     _visit.LastName = person.LastName;
                     _visit.Email = person.Email;
-                    _visit.MobileNumber = person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
 
-                    if ( _visit.MobileNumber.IsNotNullOrWhitespace() )
+                    // if no mobile number was entered on adult form, get from person if it exists
+                    string personMobileNumber = person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
+
+                    if ( personMobileNumber.IsNotNullOrWhitespace() )
                     {
-                        tbAdultFormMobile.Text = _visit.MobileNumber;
-                        tbChildrenFormMobile.Text = _visit.MobileNumber;
+                        _visit.MobileNumber = personMobileNumber;
+                        tbAdultFormMobile.Text = personMobileNumber;
+                        tbChildrenFormMobile.Text = personMobileNumber;
+                    }
+                    // otherwise use mobile number from text box
+                    else
+                    {
+                        _visit.MobileNumber = tbAdultFormMobile.Text;
                     }
 
                     // populate spouse info
@@ -568,10 +616,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // person not selected or couldnt load person, proceed using new person
             if ( rblExisting.SelectedValue.IsNotNullOrWhitespace() && ( rblExisting.SelectedValue == "none" || person == null ) )
             {
-                // check for personId -50. 
-                // This means we are in a state that "none" was already selected 
-                // when the panel loaded and we dont want to reset the visit object
-                if (_visit.PersonId != -50)
+                // reset visit object if none not already selected
+                if (_visit.NoneRadioSelected == false)
                 {
                     // reset person object since person changed
                     InitializeVisitObject();
@@ -584,13 +630,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.SpouseFirstName = tbSpouseFirstName.Text;
                     _visit.SpouseLastName = tbSpouseLastName.Text;
 
-                    // set the id to -50 so we know "none" initiated this
-                    _visit.PersonId = -50;
 
                     // set visit state
                     _visit.MainPanel = MainPanel.Adults;
                     _visit.SubPanelAdults = SubPanelAdults.Existing;
                     _visit.SubPanelChildren = SubPanelChildren.Question;
+                    _visit.NoneRadioSelected = true;
 
                     // set button state
                     btnChildrenAddAnother.Visible = false;
@@ -636,8 +681,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             if (button == btnNotMyChildren )
             {
-                // if not children, set personId to -50 to indiciate "none" on existing person page
-                _visit.PersonId = -50;
+                // if not children, set none radio selected so we dont reset the visit object prematurely
+                _visit.NoneRadioSelected = true;
 
                 // set adult panel to form panel - bypasses state issue, can circle back if we really need this to go back to existing panel
                 _visit.SubPanelAdults = SubPanelAdults.Form;
@@ -646,8 +691,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 {
                     // personclicked not my child, clear out children object
                     _visit.Children.Clear();
-
-                    // clear out child lists
                     ltlExistingChildrenHorizontal.Text = "";
                     ltlExistingChildrenVertical.Text = "";
                 }
@@ -678,8 +721,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // ensure required fields are coplete before proceeding
             if ( RequiredChildFormFieldsReady() )
             {
-                // update mobile number in visit object
-                /////////////////////////////////////////////////dontforget....///////////////////_visit.MobileNumber = tbMobileNumber.Text;
+                // update mobile number in visit object if its different from text box
+                if ( _visit.MobileNumber != tbChildrenFormMobile.Text)
+                {
+                    _visit.MobileNumber = tbChildrenFormMobile.Text;
+                    tbAdultFormMobile.Text = tbChildrenFormMobile.Text;
+                }
 
                 Child newChild = CreateChild();
 
@@ -700,21 +747,26 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
         }
 
-
-
         protected void btnChildrenNext_Click( object sender, EventArgs e )
         {
             bool hasError = true;
 
             Button button = sender as Button;
 
-            if ( button == btnChildrenNo || _visit.SubPanelChildren == SubPanelChildren.Existing)
+            if ( button == btnChildrenNo || _visit.SubPanelChildren == SubPanelChildren.Existing || AllChildFormFieldsEmpty() == true )
             {
                 // ready to proceed
                 hasError = false;
             }
             else if ( RequiredChildFormFieldsReady() )
             {
+                // update mobile number in visit object if its different from text box
+                if ( _visit.MobileNumber != tbChildrenFormMobile.Text )
+                {
+                    _visit.MobileNumber = tbChildrenFormMobile.Text;
+                    tbAdultFormMobile.Text = tbChildrenFormMobile.Text;
+                }
+
                 Child newChild = CreateChild();
 
                 AddChildToVisit( newChild );
@@ -1309,6 +1361,16 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         /// <summary>
+        /// Mask a phone number
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        private string MaskPhoneNumber( string phoneNumber )
+        {
+            return String.Format( "(***) ***-{0}", phoneNumber.Substring( phoneNumber.Length - 4 ) );
+        }
+
+        /// <summary>
         /// Mask an email address
         /// </summary>
         /// <param name="email"></param>
@@ -1355,10 +1417,23 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         /// <summary>
+        /// Return true if all child form fields are blank
+        /// </summary>
+        /// <returns></returns>
+        private bool AllChildFormFieldsEmpty()
+        {
+            return tbChildFirstName.Text.IsNullOrWhiteSpace() &&
+                tbChildLastName.Text.IsNullOrWhiteSpace() &&
+                ddlChildBdayYear.SelectedValue.IsNullOrWhiteSpace() &&
+                ddlChildBdayMonth.SelectedValue.IsNullOrWhiteSpace() &&
+                ddlChildBdayDay.SelectedValue.IsNullOrWhiteSpace();
+        }
+
+        /// <summary>
         /// Check if all child form required inputs have values
         /// </summary>
         /// <returns></returns>
-        private bool RequiredChildFormFieldsReady()
+        private bool RequiredChildFormFieldsReady( )
         {
             bool ready = true;
 
@@ -1624,6 +1699,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             public MainPanel MainPanel { get; set; }
             public SubPanelAdults SubPanelAdults { get; set; }
             public SubPanelChildren SubPanelChildren { get; set; }
+            public bool NoneRadioSelected { get; set; }
 
             public Visit()
             {
