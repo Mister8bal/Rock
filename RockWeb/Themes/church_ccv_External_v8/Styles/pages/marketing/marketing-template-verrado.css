@@ -380,6 +380,7 @@ ul.feature-list {
  #section-c-bg {
     background-image: var(--section-c-bg-desktop);
     height: var(--section-c-height-desktop);
+    background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -600,6 +601,10 @@ ul.feature-list {
     padding-top: var(--section-g-padding-top-desktop);
 }
 
+.sectionG .centerText p {
+    margin: 1% 25%;
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) { 
     #section-g-bg {
@@ -611,8 +616,12 @@ ul.feature-list {
         background-size: cover;
     }
 
-    .sectionG {
+    /* .sectionG {
         padding-top: var(--section-g-padding-top-mobile);
+    } */
+
+    .sectionG .centerText p {
+        margin: unset;
     }
 }
 
