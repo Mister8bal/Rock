@@ -336,61 +336,23 @@ ul.feature-list {
  */
 
 /*  
- *  PRACTICAL AND RELEVANT TEACHING Section. (Section B)
+ *  Sunrise Section (Section B)
  */
 
-#section-b-bg {
+ #section-b-bg {
     background-image: var(--section-b-bg-desktop);
-    height: var(--section-b-height-desktop); /* 900px; */
+    height: var(--section-b-height-desktop);
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
 }
 
-.sectionB {
-    padding-top: var(--section-b-padding-top-desktop); /* 450px; */
-    /* padding-top: 450px; */
-}
-
 /* Mobile Styling */
 @media screen and (max-width: 500px) { 
-    
     #section-b-bg {
         background-image: var(--section-b-bg-mobile);
-        height: var(--section-b-height-mobile); /* 600px; */
-        background-attachment: unset;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    .sectionB {
-        padding-top: var(--section-b-padding-top-mobile); /* 300px; */
-        /* padding-top: 300px; */
-    }
-}
-
-/*  
- *  End PRACTICAL AND RELEVANT TEACHING Section. (Section B)
- */
-
-/*  
- *  Sunrise Section (Section C)
- */
-
- #section-c-bg {
-    background-image: var(--section-c-bg-desktop);
-    height: var(--section-c-height-desktop);
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-/* Mobile Styling */
-@media screen and (max-width: 500px) { 
-    #section-c-bg {
-        background-image: var(--section-c-bg-mobile);
-        height: var(--section-c-height-mobile); 
+        height: var(--section-b-height-mobile); 
         background-attachment: unset;
         background-position: center;
         background-repeat: no-repeat;
@@ -439,8 +401,47 @@ ul.feature-list {
 }
 
 /*  
- *  End Sunrise Section (Section C)
+ *  End Sunrise Section (Section B)
  */
+
+
+/*  
+ *  Start (Section C)
+ */
+
+ #section-c-bg {
+    background-image: var(--section-c-bg-desktop);
+    height: var(--section-c-height-desktop); /* 900px; */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.sectionC {
+    padding-top: var(--section-c-padding-top-desktop); /* 450px; */
+    /* padding-top: 450px; */
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) { 
+    
+    #section-c-bg {
+        background-image: var(--section-c-bg-mobile);
+        height: var(--section-c-height-mobile); /* 600px; */
+        background-attachment: unset;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .sectionC {
+        padding-top: var(--section-c-padding-top-mobile); /* 300px; */
+    }
+}
+
+/*  
+ *  End Section (Section C)
+ */
+
 
 /*  
  *  CONTEMPORY WORSHIP Section. (Section D)
