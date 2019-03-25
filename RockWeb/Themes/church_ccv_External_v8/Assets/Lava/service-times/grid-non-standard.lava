@@ -54,7 +54,6 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% assign saturdayTimesString = '' %}
     {% assign sundayTimesString = '' %}	
 	
-
 	{% for time in times %}
 		{% assign timekv = time | PropertyToKeyValue %}
         {% assign split = timekv.Key | Split: ' ' %}
@@ -93,7 +92,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         <ul class="list-inline">
             {% assign thursdayTimes = thursdayTimesString | Split:';' %}
             {% for thursdayTime in thursdayTimes %}
-                <li>{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="thur{{ forloop.index }}">{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -103,7 +102,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         <ul class="list-inline">
             {% assign fridayTimes = fridayTimesString | Split:';' %}
             {% for fridayTime in fridayTimes %}
-                <li>{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="fri{{ forloop.index }}">{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -113,7 +112,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         <ul class="list-inline">
             {% assign saturdayTimes = saturdayTimesString | Split:';' %}
             {% for saturdayTime in saturdayTimes %}
-                <li>{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="sat{{ forloop.index }}">{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -123,17 +122,17 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         <ul class="list-inline">
             {% assign sundayTimes = sundayTimesString | Split:';' %}
             {% for sundayTime in sundayTimes %}
-                <li>{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="sun{{ forloop.index }}">{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
 
-        {% if mondayTimesString != '' %}
+    {% if mondayTimesString != '' %}
         <strong>{{ mondayDate }}</strong>
         <ul class="list-inline">
             {% assign mondayTimes = mondayTimesString | Split:';' %}
             {% for mondayTime in mondayTimes %}
-				<li>{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="mon{{ forloop.index }}">{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -143,7 +142,7 @@ Non Standard Service Times - Grid style (Christmas / Easter)
         <ul class="list-inline">
             {% assign tuesdayTimes = tuesdayTimesString | Split:';' %}
             {% for tuesdayTime in tuesdayTimes  %}
-                <li>{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="tues{{ forloop.index }}">{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -151,12 +150,11 @@ Non Standard Service Times - Grid style (Christmas / Easter)
     {% if wednesdayTimesString != '' %}
         <strong>{{ wednesdayDate }}</strong>
         <ul class="list-inline">
-        {% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
+            {% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
             {% for wednesdayTime in wednesdayTimes %}
-                <li>{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                <li class="wed{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
             {% endfor %}
         </ul>
     {% endif %}
-
 {% endif %} 
 {% assign isComingSoon = false %}
