@@ -10,6 +10,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Web.Cache;
+using Newtonsoft.Json.Linq;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -91,10 +92,42 @@ namespace church.ccv.CCVRest.MobileApp
                 campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
             }
 
-            // if there's at least 1 campaign to return, respond 
-            if( campaignResults.Count > 0 )
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            // now parse the campaigns and extract the relevant stuff out of the MobileAppNewsFeed section
+            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
+            foreach ( Campaign campaign in campaignResults )
             {
-                return Common.Util.GenerateResponse( true, PersonalizedContentResponse.Success.ToString( ), campaignResults );
+                JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
+                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
+
+                // try getting values for each piece of the campaign
+                Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+                {
+                    Title = mobileAppNewsFeedBlob["title"]?.ToString(),
+                    Description = mobileAppNewsFeedBlob["body"]?.ToString(),
+                    DetailsURL = mobileAppNewsFeedBlob["link"]?.ToString(),
+                    ImageURL = mobileAppNewsFeedBlob["img"]?.ToString()
+                };
+
+                // if either the details or image URL are relative, make them absolute
+                if ( psItem.DetailsURL.StartsWith( "/" ) )
+                {
+                    psItem.DetailsURL = publicAppRoot + psItem.DetailsURL;
+                }
+
+                if ( psItem.ImageURL.StartsWith( "/" ) )
+                {
+                    psItem.ImageURL = publicAppRoot + psItem.ImageURL;
+                }
+
+                itemsList.Add( psItem );
+            }
+
+            // if there's at least 1 campaign to return, respond 
+            if( itemsList.Count > 0 )
+            {
+                return Common.Util.GenerateResponse( true, PersonalizedContentResponse.Success.ToString( ), itemsList );
             }
             else
             {
