@@ -1,5 +1,7 @@
 # This script is run by AppVeyor's deploy agent after the deploy
 Import-Module WebAdministration
+Import-Module IISAdministration
+
 
 $rootfolder = "c:\webdata\rock.ccv.church"
 $webroot = "$rootfolder\docs"
@@ -22,13 +24,27 @@ If (Test-Path "$webroot\Content"){
 Write-Host "Moving Content folder back from temp directory"
 Move-Item "$rootfolder\temp\Content" "$webroot"
 
-# move cache directory back from temp (exploring not retaining cache through deploys)
-#Write-Host "Moving Cache folder back from temp directory"
-#Move-Item "$rootfolder\temp\Cache" "$webroot\App_Data"
-
 # copy new connection string file
 Write-Host "Copying new web.ConnectionStrings.config to web dir"
 Copy-Item "$rootfolder\config\web.ConnectionStrings.config" $webroot -force
+
+# Add modify permissions for app pool to site
+Write-Host "Adding modify permission for AppPool to site"
+
+# get the IIS App Pool
+$manager = Get-IISServerManager
+$appPoolName = "RockRMS"
+$appPoolSid = $manager.ApplicationPools["$appPoolName"].RawAttributes['applicationPoolSid']
+$identifier = New-Object System.Security.Principal.SecurityIdentifier $appPoolSid
+$user = $identifier.Translate([System.Security.Principal.NTAccount])
+
+# set permissions
+$path = "C:\webdata\rock.ccv.church\docs"
+$permission = $user,"Modify","Allow"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+$acl = Get-ACL $path
+$acl.SetAccessRule($accessRule)
+$acl | Set-ACL $path
 
 # start web publishing service
 Write-Host "Starting Web Publishing Service"
