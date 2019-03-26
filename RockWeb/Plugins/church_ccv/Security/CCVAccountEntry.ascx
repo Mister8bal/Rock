@@ -65,9 +65,7 @@
     <asp:PlaceHolder ID="phUserInfo" runat="server" Visible="true">
 
         <div class="row">
-
             <div class="col-md-6">
-
                <fieldset>
                     <legend>New Account</legend>
                     <Rock:RockTextBox ID="tbUserName" runat="server" Label="Username" Required="true" ></Rock:RockTextBox>
@@ -78,18 +76,37 @@
                     <Rock:RockTextBox ID="tbPassword" runat="server" Label="Password" Required="true" TextMode="Password" ValidateRequestMode="Disabled" ></Rock:RockTextBox>
                     <Rock:RockTextBox ID="tbPasswordConfirm" runat="server" Label="Confirmation" Required="true" TextMode="Password" ValidateRequestMode="Disabled" ></Rock:RockTextBox>
                     <asp:CompareValidator ID="covalPassword" runat="server" ControlToCompare="tbPassword" ControlToValidate="tbPasswordConfirm" ErrorMessage="Password and Confirmation do not match" Display="Dynamic" CssClass="validation-error"></asp:CompareValidator>
-
                 </fieldset>
-
             </div>
 
             <div class="col-md-6">
-
                 <fieldset>
                     <legend>Your Information</legend> 
                     <Rock:RockTextBox ID="tbFirstName" runat="server" Label="First Name" Required="true" />
                     <Rock:RockTextBox ID="tbLastName" runat="server" Label="Last Name" Required="true" />
                     <Rock:EmailBox ID="tbEmail" runat="server" Label="Email" Required="true" />
+               </fieldset>
+
+               <asp:Panel ID="pnlPhoneNumbers" runat="server">
+                   <fieldset>
+                        <asp:Repeater ID="rPhoneNumbers" runat="server">
+                                <ItemTemplate>
+                                    <div class="form-group phonegroup">
+                                        <div class="phonegroup-number">
+                                            <div>
+                                                <asp:HiddenField ID="hfPhoneType" runat="server" Visible="false" Value='<%# Eval("NumberTypeValueId")  %>' />
+                                                <Rock:PhoneNumberBox ID="pnbPhone" runat="server" Label='<%# Eval("NumberTypeValue.Value")  %>' Required="true" CountryCode='<%# Eval("CountryCode") %>' 
+                                                    Number='<%# Eval("NumberFormatted")  %>'  />
+                                            </div>    
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                        </asp:Repeater>
+                    </fieldset>
+                </asp:Panel>
+                   
+
+                <fieldset>
                     <Rock:RockDropDownList ID="ddlGender" runat="server" Label="Gender">
                         <asp:ListItem Text="" Value="U"></asp:ListItem>
                         <asp:ListItem Text="Male" Value="M"></asp:ListItem>
@@ -97,48 +114,14 @@
                     </Rock:RockDropDownList>
                     <Rock:BirthdayPicker ID="bdaypBirthDay" runat="server" Label="Birthday" />
                </fieldset>
-
-               <asp:Panel ID="pnlPhoneNumbers" runat="server">
-                   <fieldset>
-                        <legend>Phone Numbers</legend>
-                        <asp:Repeater ID="rPhoneNumbers" runat="server">
-                                    <ItemTemplate>
-                                        <div class="form-group phonegroup">
-                                            <div class="control-label col-sm-1 phonegroup-label"><%# Eval("NumberTypeValue.Value")  %>&nbsp;</div>
-                                            <div class="controls col-sm-11 phonegroup-number">
-                                                <div class="row">
-                                                    <div class="col-sm-7">
-                                                        <asp:HiddenField ID="hfPhoneType" runat="server" Value='<%# Eval("NumberTypeValueId")  %>' />
-                                                        <Rock:PhoneNumberBox ID="pnbPhone" runat="server" CountryCode='<%# Eval("CountryCode") %>' 
-                                                            Number='<%# Eval("NumberFormatted")  %>'  />
-                                                    </div>    
-                                                    <div class="col-sm-5 margin-t-sm">
-                                                        <div class="row">
-                                                            <div class="col-xs-6">
-                                                                <asp:CheckBox ID="cbSms" runat="server" Text="SMS" Checked='<%# (bool)Eval("IsMessagingEnabled") %>' CssClass="js-sms-number" />
-                                                            </div>
-                                                            <div class="col-xs-6">
-                                                                <asp:CheckBox ID="cbUnlisted" runat="server" Text="Unlisted" Checked='<%# (bool)Eval("IsUnlisted") %>' />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:Repeater>
-                        </fieldset>
-                   </asp:Panel>
-                    
-                    <asp:Panel ID="pnlAddress" runat="server">
-                        <fieldset>
-                            <legend>Address</legend>
-                            <Rock:AddressControl ID="acAddress" runat="server" RequiredErrorMessage="Your Address is Required" />
-                        </fieldset>
-                    </asp:Panel>
-            </div>
-        
+                
+                 
+                <asp:Panel ID="pnlAddress" runat="server">
+                    <fieldset>
+                        <legend>Address</legend>
+                        <Rock:AddressControl ID="acAddress" runat="server" RequiredErrorMessage="Your Address is Required" />
+                    </fieldset>
+                </asp:Panel>
         </div>
 
         <div class="actions">

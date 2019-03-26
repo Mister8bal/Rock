@@ -145,6 +145,12 @@ namespace RockWeb.Plugins.church_ccv.Security
 
                             var phoneNumber = new PhoneNumber { NumberTypeValueId = numberType.Id, NumberTypeValue = numberType };
 
+                            // If the phone type is a mobile phone, default sms texting to true (12 is Mobile)
+                            if ( phoneNumber.NumberTypeValueId == 12)
+                            {
+                                phoneNumber.IsMessagingEnabled = true;
+                            }
+
                             phoneNumbers.Add( phoneNumber );
                         }
 
@@ -648,14 +654,10 @@ namespace RockWeb.Plugins.church_ccv.Security
                 }
             }
 
-            bool smsSelected = false;
-
             foreach ( RepeaterItem item in rPhoneNumbers.Items )
             {
                 HiddenField hfPhoneType = item.FindControl( "hfPhoneType" ) as HiddenField;
                 PhoneNumberBox pnbPhone = item.FindControl( "pnbPhone" ) as PhoneNumberBox;
-                CheckBox cbUnlisted = item.FindControl( "cbUnlisted" ) as CheckBox;
-                CheckBox cbSms = item.FindControl( "cbSms" ) as CheckBox;
 
                 if ( !string.IsNullOrWhiteSpace( PhoneNumber.CleanNumber( pnbPhone.Number ) ) )
                 {
@@ -666,19 +668,6 @@ namespace RockWeb.Plugins.church_ccv.Security
                         person.PhoneNumbers.Add( phoneNumber );
                         phoneNumber.CountryCode = PhoneNumber.CleanNumber( pnbPhone.CountryCode );
                         phoneNumber.Number = PhoneNumber.CleanNumber( pnbPhone.Number );
-
-                        // Only allow one number to have SMS selected
-                        if ( smsSelected )
-                        {
-                            phoneNumber.IsMessagingEnabled = false;
-                        }
-                        else
-                        {
-                            phoneNumber.IsMessagingEnabled = cbSms.Checked;
-                            smsSelected = cbSms.Checked;
-                        }
-
-                        phoneNumber.IsUnlisted = cbUnlisted.Checked;
                     }
                 }
             }
