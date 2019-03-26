@@ -55,9 +55,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 InitializeVisitObject();
 
-                // set personId to -1 (will use to track form state)
-                _visit.PersonId = -1;
-
                 // set initial state
                 _visit.MainPanel = MainPanel.Adults;
                 _visit.SubPanelAdults = SubPanelAdults.Form;
@@ -191,6 +188,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 if ( campusDropDownList.SelectedValue.AsInteger() != 0 )
                 {
                     CampusCache campus = CampusCache.Read( campusDropDownList.SelectedValue.AsInteger() );
+                    BindVisitDateDropDowns( campus );
 
                     // set submit label 
                     lblSubmitCampus.Text = campusDropDownList.SelectedItem.Text;
@@ -212,7 +210,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.CampusId = campusDropDownList.SelectedValue;
                     WriteVisitToViewState();
 
-                    BindVisitDateDropDowns( campus );
 
                     // show the visit date dropdown
                     divVisitDate.Attributes["class"] = "";
@@ -885,11 +882,76 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
         protected void btnSubmitNext_Click( object sender, EventArgs e )
         {
+            bool hasError = true;
+
+            RockContext rockContext = new RockContext();
+
+            // get system values
+            var familyGroupType = GroupTypeCache.Read( Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY.AsGuid() );
+            var adultRoleId = familyGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT.AsGuid() ).Id;
+            var childRoleId = familyGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD.AsGuid() ).Id;
+
+            //var recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+            //var recordStatusValue = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() );
+            //var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_VISITOR.AsGuid() );
+
+            //var knownRelationshipGroupType = GroupTypeCache.Read( Rock.SystemGuid.GroupType.GROUPTYPE_KNOWN_RELATIONSHIPS.AsGuid() );
+            //var canCheckInRole = knownRelationshipGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_CAN_CHECK_IN.AsGuid() );
+            //var knownRelationshipOwnerRoleGuid = Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER.AsGuid();
 
 
+            // ...and some service objects
+            var groupService = new GroupService( rockContext );
+            var personService = new PersonService( rockContext );
+
+            //var groupMemberService = new GroupMemberService( rockContext );
+            //var groupLocationService = new GroupLocationService( rockContext );
+
+            // person / family objects
+            Rock.Model.Group family = null;
+            Person person = null;
+            Person spouse = null;
+
+            // use existing family if exists
+            if ( _visit.FamilyId > 0 )
+            {
+                family = groupService.Get( _visit.FamilyId );
+            }
+
+            // create new family if we didnt find existing family
+            if ( family == null )
+            {
+                person = new Person
+                {
+                    FirstName = _visit.FirstName,
+                    LastName = _visit.LastName,
+                    Email = _visit.Email
+                };
+
+                family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId.AsInteger(), false );
+
+                // update visit object with new family and person ID
+                _visit.FamilyId = family.Id;
+                _visit.PersonId = person.Id;
+            }
+ 
+            if ( family == null )
+            {
+                // something failed error handle and skip
+                nbAlertSubmit.NotificationBoxType = NotificationBoxType.Danger;
+                nbAlertSubmit.Text = "Error getting/creating family";
+
+                return;
+            }
+
+
+
+
+
+            nbAlertSubmit.Text = "Success, family created: " + family.Id.ToString();
 
             // change to success panel
-            ShowFormPanel( pnlSuccess, null );
+            //ShowFormPanel( pnlSuccess, null );
         }
 
 
@@ -1171,6 +1233,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
         {
             _visit = new Visit();
             _visit.Children = new List<Child>();
+
+            // -1 indicates a new person needs to be created
+            _visit.PersonId = -1;
 
             ltlExistingChildrenHorizontal.Text = "";
             ltlExistingChildrenVertical.Text = "";

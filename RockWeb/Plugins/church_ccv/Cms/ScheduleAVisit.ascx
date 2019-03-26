@@ -56,7 +56,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="lunchbo" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="a" />
                                 </div>
                                 <div class="form-field">
                                     <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="henderson" />
@@ -309,6 +309,10 @@
                                 <asp:ListItem>Other</asp:ListItem>
                              </Rock:RockRadioButtonList>
                          </div>
+
+                        <div class="form-alerts">
+                            <Rock:NotificationBox ID="nbAlertSubmit" runat="server" />
+                        </div>
 
                         <div class="form-navigation">
                             <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren" Text="Back" CssClass="btn btn-default" />                       
