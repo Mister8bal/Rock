@@ -46,14 +46,7 @@
     background-color: #ffffff;
 }
 
-.left p {
-    color: #898888;
-}
-
-.right p {
-    color: #898888;
-}
-
+/* use the expanded main feature only for tablet and larger */
 @media screen and (max-width: 500px) {
     .main-feature {
         height: 240px;
