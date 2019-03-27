@@ -166,11 +166,11 @@
                                         itemOccurrenceId: '{{ eventOccurrenceSummary.EventItemOccurrence.Id }}',
                                         photoGuid: '{{ eventOccurrenceSummary.EventItem.Photo.Guid }}',
                                         name: '{{ eventOccurrenceSummary.Name }}',
-                                        summary: '{{ eventOccurrenceSummary.Summary | Escape }}',
+                                        summary: '{{ eventOccurrenceSummary.Summary | Escape | StripNewlines }}',
                                         detailUrl: '{{ detailUrl }}',
                                         contactEmail: '{{ eventOccurrenceSummary.EventItemOccurrence.ContactEmail }}',
                                         contactPhone: '{{ eventOccurrenceSummary.EventItemOccurrence.ContactPhone }}',
-                                        note: '{{ eventOccurrenceSummary.EventItemOccurrence.Note | Escape }}',
+                                        note: '{{ eventOccurrenceSummary.EventItemOccurrence.Note | Escape | StripNewlines }}',
                                         regInfo: '',
                                         location: '{{ locationString | Escape }}'
                                     };
@@ -231,11 +231,11 @@
                                     itemOccurrenceId: '{{ eventOccurrenceSummary.EventItemOccurrence.Id }}',
                                     photoGuid: '{{ eventOccurrenceSummary.EventItem.Photo.Guid }}',
                                     name: '{{ eventOccurrenceSummary.Name | Escape }}',
-                                    summary: '{{ eventOccurrenceSummary.Summary | Escape }}',
+                                    summary: '{{ eventOccurrenceSummary.Summary | Escape | StripNewlines }}',
                                     detailUrl: '{{ detailUrl }}',
                                     contactEmail: '{{ eventOccurrenceSummary.EventItemOccurrence.ContactEmail }}',
                                     contactPhone: '{{ eventOccurrenceSummary.EventItemOccurrence.ContactPhone }}',
-                                    note: '{{ eventOccurrenceSummary.EventItemOccurrence.Note | Escape }}',
+                                    note: '{{ eventOccurrenceSummary.EventItemOccurrence.Note | Escape | StripNewlines }}',
                                     regInfo: '{{ regInfo }}',
                                     location: '{{ locationString | Escape }}'
                                 };
