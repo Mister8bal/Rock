@@ -19,6 +19,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum VersionResponse
         {
+            NotSet = -1,
+
             Success,
 
             Failed
@@ -50,6 +52,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum PersonalizedContentResponse
         {
+            NotSet = -1,
+
             Success,
 
             NoCampaignsFound,
@@ -138,6 +142,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum PromotionsResponse
         {
+            NotSet = -1,
+
             Success
         }
 

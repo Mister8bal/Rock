@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    class GroupResult
+    public class MobileAppGroupModel
     {
         public int Id;
 

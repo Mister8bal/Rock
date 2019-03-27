@@ -17,6 +17,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum LoginResponse
         {
+            NotSet = -1,
+
             Success,
 
             InvalidModel,
@@ -84,6 +86,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum FacebookLoginResponse
         {
+            NotSet = -1,
+
             Success,
 
             InvalidModel,
@@ -124,6 +128,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum RegisterNewUserResponse
         {
+            NotSet = -1,
+
             Success,
 
             InvalidModel,
@@ -198,6 +204,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum ForgotPasswordResponse
         {
+            NotSet = -1,
+
             Success,
             EmailNotFound,
             InvalidEmail

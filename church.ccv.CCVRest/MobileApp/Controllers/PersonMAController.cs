@@ -15,6 +15,7 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum PersonResponse
         {
+            NotSet = -1,
             Success,
             PersonNotFound
         }
@@ -69,6 +70,7 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum RecordAttendanceResponse
         {
+            NotSet = -1,
             Success,
             PersonNotFound,
             AlreadyAttended
@@ -105,6 +107,7 @@ namespace church.ccv.CCVRest.MobileApp
         [Serializable]
         public enum CheckAttendanceResponse
         {
+            NotSet = -1,
             Attended,
             NotAttended,
             PersonNotFound
