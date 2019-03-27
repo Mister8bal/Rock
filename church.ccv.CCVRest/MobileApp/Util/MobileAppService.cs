@@ -171,6 +171,34 @@ namespace church.ccv.CCVRest.MobileApp
             return personModel;
         }
 
+        public static UserLogin CreateNewLogin( NewUserModel newUserModel, Person person, bool autoConfirm )
+        {
+            RockContext rockContext = new RockContext();
+
+            // and now create the login for this person
+            try
+            {
+                UserLogin login = UserLoginService.Create(
+                                rockContext,
+                                person,
+                                Rock.Model.AuthenticationServiceType.Internal,
+                                EntityTypeCache.Read( Rock.SystemGuid.EntityType.AUTHENTICATION_DATABASE.AsGuid() ).Id,
+                                newUserModel.Username,
+                                newUserModel.Password,
+                                autoConfirm,
+                                false );
+
+                rockContext.SaveChanges();
+
+                return login;
+            }
+            catch
+            {
+                // fail on exception
+                return null;
+            }
+        }
+
         public static bool RegisterNewPerson( NewUserModel newUserModel )
         {
             RockContext rockContext = new RockContext();
@@ -208,27 +236,28 @@ namespace church.ccv.CCVRest.MobileApp
             person.SaveAttributeValues( rockContext );
             rockContext.SaveChanges();
 
-
             // and now create the login for this person
-            try
-            {
-                UserLogin login = UserLoginService.Create(
-                                rockContext,
-                                person,
-                                Rock.Model.AuthenticationServiceType.Internal,
-                                EntityTypeCache.Read( Rock.SystemGuid.EntityType.AUTHENTICATION_DATABASE.AsGuid() ).Id,
-                                newUserModel.Username,
-                                newUserModel.Password,
-                                true,
-                                false );
+            UserLogin newLogin = CreateNewLogin( newUserModel, person, true );
+            return newLogin != null ? true : false;
+        }
 
-                return true;
-            }
-            catch
-            {
-                // fail on exception
-                return false;
-            }
+        public static void SendConfirmAccountEmail( Person person, UserLogin userLogin )
+        {
+            const string ConfirmAccountUrlRoute = "ConfirmAccount";
+
+            // send an email to the person found asking them to confirm their account
+            var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null, person );
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            mergeFields.Add( "ConfirmAccountUrl", publicAppRoot + ConfirmAccountUrlRoute );
+
+            mergeFields.Add( "Person", person );
+            mergeFields.Add( "User", userLogin );
+
+            var emailMessage = new RockEmailMessage( Rock.SystemGuid.SystemEmail.SECURITY_CONFIRM_ACCOUNT.AsGuid() );
+            emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
+            emailMessage.CreateCommunicationRecord = false;
+            emailMessage.Send();
         }
 
         public static bool SendForgotPasswordEmail( string personEmail )
@@ -236,7 +265,6 @@ namespace church.ccv.CCVRest.MobileApp
             // Define our constant values here in the function to keep them organized
             // Note that even tho this function is "ForgotPassword", technically it sends them a list of Usernames in an email,
             // which is why we use a Username Email Template
-            const string ForgotUserNamesEmailTemplateGuid = "113593FF-620E-4870-86B1-7A0EC0409208";
             const string ConfirmAccountUrlRoute = "ConfirmAccount";
 
             // setup merge fields
@@ -284,7 +312,7 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 mergeFields.Add( "Results", results.ToArray() );
 
-                var emailMessage = new RockEmailMessage( new Guid( ForgotUserNamesEmailTemplateGuid ) );
+                var emailMessage = new RockEmailMessage( Rock.SystemGuid.SystemEmail.SECURITY_FORGOT_USERNAME.AsGuid() );
                 emailMessage.AddRecipient( new RecipientData( personEmail, mergeFields ) );
                 emailMessage.CreateCommunicationRecord = false;
                 emailMessage.Send();

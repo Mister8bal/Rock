@@ -130,15 +130,18 @@ namespace church.ccv.CCVRest.MobileApp
         {
             NotSet = -1,
 
-            Success,
+            Success, //Account created and ready for login
+
+            Success_NeedsConfirmation, //Account was created but must be confirmed via email
+
+            UsernameAlreadyExists, //The username they want is taken
+
+            MultiplePeopleFound, //Multiple people with a matching first name, last name, and email were fuond in Rock
+
+            PersonHasUsername, //At least one person with a matching first name, last name, and email was found in Rock and already has a username
 
             InvalidModel,
-            CreationError,
-
-            UsernameAlreadyExists,
-
-            PersonHasUsername,
-            PersonAlreadyExists
+            CreationError
         }
 
         [System.Web.Http.HttpPost]
@@ -164,28 +167,36 @@ namespace church.ccv.CCVRest.MobileApp
             // Now make sure the person doesn't already exist
             PersonService personService = new PersonService( rockContext );
             IEnumerable<Person> personList = personService.GetByMatch( newUserModel.FirstName, newUserModel.LastName, newUserModel.Email );
-            if ( personList.Count() > 0 )
+            if ( personList.Count() > 1 )
+            {
+                // we found multiple people with the same first name, last name and email, so we can't move forward.
+                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.MultiplePeopleFound.ToString(), null );
+            }
+            else if( personList.Count() == 1 )
             {
                 // the person exists, so now see if they already have a username, too
-                bool personHasUsername = false;
-                foreach ( var person in personList )
-                {
-                    var loginList = userLoginService.GetByPersonId( person.Id );
-                    if ( loginList.Count() > 0 )
-                    {
-                        personHasUsername = true;
-                        break;
-                    }
-                }
+                Person foundPerson = personList.First();
 
                 // the person exists AND has a username, so say that
-                if ( personHasUsername == true )
+                var loginList = userLoginService.GetByPersonId( foundPerson.Id );
+                if ( loginList.Count() > 0 )
                 {
-                    return Common.Util.GenerateResponse( false, RegisterNewUserResponse.PersonHasUsername.ToString( ), null );
+                    return Common.Util.GenerateResponse( false, RegisterNewUserResponse.PersonHasUsername.ToString(), null );
                 }
-
-                // otherwise let them know the person already exists
-                return Common.Util.GenerateResponse( false, RegisterNewUserResponse.PersonAlreadyExists.ToString( ), null );
+                else
+                {
+                    // we'll create a login but will make them confirm it (proving they own the provided email)
+                    UserLogin newLogin = MobileAppService.CreateNewLogin( newUserModel, foundPerson, false );
+                    if ( newLogin != null )
+                    {
+                        MobileAppService.SendConfirmAccountEmail( foundPerson, newLogin );
+                        return Common.Util.GenerateResponse( true, RegisterNewUserResponse.Success_NeedsConfirmation.ToString(), null );
+                    }
+                    else
+                    {
+                        return Common.Util.GenerateResponse( false, RegisterNewUserResponse.CreationError.ToString(), null );
+                    }
+                }
             }
 
 
