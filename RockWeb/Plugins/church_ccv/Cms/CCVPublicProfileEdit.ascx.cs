@@ -281,7 +281,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             var isBaptizedHere = person.AttributeValues["BaptizedHere"].ToString();
 
             // Assign baptism photo
-            if ( baptismPhoto != null && baptismPhoto.Count != 0 )
+            if ( baptismPhoto != null && baptismPhoto.Count > 0 )
             {
                 lBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
             }
@@ -792,15 +792,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     lAge.Text = string.Format( "{0} old <small>({1})</small><br/>", CurrentPerson.FormatAge(), CurrentPerson.BirthYear != DateTime.MinValue.Year ? CurrentPerson.BirthDate.Value.ToShortDateString() : CurrentPerson.BirthDate.Value.ToMonthDayString() );
                 }
 
-
                 // Get Current Person Details (baptism photo, baptized at CCV, baptism date)
-                // var hasBaptismPhoto = CurrentPerson.AttributeValues["BaptismPhoto"];
                 var hasBaptismPhoto = CurrentPerson.GetAttributeValues( "BaptismPhoto" );
                 var isBaptizedHere = CurrentPerson.AttributeValues["BaptizedHere"].ToString();
                 DateTime? BaptismDate = CurrentPerson.GetAttributeValue( "BaptismDate" ).AsDateTime();
 
                 // Assign Head of House baptism photo
-                if ( hasBaptismPhoto != null && hasBaptismPhoto.Count != 0 )
+                if ( hasBaptismPhoto != null && hasBaptismPhoto.Count > 0 )
                 {
                     lLeaderBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
                 }
