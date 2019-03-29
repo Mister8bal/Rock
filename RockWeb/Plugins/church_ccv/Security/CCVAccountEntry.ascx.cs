@@ -128,6 +128,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                 if ( pnlPhoneNumbers.Visible )
                 {
                     var phoneNumberTypeDefinedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.PERSON_PHONE_TYPE ) );
+                    var mobilePhoneType = DefinedValueCache.Read( new Guid( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ) );
 
                     if (!string.IsNullOrWhiteSpace( GetAttributeValue( "PhoneTypes" ) ) )
                     {
@@ -146,7 +147,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                             var phoneNumber = new PhoneNumber { NumberTypeValueId = numberType.Id, NumberTypeValue = numberType };
 
                             // If the phone type is a mobile phone, default sms texting to true (12 is Mobile)
-                            if ( phoneNumber.NumberTypeValueId == 12)
+                            if ( phoneNumber.NumberTypeValueId == mobilePhoneType.Id )
                             {
                                 phoneNumber.IsMessagingEnabled = true;
                             }
