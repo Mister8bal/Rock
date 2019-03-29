@@ -110,13 +110,21 @@
 
 /* End Feature Title Section */
 
-/* Map Section */
+/* video promo section */
 
 #section-a-bg {
+    background-color: #FFFFFF;
+}
+
+/* End video promo Section */
+
+/* Map Section */
+
+#section-b-bg {
     padding: 0;
 }
 
-#zone-sectiona {
+#zone-sectionb {
     max-width: 100%;
     margin: unset;
 }
@@ -132,11 +140,12 @@
 /* End Map Section */
 
 /* Campus Card Section */
-#zone-sectionb {
+#zone-sectionc {
     margin: 0 auto;
 }
 
-#section-b-bg {
+#section-c-bg {
+    /* background-color: #FFFFFF; */
     background-color: #ebebeb;
 }
 
@@ -276,11 +285,11 @@
 
 /* Plan Your Visit section */
 
-#zone-sectionc {
-    display: none;
+#zone-sectiond {
+
 }
 
-#section-c-bg {
+#section-d-bg {
     background-color: #ffffff; /* background-color: #ffffff; */
 }
 
@@ -288,7 +297,7 @@
 
 /* Baptisms section */
 
-#section-d-bg {
+#section-e-bg {
     background-color: #ffffff; /* background-color: #ebebeb; */
 }
 
@@ -296,12 +305,12 @@
 
 /* Sunrise Service section */
 
-#zone-sectione {
+#zone-sectionf {
     margin: 0 5%;
     max-width: unset;
 }
 
-#section-e-bg {
+#section-f-bg {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/feature-sunrise-strip.jpg");
 }
 
@@ -357,7 +366,7 @@
 
 /* Share Section */
 
-#section-f-bg {
+#section-g-bg {
     background-color: #FFFFFF;
 }
 
@@ -398,7 +407,7 @@
 /* End Share Section */
 
 /* FAQ section */
-#section-g-bg {
+#section-h-bg {
     background-color: #FFFFFF;
 }
 
