@@ -17,6 +17,16 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MobileAppService
     {
+        const int GroupRoleId_NeighborhoodGroupCoach = 50;
+        const int GroupTypeId_NeighborhoodGroup = 49;
+        
+        const string GroupDescription_Key = "GroupDescription";
+        const string ChildcareDescription_Key = "Childcare";
+        const string FamilyPicture_Key = "FamilyPicture";
+
+        const string GroupFilters_Key = "GroupFilters";
+        const string ChildcareProvided_FilterKey = "Childcare Provided";
+
         public static MobileAppPersonModel GetMobileAppPerson( int personId )
         {
             RockContext rockContext = new RockContext();
@@ -73,6 +83,25 @@ namespace church.ccv.CCVRest.MobileApp
                     };
 
                     personModel.FamilyMembers.Add( familyMember );
+                }
+            }
+
+            // now get the neighborhood groups (and classes?) they're in
+            personModel.Groups = new List<MobileAppGroupModel>();
+
+            // lazily load each group member
+            foreach ( GroupMember member in person.Members )
+            {
+                // and group; to see if it's a neighborhood group
+                if ( member.Group.GroupTypeId == GroupTypeId_NeighborhoodGroup )
+                {
+                    // it is, so add it
+                    MobileAppGroupModel groupResult = GetMobileAppGroup( member.Group );
+
+                    if ( groupResult != null )
+                    {
+                        personModel.Groups.Add( groupResult );
+                    }
                 }
             }
 
@@ -460,21 +489,11 @@ namespace church.ccv.CCVRest.MobileApp
         {
             // Gets Neighborhood Groups, searches by the provided arguments, and returns matching values as MobileAppGroupModels
 
-            const int GroupTypeId_NeighborhoodGroup = 49;
-            const int GroupRoleId_NeighborhoodGroupCoach = 50;
-
             // The id for the group description on Neighborhood groups. Used for joining the attributeValue if a descriptionKeyword is provided.
             const int AttributeId_GroupDescription = 13055;
 
             // The id for the group filters on Neighborhood groups. Used for joininig the attributeValue to see if it contains "Childcare"
             const int AttributeId_GroupFilters = 42850;
-
-            const string GroupDescription_Key = "GroupDescription";
-            const string ChildcareDescription_Key = "Childcare";
-            const string FamilyPicture_Key = "FamilyPicture";
-
-            const string GroupFilters_Key = "GroupFilters";
-            const string ChildcareProvided_FilterKey = "Childcare Provided";
 
             // First get all neighborhood groups, filtered by name and description if the caller provided those keywords
             RockContext rockContext = new RockContext();
@@ -550,103 +569,117 @@ namespace church.ccv.CCVRest.MobileApp
 
 
             // Now package the groups into GroupResult objects that store what the Mobile App cares about
-            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
-            var personService = new PersonService( rockContext ).Queryable().AsNoTracking();
-            var binaryFileService = new BinaryFileService( rockContext ).Queryable().AsNoTracking();
-
             List<MobileAppGroupModel> groupResultList = new List<MobileAppGroupModel>();
 
             // now take only what we need from each group (drops our return package to about 2kb, from 40kb)
             foreach ( Group group in groupList )
             {
-                // now get the group leader. If there isn't one, we'll fail, because we don't want a group with no leader
-                GroupMember leader = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach == gm.GroupRole.Id ).SingleOrDefault();
-                if ( leader != null )
+                MobileAppGroupModel groupResult = GetMobileAppGroup( group );
+
+                if ( groupResult != null )
                 {
-                    // we are guaranteed that there will be a location object due to our initial query
-                    Location locationObj = group.GroupLocations.First().Location;
-
-                    MobileAppGroupModel groupResult = new MobileAppGroupModel()
-                    {
-                        Id = group.Id,
-
-                        Name = group.Name,
-                        Description = group.Description,
-
-                        Longitude = locationObj.Longitude.Value,
-                        Latitude = locationObj.Latitude.Value,
-                        DistanceFromSource = locationObj.Distance,
-
-                        MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : "",
-
-                        Street = locationObj.Street1,
-                        City = locationObj.City,
-                        State = locationObj.State,
-                        Zip = locationObj.PostalCode
-                    };
-
-                    // now find the leader in our datamart so that we can see who their Associate Pastor / Neighborhood Leader is
-                    var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == leader.Person.Id ).SingleOrDefault();
-                    if ( datamartPerson != null )
-                    {
-                        groupResult.CoachName = leader.Person.NickName + " " + leader.Person.LastName;
-                        groupResult.CoachPhotoId = leader.Person.PhotoId;
-
-                        // if the leader has a neighborhood pastor (now called associate pastor) defined, take their values.
-                        if ( datamartPerson.NeighborhoodPastorId.HasValue )
-                        {
-                            // get the AP, but guard against a null value (could happen if the current ID is merged and the datamart hasn't re-run)
-                            Person associatePastor = personService.Where( p => p.Id == datamartPerson.NeighborhoodPastorId.Value ).SingleOrDefault();
-                            if ( associatePastor != null )
-                            {
-                                groupResult.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
-                                groupResult.AssociatePastorPhotoId = associatePastor.PhotoId;
-                            }
-                        }
-                    }
-
-                    // Finally, load attributes so we can set additional group info
-                    group.LoadAttributes();
-
-                    if ( group.AttributeValues.ContainsKey( GroupDescription_Key ) )
-                    {
-                        groupResult.Description = group.AttributeValues[GroupDescription_Key].Value;
-                    }
-
-                    if ( group.AttributeValues.ContainsKey( FamilyPicture_Key ) )
-                    {
-                        Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
-
-                        // get the id so that we send consistent data down to the mobile app
-                        var photoObj = binaryFileService.Where( f => f.Guid == photoGuid ).SingleOrDefault();
-                        if ( photoObj != null )
-                        {
-                            groupResult.PhotoId = photoObj.Id;
-                        }
-                    }
-
-                    // get the childcare description whether the Childcare filter is set or NOT. This is
-                    // because some groups (like mine!) explain that they'd be willing to start childcare if the group grew.
-                    if ( group.AttributeValues.ContainsKey( ChildcareDescription_Key ) )
-                    {
-                        groupResult.ChildcareDesc = group.AttributeValues[ChildcareDescription_Key].Value;
-                    }
-
-                    // filters contain a comma delimited list of features the group offers. See if it has any.
-                    if ( group.AttributeValues.ContainsKey( GroupFilters_Key ) )
-                    {
-                        // The only one we currently care about it Childcare.
-                        if ( group.AttributeValues[GroupFilters_Key].Value.Contains( ChildcareProvided_FilterKey ) )
-                        {
-                            groupResult.Childcare = true;
-                        }
-                    }
-
                     groupResultList.Add( groupResult );
                 }
             }
 
             return groupResultList;
+        }
+
+        public static MobileAppGroupModel GetMobileAppGroup( Group group )
+        {
+            RockContext rockContext = new RockContext();
+
+            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var personService = new PersonService( rockContext ).Queryable().AsNoTracking();
+            var binaryFileService = new BinaryFileService( rockContext ).Queryable().AsNoTracking();
+
+
+            // now get the group leader. If there isn't one, we'll fail, because we don't want a group with no leader
+            GroupMember leader = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach == gm.GroupRole.Id ).SingleOrDefault();
+            if ( leader != null )
+            {
+                // we are guaranteed that there will be a location object due to our initial query
+                Location locationObj = group.GroupLocations.First().Location;
+
+                MobileAppGroupModel groupResult = new MobileAppGroupModel()
+                {
+                    Id = group.Id,
+
+                    Name = group.Name,
+
+                    Longitude = locationObj.Longitude.Value,
+                    Latitude = locationObj.Latitude.Value,
+                    DistanceFromSource = locationObj.Distance,
+
+                    MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : "",
+
+                    Street = locationObj.Street1,
+                    City = locationObj.City,
+                    State = locationObj.State,
+                    Zip = locationObj.PostalCode
+                };
+
+                // now find the leader in our datamart so that we can see who their Associate Pastor / Neighborhood Leader is
+                var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == leader.Person.Id ).SingleOrDefault();
+                if ( datamartPerson != null )
+                {
+                    groupResult.CoachName = leader.Person.NickName + " " + leader.Person.LastName;
+                    groupResult.CoachPhotoId = leader.Person.PhotoId;
+
+                    // if the leader has a neighborhood pastor (now called associate pastor) defined, take their values.
+                    if ( datamartPerson.NeighborhoodPastorId.HasValue )
+                    {
+                        // get the AP, but guard against a null value (could happen if the current ID is merged and the datamart hasn't re-run)
+                        Person associatePastor = personService.Where( p => p.Id == datamartPerson.NeighborhoodPastorId.Value ).SingleOrDefault();
+                        if ( associatePastor != null )
+                        {
+                            groupResult.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
+                            groupResult.AssociatePastorPhotoId = associatePastor.PhotoId;
+                        }
+                    }
+                }
+
+                // Finally, load attributes so we can set additional group info
+                group.LoadAttributes();
+
+                if ( group.AttributeValues.ContainsKey( GroupDescription_Key ) )
+                {
+                    groupResult.Description = group.AttributeValues[GroupDescription_Key].Value;
+                }
+
+                if ( group.AttributeValues.ContainsKey( FamilyPicture_Key ) )
+                {
+                    Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
+
+                    // get the id so that we send consistent data down to the mobile app
+                    var photoObj = binaryFileService.Where( f => f.Guid == photoGuid ).SingleOrDefault();
+                    if ( photoObj != null )
+                    {
+                        groupResult.PhotoId = photoObj.Id;
+                    }
+                }
+
+                // get the childcare description whether the Childcare filter is set or NOT. This is
+                // because some groups (like mine!) explain that they'd be willing to start childcare if the group grew.
+                if ( group.AttributeValues.ContainsKey( ChildcareDescription_Key ) )
+                {
+                    groupResult.ChildcareDesc = group.AttributeValues[ChildcareDescription_Key].Value;
+                }
+
+                // filters contain a comma delimited list of features the group offers. See if it has any.
+                if ( group.AttributeValues.ContainsKey( GroupFilters_Key ) )
+                {
+                    // The only one we currently care about it Childcare.
+                    if ( group.AttributeValues[GroupFilters_Key].Value.Contains( ChildcareProvided_FilterKey ) )
+                    {
+                        groupResult.Childcare = true;
+                    }
+                }
+
+                return groupResult;
+            }
+
+            return null;
         }
     }
 }

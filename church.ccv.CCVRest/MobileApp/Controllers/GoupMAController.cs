@@ -70,5 +70,37 @@ namespace church.ccv.CCVRest.MobileApp
 
             return Common.Util.GenerateResponse( true, SearchGroupsResponse.Success.ToString(), groupResults );
         }
+
+        [Serializable]
+        public enum GroupResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            NotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Group" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage Group( int groupId )
+        {
+            // find the Rock group, and then we'll get a mobile app group from that
+            RockContext rockContext = new RockContext();
+            GroupService groupService = new GroupService( rockContext );
+            Group group = groupService.Get( groupId );
+
+            if ( group != null )
+            {
+                MobileAppGroupModel mobileAppGroup = MobileAppService.GetMobileAppGroup( group );
+
+                return Common.Util.GenerateResponse( true, GroupResponse.Success.ToString(), mobileAppGroup );
+            }
+            else
+            {
+                return Common.Util.GenerateResponse( false, GroupResponse.NotFound.ToString(), null );
+            }
+        }
     }
 }

@@ -77,7 +77,6 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route( "api/NewMobileApp/Attendance" )] //REMOVE AFTER MA PULL REQUEST IS ACCEPTED
         [System.Web.Http.Route( "api/NewMobileApp/RecordAttendance" )]
         [Authenticate, Secured]
         public HttpResponseMessage RecordAttendance( int primaryAliasId, int? campusId = null )
@@ -114,7 +113,6 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [System.Web.Http.HttpGet]
-        [System.Web.Http.Route( "api/NewMobileApp/Attended" )] //REMOVE AFTER MA PULL REQUEST IS ACCEPTED
         [System.Web.Http.Route( "api/NewMobileApp/CheckAttendance" )]
         [Authenticate, Secured]
         public HttpResponseMessage CheckAttendance( int primaryAliasId )

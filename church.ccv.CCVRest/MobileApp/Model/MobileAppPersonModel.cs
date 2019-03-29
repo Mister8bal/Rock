@@ -32,6 +32,9 @@ namespace church.ccv.CCVRest.MobileApp.Model
         // Family Info
         public int FamilyId;
         public List<FamilyMemberModel> FamilyMembers;
+
+        // Group Info
+        public List<MobileAppGroupModel> Groups { get; set; }
         
 
         // Address Info
