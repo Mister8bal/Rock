@@ -681,5 +681,127 @@ namespace church.ccv.CCVRest.MobileApp
 
             return null;
         }
+
+        public enum RegisterPersonResult
+        {
+            Success,
+            GroupNotFound,
+            SecurityIssue,
+            AlreadyInGroup
+        }
+
+        public static RegisterPersonResult RegisterPersonInGroup( JoinGroupModel regModel )
+        {
+            // the workflow type id for the alert note re-route
+            const int AlertNoteReReouteWorkflowId = 166;
+            
+            // setup all variables we'll need
+            var rockContext = new RockContext();
+            var personService = new PersonService( rockContext );
+            var groupService = new GroupService( rockContext );
+
+            DefinedValueCache connectionStatusPending = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT );
+            DefinedValueCache recordStatusPending = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING );
+
+            Person person = null;
+
+            // first, get the group the person wants to join
+            Group requestedGroup = groupService.Get( regModel.GroupId );
+            if ( requestedGroup != null )
+            {
+                // Try to find person by name/email 
+                var matches = personService.GetByMatch( regModel.FirstName.Trim(), regModel.LastName.Trim(), regModel.Email.Trim() );
+                if ( matches.Count() == 1 )
+                {
+                    person = matches.First();
+                }
+
+                // Check to see if this is a new person
+                if ( person == null )
+                {
+                    // If so, create the person and family record for the new person
+                    person = new Person();
+                    person.FirstName = regModel.FirstName.Trim();
+                    person.LastName = regModel.LastName.Trim();
+                    person.Email = regModel.Email.Trim();
+                    person.IsEmailActive = true;
+                    person.EmailPreference = EmailPreference.EmailAllowed;
+                    person.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                    person.ConnectionStatusValueId = connectionStatusPending.Id;
+                    person.RecordStatusValueId = recordStatusPending.Id;
+                    person.Gender = Gender.Unknown;
+
+                    PersonService.SaveNewPerson( person, rockContext, requestedGroup.CampusId, false );
+                }
+
+                // Save all changes
+                rockContext.SaveChanges();
+
+                // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
+                // (Or nothing if there's no problem but they're already in the group)
+                GroupMember primaryGroupMember = PersonToGroupMember( rockContext, person, requestedGroup );
+                
+                // does the person registering have alert notes?
+                int alertNoteCount = new NoteService( rockContext ).Queryable().Where( n => n.EntityId == person.Id && n.IsAlert == true ).Count();
+
+                if ( alertNoteCount > 0 )
+                {
+                    // First, check to see if an alert re-route workflow should be launched
+                    WorkflowTypeCache alertRerouteWorkflowType = WorkflowTypeCache.Read( AlertNoteReReouteWorkflowId );
+
+                    // yes they do. so kick off the re-route workflow so security can review.
+                    Common.Util.LaunchWorkflow( rockContext, alertRerouteWorkflowType, primaryGroupMember );
+
+                    return RegisterPersonResult.SecurityIssue;
+                }
+                // if above, we didn't flag that they should not join the group, let's add them
+                else
+                {
+                    // try to add them to the group (would only fail if the're already in it)
+                    if ( TryAddGroupMemberToGroup( rockContext, primaryGroupMember, requestedGroup ) )
+                    {
+                        return RegisterPersonResult.Success;
+                    }
+                    else
+                    {
+                        return RegisterPersonResult.AlreadyInGroup;
+                    }
+                }
+            }
+
+            return RegisterPersonResult.GroupNotFound;
+        }
+        
+        private static GroupMember PersonToGroupMember( RockContext rockContext, Person person, Group group )
+        {
+            // puts a person into a group member object, so that we can pass it to a workflow
+            GroupMember newGroupMember = new GroupMember();
+            newGroupMember.PersonId = person.Id;
+            newGroupMember.GroupRoleId = group.GroupType.DefaultGroupRole.Id;
+            newGroupMember.GroupMemberStatus = GroupMemberStatus.Pending;
+            newGroupMember.GroupId = group.Id;
+
+            return newGroupMember;
+        }
+
+        /// <summary>
+        /// Adds the group member to the group if they aren't already in it
+        /// </summary>
+        private static bool TryAddGroupMemberToGroup( RockContext rockContext, GroupMember newGroupMember, Group group )
+        {
+            if ( !group.Members.Any( m =>
+                                      m.PersonId == newGroupMember.PersonId &&
+                                      m.GroupRoleId == group.GroupType.DefaultGroupRole.Id ) )
+            {
+                var groupMemberService = new GroupMemberService( rockContext );
+                groupMemberService.Add( newGroupMember );
+
+                rockContext.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

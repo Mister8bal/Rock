@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using church.ccv.CCVRest.Common.Model;
 using Newtonsoft.Json;
 using Rock.Data;
 using Rock.Model;
+using Rock.Web.Cache;
 
 namespace church.ccv.CCVRest.Common
 {
@@ -94,6 +96,22 @@ namespace church.ccv.CCVRest.Common
                 .FirstOrDefault();
 
             return attendance != null;
+        }
+
+        public static void LaunchWorkflow( RockContext rockContext, 
+                                           WorkflowTypeCache workflowTypeCache, 
+                                           object contextEntity )
+        {
+            try
+            {
+                List<string> workflowErrors;
+                var workflow = Workflow.Activate( workflowTypeCache, workflowTypeCache.Name );
+                new WorkflowService( rockContext ).Process( workflow, contextEntity, out workflowErrors );
+            }
+            catch ( Exception ex )
+            {
+                ExceptionLogService.LogException( ex, null );
+            }
         }
     }
 }

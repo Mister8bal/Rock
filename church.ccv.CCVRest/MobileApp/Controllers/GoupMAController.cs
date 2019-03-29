@@ -13,6 +13,7 @@ using Rock.Web.Cache;
 using Newtonsoft.Json.Linq;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Datamart.Model;
+using System.Web.Http;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -23,11 +24,7 @@ namespace church.ccv.CCVRest.MobileApp
         {
             NotSet = -1,
 
-            Success,
-            
-            AddressLookupFailed, //The address couldn't be resolved to a location object within Rock
-
-            LocationNotGeocoded, //Means a location was found with the address provided, but it isn't geocoded (and needs to be)
+            Success
         }
 
         [System.Web.Http.HttpGet]
@@ -53,16 +50,12 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 // take the address provided and get a location object from it
                 RockContext rockContext = new RockContext( );
-                locationForDistance = new LocationService( rockContext ).Get( street, string.Empty, city, state, zip, GlobalAttributesCache.Read().OrganizationCountry );
-                if ( locationForDistance == null )
-                {
-                    return Common.Util.GenerateResponse( false, SearchGroupsResponse.AddressLookupFailed.ToString(), null );
-                }
+                Location foundLocation = new LocationService( rockContext ).Get( street, string.Empty, city, state, zip, GlobalAttributesCache.Read().OrganizationCountry );
 
-                // use the location to find the groups nearby
-                if ( locationForDistance.GeoPoint == null )
+                // if we found a location and it's geo-coded, we'll use it to sort groups by distance from it
+                if ( foundLocation != null && foundLocation.GeoPoint != null )
                 {
-                    return Common.Util.GenerateResponse( false, SearchGroupsResponse.LocationNotGeocoded.ToString(), null );
+                    locationForDistance = foundLocation;
                 }
             }
 
@@ -100,6 +93,59 @@ namespace church.ccv.CCVRest.MobileApp
             else
             {
                 return Common.Util.GenerateResponse( false, GroupResponse.NotFound.ToString(), null );
+            }
+        }
+
+        [Serializable]
+        public enum JoinGroupResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            Success_SecurityIssue, //The user was processed, but needs a review by security before they can join the group.
+
+            AlreadyInGroup, //The user is already in this group
+
+            GroupNotFound, //A group with the provided group id wasn't found
+
+            InvalidModel,
+
+            Failed
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route( "api/NewMobileApp/JoinGroup" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage JoinGroup( [FromBody] JoinGroupModel joinGroupModel )
+        {
+            // make sure the model is valid
+            if ( joinGroupModel == null ||
+                string.IsNullOrWhiteSpace( joinGroupModel.FirstName ) == true ||
+                string.IsNullOrWhiteSpace( joinGroupModel.LastName ) == true ||
+                string.IsNullOrWhiteSpace( joinGroupModel.Email ) == true )
+            {
+                return Common.Util.GenerateResponse( false, JoinGroupResponse.InvalidModel.ToString(), null );
+            }
+
+            // try letting them join the group
+            MobileAppService.RegisterPersonResult result = MobileAppService.RegisterPersonInGroup( joinGroupModel );
+            switch ( result )
+            {
+                case MobileAppService.RegisterPersonResult.Success:
+                    return Common.Util.GenerateResponse( true, JoinGroupResponse.Success.ToString(), null );
+
+                case MobileAppService.RegisterPersonResult.SecurityIssue:
+                    return Common.Util.GenerateResponse( true, JoinGroupResponse.Success_SecurityIssue.ToString(), null );
+
+                case MobileAppService.RegisterPersonResult.GroupNotFound:
+                    return Common.Util.GenerateResponse( true, JoinGroupResponse.GroupNotFound.ToString(), null );
+
+                case MobileAppService.RegisterPersonResult.AlreadyInGroup:
+                    return Common.Util.GenerateResponse( true, JoinGroupResponse.AlreadyInGroup.ToString(), null );
+
+                default:
+                    return Common.Util.GenerateResponse( false, JoinGroupResponse.Failed.ToString(), null );
             }
         }
     }
