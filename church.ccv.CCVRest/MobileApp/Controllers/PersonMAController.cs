@@ -137,5 +137,32 @@ namespace church.ccv.CCVRest.MobileApp
 
             return Common.Util.GenerateResponse( false, CheckAttendanceResponse.PersonNotFound.ToString(), null );
         }
+
+        [Serializable]
+        public enum AccessTokenResponse
+        {
+            NotSet = -1,
+            Success,
+            PersonNotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/AccessToken" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage AccessToken( int primaryAliasId )
+        {
+            RockContext rockContext = new RockContext();
+
+            // get the person ID by their primary alias id
+            PersonAliasService paService = new PersonAliasService( rockContext );
+            PersonAlias personAlias = paService.Get( primaryAliasId );
+
+            if ( personAlias != null )
+            {
+                return Common.Util.GenerateResponse( true, AccessTokenResponse.Success.ToString(), "rckipid=" + personAlias.Person.GetImpersonationToken() );
+            }
+
+            return Common.Util.GenerateResponse( false, CheckAttendanceResponse.PersonNotFound.ToString(), string.Empty );
+        }
     }
 }
