@@ -26,6 +26,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
     public partial class ScheduleAVisit : RockBlock
     {
+        const int AttributeId_Allergies = 676;
+        const int AttributeId_HowDidYouHearAboutCCV = 719;
+        const int DefinedTypeId_SourceofVisit = 33;
+
         private Visit _visit;
 
         /// <summary>
@@ -64,7 +68,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 // bind dropdowns
                 BindCampuses();
-                BindStates();
+
+                // *********************************************** Probably Remove
+                //BindStates();
+
                 BindBDayYearDropDown();
             }
             else
@@ -417,11 +424,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     string maskedIdentifier = "";
 
                     // scrub mobile phone if exists
-                    string prsnMobile = prsn.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
+                    PhoneNumber mobileNumber = prsn.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
 
-                    if ( prsnMobile.IsNotNullOrWhitespace() )
+                    if ( mobileNumber.IsNotNull() )
                     {
-                        maskedIdentifier = MaskPhoneNumber( prsnMobile );
+                        maskedIdentifier = MaskPhoneNumber( mobileNumber.ToString() );
                     }
                     // no mobile phone, scrub email if exists
                     else if ( prsn.Email.IsNotNullOrWhitespace() )
@@ -467,17 +474,20 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 _visit.FirstName = tbAdultFirstName.Text;
                 _visit.LastName = tbAdultLastName.Text;
                 _visit.Email = tbAdultEmail.Text;
-                _visit.Address = tbAdultAddress.Text;
-                _visit.City = tbAdultCity.Text;
-                _visit.State = ddlAdultState.SelectedValue;
-                _visit.PostalCode = tbAdultPostalCode.Text;
+
+                // *************************************************************Probably remove
+                //_visit.Address = tbAdultAddress.Text;
+                //_visit.City = tbAdultCity.Text;
+                //_visit.State = ddlAdultState.SelectedValue;
+                //_visit.PostalCode = tbAdultPostalCode.Text;
+
                 _visit.SpouseFirstName = tbSpouseFirstName.Text;
                 _visit.SpouseLastName = tbSpouseLastName.Text;
 
 
                 if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace())
                 {
-                    _visit.MobileNumber = tbAdultFormMobile.Text;
+                    _visit.MobileNumber = PhoneNumber.CleanNumber( tbAdultFormMobile.Text );
 
                     // update mobile field on children form
                     tbChildrenFormMobile.Text = tbAdultFormMobile.Text;
@@ -546,12 +556,17 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     // otherwise use mobile number from text box
                     else
                     {
-                        _visit.MobileNumber = tbAdultFormMobile.Text;
+                        _visit.MobileNumber = PhoneNumber.CleanNumber( tbAdultFormMobile.Text );
                     }
 
-                    // populate spouse info
-                    _visit.SpouseFirstName = person.GetSpouse().FirstName;
-                    _visit.SpouseLastName = person.GetSpouse().LastName;
+                    Person spouse = person.GetSpouse();
+
+                    if ( spouse != null )
+                    {
+                        // populate spouse info
+                        _visit.SpouseFirstName = spouse.FirstName;
+                        _visit.SpouseLastName = spouse.LastName;
+                    }
 
                     // dont add the kids if family ID is already in visit object - prevents kids added everytime back button is hit
                     if (_visit.FamilyId != person.GetFamily().Id)
@@ -719,9 +734,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
             if ( RequiredChildFormFieldsReady() )
             {
                 // update mobile number in visit object if its different from text box
-                if ( _visit.MobileNumber != tbChildrenFormMobile.Text)
+                if ( _visit.MobileNumber != PhoneNumber.CleanNumber( tbChildrenFormMobile.Text) )
                 {
-                    _visit.MobileNumber = tbChildrenFormMobile.Text;
+                    _visit.MobileNumber = PhoneNumber.CleanNumber( tbChildrenFormMobile.Text );
                     tbAdultFormMobile.Text = tbChildrenFormMobile.Text;
                 }
 
@@ -760,7 +775,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // update mobile number in visit object if its different from text box
                 if ( _visit.MobileNumber != tbChildrenFormMobile.Text )
                 {
-                    _visit.MobileNumber = tbChildrenFormMobile.Text;
+                    _visit.MobileNumber = PhoneNumber.CleanNumber( tbChildrenFormMobile.Text );
                     tbAdultFormMobile.Text = tbChildrenFormMobile.Text;
                 }
 
@@ -882,7 +897,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
         protected void btnSubmitNext_Click( object sender, EventArgs e )
         {
-            bool hasError = true;
+            // disable and hide submit button so it cant be hit twice
+            btnSubmitNext.Enabled = false;
+            btnSubmitNext.Visible = false;
+
+            bool newFamily = true;
 
             RockContext rockContext = new RockContext();
 
@@ -891,70 +910,264 @@ namespace RockWeb.Plugins.church_ccv.Cms
             var adultRoleId = familyGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT.AsGuid() ).Id;
             var childRoleId = familyGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD.AsGuid() ).Id;
 
-            //var recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-            //var recordStatusValue = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() );
-            //var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_VISITOR.AsGuid() );
+            var recordTypePersonId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+            var recordStatusValue = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING.AsGuid() );
+            var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() );
+            var homeLocationType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
+            var mobilePhoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
 
+
+
+            
             //var knownRelationshipGroupType = GroupTypeCache.Read( Rock.SystemGuid.GroupType.GROUPTYPE_KNOWN_RELATIONSHIPS.AsGuid() );
             //var canCheckInRole = knownRelationshipGroupType.Roles.FirstOrDefault( r => r.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_CAN_CHECK_IN.AsGuid() );
             //var knownRelationshipOwnerRoleGuid = Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER.AsGuid();
 
 
-            // ...and some service objects
-            var groupService = new GroupService( rockContext );
-            var personService = new PersonService( rockContext );
-
-            //var groupMemberService = new GroupMemberService( rockContext );
-            //var groupLocationService = new GroupLocationService( rockContext );
+            // service objects
+            AttributeValueService avService = new AttributeValueService( rockContext );
+            PersonService personService = new PersonService( rockContext );
+            GroupService groupService = new GroupService( rockContext );
+            GroupMemberService groupMemberService = new GroupMemberService( rockContext );
 
             // person / family objects
             Rock.Model.Group family = null;
             Person person = null;
             Person spouse = null;
 
-            // use existing family if exists
-            if ( _visit.FamilyId > 0 )
+            // use existing person if exists
+            if ( _visit.PersonId > 0 )
             {
-                family = groupService.Get( _visit.FamilyId );
+                person = personService.Get( _visit.PersonId );
+
+                if ( person != null )
+                {
+                    family = person.GetFamily();
+
+                    newFamily = false;
+                }
             }
 
-            // create new family if we didnt find existing family
-            if ( family == null )
+            // create new family if no existing family
+            if ( newFamily )
             {
                 person = new Person
                 {
                     FirstName = _visit.FirstName,
                     LastName = _visit.LastName,
-                    Email = _visit.Email
+                    Email = _visit.Email,
+                    ConnectionStatusValueId = connectionStatusValue.Id,
+                    RecordTypeValueId = recordTypePersonId,
+                    RecordStatusValueId = recordStatusValue.Id
                 };
 
                 family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId.AsInteger(), false );
 
-                // update visit object with new family and person ID
+                // update visit object
                 _visit.FamilyId = family.Id;
                 _visit.PersonId = person.Id;
             }
- 
+
             if ( family == null )
             {
-                // something failed error handle and skip
+                // something failed 
+                // TODO: error handle and skip
                 nbAlertSubmit.NotificationBoxType = NotificationBoxType.Danger;
                 nbAlertSubmit.Text = "Error getting/creating family";
 
                 return;
             }
 
+            // we should have a person by now, update survey answer if they answered
+            if ( rblSurvey.SelectedValue.IsNotNullOrWhitespace() )
+            {
+                DefinedValueService definedValueService = new DefinedValueService( rockContext );
+
+                // get the DefinedValue that matches the survey answer
+                DefinedValue surveyAnswer = definedValueService.Queryable().Where( a => a.DefinedTypeId == DefinedTypeId_SourceofVisit && a.Value == rblSurvey.SelectedValue ).SingleOrDefault();
+
+                 // check to see if currently exists - to prevent duplicates if the attribute was created with person creation
+                AttributeValue avSurvey = avService.Queryable().Where( av => av.EntityId == person.Id && av.AttributeId == AttributeId_HowDidYouHearAboutCCV ).SingleOrDefault();
+
+                if ( avSurvey == null )
+                {
+                    // doesnt exist - create a new attribute value tied to the person, and of attribute type "HowDidYouHearAboutCCV"
+                    avSurvey = new AttributeValue
+                    {
+                        EntityId = person.Id,
+                        AttributeId = AttributeId_HowDidYouHearAboutCCV
+                    };
+                    avService.Add( avSurvey );
+                }
+
+                // update with the new value
+                avSurvey.Value = surveyAnswer.Guid.ToString();
+
+                _visit.Survey = rblSurvey.SelectedValue;
+            }
+
+            // if address specified add it to family ***************************************************** Probably Remove
+            //if ( _visit.Address.IsNotNullOrWhitespace() && 
+            //        _visit.City.IsNotNullOrWhitespace() &&
+            //        _visit.State.IsNotNullOrWhitespace() &&
+            //        _visit.PostalCode.IsNotNullOrWhitespace() )
+            //{
+            //    GroupService.AddNewGroupAddress( rockContext, family, homeLocationType.Guid.ToString(), _visit.Address, "", _visit.City, _visit.State, _visit.PostalCode, "US", true );
+
+            //    rockContext.SaveChanges();
+            //}
+
+            // if mobile specified, add to person
+            if ( _visit.MobileNumber.IsNotNullOrWhitespace() )
+            {
+                PhoneNumberService phoneNumberService = new PhoneNumberService( rockContext );
+
+                PhoneNumber phoneNumber = phoneNumberService.Queryable()
+                    .Where( a =>
+                        a.PersonId == person.Id &&
+                        a.NumberTypeValueId.HasValue &&
+                        a.NumberTypeValueId.Value == mobilePhoneType.Id )
+                    .FirstOrDefault();
+
+                if ( phoneNumber == null )
+                {
+                    phoneNumber = new PhoneNumber
+                    {
+                        PersonId = person.Id,
+                        NumberTypeValueId = mobilePhoneType.Id
+                    };
+
+                    phoneNumberService.Add( phoneNumber );
+                }
+
+                phoneNumber.Number = _visit.MobileNumber;
+                phoneNumber.IsMessagingEnabled = true;
+
+                rockContext.SaveChanges();
+            }
 
 
+            // if not a new family, check if spouse already in family
+            if ( !newFamily && _visit.SpouseFirstName.IsNotNullOrWhitespace() )
+            {
+                GroupMember member = family.Members.FirstOrDefault( a => (a.Person.FirstName == _visit.SpouseFirstName || a.Person.NickName == _visit.SpouseFirstName) && a.GroupRoleId == adultRoleId );
 
+                if ( member != null )
+                {
+                    spouse = personService.Get( member.Person.Guid );
 
-            nbAlertSubmit.Text = "Success, family created: " + family.Id.ToString();
+                    // update visit object
+                    _visit.SpouseFirstName = spouse.FirstName;
+                    _visit.SpouseLastName = spouse.LastName;
+                }
+            }
+
+            // if spouse not found, add new if specified
+            if ( spouse == null && _visit.SpouseFirstName.IsNotNullOrWhitespace() )
+            {
+                GroupMember newFamilyMember = new GroupMember()
+                {
+                    Person = new Person()
+                    {
+                        FirstName = _visit.SpouseFirstName,
+                        LastName = _visit.SpouseLastName.IsNotNullOrWhitespace() ? _visit.SpouseLastName : _visit.LastName,
+                        ConnectionStatusValueId = connectionStatusValue.Id,
+                        RecordTypeValueId = recordTypePersonId,
+                        RecordStatusValueId = recordStatusValue.Id
+                    },
+                    Group = family,
+                    GroupId = family.Id,
+                    GroupRoleId = adultRoleId
+                };
+
+                groupMemberService.Add( newFamilyMember );
+
+                rockContext.SaveChanges();
+            }
+
+            // add children to family if specified
+            if (_visit.Children.Count > 0 )
+            {
+                foreach ( var child in _visit.Children )
+                {
+                    // first check if already in family
+                    GroupMember childFamilyMember = family.Members.FirstOrDefault( a => (a.Person.FirstName == child.FirstName || a.Person.NickName == child.FirstName) && a.Person.BirthDate == child.Birthday );
+
+                    if ( childFamilyMember == null)
+                    {
+                        // no matching child found, add new family member
+                        GroupMember newFamilyMember = new GroupMember()
+                        {
+                            Person = new Person()
+                            {
+                                FirstName = child.FirstName,
+                                LastName = child.LastName,
+                                ConnectionStatusValueId = connectionStatusValue.Id,
+                                RecordTypeValueId = recordTypePersonId,
+                                RecordStatusValueId = recordStatusValue.Id
+                            },
+                            Group = family,
+                            GroupId = family.Id,
+                            GroupRoleId = childRoleId
+                        };
+
+                        groupMemberService.Add( newFamilyMember );
+
+                        rockContext.SaveChanges();
+
+                        // update optional attributes (only doing this for new chidren added to family)
+                        if ( newFamilyMember != null && ( child.Allergies.IsNotNullOrWhitespace() || child.Gender != Gender.Unknown || child.Grade.IsNotNullOrWhitespace() ) )
+                        {
+                            Person childPerson = newFamilyMember.Person;
+
+                            childPerson.SetBirthDate( child.Birthday );
+
+                            if ( child.Allergies.IsNotNullOrWhitespace() )
+                            {
+                                // check to see if value currently exists - to prevent duplicates if the attribute was created with person creation
+                                AttributeValue avAllergy = avService.Queryable().Where( av => av.EntityId == childPerson.Id && av.AttributeId == AttributeId_Allergies ).SingleOrDefault();
+
+                                if ( avAllergy == null )
+                                {
+                                    // doesnt exist - create a new attribute value tied to the person(child), and of attribute type "Allergy"
+                                    avAllergy = new AttributeValue
+                                    {
+                                        EntityId = childPerson.Id,
+                                        AttributeId = AttributeId_Allergies
+                                    };
+                                    avService.Add( avAllergy );
+                                }
+
+                                // update with the new value
+                                avAllergy.Value = child.Allergies;
+                            }
+
+                            if ( child.Gender != Gender.Unknown )
+                            {
+                                childPerson.Gender = child.Gender;
+                            }
+
+                            if ( child.Grade.IsNotNullOrWhitespace() )
+                            {
+                                childPerson.GradeOffset = child.Grade.AsInteger();
+                            }
+                        }
+
+                        rockContext.SaveChanges();
+                    }
+                }
+            }
 
             // change to success panel
-            //ShowFormPanel( pnlSuccess, null );
+            ShowFormPanel( pnlSuccess, null );
+
+            WriteVisitToViewState();
         }
 
+        protected void btnSubmitRetry_Click( object sender, EventArgs e )
+        {
 
+        }
 
 
         #endregion
@@ -987,43 +1200,44 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
         }
 
+        //   **************************************************************************** Probably Remove
         /// <summary>
         /// Bind states dropdown
         /// </summary>
-        private void BindStates()
-        {
-            // hardcoding us guid for now
-            string usGuid = "F4DAEB01-A0E5-426A-A425-7F6D21DF1CE7";
+        //private void BindStates()
+        //{
+        //    // hardcoding us guid for now
+        //    string usGuid = "F4DAEB01-A0E5-426A-A425-7F6D21DF1CE7";
 
-            // get states from defined type
-            var statesDefinedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
+        //    // get states from defined type
+        //    var statesDefinedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
 
-            var stateList = statesDefinedType
-                .DefinedValues
-                .Where( v =>
-                    (
-                        v.AttributeValues.ContainsKey( "Country" ) &&
-                        v.AttributeValues["Country"] != null &&
-                        v.AttributeValues["Country"].Value.Equals( usGuid, StringComparison.OrdinalIgnoreCase )
-                    ) )
-                .OrderBy( v => v.Order )
-                .ThenBy( v => v.Value )
-                .Select( v => new { Id = v.Value, Value = v.Description } )
-                .ToList();
+        //    var stateList = statesDefinedType
+        //        .DefinedValues
+        //        .Where( v =>
+        //            (
+        //                v.AttributeValues.ContainsKey( "Country" ) &&
+        //                v.AttributeValues["Country"] != null &&
+        //                v.AttributeValues["Country"].Value.Equals( usGuid, StringComparison.OrdinalIgnoreCase )
+        //            ) )
+        //        .OrderBy( v => v.Order )
+        //        .ThenBy( v => v.Value )
+        //        .Select( v => new { Id = v.Value, Value = v.Description } )
+        //        .ToList();
 
-            // add states to drop down
-            if ( stateList.Any() )
-            {
-                ddlAdultState.Items.Clear();
+        //    // add states to drop down
+        //    if ( stateList.Any() )
+        //    {
+        //        ddlAdultState.Items.Clear();
 
-                ddlAdultState.Items.Add( new ListItem( "" ) );
+        //        ddlAdultState.Items.Add( new ListItem( "" ) );
 
-                foreach ( var state in stateList )
-                {
-                    ddlAdultState.Items.Add( new ListItem( state.Value, state.Value ) );
-                }
-            }
-        }
+        //        foreach ( var state in stateList )
+        //        {
+        //            ddlAdultState.Items.Add( new ListItem( state.Value, state.Value ) );
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Bind upcoming dates for the specified campus
@@ -1206,6 +1420,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
             pnlSubmit.Visible = false;
         }
 
+        /// <summary>
+        /// Reset Child Form to empty state
+        /// </summary>
+        /// <param name="resetMobileNumber"></param>
         private void ResetChildForm( bool resetMobileNumber )
         {
             tbChildFirstName.Text = "";
@@ -1237,6 +1455,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // -1 indicates a new person needs to be created
             _visit.PersonId = -1;
 
+            // ensure no kids are displaying on the form
             ltlExistingChildrenHorizontal.Text = "";
             ltlExistingChildrenVertical.Text = "";
         }
@@ -1246,7 +1465,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// </summary>
         private void WriteVisitToViewState()
         {
-            // write object to viewstate
             ViewState["Visit"] = _visit;
         }
 
@@ -1271,7 +1489,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// </summary>
         private void RestoreFormState()
         {
-            // set state of progress buttons
             switch ( _visit.MainPanel )
             {
                 case MainPanel.Adults:
@@ -1315,7 +1532,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// </summary>
         private void SetProgressButtonsState()
         {
-            // set state of progress buttons
             switch ( _visit.MainPanel )
             {
                 case MainPanel.Adults:
@@ -1410,7 +1626,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 ddlChildBdayMonth.Items.Clear();
                 ddlChildBdayMonth.Items.Add( new ListItem( "", "" ) );
 
-                // hide month dropdown
                 ddlChildBdayMonth.Visible = false;
             }
 
@@ -1420,7 +1635,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 ddlChildBdayDay.Items.Clear();
                 ddlChildBdayDay.Items.Add( new ListItem( "", "" ) );
 
-                // hide day dropdown
                 ddlChildBdayDay.Visible = false;
             }
         }
@@ -1459,23 +1673,22 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             maskedEmail += "@";
 
-            // add first letter of domain
-            maskedEmail += domainParts[0].Substring( 0, 1 );
-
-            // add * for remaining characters in first part of domain
-            for ( int i = 0; i < domainParts[0].Length - 1; i++ )
+            // loop through all sub domains
+            for ( int i = 0; i < domainParts.Length; i++ )
             {
-                maskedEmail += "*";
-            }
+                maskedEmail += domainParts[i].Substring( 0, 1 );
 
-            // TODO Handle multiple sub domains aka dots
+                // add * for remaining characters
+                for ( int j = 1; j < domainParts[i].Length; j++ )
+                {
+                    maskedEmail += "*";
+                }
 
-            maskedEmail += ".";
-
-            // add * for remaining characters in second part of domain
-            for ( int i = 0; i < domainParts[1].Length; i++ )
-            {
-                maskedEmail += "*";
+                // add dot except on final domain
+                if ( i != domainParts.Length - 1 )
+                {
+                    maskedEmail += ".";
+                }
             }
 
             return maskedEmail;
@@ -1508,11 +1721,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             if ( !ValidateFormField( tbChildFirstName ) )
-            {
-                ready = false;
-            }
-
-            if ( !ValidateFormField( tbChildLastName ) )
             {
                 ready = false;
             }
@@ -1676,10 +1884,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
         private Child CreateChild()
         {
             // build new child object
-            Child newChild = new Child();
-
-            newChild.FirstName = tbChildFirstName.Text;
-            newChild.LastName = tbChildLastName.Text;
+            Child newChild = new Child
+            {
+                FirstName = tbChildFirstName.Text,
+                LastName = tbChildLastName.Text.IsNotNullOrWhitespace() ? tbChildLastName.Text : _visit.LastName
+            };
 
             if ( ddlChildBdayYear.SelectedValue.IsNotNullOrWhitespace() && ddlChildBdayMonth.SelectedValue.IsNotNullOrWhitespace() && ddlChildBdayDay.SelectedValue.IsNotNullOrWhitespace() )
             {
@@ -1712,6 +1921,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
             return newChild;
         }
 
+        /// <summary>
+        /// Force Edit Details on Submit panel to View
+        /// </summary>
         private void SetSubmitEditDetailsToView()
         {
             lblSubmitVisitDate.Visible = true;
@@ -1737,7 +1949,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             public string VisitDate { get; set; }
             public string CampusId { get; set; }
             public string ServiceTime { get; set; }
-            
+            public string Survey { get; set; }
+
             // Adult
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -1748,10 +1961,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
 
             public string MobileNumber { get; set; }
-            public string Address { get; set; }
-            public string City { get; set; }
-            public string State { get; set; }
-            public string PostalCode { get; set; }
+            //public string Address { get; set; }
+            //public string City { get; set; }
+            //public string State { get; set; }
+            //public string PostalCode { get; set; }
 
             // Spouse
             public string SpouseFirstName { get; set; }
@@ -1808,5 +2021,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Form,
             Question
         }
+
+
     }
 }

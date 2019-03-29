@@ -56,10 +56,10 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="a" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="henderson" />
+                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="tester" />
                                 </div>
                             </div>
                             <div class="form-row">
@@ -69,18 +69,18 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultAddress" runat="server" Label="Address" Required="false" Text="123 test st" />
+                                    <Rock:RockTextBox ID="tbAdultAddress" runat="server" Label="Address" Required="false" Text="123 test st" Visible="false" />
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultCity" runat="server" Label="City" Required="false" Text="Testertown" />
+                                    <Rock:RockTextBox ID="tbAdultCity" runat="server" Label="City" Required="false" Text="Test" Visible="false" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockDropDownList ID="ddlAdultState" runat="server" Label="State" Required="false" />
+                                    <Rock:RockDropDownList ID="ddlAdultState" runat="server" Label="State" Required="false" Visible="false" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultPostalCode" runat="server" Label="Zipcode" Required="false" Text="12345" />
+                                    <Rock:RockTextBox ID="tbAdultPostalCode" runat="server" Label="Zipcode" Required="false" Text="12345" Visible="false" />
                                 </div>
                             </div>
                             <div class="form-row">
@@ -254,7 +254,7 @@
                                         <Rock:RockTextBox ID="tbAllergies" runat="server" ClientIDMode="Static" Placeholder="List Allergies:" CssClass="allergies hidden" TextMode="MultiLine" Rows="3" />
                                     </div>
                                     <div class="form-field field-grade">
-                                        <Rock:GradePicker ID="gpChildGrade" runat="server" Label="Grade" />
+                                        <Rock:GradePicker ID="gpChildGrade" runat="server" Label="Grade" UseGradeOffsetAsValue="true" />
                                     </div>
                                 </div>
                             </div>
@@ -301,12 +301,12 @@
                         <div class="submit-survey row-centered">
                             <h4>How did you hear about CCV?</h4>
                             <Rock:RockRadioButtonList ID="rblSurvey" runat="server" RepeatLayout="Flow" RepeatDirection="Horizontal" ClientIDMode="Static">
-                                <asp:ListItem>Drive By / New to area</asp:ListItem>
-                                <asp:ListItem>Current Member</asp:ListItem>
-                                <asp:ListItem>Online Search</asp:ListItem>
-                                <asp:ListItem>Advertising</asp:ListItem>
-                                <asp:ListItem>Stars sports program</asp:ListItem>
-                                <asp:ListItem>Other</asp:ListItem>
+                                <asp:ListItem Value="Drive-by">Drive By / New to area</asp:ListItem>
+                                <asp:ListItem Value="Current Member">Current Member</asp:ListItem>
+                                <asp:ListItem Value="Online Search">Online Search</asp:ListItem>
+                                <asp:ListItem Value="Advertisement">Advertising</asp:ListItem>
+                                <asp:ListItem Value="STARS">Stars sports program</asp:ListItem>
+                                <asp:ListItem Value="Other">Other</asp:ListItem>
                              </Rock:RockRadioButtonList>
                          </div>
 
@@ -316,7 +316,8 @@
 
                         <div class="form-navigation">
                             <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren" Text="Back" CssClass="btn btn-default" />                       
-                            <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" OnClientClick="btnNext_OnClick('pnlSubmit'); return false;" Text="Submit" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" Text="Submit" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnSubmitRetry" runat="server" OnClick="btnSubmitRetry_Click" Text="Retry" CssClass="btn btn-primary" Enabled="false" Visible="false" />
                         </div>
 
                 </asp:Panel>
