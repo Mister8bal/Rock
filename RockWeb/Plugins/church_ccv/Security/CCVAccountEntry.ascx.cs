@@ -128,7 +128,6 @@ namespace RockWeb.Plugins.church_ccv.Security
                 if ( pnlPhoneNumbers.Visible )
                 {
                     var phoneNumberTypeDefinedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.PERSON_PHONE_TYPE ) );
-                    var mobilePhoneType = DefinedValueCache.Read( new Guid( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ) );
 
                     if (!string.IsNullOrWhiteSpace( GetAttributeValue( "PhoneTypes" ) ) )
                     {
@@ -145,13 +144,6 @@ namespace RockWeb.Plugins.church_ccv.Security
                             numberType.Guid = phoneNumberType.Guid;
 
                             var phoneNumber = new PhoneNumber { NumberTypeValueId = numberType.Id, NumberTypeValue = numberType };
-
-                            // If the phone type is a mobile phone, default sms texting to true (12 is Mobile)
-                            if ( phoneNumber.NumberTypeValueId == mobilePhoneType.Id )
-                            {
-                                phoneNumber.IsMessagingEnabled = true;
-                            }
-
                             phoneNumbers.Add( phoneNumber );
                         }
 
@@ -659,6 +651,7 @@ namespace RockWeb.Plugins.church_ccv.Security
             {
                 HiddenField hfPhoneType = item.FindControl( "hfPhoneType" ) as HiddenField;
                 PhoneNumberBox pnbPhone = item.FindControl( "pnbPhone" ) as PhoneNumberBox;
+                var mobilePhoneType = DefinedValueCache.Read( new Guid( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ) );
 
                 if ( !string.IsNullOrWhiteSpace( PhoneNumber.CleanNumber( pnbPhone.Number ) ) )
                 {
@@ -666,6 +659,13 @@ namespace RockWeb.Plugins.church_ccv.Security
                     if ( int.TryParse( hfPhoneType.Value, out phoneNumberTypeId ) )
                     {
                         var phoneNumber = new PhoneNumber { NumberTypeValueId = phoneNumberTypeId };
+
+                        // If the phone type is a mobile phone, default sms texting to true
+                        if ( phoneNumber.NumberTypeValueId == mobilePhoneType.Id )
+                        {
+                            phoneNumber.IsMessagingEnabled = true;
+                        }
+
                         person.PhoneNumbers.Add( phoneNumber );
                         phoneNumber.CountryCode = PhoneNumber.CleanNumber( pnbPhone.CountryCode );
                         phoneNumber.Number = PhoneNumber.CleanNumber( pnbPhone.Number );
