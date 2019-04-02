@@ -1,3 +1,23 @@
+{% comment %}
+    {% assign title = 'Toolbox Title' %}
+    {% person dataview:'741' where:'Id == "{{ CurrentPerson.Id }}"' %}
+        {% for person in personItems %}
+            {% assign canAccessToolbox = true %}
+        {% endfor %}
+    {% endperson %}
+    {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/toolbox-header.lava' %}
+
+    You must add all the above code and configure for relative toolbox
+
+    Kids Coach Dataviews
+    741 - 2 Year Olds
+    742 - Early Kids
+    743 - Later Kids
+    
+{% endcomment %}
+
+
+
 
 <script>
     // adds on "onload" hook to the window.onload function chain
@@ -12,8 +32,8 @@
 
     function handleOnLoad() {
         // default to the dashboard panel
-        gCurrentLink = $("#coach-guide-button")[0];
-        gCurrentPanel = $("#coach-guide-panel")[0];
+        gCurrentLink = $("#coach-videos-button")[0];
+        gCurrentPanel = $("#coach-videos-panel")[0];
         togglePanel( gCurrentLink, gCurrentPanel, true );
     }
 
@@ -29,7 +49,6 @@
     }
          
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-        // remove styling from default mobile panel - Jered better way?
         $('#coach-guide-mobile-button').removeClass('toolbox-subnav-div-selected');
 
         // turn off existing panel
@@ -46,40 +65,9 @@
     }
 </script>
 
-{% comment %} 
-Check if person in Dataview for specified toolbox 
 
-741 - 2 Year Olds
-742 - Early Kids
-743 - Later Kids
 
-{% endcomment %}
 
-{% assign canAccessToolbox = false %}
-
-{% if PageParameter.AgeGroup %}
-    {% case PageParameter.AgeGroup %}
-    {% when '2' %}
-        {% assign dataView = '741' %}
-        {% assign title = '2 Year Olds Coach Toolbox' %}
-    {% when 'E' %}
-        {% assign dataView = '742' %}
-        {% assign title = 'Early Kids Coach Toolbox' %}
-    {% when 'L' %}
-        {% assign dataView = '743' %}
-        {% assign title = 'Later Kids Coach Toolbox' %}
-    {% else %}
-        {% assign dataView = 'unknown' %}
-    {% endcase %}
-{% endif %}
-
-{% if dataView != 'unknown' %}
-    {% person dataview:'{{ dataView }}' where:'Id == "{{ CurrentPerson.Id }}"' %}
-        {% for person in personItems %}
-            {% assign canAccessToolbox = true %}
-        {% endfor %}
-    {% endperson %}
-{% endif %}
 
 {% if canAccessToolbox == false %}
     {% if CurrentPersonCanEdit %}
@@ -89,29 +77,23 @@ Check if person in Dataview for specified toolbox
     {% endif %}
 {% endif %}
 
+<div class="header">
+    <h4>{{ title }}</h4>
+</div>
 
+<div class="toolbox-subnav-desktop">
+    <div id="coach-videos-button" onClick="linkClicked(this, 'coach-videos')">Coach Videos</div>
+    <div id="coach-guide-button" onClick="linkClicked(this, 'coach-guide')">Coach Guide</div>
+    <div id="resources-button" onClick="linkClicked(this, 'resources')">Resources</div>
+</div>
 
-{% comment %}Force conversion from string to int {% endcomment %}
-
-
-
-    <div class="header">
-        <h4>{{ title }}</h4>
+<div class="toolbox-subnav-mobile">
+    <div class="toolbox-subnav-mobile-items">
+        <div id="coach-videos-mobile-button" onClick="linkClicked(this, 'coach-videos')" class="subnav-item toolbox-subnav-div-selected">Coach Videos</div>
+        <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item toolbox-subnav-div-selected">Coach Guide</div>
+        <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
     </div>
-
-    <div class="toolbox-subnav-desktop">
-        <div id="coach-guide-button" onClick="linkClicked(this, 'coach-guide')">Coach Guide</div>
-        <div id="training-center-button" onClick="linkClicked(this, 'training-center')">Training Center</div>
-        <div id="camp-tools-button" onClick="linkClicked(this, 'camp-tools', false)">Camp Tools</div>
-    </div>
-
-    <div class="toolbox-subnav-mobile">
-        <div class="toolbox-subnav-mobile-items">
-            <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item toolbox-subnav-div-selected">Coach Guide</div>
-            <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
-            <div id="camp-tools-button" onClick="linkClicked(this, 'camp-tools', false)" class="subnav-item">Group Details</div>
-        </div>
-    </div>
+</div>
 
 <script>
     $(document).ready(function(){
