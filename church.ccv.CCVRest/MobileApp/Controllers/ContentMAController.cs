@@ -111,7 +111,11 @@ namespace church.ccv.CCVRest.MobileApp
                     Title = mobileAppNewsFeedBlob["title"]?.ToString(),
                     Description = mobileAppNewsFeedBlob["body"]?.ToString(),
                     DetailsURL = mobileAppNewsFeedBlob["link"]?.ToString(),
-                    ImageURL = mobileAppNewsFeedBlob["img"]?.ToString()
+                    ImageURL = mobileAppNewsFeedBlob["img"]?.ToString(),
+
+                    // For future compatibility
+                    LaunchExternalBrowser = false,
+                    IncludeAccessToken = true
                 };
 
                 // if either the details or image URL are relative, make them absolute
@@ -182,22 +186,20 @@ namespace church.ccv.CCVRest.MobileApp
                     ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ),
 
                     Title = item.Title,
-                    Description = item.Content,
 
                     DetailsURL = item.GetAttributeValue( "DetailsURL" ),
-                    DetailsURLLaunchesBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean( ),
-                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean( ),
-
-                    SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean( ),
-
-                    StartDateTime = item.StartDateTime,
-                    EndDateTime = item.ExpireDateTime,
-
-                    PublishedStatus = (int)item.Status
+                    LaunchExternalBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean( ),
+                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean( )
                 };
 
                 promotions.Add( promotion );
             }
+
+            //sort them
+            promotions.Sort( delegate ( Model.Promotion a, Model.Promotion b )
+            {
+                return a.SortPriority < b.SortPriority ? -1 : 1;
+            } );
 
             // return it!
             return Common.Util.GenerateResponse( true, PromotionsResponse.Success.ToString( ), promotions );

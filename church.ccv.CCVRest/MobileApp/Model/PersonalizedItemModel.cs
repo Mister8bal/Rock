@@ -9,12 +9,14 @@ namespace church.ccv.CCVRest.MobileApp.Model
     [Serializable]
     public class PersonalizedItem
     {
-        public string Title;
+        public string ImageURL;
 
+        public string Title;
         public string Description;
 
         public string DetailsURL;
+        public bool LaunchExternalBrowser;
 
-        public string ImageURL;
+        public bool IncludeAccessToken;
     }
 }
