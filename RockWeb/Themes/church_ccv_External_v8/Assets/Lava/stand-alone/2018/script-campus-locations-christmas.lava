@@ -7,6 +7,13 @@ CCV.findCampusById = function (campusId) {
   
 {% assign activeCampuses = Campuses | Where: 'IsActive', true %}
 CCV.locations = [
+  {% capture deafIcon %}
+<span class="csi csi-slt"></span>
+{% endcapture %}
+
+{% capture specialNeedsIcon %}
+<span class="csi csi-special-needs"></span>
+{% endcapture %}
 {% for campus in activeCampuses %}
   {% assign mondayTimesString = '' %}
   {% assign tuesdayTimesString = '' %}
@@ -71,13 +78,31 @@ CCV.locations = [
   
     EasterServiceTimes: {
       {% capture renderedEasterTimes %}
+        monday: [
+            {% if mondayTimesString != '' %}
+              '<strong>{{ mondayDate }}</strong>' +
+                    '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
+                    '{% for mondayTime in mondayTimes %}' +
+                        '{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
+                    '{% endfor %}',
+    {% endif %}
+        ],
+        tuesday: [
+            {% if thursdayTimesString != '' %}
+              '<strong>{{ tuesdayDate }}</strong>' +
+                    '{% assign tuesdayTimes = thursdayTimesString | Split:';' %}' +
+                    '{% for tuesdayTime in tuesdayTimes %}' +
+                        '{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
+                    '{% endfor %}',
+    {% endif %}
+        ],
         wednesday: [
          {% if sundayTimesString != '' %}
             '<strong>{{ wednesdayDate }}</strong>' +
               '<ul class="list-inline">' +
                     '{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}' +
                     '{% for wednesdayTime in wednesdayTimes %}' +
-                        '{{ wednesdayTime }}' +
+                        '{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
                     '{% endfor %}' +
               '</ul>',
         {% endif %}       
@@ -88,7 +113,7 @@ CCV.locations = [
               '<ul class="list-inline">' +
                     '{% assign thursdayTimes = thursdayTimesString | Split:';' %}' +
                     '{% for thursdayTime in thursdayTimes %}' +
-                        '{{ thursdayTime }}' +
+                        '{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
                     '{% endfor %}' +
               '</ul>',
         {% endif %}       
@@ -99,7 +124,7 @@ CCV.locations = [
               '<ul class="list-inline">' +
                     '{% assign fridayTimes = fridayTimesString | Split:';' %}' +
                     '{% for fridayTime in fridayTimes %}' +
-                        '{{ fridayTime }}' +
+                        '{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
                     '{% endfor %}' +
               '</ul>',
          {% endif %}      
@@ -110,7 +135,7 @@ CCV.locations = [
               '<ul class="list-inline">' +
                     '{% assign saturdayTimes = saturdayTimesString | Split:';' %}' +
                     '{% for saturdayTime in saturdayTimes %}' +
-                        '{{ saturdayTime }}' +
+                        '{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
                     '{% endfor %}' +
               '</ul>',
          {% endif %}     
@@ -121,29 +146,7 @@ CCV.locations = [
               '<ul class="list-inline">' +
                     '{% assign sundayTimes = sundayTimesString | Split:';' %}' +
                     '{% for sundayTime in sundayTimes %}' +
-                        '{{ sundayTime }}' +
-                    '{% endfor %}' +
-              '</ul>',
-    {% endif %}
-        ],
-        monday: [
-            {% if mondayTimesString != '' %}
-              '<strong>{{ mondayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
-                    '{% for mondayTime in mondayTimes %}' +
-                        '{{ mondayTime }}' +
-                    '{% endfor %}' +
-              '</ul>',
-    {% endif %}
-        ],
-        tuesday: [
-            {% if thursdayTimesString != '' %}
-              '<strong>{{ tuesdayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign tuesdayTimes = thursdayTimesString | Split:';' %}' +
-                    '{% for tuesdayTime in tuesdayTimes %}' +
-                        '{{ tuesdayTime }}' +
+                        '{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
                     '{% endfor %}' +
               '</ul>',
     {% endif %}

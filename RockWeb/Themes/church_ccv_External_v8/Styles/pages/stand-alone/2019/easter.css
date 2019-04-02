@@ -24,6 +24,10 @@
         height: unset !important;
         padding-top: 75px !important;
     }
+
+    .list-inline > li {
+        width: 100%;
+    }    
 }
 
 /* Feature Title Section */
@@ -253,10 +257,6 @@
     margin-bottom: 5%;
 }
 
-.campus-card {
-    height: 600px;
-}
-
 .service-times strong {
     font-weight: 700;
 }
@@ -308,7 +308,6 @@
 
     .campus-cards-row-mobile {
         display: block;
-        height: 650px;
     }
 
     .campus-cards-row {
@@ -316,7 +315,6 @@
     }
 
     .campus-card {
-        height: 600px;
         margin: 0;
         min-width: unset;
         max-width: unset;
@@ -326,10 +324,6 @@
 /* End Campus Card Section */
 
 /* Plan Your Visit section */
-
-#zone-sectiond {
-
-}
 
 #section-d-bg {
     background-color: #ffffff; /* background-color: #ffffff; */
