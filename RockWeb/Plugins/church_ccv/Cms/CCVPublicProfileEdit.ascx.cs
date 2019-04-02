@@ -277,28 +277,26 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             // Get Current Person Details (baptism photo, baptized at CCV, baptism date)
             var hasBaptismPhoto = person.GetAttributeValues( "BaptismPhoto" );
-            DateTime? BaptismDate = person.GetAttributeValue( "BaptismDate" ).AsDateTime();
+            var isBaptizedHere = person.AttributeValues["BaptizedHere"];
 
             // Assign Head of House baptism photo
             if ( hasBaptismPhoto != null && hasBaptismPhoto.Count > 0 )
             {
                 lBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
-
-                var isBaptizedHere = person.AttributeValues["BaptizedHere"].ToString();
-
-                // Assign Head of House baptism certificate 
-                if ( isBaptizedHere == "Yes" && BaptismDate != null )
-                {
-                    lCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
-                }
-                else
-                {
-                    lCertificate.Text = "";
-                }
             }
             else
             {
                 lBaptismPhoto.Text = "";
+            }
+
+            // Assign Head of House baptism certificate 
+            if ( isBaptizedHere != null && isBaptizedHere.ToString() == "Yes" )
+            {
+                lCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", person.PrimaryAlias.Guid );
+            }
+            else
+            {
+                lCertificate.Text = "";
             }
 
             // Setup Image
@@ -904,34 +902,29 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     lbRequestChanges.Visible = false;
                 }
 
-
                 // Get next family members details
                 var leaderBaptismPhoto = CurrentPerson.GetAttributeValues( "BaptismPhoto" );
-                DateTime? leaderBaptismDate = CurrentPerson.GetAttributeValue( "BaptismDate" ).AsDateTime();
+                var isLeaderBaptizedHere = CurrentPerson.AttributeValues[ "BaptizedHere" ];
 
                 // Assign baptism photo
                 if ( leaderBaptismPhoto != null && leaderBaptismPhoto.Count > 0 )
                 {
                     lLeaderBaptismPhoto.Text = string.Format( "<a href='/baptismdashboard?display=photo&paguid={0}'><div class='fa fa-picture-o nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
-
-                    var isLeaderBaptizedHere = CurrentPerson.AttributeValues["BaptizedHere"].ToString();
-
-                    // Assign baptism certificate 
-                    if ( isLeaderBaptizedHere == "Yes" && leaderBaptismDate != null )
-                    {
-                        lLeaderCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
-                    }
-                    else
-                    {
-                        lLeaderCertificate.Text = "";
-                    }
                 }
                 else
                 {
                     lLeaderBaptismPhoto.Text = "";
                 }
 
-
+                // Assign baptism certificate 
+                if ( isLeaderBaptizedHere != null && isLeaderBaptizedHere.ToString() == "Yes" )
+                {
+                    lLeaderCertificate.Text = string.Format( "<a href='/baptismdashboard?display=certificate&paguid={0}'><div class='mdi mdi-certificate nextstep-modal-baptism-icon baptism-profile-icons'></div></a>", CurrentPerson.PrimaryAlias.Guid );
+                }
+                else
+                {
+                    lLeaderCertificate.Text = "";
+                }
             }
 
             hfPersonId.Value = string.Empty;
