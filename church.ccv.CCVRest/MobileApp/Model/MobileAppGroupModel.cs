@@ -31,9 +31,9 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string ChildcareDesc;
 
         public string AssociatePastorName;
-        public int? AssociatePastorPhotoId;
+        public string AssociatePastorPhotoURL;
 
         public string CoachName;
-        public int? CoachPhotoId;
+        public string CoachPhotoURL;
     }
 }

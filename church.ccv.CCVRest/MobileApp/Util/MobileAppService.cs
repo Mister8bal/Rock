@@ -609,7 +609,7 @@ namespace church.ccv.CCVRest.MobileApp
             var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
             var personService = new PersonService( rockContext ).Queryable().AsNoTracking();
             var binaryFileService = new BinaryFileService( rockContext ).Queryable().AsNoTracking();
-
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
             // now get the group leader. If there isn't one, we'll fail, because we don't want a group with no leader
             GroupMember leader = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach == gm.GroupRole.Id ).SingleOrDefault();
@@ -641,7 +641,16 @@ namespace church.ccv.CCVRest.MobileApp
                 if ( datamartPerson != null )
                 {
                     groupResult.CoachName = leader.Person.NickName + " " + leader.Person.LastName;
-                    groupResult.CoachPhotoId = leader.Person.PhotoId;
+
+                    if ( leader.Person.PhotoId.HasValue )
+                    {
+                        groupResult.CoachPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + leader.Person.PhotoId.Value;
+                    }
+                    else
+                    {
+                        groupResult.CoachPhotoURL = string.Empty;
+                    }
+
 
                     // if the leader has a neighborhood pastor (now called associate pastor) defined, take their values.
                     if ( datamartPerson.NeighborhoodPastorId.HasValue )
@@ -651,7 +660,15 @@ namespace church.ccv.CCVRest.MobileApp
                         if ( associatePastor != null )
                         {
                             groupResult.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
-                            groupResult.AssociatePastorPhotoId = associatePastor.PhotoId;
+
+                            if ( associatePastor.PhotoId.HasValue )
+                            {
+                                groupResult.AssociatePastorPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value;
+                            }
+                            else
+                            {
+                                groupResult.AssociatePastorPhotoURL = string.Empty;
+                            }
                         }
                     }
                 }
@@ -673,7 +690,6 @@ namespace church.ccv.CCVRest.MobileApp
                     if ( photoObj != null )
                     {
                         // build a URL for retrieving the group's pic
-                        string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
                         groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + photoObj.Id;
                     }
                 }
