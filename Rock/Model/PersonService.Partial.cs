@@ -910,6 +910,18 @@ namespace Rock.Model
                 }
 
                 var previousNamesQry = new PersonPreviousNameService( this.Context as RockContext ).Queryable();
+                var attributeValueQry = new AttributeValueService( this.Context as RockContext ).Queryable();
+                int personEntityTypeId = EntityTypeCache.Read( Rock.SystemGuid.EntityType.PERSON.AsGuid() ).Id;
+                var attributeService = new AttributeService( this.Context as RockContext );
+
+                var firstNameNonAccentedAttribute = attributeService.Get( personEntityTypeId, "", "", "FirstNameNonAccented" );
+                var firstNameNonAccentedId = firstNameNonAccentedAttribute != null ? firstNameNonAccentedAttribute.Id : 0;
+
+                var nickNameNonAccentedAttribute = attributeService.Get( personEntityTypeId, "", "", "NickNameNonAccented" );
+                var nickNameNonAccentedId = nickNameNonAccentedAttribute != null ? nickNameNonAccentedAttribute.Id : 0;
+
+                var lastNameNonAccentedAttribute = attributeService.Get( personEntityTypeId, "", "", "LastNameNonAccented" );
+                var lastNameNonAccentedId = lastNameNonAccentedAttribute != null ? lastNameNonAccentedAttribute.Id : 0;
 
                 if ( allowFirstNameOnly )
                 {
@@ -918,6 +930,9 @@ namespace Rock.Model
                             p.LastName.StartsWith( singleName ) ||
                             p.FirstName.StartsWith( singleName ) ||
                             p.NickName.StartsWith( singleName ) ||
+                            attributeValueQry.Any( a => a.EntityId == p.Id && lastNameNonAccentedId > 0 && a.AttributeId == lastNameNonAccentedId && a.Value.StartsWith( singleName ) ) ||
+                            attributeValueQry.Any( a => a.EntityId == p.Id && firstNameNonAccentedId > 0 && a.AttributeId == firstNameNonAccentedId && a.Value.StartsWith( singleName ) ) ||
+                            attributeValueQry.Any( a => a.EntityId == p.Id && nickNameNonAccentedId > 0 && a.AttributeId == nickNameNonAccentedId && a.Value.StartsWith( singleName ) ) ||
                             previousNamesQry.Any( a => a.PersonAlias.PersonId == p.Id && a.LastName.StartsWith( singleName ) ) );
                 }
                 else
@@ -925,6 +940,7 @@ namespace Rock.Model
                     return Queryable( includeDeceased, includeBusinesses )
                         .Where( p =>
                             p.LastName.StartsWith( singleName ) ||
+                            attributeValueQry.Any( a => a.EntityId == p.Id && lastNameNonAccentedId > 0 && a.AttributeId == lastNameNonAccentedId && a.Value.StartsWith( singleName ) ) ||
                             previousNamesQry.Any( a => a.PersonAlias.PersonId == p.Id && a.LastName.StartsWith( singleName ) ) );
                 }
             }
