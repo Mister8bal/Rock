@@ -41,6 +41,8 @@ namespace church.ccv.CCVRest.MobileApp
                 return null;
             }
 
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
             MobileAppPersonModel personModel = new MobileAppPersonModel();
 
             // first get their basic info
@@ -48,8 +50,16 @@ namespace church.ccv.CCVRest.MobileApp
             personModel.FirstName = person.NickName;
             personModel.LastName = person.LastName;
             personModel.Email = person.Email;
-            personModel.PhotoId = person.PhotoId;
             personModel.Birthdate = person.BirthDate;
+
+            if ( person.PhotoId.HasValue )
+            {
+                personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId;
+            }
+            else
+            {
+                personModel.PhotoURL = string.Empty;
+            }
 
             var mobilePhoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
             if ( mobilePhoneType != null )
@@ -77,10 +87,17 @@ namespace church.ccv.CCVRest.MobileApp
                     {
                         PrimaryAliasId = groupMember.Person.PrimaryAliasId ?? groupMember.Person.Id,
                         FirstName = groupMember.Person.FirstName,
-                        LastName = groupMember.Person.LastName,
-                        PhotoId = groupMember.Person.PhotoId
-
+                        LastName = groupMember.Person.LastName
                     };
+
+                    if ( groupMember.Person.PhotoId.HasValue )
+                    {
+                        familyMember.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + groupMember.Person.PhotoId;
+                    }
+                    else
+                    {
+                        familyMember.PhotoURL = string.Empty;
+                    }
 
                     personModel.FamilyMembers.Add( familyMember );
                 }
@@ -655,7 +672,9 @@ namespace church.ccv.CCVRest.MobileApp
                     var photoObj = binaryFileService.Where( f => f.Guid == photoGuid ).SingleOrDefault();
                     if ( photoObj != null )
                     {
-                        groupResult.PhotoId = photoObj.Id;
+                        // build a URL for retrieving the group's pic
+                        string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+                        groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + photoObj.Id;
                     }
                 }
 

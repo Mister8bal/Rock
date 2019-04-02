@@ -99,7 +99,7 @@
     <Compile Include="Common\Model\ResponseModel.cs" />
     <Compile Include="Common\Util\Util.cs" />
     <Compile Include="MobileApp\Controllers\AccountMAController.cs" />
-    <Compile Include="MobileApp\Controllers\ApplicationMAController.cs" />
+    <Compile Include="MobileApp\Controllers\ContentMAController.cs" />
     <Compile Include="MobileApp\Controllers\GoupMAController.cs" />
     <Compile Include="MobileApp\Controllers\PersonMAController.cs" />
     <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />

@@ -22,7 +22,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string PhoneNumberDigits;
 
-        public int? PhotoId;
+        public string PhotoURL;
 
         public DateTime? Birthdate;
 

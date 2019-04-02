@@ -25,7 +25,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string State;
         public string Zip;
 
-        public int? PhotoId;
+        public string PhotoURL;
 
         public bool Childcare;
         public string ChildcareDesc;

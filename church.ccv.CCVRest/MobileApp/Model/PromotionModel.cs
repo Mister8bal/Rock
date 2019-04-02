@@ -15,7 +15,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string DetailsURL;
         public bool DetailsURLLaunchesBrowser;
-        public bool IncludeImpersonationToken;
+        public bool IncludeAccessToken;
 
         public bool SkipDetailsPage;
 

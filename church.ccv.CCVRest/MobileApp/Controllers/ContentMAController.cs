@@ -186,7 +186,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                     DetailsURL = item.GetAttributeValue( "DetailsURL" ),
                     DetailsURLLaunchesBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean( ),
-                    IncludeImpersonationToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean( ),
+                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean( ),
 
                     SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean( ),
 
