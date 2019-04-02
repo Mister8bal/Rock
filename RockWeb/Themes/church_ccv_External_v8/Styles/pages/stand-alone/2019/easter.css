@@ -233,6 +233,30 @@
     color: #777777;
 }
 
+.campus-cards-row-mobile {
+    display: none;
+}
+
+.campus-container {
+    width: 100%;
+}
+
+.campus-dropdown {
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: rgb(122, 19, 21);
+    border-radius: 10px;
+    height: 36px;
+    min-width: 200px;
+    margin-bottom: 5%;
+}
+
+.campus-card {
+    height: 600px;
+}
+
 .service-times strong {
     font-weight: 700;
 }
@@ -272,13 +296,31 @@
 
 /* Mobile */
 @media screen and (max-width: 500px) {
-    .campus-cards-row {
-        justify-content: center;
+    #zone-sectionc {
+        margin: 0 5%;
+        padding-bottom: 5%;
     }
 
     .campus-card {
         width: 90%;
         padding-bottom: 15px;
+    }
+
+    .campus-cards-row-mobile {
+        display: block;
+        height: 650px;
+    }
+
+    .campus-cards-row {
+        display: none; 
+    }
+
+    .campus-card {
+        height: 600px;
+        margin: 0;
+        min-width: unset;
+        max-width: unset;
+        width: unset;
     }
 }
 /* End Campus Card Section */

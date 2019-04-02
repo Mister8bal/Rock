@@ -1,0 +1,158 @@
+{% assign season = 'easter' %}
+{% assign isComingSoon = false %}
+<h2 class="service-times-title">Service Times</h2>
+
+<div class="campus-cards-row">
+    <a name="service-times" style="padding-top: 150px; margin-top: -150px;"></a>
+
+    {% for campus in Campuses %}
+        {% if campus.IsActive == 'True' %}
+                <div class="campus-card">
+                    <a name="{{ campus.Name | Replace:' ','-' | Downcase }}" style="padding-top: 75px; margin-top: -75px;"></a>
+                    <div class="image">
+                        {% assign imageGuid = campus | Attribute:'FeatureImage', 'RawValue' %}
+                        <img src="/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-{{ campus.ShortCode }}.jpg"/>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-head">
+                            <div class="header">
+                                <h4>{{ campus.Name }}</h4>
+                            </div>
+                            <div class="content service-times mt-25">
+                                {% include '~~/Assets/Lava/service-times/grid-non-standard.lava' %}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="link">
+                                <a class="contact-phone" href="tel:{{ campus.PhoneNumber }}">{{ campus.PhoneNumber }}</a>
+                                <a target="_blank" href="https://maps.google.com/?q={{campus.Location.Street1 | Replace: ' ', '+'}}+{{campus.Location.City | Replace: ' ', '+'}}+{{campus.Location.State | Replace: ' ', '+'}}+{{campus.Location.PostalCode | Replace: ' ', '+'}}" class="btn btn-primary">GET DIRECTIONS</a>
+                            </div>
+                            <div class="icon-details">
+                                <div class="icon-desc">
+                                    <p><span class="csi csi-slt"></span> Sign language available</p>
+                                </div>
+                                <div class="icon-desc">
+                                    <p><span class="csi csi-special-needs"></span> Special Needs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+  {% endfor %}
+</div>
+
+<div class="campus-cards-row-mobile">
+
+{% for campusItem in Campuses %}
+    {% if campusItem.Id == Context.Campus.Id %}
+        {% assign campus = campusItem %}
+    {% endif %}
+{% endfor %}
+
+<div class="campus-container">
+    <select class="campus-dropdown" id="ddlCampusDropdown">
+        {% for campusItem in Campuses %}
+            {% if campusItem.IsActive == 'True' %}
+                {% if campusItem.Id == campus.Id %}
+                    <option selected="selected" value="{{campusItem.Id}}">{{campusItem.Name}}</option>  
+                {% else %}     
+                    <option value="{{campusItem.Id}}">{{campusItem.Name}}</option> 
+                {% endif %}
+            {% endif %}
+        {% endfor %} 
+    </select> 
+</div> 
+    
+    <a name="service-times" style="padding-top: 150px; margin-top: -150px;"></a>
+    <div class="campus-card">
+        <div class="image">
+            {% assign imageGuid = campus | Attribute:'FeatureImage', 'RawValue' %}
+            <img id="iCampusCardImage" src="/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-{{ campus.ShortCode }}.jpg"/>
+        </div>
+        <div class="card-content">
+            <div class="card-head">
+                <div class="header">
+                    <h4 id="campusName">{{ campus.Name }}</h4>
+                </div>
+                <div class="content service-times mt-25">
+                    {% comment %} {% include '~~/Assets/Lava/service-times/grid-non-standard.lava' %} {% endcomment %}
+                    {% for campusItem in Campuses %}
+                        {% if campusItem.IsActive == 'True' %}
+
+                            <ul class="list-inline">
+                                <li id="monday" class="mon{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="tuesday" class="tues{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="wednesday" class="wed{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="thursday" class="thur{{ wednesdayTime }}">{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="friday" class="fri{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="saturday" class="sat{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            <ul class="list-inline">
+                                <li id="sunday" class="sun{{ wednesdayTime }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '$', '' }}</li>
+                            </ul>
+                            {% if campusItem.Id == campus.Id %}
+                                <option selected="selected" value="{{campusItem.Id}}">{{campusItem.Name}}</option>  
+                            {% else %}     
+                                <option value="{{campusItem.Id}}">{{campusItem.Name}}</option> 
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %} 
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="link">
+                    <a class="contact-phone" id="campusPhone" href="tel:{{ campus.PhoneNumber }}">{{ campus.PhoneNumber }}</a>
+                    <a target="_blank" id="campusLocation" href="https://maps.google.com/?q={{campus.Location.Street1 | Replace: ' ', '+'}}+{{campus.Location.City | Replace: ' ', '+'}}+{{campus.Location.State | Replace: ' ', '+'}}+{{campus.Location.PostalCode | Replace: ' ', '+'}}" class="btn btn-primary">GET DIRECTIONS</a>
+                </div>
+                <div class="icon-details">
+                    <div class="icon-desc">
+                        <p><span class="csi csi-slt"></span> Sign language available</p>
+                    </div>
+                    <div class="icon-desc">
+                        <p><span class="csi csi-special-needs"></span> Special Needs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function pageLoad() {
+        $('#ddlCampusDropdown').on('change', function() {
+            for (var i = 0; i < CCV.locations.length; i++) {
+                if ($(this).val() == CCV.locations[i].id) {
+                    $(this).attr('selected', 'selected');
+                   
+                    var campus = CCV.locations[i];
+
+                    $('#iCampusCardImage').attr('src','/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-' + campus.shortcode + '.jpg');
+                    $('#campusName').text( campus.name );
+                    $('#campusPhone').text( campus.phone );
+                    $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
+
+                    for (day in campus.EasterServiceTimes) {
+                        console.log(day); 
+                        if(campus.EasterServiceTimes[day].length > 0) {
+                              
+                            $("#"+day).html( campus.EasterServiceTimes[day]);
+                        }
+                    }
+                }  
+            }
+        });
+    }
+
+</script>

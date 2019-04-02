@@ -4,11 +4,53 @@ var CCV = CCV || {}
 CCV.findCampusById = function (campusId) {
   return CCV.locations.filter(function (campus) { return campus.id == campusId })[0]
 }
-
+  
 {% assign activeCampuses = Campuses | Where: 'IsActive', true %}
 CCV.locations = [
 {% for campus in activeCampuses %}
-  {% assign renderedTimes = "" %}{% assign hasSaturday = false %}{% assign hasSunday = false %}
+  {% assign mondayTimesString = '' %}
+  {% assign tuesdayTimesString = '' %}
+  {% assign wednesdayTimesString = '' %}
+  {% assign thursdayTimesString = '' %}
+  {% assign fridayTimesString = '' %}
+  {% assign saturdayTimesString = '' %}
+  {% assign sundayTimesString = '' %}	
+  {% assign times = campus | Attribute:'EasterServiceTimes' %}
+    {% for time in times %}
+      {% assign timekv = time | PropertyToKeyValue %}
+          {% assign split = timekv.Key | Split: ' ' %}
+      {% case split[0] %}
+        {% when 'Monday' %}
+              {% assign mondayDate = timekv.Key %}
+              {% assign mondayTimesString = mondayTimesString | Append:timekv.Value | Append:';' %}
+        {% when 'Tuesday' %}
+              {% assign tuesdayDate = timekv.Key %}
+              {% assign tuesdayTimesString = tuesdayTimesString | Append:timekv.Value | Append:';' %}
+        {% when 'Wednesday' %}
+              {% assign wednesdayDate = timekv.Key %}
+              {% assign wednesdayTimesString = wednesdayTimesString | Append:timekv.Value | Append:';' %}
+        {% when 'Thursday' %}
+              {% assign thursdayDate = timekv.Key %}
+              {% assign thursdayTimesString = thursdayTimesString | Append:timekv.Value | Append:';' %}
+        {% when 'Friday' %}
+              {% assign fridayDate = timekv.Key %} 
+              {% assign fridayTimesString = fridayTimesString | Append:timekv.Value | Append:';' %}       
+        {% when 'Saturday' %}
+              {% assign saturdayDate = timekv.Key %}
+              {% assign saturdayTimesString = saturdayTimesString | Append:timekv.Value | Append:';' %}
+        {% when 'Sunday' %}
+              {% assign sundayDate = timekv.Key %}
+              {% assign sundayTimesString = sundayTimesString | Append:timekv.Value | Append:';' %}
+      {% endcase %}
+  {% endfor %}
+{% assign thursdayTimes = thursdayTimesString | Split:';' %}
+{% assign fridayTimes = fridayTimesString | Split:';' %}
+{% assign saturdayTimes = saturdayTimesString | Split:';' %}
+{% assign sundayTimes = sundayTimesString | Split:';' %}
+{% assign mondayTimes = mondayTimesString | Split:';' %}
+{% assign tuesdayTimes = tuesdayTimesString | Split:';' %}
+{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}
+  {% assign renderedTimes = "" %}{% assign renderedEasterTimes = "" %}{% assign hasSaturday = false %}{% assign hasSunday = false %}
   {
     id: '{{ campus.Id }}',
     name: '{{ campus.Name }}',
@@ -26,6 +68,89 @@ CCV.locations = [
     url: '{{ campus.Url }}',
     vimeoid: '{{ campus.CampusTourVimeoId }}',
     facebook: '{{ campus.FacebookURL }}',
+  
+    EasterServiceTimes: {
+      {% capture renderedEasterTimes %}
+        wednesday: [
+         {% if sundayTimesString != '' %}
+            '<strong>{{ wednesdayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}' +
+                    '{% for wednesdayTime in wednesdayTimes %}' +
+                        '{{ wednesdayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+        {% endif %}       
+        ],
+        thursday: [
+          {% if sundayTimesString != '' %}
+              '<strong>{{ thursdayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign thursdayTimes = thursdayTimesString | Split:';' %}' +
+                    '{% for thursdayTime in thursdayTimes %}' +
+                        '{{ thursdayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+        {% endif %}       
+        ],
+        friday: [
+          {% if fridayTimesString != '' %}
+              '<strong>{{ fridayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign fridayTimes = fridayTimesString | Split:';' %}' +
+                    '{% for fridayTime in fridayTimes %}' +
+                        '{{ fridayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+         {% endif %}      
+        ],
+        saturday: [
+           {% if saturdayTimesString != '' %}
+              '<strong>{{ saturdayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign saturdayTimes = saturdayTimesString | Split:';' %}' +
+                    '{% for saturdayTime in saturdayTimes %}' +
+                        '{{ saturdayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+         {% endif %}     
+        ],
+        sunday: [
+            {% if sundayTimesString != '' %}
+              '<strong>{{ sundayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign sundayTimes = sundayTimesString | Split:';' %}' +
+                    '{% for sundayTime in sundayTimes %}' +
+                        '{{ sundayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+    {% endif %}
+        ],
+        monday: [
+            {% if mondayTimesString != '' %}
+              '<strong>{{ mondayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
+                    '{% for mondayTime in mondayTimes %}' +
+                        '{{ mondayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+    {% endif %}
+        ],
+        tuesday: [
+            {% if thursdayTimesString != '' %}
+              '<strong>{{ tuesdayDate }}</strong>' +
+              '<ul class="list-inline">' +
+                    '{% assign tuesdayTimes = thursdayTimesString | Split:';' %}' +
+                    '{% for tuesdayTime in tuesdayTimes %}' +
+                        '{{ tuesdayTime }}' +
+                    '{% endfor %}' +
+              '</ul>',
+    {% endif %}
+        ],
+      {% endcapture %}{{ renderedEasterTimes | StripNewlines | Remove: '  ' }}
+    },
+
     serviceTimes: {
       {% capture renderedTimes %}
       {% for time in campus.ServiceTimes %}
