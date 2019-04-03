@@ -204,5 +204,178 @@ namespace church.ccv.CCVRest.MobileApp
             // return it!
             return Common.Util.GenerateResponse( true, PromotionsResponse.Success.ToString( ), promotions );
         }
+
+        [Serializable]
+        public enum CampusResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            CampusNotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Campus" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage GetCampus( int? campusId = null )
+        {
+            // get one or all campuses, depending on what they ask for
+            List<CampusCache> campusCacheList = new List<CampusCache>();
+
+            if ( campusId.HasValue )
+            {
+                CampusCache campusCache = CampusCache.Read( campusId.Value );
+                if ( campusCache != null )
+                {
+                    campusCacheList.Add( campusCache );
+                }
+            }
+            else
+            {
+                // get all active campuses (false means don't include inactive ones)
+                campusCacheList = CampusCache.All( false );
+            }
+
+            // if we couldn't load any campuses, they asked for one that doesn't exist
+            if ( campusCacheList.Count == 0 )
+            {
+                return Common.Util.GenerateResponse( false, CampusResponse.CampusNotFound.ToString(), null );
+            }
+
+            // now begin the wild joining to get all necessary data
+            RockContext rockContext = new RockContext();
+            PersonAliasService paService = new PersonAliasService( rockContext );
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            List<Model.CampusModel> campusModelList = new List<MobileApp.Model.CampusModel>();
+
+            foreach ( CampusCache campusCache in campusCacheList )
+            {
+                // first copy over simple native types from the model
+                Model.CampusModel campusModel = new Model.CampusModel
+                {
+                    Name = campusCache.Name,
+
+                    PhoneNumber = campusCache.PhoneNumber,
+
+                    Latitude = campusCache.Location.Latitude.Value,
+                    Longitude = campusCache.Location.Longitude.Value,
+
+                    Street = campusCache.Location.Street1,
+                    City = campusCache.Location.City,
+                    State = campusCache.Location.State,
+                    Zip = campusCache.Location.PostalCode,
+
+                    DistanceFromSource = 0 //TODO: Do we support api driven distance calcs?
+                };
+                                             
+                // Grab Campus Pastor Info
+                if ( campusCache.LeaderPersonAliasId.HasValue )
+                {
+                    PersonAlias campusPastor = paService.Get( campusCache.LeaderPersonAliasId.Value );
+
+                    campusModel.CampusPastorName = campusPastor.Person.NickName + " " + campusPastor.Person.LastName;
+                    campusModel.CampusPastorEmail = campusPastor.Person.Email;
+
+                    if ( campusPastor.Person.PhotoId.HasValue )
+                    {
+                        campusModel.CampusPastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + campusPastor.Person.PhotoId.Value;
+                    }
+                    else
+                    {
+                        campusModel.CampusPastorImageURL = string.Empty;
+                    }
+                }
+
+                // build the wistia video URL
+                var wistiaIdAV = campusCache.AttributeValues["CampusTourWistiaId"];
+                if ( wistiaIdAV != null )
+                {
+                    //todo: figure out how we'll link to this video
+                    campusModel.VideoURL = wistiaIdAV.ToString();
+                }
+
+                // Service Times
+                campusModel.ServiceTimes = new List<MobileApp.Model.ServiceTimeModel>();
+                foreach ( var campusCacheServiceTime in campusCache.ServiceTimes )
+                {
+                    Model.ServiceTimeModel serviceTime = new MobileApp.Model.ServiceTimeModel();
+
+                    // check for special symbols
+                    if ( campusCacheServiceTime.Time.Contains( '%' ) )
+                    {
+                        serviceTime.SpecialNeeds = true;
+                    }
+
+                    if ( campusCacheServiceTime.Time.Contains( '*' ) )
+                    {
+                        serviceTime.HearingImpaired = true;
+                    }
+
+                    // now cut out those symbols and trailing whitespace
+                    serviceTime.Time = campusCacheServiceTime.Time.Trim( new char[] { '%', '*' } ).Trim();
+
+                    serviceTime.Day = campusCacheServiceTime.Day;
+
+                    campusModel.ServiceTimes.Add( serviceTime );
+                }
+
+                // Seventh Grade
+                var serviceLocationAV = campusCache.AttributeValues["7thGradeServiceLocation"];
+                if ( serviceLocationAV != null )
+                {
+                    campusModel.SeventhGrade_ServiceLocation = serviceLocationAV.ToString();
+                }
+
+                var serviceTimeAV = campusCache.AttributeValues["7thGradeServiceTime"];
+                if ( serviceTimeAV != null )
+                {
+                    campusModel.SeventhGrade_ServiceTime = serviceTimeAV.ToString();
+                }
+
+                // Eighth Grade
+                serviceLocationAV = campusCache.AttributeValues["8thGradeServiceLocation"];
+                if ( serviceLocationAV != null )
+                {
+                    campusModel.EighthGrade_ServiceLocation = serviceLocationAV.ToString();
+                }
+
+                serviceTimeAV = campusCache.AttributeValues["8thGradeServiceTime"];
+                if ( serviceTimeAV != null )
+                {
+                    campusModel.EighthGrade_ServiceTime = serviceTimeAV.ToString();
+                }
+
+                // High School
+                serviceLocationAV = campusCache.AttributeValues["HighSchoolLocations"];
+                if ( serviceLocationAV != null )
+                {
+                    campusModel.HighSchool_ServiceLocation = serviceLocationAV.ToString();
+                }
+
+                serviceTimeAV = campusCache.AttributeValues["HighSchoolTime"];
+                if ( serviceTimeAV != null )
+                {
+                    campusModel.HighSchool_ServiceTime = serviceTimeAV.ToString();
+                }
+
+                // Kids
+                campusModel.Kids_ServiceTime = "Available during all services";
+                campusModel.Kids_ServiceLocation = string.Empty;
+
+                campusModelList.Add( campusModel );
+                
+                //TODO:
+                // Add support for the extra info
+                //Info_About;
+                //Info_FirstTimeArrival;
+                //Info_CheckingInKids;
+                //Info_Parking;
+
+            }
+
+            return Common.Util.GenerateResponse( true, CampusResponse.Success.ToString(), campusModelList );
+        }
     }
 }
