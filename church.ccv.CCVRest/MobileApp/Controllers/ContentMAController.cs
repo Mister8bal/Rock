@@ -364,15 +364,44 @@ namespace church.ccv.CCVRest.MobileApp
                 campusModel.Kids_ServiceTime = "Available during all services";
                 campusModel.Kids_ServiceLocation = string.Empty;
 
-                campusModelList.Add( campusModel );
-                
-                //TODO:
-                // Add support for the extra info
-                //Info_About;
-                //Info_FirstTimeArrival;
-                //Info_CheckingInKids;
-                //Info_Parking;
+                // Misc Data
+                var campusCacheAV = campusCache.AttributeValues["History"];
+                if ( campusCacheAV != null )
+                {
+                    campusModel.Info_About = campusCacheAV.ToString();
+                }
 
+                campusCacheAV = campusCache.AttributeValues["ParkingDirections"];
+                if ( campusCacheAV != null )
+                {
+                    // parking directions are weird--we'll split it up to make it easier for the mobile app
+                    string[] stepsArray = campusCacheAV.ToString().Split( '\n' );
+
+                    campusModel.Info_ParkingDirectionSteps = new List<string>();
+                    foreach ( string step in stepsArray )
+                    {
+                        // now for each step, remove any leading bullets or whitespace
+                        string cleanedString = step.TrimStart( new char[] { ' ', '*' } );
+                        campusModel.Info_ParkingDirectionSteps.Add( cleanedString );
+                    }
+
+                }
+
+                // the map URL is defined by the following format
+                campusModel.Info_MapImageURL = publicAppRoot + "/Themes/church_ccv_External_v8/assets/images/home/locations/campus-landing/campus-maps/map-" + campusCache.ShortCode.ToLower() + ".jpg";
+
+                // and these values are hardcoded
+                campusModel.Info_FirstTimeArrival = "On your first visit, look for the designated New to CCV Guest Tables," + 
+                                                    " where one of our team members will provide you with a Welcome Packet and answer any questions you may have." + 
+                                                    " If you are checking in children, they will cover the first - time visit check-in process and lead you to your child's classroom." + 
+                                                    " You'll want to arrive about 15 - 20 minutes early.";
+
+                campusModel.Info_CheckingInKids = "Parents must check in their kids before service. Once your child is registered for the first time," + 
+                                                  " simply enter your phone number into one of the self-service or assisted kiosks to receive your child's name tag." +  
+                                                  " You will receive a matching pick-up receipt which will be required to pick your child up after service." + 
+                                                  " Jr High and High School Students are able to check themselves into class using the self-service kiosks.";
+
+                campusModelList.Add( campusModel );
             }
 
             return Common.Util.GenerateResponse( true, CampusResponse.Success.ToString(), campusModelList );

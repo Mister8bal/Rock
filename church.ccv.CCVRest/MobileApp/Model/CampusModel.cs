@@ -42,7 +42,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string Info_About;
         public string Info_FirstTimeArrival;
         public string Info_CheckingInKids;
-        public string Info_Parking;
+        public List<string> Info_ParkingDirectionSteps;
         public string Info_MapImageURL;
     }
 
