@@ -11,6 +11,8 @@ using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Web.Cache;
 using Newtonsoft.Json.Linq;
+using System.Web.Http;
+using church.ccv.CCVRest.MobileApp.Model;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -108,10 +110,11 @@ namespace church.ccv.CCVRest.MobileApp
                 // try getting values for each piece of the campaign
                 Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
                 {
-                    Title = mobileAppNewsFeedBlob["title"]?.ToString(),
-                    Description = mobileAppNewsFeedBlob["body"]?.ToString(),
-                    DetailsURL = mobileAppNewsFeedBlob["link"]?.ToString(),
-                    ImageURL = mobileAppNewsFeedBlob["img"]?.ToString(),
+                    Title = mobileAppNewsFeedBlob["title"].ToString(),
+                    Description = mobileAppNewsFeedBlob["body"].ToString(),
+                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
+                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
+                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
 
                     // For future compatibility
                     LaunchExternalBrowser = false,
@@ -186,6 +189,9 @@ namespace church.ccv.CCVRest.MobileApp
                     ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ),
 
                     Title = item.Title,
+                    Description = item.Content,
+
+                    SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean( ),
 
                     DetailsURL = item.GetAttributeValue( "DetailsURL" ),
                     LaunchExternalBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean( ),
@@ -294,6 +300,13 @@ namespace church.ccv.CCVRest.MobileApp
                 {
                     //todo: figure out how we'll link to this video
                     campusModel.VideoURL = wistiaIdAV.ToString();
+                }
+
+                // include the campus image (in case the wistia video isn't available)
+                var photoAV = campusCache.AttributeValues["MarketingSiteCoverPhoto"];
+                if ( photoAV != null )
+                {
+                    campusModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + photoAV.Value;
                 }
 
                 // Service Times
@@ -405,6 +418,43 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return Common.Util.GenerateResponse( true, CampusResponse.Success.ToString(), campusModelList );
+        }
+
+        [Serializable]
+        public enum OnCampusResponse
+        {
+            NotSet = -1,
+            Success,
+            NotOnCampus,
+            InvalidModel
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route( "api/NewMobileApp/OnCampus" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage OnCampus( [FromBody] OnCampusModel onCampusModel )
+        {
+            // validate the model
+            if ( onCampusModel == null || onCampusModel.Latitude == 0 || onCampusModel.Longitude == 0 )
+            {
+                return Common.Util.GenerateResponse( false, OnCampusResponse.InvalidModel.ToString(), null );
+            }
+
+            RockContext rockContext = new RockContext();
+
+            // see if the location is within maxDistanceMeters meters of the campus
+            double maxDistanceMeters = 750;
+            int? campusForLocation = MobileAppService.GetNearestCampus( onCampusModel.Longitude, onCampusModel.Latitude, maxDistanceMeters );
+            if ( campusForLocation.HasValue )
+            {
+                // Send back a response that says yes, and includes the campusId for the campus they're on.
+                return Common.Util.GenerateResponse( true, OnCampusResponse.Success.ToString(), campusForLocation.Value );
+            }
+            else
+            {
+                // send back that they aren't on campus
+                return Common.Util.GenerateResponse( true, OnCampusResponse.NotOnCampus.ToString(), null );
+            }
         }
     }
 }

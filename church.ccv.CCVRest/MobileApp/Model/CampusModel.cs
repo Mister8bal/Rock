@@ -8,7 +8,9 @@ namespace church.ccv.CCVRest.MobileApp.Model
     public class CampusModel
     {
         public string Name;
+
         public string VideoURL;
+        public string ImageURL;
 
         public string CampusPastorName;
         public string CampusPastorEmail;

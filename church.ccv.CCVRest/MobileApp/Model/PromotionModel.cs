@@ -14,7 +14,11 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string Title;
 
+        public string Description;
+
         public string DetailsURL;
+
+        public bool SkipDetailsPage;
 
         public bool LaunchExternalBrowser;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Spatial;
 using System.Linq;
 using church.ccv.Actions;
 using church.ccv.CCVRest.Common;
@@ -369,6 +370,42 @@ namespace church.ccv.CCVRest.MobileApp
             return false;
         }
 
+        public static int? GetNearestCampus( double longitude, double latitude, double maxDistanceMeters )
+        {
+            List<CampusCache> campusCacheList = CampusCache.All( false );
+
+            // assume we're too far away from any campuses
+            double closestDistance = maxDistanceMeters;
+            int? closestCampusId = null;
+
+            // take the provided long/lat and get a geoPoint out of it
+            DbGeography geoPoint = DbGeography.FromText( string.Format( "POINT({0} {1})", longitude, latitude ) );
+
+            // now go thru each campus
+            foreach ( CampusCache campusCache in campusCacheList )
+            {
+                // if the campus has a geopoint defined
+                if ( campusCache.Location.Longitude.HasValue && campusCache.Location.Latitude.HasValue )
+                {
+                    // put it in a geoPoint
+                    DbGeography campusGeoPoint = DbGeography.FromText( string.Format( "POINT({0} {1})", campusCache.Location.Longitude, campusCache.Location.Latitude ) );
+
+                    // take the distance between the the provided point and this campus
+                    double? distanceFromCampus = campusGeoPoint.Distance( geoPoint );
+
+                    // if a calcluation could be performed and it's closer than what we've already found, take it.
+                    if ( distanceFromCampus.HasValue && distanceFromCampus < closestDistance )
+                    {
+                        closestDistance = distanceFromCampus.Value;
+                        closestCampusId = campusCache.Id;
+                    }
+                }
+            }
+
+            // return whatever the closest campus was (or null if none were close enough)
+            return closestCampusId;
+        }
+
         // This is the Id for the attendance group created in the Check-In system within Rock. It should never change.
         //const int Attendance_GroupId_CCVMobileAttendance = 2595385; //Production Value - Can't use in MA3 until we refresh the server.
         const int Attendance_GroupId_CCVMobileAttendance = 2588359; //Temp MA3 value - Remove once we refresh MA3.
@@ -608,7 +645,6 @@ namespace church.ccv.CCVRest.MobileApp
 
             var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
             var personService = new PersonService( rockContext ).Queryable().AsNoTracking();
-            var binaryFileService = new BinaryFileService( rockContext ).Queryable().AsNoTracking();
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
             // now get the group leader. If there isn't one, we'll fail, because we don't want a group with no leader
@@ -683,15 +719,9 @@ namespace church.ccv.CCVRest.MobileApp
 
                 if ( group.AttributeValues.ContainsKey( FamilyPicture_Key ) )
                 {
+                    // build a URL for retrieving the group's pic
                     Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
-
-                    // get the id so that we send consistent data down to the mobile app
-                    var photoObj = binaryFileService.Where( f => f.Guid == photoGuid ).SingleOrDefault();
-                    if ( photoObj != null )
-                    {
-                        // build a URL for retrieving the group's pic
-                        groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + photoObj.Id;
-                    }
+                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
                 }
 
                 // get the childcare description whether the Childcare filter is set or NOT. This is

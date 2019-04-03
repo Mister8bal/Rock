@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Web.Http;
 using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using Rock;
@@ -65,7 +66,6 @@ namespace church.ccv.CCVRest.MobileApp
 
             return Common.Util.GenerateResponse( false, PersonResponse.PersonNotFound.ToString( ), null );
         }
-
 
         [Serializable]
         public enum RecordAttendanceResponse
