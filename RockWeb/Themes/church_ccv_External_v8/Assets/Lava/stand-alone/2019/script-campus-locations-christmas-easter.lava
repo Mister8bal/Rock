@@ -8,11 +8,11 @@ CCV.findCampusById = function (campusId) {
 {% assign activeCampuses = Campuses | Where: 'IsActive', true %}
 CCV.locations = [
   {% capture deafIcon %}
-<span class="csi csi-slt"></span>
+<span class="csi csi-slt">  </span>
 {% endcapture %}
 
 {% capture specialNeedsIcon %}
-<span class="csi csi-special-needs"></span>
+<span class="csi csi-special-needs">  </span>
 {% endcapture %}
 {% for campus in activeCampuses %}
   {% assign mondayTimesString = '' %}
@@ -80,76 +80,66 @@ CCV.locations = [
       {% capture renderedEasterTimes %}
         monday: [
             {% if mondayTimesString != '' %}
-              '<strong>{{ mondayDate }}</strong>' +
-                    '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
-                    '{% for mondayTime in mondayTimes %}' +
-                        '{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}',
-    {% endif %}
+                '<strong>{{ mondayDate }}</strong>' +
+                '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
+                '<div class="service-times-list">{% for mondayTime in mondayTimes %}' +
+                    '<li class="mon{{ forloop.index }}">{{ mondayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                '{% endfor %}</div>',
+            {% endif %}
         ],
         tuesday: [
-            {% if thursdayTimesString != '' %}
-              '<strong>{{ tuesdayDate }}</strong>' +
-                    '{% assign tuesdayTimes = thursdayTimesString | Split:';' %}' +
-                    '{% for tuesdayTime in tuesdayTimes %}' +
-                        '{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}',
-    {% endif %}
+            {% if tuesdayTimesString != '' %}
+                '<strong>{{ tuesdayDate }}</strong>' +
+                '{% assign tuesdayTimes = tuesdayTimesString | Split:';' %}' +
+                '<div class="service-times-list">{% for tuesdayTime in tuesdayTimes %}' +
+                    '<li class="tues{{ forloop.index }}">{{ tuesdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                '{% endfor %}</div>',
+            {% endif %}
         ],
         wednesday: [
-         {% if sundayTimesString != '' %}
-            '<strong>{{ wednesdayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}' +
-                    '{% for wednesdayTime in wednesdayTimes %}' +
-                        '{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}' +
-              '</ul>',
-        {% endif %}       
+            {% if wednesdayTimesString != '' %}
+                '<strong>{{ wednesdayDate }}</strong>' +
+                '{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}' +
+                '<div class="service-times-list">{% for wednesdayTime in wednesdayTimes %}' +
+                    '<li class="wed{{ forloop.index }}">{{ wednesdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                '{% endfor %}</div>',
+            {% endif %}       
         ],
         thursday: [
-          {% if sundayTimesString != '' %}
-              '<strong>{{ thursdayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign thursdayTimes = thursdayTimesString | Split:';' %}' +
-                    '{% for thursdayTime in thursdayTimes %}' +
-                        '{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}' +
-              '</ul>',
-        {% endif %}       
+            {% if thursdayTimesString != '' %}
+                '<strong>{{ thursdayDate }}</strong>' +
+                '{% assign thursdayTimes = thursdayTimesString | Split:';' %}' +
+                '<div class="service-times-list">{% for thursdayTime in thursdayTimes %}' +
+                    '<li class="thur{{ forloop.index }}">{{ thursdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                '{% endfor %}</div>',
+          {% endif %}       
         ],
         friday: [
-          {% if fridayTimesString != '' %}
-              '<strong>{{ fridayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign fridayTimes = fridayTimesString | Split:';' %}' +
-                    '{% for fridayTime in fridayTimes %}' +
-                        '{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}' +
-              '</ul>',
-         {% endif %}      
+            {% if fridayTimesString != '' %}
+                '<strong>{{ fridayDate }}</strong>' +
+                '{% assign fridayTimes = fridayTimesString | Split:';' %}' +
+                '<div class="service-times-list">{% for fridayTime in fridayTimes %}' +
+                    '<li class="fri{{ forloop.index }}">{{ fridayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                '{% endfor %}</div>',
+          {% endif %}      
         ],
         saturday: [
-           {% if saturdayTimesString != '' %}
+            {% if saturdayTimesString != '' %}
               '<strong>{{ saturdayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign saturdayTimes = saturdayTimesString | Split:';' %}' +
-                    '{% for saturdayTime in saturdayTimes %}' +
-                        '{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}' +
-              '</ul>',
-         {% endif %}     
+              '{% assign saturdayTimes = saturdayTimesString | Split:';' %}' +
+              '<div class="service-times-list">{% for saturdayTime in saturdayTimes %}' +
+                  '<li class="sat{{ forloop.index }}">{{ saturdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+              '{% endfor %}</div>',
+            {% endif %}     
         ],
         sunday: [
             {% if sundayTimesString != '' %}
               '<strong>{{ sundayDate }}</strong>' +
-              '<ul class="list-inline">' +
-                    '{% assign sundayTimes = sundayTimesString | Split:';' %}' +
-                    '{% for sundayTime in sundayTimes %}' +
-                        '{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}' +
-                    '{% endfor %}' +
-              '</ul>',
-    {% endif %}
+              '{% assign sundayTimes = sundayTimesString | Split:';' %}' +
+              '<div class="service-times-list">{% for sundayTime in sundayTimes %}' +
+                  '<li class="sun{{ forloop.index }}">{{ sundayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+              '{% endfor %}</div>',
+            {% endif %}
         ],
       {% endcapture %}{{ renderedEasterTimes | StripNewlines | Remove: '  ' }}
     },

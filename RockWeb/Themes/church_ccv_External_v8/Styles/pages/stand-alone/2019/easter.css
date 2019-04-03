@@ -24,10 +24,6 @@
         height: unset !important;
         padding-top: 75px !important;
     }
-
-    .list-inline > li {
-        width: 100%;
-    }    
 }
 
 /* Feature Title Section */
@@ -320,6 +316,29 @@
         max-width: unset;
         width: unset;
     }
+
+    .list-inline > ul {
+        padding: 5px 0;
+    }  
+
+    .list-inline {
+        margin-left: 0;
+    } 
+
+    .service-times-list {
+        display: flex;
+        flex-wrap: wrap;
+        text-decoration: none;
+        list-style: none;
+    }
+
+    li {
+        margin-right: 2%;
+    }
+
+    .csi {
+        margin: 0 3px;
+    }
 }
 /* End Campus Card Section */
 
@@ -329,7 +348,7 @@
     background-color: #ffffff; /* background-color: #ffffff; */
 }
 
-/* Plan Your Visit Section */
+/* End Plan Your Visit Section */
 
 /* Baptisms section */
 
@@ -398,7 +417,7 @@
     }
 }
 
-/* Sunrise Service Section */
+/* End Sunrise Service Section */
 
 /* Share Section */
 
