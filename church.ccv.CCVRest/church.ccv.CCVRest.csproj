@@ -109,7 +109,7 @@
     <Compile Include="MobileApp\Model\LoginModel.cs" />
     <Compile Include="MobileApp\Model\MobileAppPersonModel.cs" />
     <Compile Include="MobileApp\Model\NewUserModel.cs" />
-    <Compile Include="MobileApp\Model\OnCampusModel.cs" />
+    <Compile Include="MobileApp\Model\IsOnCampusModel.cs" />
     <Compile Include="MobileApp\Model\PersonalizedItemModel.cs" />
     <Compile Include="MobileApp\Model\PromotionModel.cs" />
     <Compile Include="MobileApp\Util\MobileAppService.cs" />

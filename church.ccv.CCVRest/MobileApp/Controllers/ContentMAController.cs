@@ -421,39 +421,56 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [Serializable]
-        public enum OnCampusResponse
+        public enum IsOnCampusResponse
         {
             NotSet = -1,
+
             Success,
+
             NotOnCampus,
-            InvalidModel
+
+            InvalidModel,
+
+            InvalidLatitude,
+
+            InvalidLongitude
         }
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route( "api/NewMobileApp/OnCampus" )]
+        [System.Web.Http.Route( "api/NewMobileApp/IsOnCampus" )]
         [Authenticate, Secured]
-        public HttpResponseMessage OnCampus( [FromBody] OnCampusModel onCampusModel )
+        public HttpResponseMessage IsOnCampus( [FromBody] IsOnCampusModel isOnCampusModel )
         {
             // validate the model
-            if ( onCampusModel == null || onCampusModel.Latitude == 0 || onCampusModel.Longitude == 0 )
+            if ( isOnCampusModel == null )
             {
-                return Common.Util.GenerateResponse( false, OnCampusResponse.InvalidModel.ToString(), null );
+                return Common.Util.GenerateResponse( false, IsOnCampusResponse.InvalidModel.ToString(), null );
+            }
+            // validate latitude is -90 to 90
+            else if ( Math.Abs( isOnCampusModel.Latitude ) > 90 )
+            {
+                return Common.Util.GenerateResponse( false, IsOnCampusResponse.InvalidLatitude.ToString(), null );
+            }
+            // validate longitude is -180 to 180
+            else if ( Math.Abs( isOnCampusModel.Longitude ) > 180 )
+            {
+                return Common.Util.GenerateResponse( false, IsOnCampusResponse.InvalidLongitude.ToString(), null );
             }
 
             RockContext rockContext = new RockContext();
 
             // see if the location is within maxDistanceMeters meters of the campus
             double maxDistanceMeters = 750;
-            int? campusForLocation = MobileAppService.GetNearestCampus( onCampusModel.Longitude, onCampusModel.Latitude, maxDistanceMeters );
+            int? campusForLocation = MobileAppService.GetNearestCampus( isOnCampusModel.Longitude, isOnCampusModel.Latitude, maxDistanceMeters );
             if ( campusForLocation.HasValue )
             {
                 // Send back a response that says yes, and includes the campusId for the campus they're on.
-                return Common.Util.GenerateResponse( true, OnCampusResponse.Success.ToString(), campusForLocation.Value );
+                return Common.Util.GenerateResponse( true, IsOnCampusResponse.Success.ToString(), campusForLocation.Value );
             }
             else
             {
                 // send back that they aren't on campus
-                return Common.Util.GenerateResponse( true, OnCampusResponse.NotOnCampus.ToString(), null );
+                return Common.Util.GenerateResponse( true, IsOnCampusResponse.NotOnCampus.ToString(), null );
             }
         }
     }

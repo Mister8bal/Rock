@@ -3,7 +3,7 @@
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    public class OnCampusModel
+    public class IsOnCampusModel
     {
         public double Latitude;
         public double Longitude;
