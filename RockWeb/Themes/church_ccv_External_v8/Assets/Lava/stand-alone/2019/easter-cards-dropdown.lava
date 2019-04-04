@@ -44,14 +44,9 @@
 
 <div class="campus-cards-row-mobile">
 
-{% for campusItem in Campuses %}
-    {% if campusItem.Id == Context.Campus.Id %}
-        {% assign campus = campusItem %}
-    {% endif %}
-{% endfor %}
-
 <div class="campus-container">
     <select class="campus-dropdown" id="ddlCampusDropdown">
+    <option value="" selected disabled hidden>SELECT A CAMPUS</option>
         {% for campusItem in Campuses %}
             {% if campusItem.IsActive == 'True' %}
                 {% if campusItem.Id == campus.Id %}
@@ -65,7 +60,7 @@
 </div> 
     
     <a name="service-times" style="padding-top: 150px; margin-top: -150px;"></a>
-    <div class="campus-card">
+    <div class="campus-card hidden" id="campus-card">
         <div class="image">
             {% assign imageGuid = campus | Attribute:'FeatureImage', 'RawValue' %}
             <img id="iCampusCardImage" src="/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-{{ campus.ShortCode }}.jpg"/>
@@ -121,8 +116,9 @@
             for (var i = 0; i < CCV.locations.length; i++) {
                 if ($(this).val() == CCV.locations[i].id) {
                     $(this).attr('selected', 'selected');
-                   
+                    
                     var campus = CCV.locations[i];
+                                        $('#campus-card').removeClass("hidden");
 
                     $('#iCampusCardImage').attr('src','/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-' + campus.shortcode + '.jpg');
                     $('#campusName').text( campus.name );
