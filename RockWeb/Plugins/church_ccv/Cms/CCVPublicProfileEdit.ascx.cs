@@ -49,6 +49,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [AttributeField( Rock.SystemGuid.EntityType.GROUP, "GroupTypeId", Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY, "Family Attributes", "The family attributes that should be displayed / edited.", false, true, order: 8 )]
     [AttributeField( Rock.SystemGuid.EntityType.PERSON, "Person Attributes (adults)", "The person attributes that should be displayed / edited for adults.", false, true, order: 9 )]
     [AttributeField( Rock.SystemGuid.EntityType.PERSON, "Person Attributes (children)", "The person attributes that should be displayed / edited for children.", false, true, order: 10 )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Default Connection Status", "The default connection status that is given to new family members.", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 11 )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Default Record Status", "The default record status that is given to new family members.", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 12 )]
     public partial class CCVPublicProfileEdit : RockBlock
     {
         #region Properties
@@ -423,21 +425,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                 groupMember.GroupRoleId = role.Id;
                             }
 
-                            var headOfHousehold = GroupServiceExtensions.HeadOfHousehold( group.Members.AsQueryable() );
-                            if ( headOfHousehold != null )
-                            {
-                                DefinedValueCache dvcConnectionStatus = DefinedValueCache.Read( headOfHousehold.ConnectionStatusValueId ?? 0 );
-                                DefinedValueCache dvcRecordStatus = DefinedValueCache.Read( headOfHousehold.RecordStatusValueId ?? 0 );
-                                if ( dvcConnectionStatus != null )
-                                {
-                                    groupMember.Person.ConnectionStatusValueId = dvcConnectionStatus.Id;
-                                }
-
-                                if ( dvcRecordStatus != null )
-                                {
-                                    groupMember.Person.RecordStatusValueId = dvcRecordStatus.Id;
-                                }
-                            }
+                            groupMember.Person.ConnectionStatusValueId = DefinedValueCache.Read( GetAttributeValue( "DefaultConnectionStatus" ).AsGuid() ).Id;
+                            groupMember.Person.RecordStatusValueId = DefinedValueCache.Read( GetAttributeValue( "DefaultRecordStatus" ).AsGuid() ).Id;
 
                             if ( groupMember.GroupRole.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT.AsGuid() )
                             {
