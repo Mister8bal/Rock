@@ -1,5 +1,6 @@
 {% comment %}
     {% assign title = 'Toolbox Title' %}
+
     {% person dataview:'741' where:'Id == "{{ CurrentPerson.Id }}"' %}
         {% for person in personItems %}
             {% assign canAccessToolbox = true %}
@@ -15,9 +16,6 @@
     743 - Later Kids
     
 {% endcomment %}
-
-
-
 
 <script>
     // adds on "onload" hook to the window.onload function chain
@@ -35,6 +33,9 @@
         gCurrentLink = $("#coach-videos-button")[0];
         gCurrentPanel = $("#coach-videos-panel")[0];
         togglePanel( gCurrentLink, gCurrentPanel, true );
+
+        // set page state
+        
     }
 
     function togglePanel(panelLink, panelObj, enabled) {
@@ -61,14 +62,17 @@
         togglePanel( gCurrentLink, gCurrentPanel, true );
     }
 
-    function tryToggleInfoBanner( sectionName ) {
+    function previousWeekend_Click() {
+        // Default to index 1 (no Item page parameter means we already on index 0)
+        window.location.href = "{{ 'Global' | Page:'Path' }}?Item={{ PageParameter.Item | Plus:1 | Default:'1' }}"
+    }
+
+    function nextWeekend_Click() {
+        console.log("{{ 'Global' | Page:'Host' }}{{ 'Global' | Page:'Path' }}")
     }
 </script>
 
-
-
-
-
+{% comment %} canAccessToolbox is set before the include in block settings (dataview has to be hardcoded){% endcomment %}
 {% if canAccessToolbox == false %}
     {% if CurrentPersonCanEdit %}
         <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because you do not have Kid Coach Toolbox access</p>
@@ -93,6 +97,10 @@
         <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item toolbox-subnav-div-selected">Coach Guide</div>
         <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
     </div>
+</div>
+
+<div class="group-info-banner">
+    <div><i id="previousItem" class="mdi mdi-chevron-left" style="font-size: 22px; vertical-align: middle;" onClick="previousWeekend_Click()"></i> <span id="weekendDates" style="color: black;"></span> <i id="nextItem" class="mdi mdi-chevron-right hidden" style="font-size: 22px; vertical-align: middle;" onClick="nextWeekend_Click()"></i></div>
 </div>
 
 <script>

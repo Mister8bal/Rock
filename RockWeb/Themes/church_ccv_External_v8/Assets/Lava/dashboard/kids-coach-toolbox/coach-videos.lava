@@ -1,24 +1,41 @@
 {% comment %}
-  {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/coach-videos.lava' %}
+    {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/coach-videos.lava' %}
 {% endcomment %}
 
 
-{% assign viewedItem = Items | First %}
+{% assign viewedItem = Items[0] %}
+
+{% if PageParameter.Item %}
+    {% assign itemIndex = PageParameter.Item | AsInteger %}
+    {% assign viewedItem = Items[itemIndex] %}
+{% endif %}
 
 {% assign messageVideo = viewedItem | Attribute: 'LinktoWeekendMessageVideo' %}
 
 {% if messageVideo != '' %}
-    <h4>Weekend Message</h4>
+    <div class="header">
+        <h4>Weekend Message</h4>
+    </div>
     <div class="embed-responsive embed-responsive-16by9">
-      <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ messageVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ messageVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
     </div>
 {% endif %}
 
 {% assign trainingVideo = viewedItem | Attribute: 'LinktoCoachTrainingVideo' %}
 
 {% if trainingVideo != '' %}
-    <h4>Coach Training Video</h4>
+    <div class="header">
+        <h4>Coach Training Video</h4>
+    </div>
     <div class="embed-responsive embed-responsive-16by9">
-      <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
     </div>
 {% endif %}
+
+<script>
+    $(document).ready(function(){
+
+        $('#weekendDates').text('{{ viewedItem.WeekendDates }}');
+        $('#pdfCoachGuide').attr('data', "{{ viewedItem | Attribute:'Guide', 'Url' }}");
+    });
+</script>

@@ -4,18 +4,4 @@
 {% endcomment %}
 
 
-{% assign viewedItem = Items | First %}
-
-{% assign guide = viewedItem | Attribute: 'Guide', 'Url' %}
-
-{% if guide != '' %}
-
-      <object data="{{ guide }}" width="100%" height="100%" type="application/pdf"></object>
-
-{% endif %}
-
-<style>
-  object {
-    background-color: transparent !important;
-  }
-</style>
+<object id="pdfCoachGuide" data="" width="100%" height="100%" type="application/pdf"></object>
