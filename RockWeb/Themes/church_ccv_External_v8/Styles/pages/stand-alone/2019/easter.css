@@ -254,6 +254,13 @@
     margin-bottom: 5%;
 }
 
+.campus-container .fa {
+    color: white;
+    position: absolute;
+    right: 30px;
+    padding: 2%;
+}
+
 .service-times strong {
     font-weight: 700;
 }

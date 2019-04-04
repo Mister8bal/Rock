@@ -44,7 +44,9 @@
 
 <div class="campus-cards-row-mobile">
 
+
 <div class="campus-container">
+<b class="fa fa-caret-down"></b>
     <select class="campus-dropdown" id="ddlCampusDropdown">
     <option value="" selected disabled hidden>SELECT A CAMPUS</option>
         {% for campusItem in Campuses %}
@@ -118,7 +120,7 @@
                     $(this).attr('selected', 'selected');
                     
                     var campus = CCV.locations[i];
-                                        $('#campus-card').removeClass("hidden");
+                    $('#campus-card').removeClass("hidden");
 
                     $('#iCampusCardImage').attr('src','/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-' + campus.shortcode + '.jpg');
                     $('#campusName').text( campus.name );
@@ -130,14 +132,14 @@
                         $("#"+day).html( campus.EasterServiceTimes[day]);
                         $("#post").removeClass("hidden");
 
-                        // Look for any empty li, if any found then unhide by default
+                        // Look for any empty ul, if any found then unhide by default
                         $("ul").each(function() {
                             var $this = $(this);
                             $this.removeClass("hidden");
                         });
                     }
 
-                    // Look for any empty li, if any found then hide
+                    // Look for any empty ul, if any found then hide
                     $("ul").each(function() {
                         var $this = $(this);
                         if($this.text() == ""){
