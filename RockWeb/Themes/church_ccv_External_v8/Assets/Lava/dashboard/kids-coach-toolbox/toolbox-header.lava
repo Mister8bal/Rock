@@ -8,7 +8,7 @@
     {% endperson %}
     {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/toolbox-header.lava' %}
 
-    You must add all the above code and configure for relative toolbox
+    You must add all the above code into content channel block setting above the lava include and configure for relative toolbox
 
     Kids Coach Dataviews
     741 - 2 Year Olds
@@ -32,10 +32,7 @@
         // default to the dashboard panel
         gCurrentLink = $("#coach-videos-button")[0];
         gCurrentPanel = $("#coach-videos-panel")[0];
-        togglePanel( gCurrentLink, gCurrentPanel, true );
-
-        // set page state
-        
+        togglePanel( gCurrentLink, gCurrentPanel, true );        
     }
 
     function togglePanel(panelLink, panelObj, enabled) {
@@ -50,7 +47,8 @@
     }
          
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-        $('#coach-guide-mobile-button').removeClass('toolbox-subnav-div-selected');
+        // remove styling from default mobile panel
+        $('#coach-videos-mobile-button').removeClass('toolbox-subnav-div-selected');
 
         // turn off existing panel
         togglePanel( gCurrentLink, gCurrentPanel, false );
@@ -63,12 +61,82 @@
     }
 
     function previousWeekend_Click() {
-        // Default to index 1 (no Item page parameter means we already on index 0)
-        window.location.href = "{{ 'Global' | Page:'Path' }}?Item={{ PageParameter.Item | Plus:1 | Default:'1' }}"
+        // reminder: items are sorted descending, so index is backwards
+
+        var totalItems = $('input[name=TotalItems]').val();
+        var currentIndex = $('input[name=CurrentIndex]').val();
+
+        if (currentIndex < totalItems) {
+            hideAllCoachVideoDivs(totalItems);
+
+            currentIndex++
+
+            // update weekend date and guide
+            $('#weekendDates').text($('input[name=WeekendDates' + currentIndex + ']').val());
+            $('#pdfCoachGuide').attr('data', $('input[name=Guide' + currentIndex + ']').val());
+
+            // unhide the new video div
+            $('#divCoachVideos' + currentIndex).removeClass('hidden');
+
+            // update hidden field with new index
+            $('input[name=CurrentIndex]').val(currentIndex);
+
+            setNextPreviousState(currentIndex, totalItems);
+        }
     }
 
     function nextWeekend_Click() {
-        console.log("{{ 'Global' | Page:'Host' }}{{ 'Global' | Page:'Path' }}")
+        // reminder: items are sorted descending, so index is backwards
+
+        var totalItems = $('input[name=TotalItems]').val();
+        var currentIndex = $('input[name=CurrentIndex]').val();
+
+        if (currentIndex < totalItems) {
+            hideAllCoachVideoDivs(totalItems);
+
+            currentIndex--
+
+            // update weekend date and guide
+            $('#weekendDates').text($('input[name=WeekendDates' + currentIndex + ']').val());
+            $('#pdfCoachGuide').attr('data', $('input[name=Guide' + currentIndex + ']').val());
+
+            // unhide the new video div
+            $('#divCoachVideos' + currentIndex).removeClass('hidden');
+
+            // update hidden field with new index
+            $('input[name=CurrentIndex]').val(currentIndex);
+
+            setNextPreviousState(currentIndex, totalItems);
+        }
+    }
+
+    function setNextPreviousState(currentIndex, totalItems) {
+        var lastItemIndex = totalItems - 1;
+        
+        switch (currentIndex) {
+            case 0:
+                // at newest item, hide next button
+                $('#nextItem').addClass('hidden');
+                $('#previousItem').removeClass('hidden');
+                break;
+            case lastItemIndex:
+                // at last item, hide previous button
+                $('#nextItem').removeClass('hidden');
+                $('#previousItem').addClass('hidden');
+                break;
+            default:
+                // show both buttons
+                $('#nextItem').removeClass('hidden');
+                $('#previousItem').removeClass('hidden');
+                break;
+        }
+    }
+
+    // loop through all divs and hide them
+    function hideAllCoachVideoDivs(totalDivs) {
+        for (let i = 0; i < totalDivs; i++) {
+            $('#divCoachVideos' + (i)).addClass('hidden');         
+        }
     }
 </script>
 
@@ -94,13 +162,21 @@
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
         <div id="coach-videos-mobile-button" onClick="linkClicked(this, 'coach-videos')" class="subnav-item toolbox-subnav-div-selected">Coach Videos</div>
-        <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item toolbox-subnav-div-selected">Coach Guide</div>
+        <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item">Coach Guide</div>
         <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
     </div>
 </div>
 
-<div class="group-info-banner">
-    <div><i id="previousItem" class="mdi mdi-chevron-left" style="font-size: 22px; vertical-align: middle;" onClick="previousWeekend_Click()"></i> <span id="weekendDates" style="color: black;"></span> <i id="nextItem" class="mdi mdi-chevron-right hidden" style="font-size: 22px; vertical-align: middle;" onClick="nextWeekend_Click()"></i></div>
+<div class="group-info-banner weekend-navigation">
+    <div style="width: 25px;">
+        <i id="previousItem" class="mdi mdi-chevron-left" onClick="previousWeekend_Click(); return false;"></i>
+    </div>
+    <div>
+        <span id="weekendDates" style="color: black;"></span>
+    </div>
+    <div style="width: 25px;">
+        <i id="nextItem" class="mdi mdi-chevron-right hidden" onClick="nextWeekend_Click(); return false;"></i>
+    </div>
 </div>
 
 <script>
@@ -113,7 +189,6 @@
             variableWidth: true,
             prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
             nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
-
         });
     });
     
@@ -125,5 +200,4 @@
         $('.toolbox-subnav-mobile-items').slick('slickNext');
     });
 </script>
-
    
