@@ -47,17 +47,19 @@
     }
          
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-        // remove styling from default mobile panel
-        $('#coach-videos-mobile-button').removeClass('toolbox-subnav-div-selected');
+        if ( document.readyState === "complete") {
+            // remove styling from default mobile panel
+            $('#coach-videos-mobile-button').removeClass('toolbox-subnav-div-selected');
 
-        // turn off existing panel
-        togglePanel( gCurrentLink, gCurrentPanel, false );
-        
-        var targetPanel = $("#" + sectionName + "-panel")[0];
-        gCurrentPanel = targetPanel;
-        gCurrentLink = linkElement;
-        
-        togglePanel( gCurrentLink, gCurrentPanel, true );
+            // turn off existing panel
+            togglePanel( gCurrentLink, gCurrentPanel, false );
+            
+            var targetPanel = $("#" + sectionName + "-panel")[0];
+            gCurrentPanel = targetPanel;
+            gCurrentLink = linkElement;
+            
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
     }
 
     function previousWeekend_Click() {

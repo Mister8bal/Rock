@@ -838,6 +838,13 @@
 .weekend-navigation i {
     font-size: 20px;
 }
+#pdfCoachGuideDownload {
+    display: none;
+}
+
+#pdfCoachGuide {
+    display: block;
+}
 
 @media screen and (max-width: 500px) {
     .weekend-navigation {
@@ -850,6 +857,15 @@
 
     .weekend-navigation i {
         font-size: 24px;
+    }
+
+    #pdfCoachGuideDownload {
+        display: block;
+        padding-top: 50px;
+    }
+
+    #pdfCoachGuide {
+        display: none;
     }
 
     .coach-guide-pdf {

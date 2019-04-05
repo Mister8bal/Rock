@@ -1,6 +1,5 @@
 {% comment %}
-  {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/coach-guide.lava' %}
-
+  {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/coach-guide.lava' %}00
 {% endcomment %}
 
 <div id="pdfCoachGuideDownload"></div>
