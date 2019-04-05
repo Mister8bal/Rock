@@ -236,6 +236,10 @@
     display: none;
 }
 
+#verrado-details li {
+    padding-left: 0px;
+}
+
 .campus-dropdown li {
     margin: 0%;
 }

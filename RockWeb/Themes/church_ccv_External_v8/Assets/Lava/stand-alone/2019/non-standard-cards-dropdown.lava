@@ -83,8 +83,18 @@
                 <div class="header">
                     <h4 id="campusName">{{ campus.Name }}</h4>
                 </div>
-                
                 <div class="content service-times mt-25">
+                    <div id="verrado-details">
+                        <strong>Sunday 4/21</strong>
+                        <ul class="list-inline">
+                            <li style="color:#119156">7:00am</li><br>
+                        </ul>
+                        <ul class="list-inline">
+                            <li>Easter Service being held at:</li><br>
+                            <li>4239 N. Village Street</li><br>
+                            <li>Buckeye, AZ 85396</li>
+                        </ul> 
+                    </div>
                     <ul class="list-inline">
                         {% for campusItem in Campuses %}
                             {% if campusItem.IsActive == 'True' %}
@@ -126,7 +136,7 @@
         for (var i = 0; i < CCV.locations.length; i++) {
             if (campusId == CCV.locations[i].id) {
                 var campus = CCV.locations[i];
-
+                $('#verrado-details').addClass("hidden");
                 $('#campus-card').removeClass("hidden");
 
                 // Set Campus image, name, phone number and change dropdown text to campus name
@@ -138,9 +148,7 @@
                 // Set location of directions button. Check to see if campus is Verrado
                 if(CCV.locations[i].id == 14) {
                     $('#campusLocation').attr('href', 'https://goo.gl/maps/NubFU8nof9N2');
-                    // $('#list-item-header').text('Easter Service being held at:');
-                    // $('#list-item-street').text('4239 N. Village Street');
-                    // $('#list-item-city').text('Buckeye, AZ 85396');
+                    $('#verrado-details').removeClass("hidden");
                 }
                 else {
                     $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
