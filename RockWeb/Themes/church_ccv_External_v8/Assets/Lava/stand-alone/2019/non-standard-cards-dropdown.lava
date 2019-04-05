@@ -42,7 +42,12 @@
                         <div class="card-footer">
                             <div class="link">
                                 <a class="contact-phone" href="tel:{{ campus.PhoneNumber }}">{{ campus.PhoneNumber }}</a>
-                                <a target="_blank" href="https://maps.google.com/?q={{campus.Location.Street1 | Replace: ' ', '+'}}+{{campus.Location.City | Replace: ' ', '+'}}+{{campus.Location.State | Replace: ' ', '+'}}+{{campus.Location.PostalCode | Replace: ' ', '+'}}" class="btn btn-primary">GET DIRECTIONS</a>
+                                
+                                {% if campus.Name == 'Verrado' %}
+                                    <a target="_blank" href="https://goo.gl/maps/NubFU8nof9N2" class="btn btn-primary">GET DIRECTIONS</a>    
+                                {% else %}
+                                    <a target="_blank" href="https://maps.google.com/?q={{campus.Location.Street1 | Replace: ' ', '+'}}+{{campus.Location.City | Replace: ' ', '+'}}+{{campus.Location.State | Replace: ' ', '+'}}+{{campus.Location.PostalCode | Replace: ' ', '+'}}" class="btn btn-primary">GET DIRECTIONS</a>    
+                                {% endif %}
                             </div>
                             <div class="icon-details">
                                 <div class="icon-desc">
@@ -165,7 +170,7 @@
             }  
         }
         // Highlight first sunday of each campus since it will be the sunrise service
-            $('.sun1').css('color', '#119156');   
+        $('.sun1').css('color', '#119156');   
     }
             
 </script>
