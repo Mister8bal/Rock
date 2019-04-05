@@ -10,7 +10,6 @@
                 <div class="campus-card">
                     <a name="{{ campus.Name | Replace:' ','-' | Downcase }}" style="padding-top: 75px; margin-top: -75px;"></a>
                     <div class="image">
-                        {% assign imageGuid = campus | Attribute:'FeatureImage', 'RawValue' %}
                         <img src="/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-{{ campus.ShortCode }}.jpg"/>
                     </div>
                     <div class="card-content">
@@ -68,11 +67,7 @@
         <ul class="dropdown-menu">
             {% for campusItem in Campuses %}
                 {% if campusItem.IsActive == 'True' %}
-                    {% if campusItem.Id == campus.Id %}
-                        <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
-                    {% else %}     
-                        <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
-                    {% endif %}
+                    <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
                 {% endif %}
             {% endfor %} 
         </ul>
@@ -81,7 +76,6 @@
     <a name="service-times" style="padding-top: 150px; margin-top: -150px;"></a>
     <div class="campus-card hidden" id="campus-card">
         <div class="image">
-            {% assign imageGuid = campus | Attribute:'FeatureImage', 'RawValue' %}
             <img id="iCampusCardImage" src="/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-{{ campus.ShortCode }}.jpg"/>
         </div>
         <div class="card-content">
@@ -91,25 +85,23 @@
                 </div>
                 
                 <div class="content service-times mt-25">
-                    <div id="post">
-                        <ul class="list-inline">
-                            {% for campusItem in Campuses %}
-                                {% if campusItem.IsActive == 'True' %}
-                                    {% if forloop.index < 2 %}
-                                        <ul id="monday"></ul>
-                                        <ul id="tuesday"></ul>
-                                        <ul id="wednesday"></ul>
-                                        <ul id="thursday"></ul>
-                                        <ul id="friday"></ul>
-                                        <ul id="saturday"></ul>
-                                        <ul id="sunday"></ul>
-                                    {% endif %}
+                    <ul class="list-inline">
+                        {% for campusItem in Campuses %}
+                            {% if campusItem.IsActive == 'True' %}
+                                {% if forloop.index < 2 %}
+                                    <ul id="monday"></ul>
+                                    <ul id="tuesday"></ul>
+                                    <ul id="wednesday"></ul>
+                                    <ul id="thursday"></ul>
+                                    <ul id="friday"></ul>
+                                    <ul id="saturday"></ul>
+                                    <ul id="sunday"></ul>
                                 {% endif %}
-                            {% endfor %} 
-                        </ul>
-                    </div>
-                    </div>
+                            {% endif %}
+                        {% endfor %} 
+                    </ul>
                 </div>
+            </div>
             <div class="card-footer">
                 <div class="link">
                     <a class="contact-phone" id="campusPhone" href="tel:{{ campus.PhoneNumber }}">{{ campus.PhoneNumber }}</a>
@@ -134,15 +126,16 @@
         for (var i = 0; i < CCV.locations.length; i++) {
             if (campusId == CCV.locations[i].id) {
                 var campus = CCV.locations[i];
+
                 $('#campus-card').removeClass("hidden");
 
+                // Set Campus image, name, phone number and change dropdown text to campus name
                 $('#iCampusCardImage').attr('src','/Themes/church_ccv_External_v8/Assets/Images/home/locations/feature-locations-' + campus.shortcode + '.jpg');
                 $('#campusName').text( campus.name );
                 $('#btnCampusSelect').text( campus.name + " Campus");
-
                 $('#campusPhone').text( campus.phone );
-            
 
+                // Set location of directions button. Check to see if campus is Verrado
                 if(CCV.locations[i].id == 14) {
                     $('#campusLocation').attr('href', 'https://goo.gl/maps/NubFU8nof9N2');
                     // $('#list-item-header').text('Easter Service being held at:');
@@ -153,18 +146,18 @@
                     $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
                 }
                 
+                // loop through service times
                 for (day in campus.EasterServiceTimes) {
                     $("#"+day).html( campus.EasterServiceTimes[day]);
-                    $("#post").removeClass("hidden");
 
-                    // Look for any ul, if any found then unhide by default
+                    // Unhide all ul's by default
                     $("ul").each(function() {
                         var $this = $(this);
                         $this.removeClass("hidden");
                     });
                 }
 
-                // Look for any empty ul, if any found then hide
+                // Look for any empty ul's, if any found then hide
                 $("ul").each(function() {
                     var $this = $(this);
                     if($this.text() == ""){
@@ -174,7 +167,7 @@
             }  
         }
         // Highlight first sunday of each campus since it will be the sunrise service
-            $('.sun1').css('color', '#119156');   
+        $('.sun1').css('color', '#119156');   
     }
             
 </script>
