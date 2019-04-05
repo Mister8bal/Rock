@@ -838,12 +838,13 @@
 .weekend-navigation i {
     font-size: 20px;
 }
-#pdfCoachGuideDownload {
-    display: none;
+
+#coach-guide-panel .fluid-width-video-wrapper {
+    display: block;
 }
 
-#pdfCoachGuide {
-    display: block;
+#pdfCoachGuideDownload {
+    display: none;
 }
 
 @media screen and (max-width: 500px) {
@@ -859,13 +860,18 @@
         font-size: 24px;
     }
 
-    #pdfCoachGuideDownload {
-        display: block;
-        padding-top: 50px;
+    #coach-guide-panel .fluid-width-video-wrapper {
+        display: none;
     }
 
-    #pdfCoachGuide {
-        display: none;
+    #pdfCoachGuideDownload {
+        display: block;
+        padding: 50px 0;
+    }
+
+    #pdfCoachGuideDownload a:focus {
+        color: #FFFFFF;
+        text-decoration: none;
     }
 
     .coach-guide-pdf {

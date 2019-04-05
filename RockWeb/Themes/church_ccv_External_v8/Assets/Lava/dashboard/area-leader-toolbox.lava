@@ -6,7 +6,9 @@
 
 <div class="area-toolbox">
     <div class="back-button">
-        <a class="btn btn-primary" href="##" onClick="history.go(-1); return false;">Back</a>
+        {% if PageParameter.client != 'mobile-app' %}
+            <a class="btn btn-primary" href="##" onClick="history.go(-1); return false;">Back</a>
+        {% endif %}
     </div>
 
     {% for group in Groups %}
