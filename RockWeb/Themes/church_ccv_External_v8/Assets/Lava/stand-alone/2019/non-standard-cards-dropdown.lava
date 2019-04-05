@@ -1,5 +1,3 @@
-<!--{% include '~~/Assets/Lava/stand-alone/2019/non-standard-cards-dropdown.lava' %}-->
-
 {% assign season = 'easter' %}
 {% assign isComingSoon = false %}
 <h2 class="service-times-title">Service Times</h2>
@@ -28,9 +26,9 @@
                                         <li style="color:#119156">7:00am</li>
                                     </ul>
                                     <ul class="list-inline">
-                                        <li>Easter Service being held at:</li><br>
-                                        <li>4239 N. Village Street</li><br>
-                                        <li>Buckeye, AZ 85396</li>
+                                        <li id="list-item-header">Easter Service being held at:</li><br>
+                                        <li id="list-item-street">4239 N. Village Street</li><br>
+                                        <li id="list-item-city">Buckeye, AZ 85396</li>
                                     </ul> 
                                 </div>
                             {% else %}    
@@ -65,22 +63,20 @@
 </div>
 
 <div class="campus-cards-row-mobile">
-
-
-<div class="campus-dropdown">
-    <button id="btnCampusSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Select Campus<b class="fa fa-caret-down"></b></button>
-    <ul class="dropdown-menu">
-        {% for campusItem in Campuses %}
-            {% if campusItem.IsActive == 'True' %}
-                {% if campusItem.Id == campus.Id %}
-                    <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
-                {% else %}     
-                    <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
+    <div class="campus-dropdown">
+        <button id="btnCampusSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Select Campus<b class="fa fa-caret-down"></b></button>
+        <ul class="dropdown-menu">
+            {% for campusItem in Campuses %}
+                {% if campusItem.IsActive == 'True' %}
+                    {% if campusItem.Id == campus.Id %}
+                        <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
+                    {% else %}     
+                        <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        {% endfor %} 
-    </ul>
-</div> 
+            {% endfor %} 
+        </ul>
+    </div> 
     
     <a name="service-times" style="padding-top: 150px; margin-top: -150px;"></a>
     <div class="campus-card hidden" id="campus-card">
@@ -95,7 +91,6 @@
                 </div>
                 
                 <div class="content service-times mt-25">
-                    <div id="pre"> {% include '~~/Assets/Lava/service-times/grid-non-standard.lava' %} </div>
                     <div id="post">
                         <ul class="list-inline">
                             {% for campusItem in Campuses %}
@@ -146,14 +141,23 @@
                 $('#btnCampusSelect').text( campus.name + " Campus");
 
                 $('#campusPhone').text( campus.phone );
-                $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
+            
 
+                if(CCV.locations[i].id == 14) {
+                    $('#campusLocation').attr('href', 'https://goo.gl/maps/NubFU8nof9N2');
+                    // $('#list-item-header').text('Easter Service being held at:');
+                    // $('#list-item-street').text('4239 N. Village Street');
+                    // $('#list-item-city').text('Buckeye, AZ 85396');
+                }
+                else {
+                    $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
+                }
+                
                 for (day in campus.EasterServiceTimes) {
-                    $("#pre").addClass("hidden");
                     $("#"+day).html( campus.EasterServiceTimes[day]);
                     $("#post").removeClass("hidden");
 
-                    // Look for any empty ul, if any found then unhide by default
+                    // Look for any ul, if any found then unhide by default
                     $("ul").each(function() {
                         var $this = $(this);
                         $this.removeClass("hidden");
@@ -170,7 +174,7 @@
             }  
         }
         // Highlight first sunday of each campus since it will be the sunrise service
-        $('.sun1').css('color', '#119156');   
+            $('.sun1').css('color', '#119156');   
     }
             
 </script>

@@ -7,12 +7,11 @@ CCV.findCampusById = function (campusId) {
   
 {% assign activeCampuses = Campuses | Where: 'IsActive', true %}
 CCV.locations = [
-  {% capture deafIcon %}
-<span class="csi csi-slt">  </span>
+{% capture deafIcon %}
+  <span class="csi csi-slt">  </span>
 {% endcapture %}
-
 {% capture specialNeedsIcon %}
-<span class="csi csi-special-needs">  </span>
+  <span class="csi csi-special-needs">  </span>
 {% endcapture %}
 {% for campus in activeCampuses %}
   {% assign mondayTimesString = '' %}
@@ -23,32 +22,32 @@ CCV.locations = [
   {% assign saturdayTimesString = '' %}
   {% assign sundayTimesString = '' %}	
   {% assign times = campus | Attribute:'EasterServiceTimes' %}
-    {% for time in times %}
-      {% assign timekv = time | PropertyToKeyValue %}
-          {% assign split = timekv.Key | Split: ' ' %}
-      {% case split[0] %}
-        {% when 'Monday' %}
-              {% assign mondayDate = timekv.Key %}
-              {% assign mondayTimesString = mondayTimesString | Append:timekv.Value | Append:';' %}
-        {% when 'Tuesday' %}
-              {% assign tuesdayDate = timekv.Key %}
-              {% assign tuesdayTimesString = tuesdayTimesString | Append:timekv.Value | Append:';' %}
-        {% when 'Wednesday' %}
-              {% assign wednesdayDate = timekv.Key %}
-              {% assign wednesdayTimesString = wednesdayTimesString | Append:timekv.Value | Append:';' %}
-        {% when 'Thursday' %}
-              {% assign thursdayDate = timekv.Key %}
-              {% assign thursdayTimesString = thursdayTimesString | Append:timekv.Value | Append:';' %}
-        {% when 'Friday' %}
-              {% assign fridayDate = timekv.Key %} 
-              {% assign fridayTimesString = fridayTimesString | Append:timekv.Value | Append:';' %}       
-        {% when 'Saturday' %}
-              {% assign saturdayDate = timekv.Key %}
-              {% assign saturdayTimesString = saturdayTimesString | Append:timekv.Value | Append:';' %}
-        {% when 'Sunday' %}
-              {% assign sundayDate = timekv.Key %}
-              {% assign sundayTimesString = sundayTimesString | Append:timekv.Value | Append:';' %}
-      {% endcase %}
+  {% for time in times %}
+    {% assign timekv = time | PropertyToKeyValue %}
+        {% assign split = timekv.Key | Split: ' ' %}
+    {% case split[0] %}
+      {% when 'Monday' %}
+            {% assign mondayDate = timekv.Key %}
+            {% assign mondayTimesString = mondayTimesString | Append:timekv.Value | Append:';' %}
+      {% when 'Tuesday' %}
+            {% assign tuesdayDate = timekv.Key %}
+            {% assign tuesdayTimesString = tuesdayTimesString | Append:timekv.Value | Append:';' %}
+      {% when 'Wednesday' %}
+            {% assign wednesdayDate = timekv.Key %}
+            {% assign wednesdayTimesString = wednesdayTimesString | Append:timekv.Value | Append:';' %}
+      {% when 'Thursday' %}
+            {% assign thursdayDate = timekv.Key %}
+            {% assign thursdayTimesString = thursdayTimesString | Append:timekv.Value | Append:';' %}
+      {% when 'Friday' %}
+            {% assign fridayDate = timekv.Key %} 
+            {% assign fridayTimesString = fridayTimesString | Append:timekv.Value | Append:';' %}       
+      {% when 'Saturday' %}
+            {% assign saturdayDate = timekv.Key %}
+            {% assign saturdayTimesString = saturdayTimesString | Append:timekv.Value | Append:';' %}
+      {% when 'Sunday' %}
+            {% assign sundayDate = timekv.Key %}
+            {% assign sundayTimesString = sundayTimesString | Append:timekv.Value | Append:';' %}
+    {% endcase %}
   {% endfor %}
 {% assign thursdayTimes = thursdayTimesString | Split:';' %}
 {% assign fridayTimes = fridayTimesString | Split:';' %}
@@ -83,7 +82,7 @@ CCV.locations = [
                 '<strong>{{ mondayDate }}</strong>' +
                 '{% assign mondayTimes = mondayTimesString | Split:';' %}' +
                 '<div class="service-times-list">{% for mondayTime in mondayTimes %}' +
-                    '<li class="mon{{ forloop.index }}">{{ mondayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                    '<li class="mon{{ forloop.index }}">{{ mondayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
                 '{% endfor %}</div>',
             {% endif %}
         ],
@@ -92,7 +91,7 @@ CCV.locations = [
                 '<strong>{{ tuesdayDate }}</strong>' +
                 '{% assign tuesdayTimes = tuesdayTimesString | Split:';' %}' +
                 '<div class="service-times-list">{% for tuesdayTime in tuesdayTimes %}' +
-                    '<li class="tues{{ forloop.index }}">{{ tuesdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                    '<li class="tues{{ forloop.index }}">{{ tuesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
                 '{% endfor %}</div>',
             {% endif %}
         ],
@@ -101,7 +100,7 @@ CCV.locations = [
                 '<strong>{{ wednesdayDate }}</strong>' +
                 '{% assign wednesdayTimes = wednesdayTimesString | Split:';' %}' +
                 '<div class="service-times-list">{% for wednesdayTime in wednesdayTimes %}' +
-                    '<li class="wed{{ forloop.index }}">{{ wednesdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                    '<li class="wed{{ forloop.index }}">{{ wednesdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
                 '{% endfor %}</div>',
             {% endif %}       
         ],
@@ -110,7 +109,7 @@ CCV.locations = [
                 '<strong>{{ thursdayDate }}</strong>' +
                 '{% assign thursdayTimes = thursdayTimesString | Split:';' %}' +
                 '<div class="service-times-list">{% for thursdayTime in thursdayTimes %}' +
-                    '<li class="thur{{ forloop.index }}">{{ thursdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                    '<li class="thur{{ forloop.index }}">{{ thursdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
                 '{% endfor %}</div>',
           {% endif %}       
         ],
@@ -119,7 +118,7 @@ CCV.locations = [
                 '<strong>{{ fridayDate }}</strong>' +
                 '{% assign fridayTimes = fridayTimesString | Split:';' %}' +
                 '<div class="service-times-list">{% for fridayTime in fridayTimes %}' +
-                    '<li class="fri{{ forloop.index }}">{{ fridayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                    '<li class="fri{{ forloop.index }}">{{ fridayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
                 '{% endfor %}</div>',
           {% endif %}      
         ],
@@ -128,7 +127,7 @@ CCV.locations = [
               '<strong>{{ saturdayDate }}</strong>' +
               '{% assign saturdayTimes = saturdayTimesString | Split:';' %}' +
               '<div class="service-times-list">{% for saturdayTime in saturdayTimes %}' +
-                  '<li class="sat{{ forloop.index }}">{{ saturdayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                  '<li class="sat{{ forloop.index }}">{{ saturdayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
               '{% endfor %}</div>',
             {% endif %}     
         ],
@@ -137,7 +136,7 @@ CCV.locations = [
               '<strong>{{ sundayDate }}</strong>' +
               '{% assign sundayTimes = sundayTimesString | Split:';' %}' +
               '<div class="service-times-list">{% for sundayTime in sundayTimes %}' +
-                  '<li class="sun{{ forloop.index }}">{{ sundayTime | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
+                  '<li class="sun{{ forloop.index }}">{{ sundayTime | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>' +
               '{% endfor %}</div>',
             {% endif %}
         ],
