@@ -25,9 +25,9 @@
                                         <li style="color:#119156">7:00am</li>
                                     </ul>
                                     <ul class="list-inline">
-                                        <li id="list-item-header">Easter Service being held at:</li><br>
-                                        <li id="list-item-street">4239 N. Village Street</li><br>
-                                        <li id="list-item-city">Buckeye, AZ 85396</li>
+                                        <li>Easter Service being held at:</li><br>
+                                        <li>4239 N. Village Street</li><br>
+                                        <li>Buckeye, AZ 85396</li>
                                     </ul> 
                                 </div>
                             {% else %}    
@@ -84,17 +84,6 @@
                     <h4 id="campusName">{{ campus.Name }}</h4>
                 </div>
                 <div class="content service-times mt-25">
-                    <div id="verrado-details">
-                        <strong>Sunday 4/21</strong>
-                        <ul class="list-inline">
-                            <li style="color:#119156">7:00am</li><br>
-                        </ul>
-                        <ul class="list-inline">
-                            <li>Easter Service being held at:</li><br>
-                            <li>4239 N. Village Street</li><br>
-                            <li>Buckeye, AZ 85396</li>
-                        </ul> 
-                    </div>
                     <ul class="list-inline">
                         {% for campusItem in Campuses %}
                             {% if campusItem.IsActive == 'True' %}
@@ -110,6 +99,13 @@
                             {% endif %}
                         {% endfor %} 
                     </ul>
+                    <div id="verrado-details">
+                        <ul class="list-inline">
+                            <li>Easter Service being held at:</li><br>
+                            <li>4239 N. Village Street</li><br>
+                            <li>Buckeye, AZ 85396</li>
+                        </ul> 
+                    </div>
                 </div>
             </div>
             <div class="card-footer">
@@ -145,10 +141,10 @@
                 $('#btnCampusSelect').text( campus.name + " Campus");
                 $('#campusPhone').text( campus.phone );
 
-                // Set location of directions button. Check to see if campus is Verrado
+                // Set location of directions button and unhide location details. Check to see if campus is Verrado
                 if(CCV.locations[i].id == 14) {
-                    $('#campusLocation').attr('href', 'https://goo.gl/maps/NubFU8nof9N2');
                     $('#verrado-details').removeClass("hidden");
+                    $('#campusLocation').attr('href', 'https://goo.gl/maps/NubFU8nof9N2');
                 }
                 else {
                     $('#campusLocation').attr('href', 'https://maps.google.com/?q='+campus.street+' + '+campus.city+' + '+campus.state+' + '+campus.zip);
