@@ -13,6 +13,7 @@ using Rock.Web.Cache;
 using Newtonsoft.Json.Linq;
 using System.Web.Http;
 using church.ccv.CCVRest.MobileApp.Model;
+using church.ccv.Podcast;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -31,14 +32,14 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/Version" )]
         [Authenticate, Secured]
-        public HttpResponseMessage Version( )
+        public HttpResponseMessage Version()
         {
             // the attribute Id for the Mobile App's version
             const int MobileAppVersionAttributeId = 29469;
-            
+
             // find the mobile app version Global Attribute and return it
             RockContext rockContext = new RockContext();
-            var mobileAppAttribute = new AttributeValueService( rockContext ).Queryable().AsNoTracking( ).Where( av => av.AttributeId == MobileAppVersionAttributeId ).SingleOrDefault();
+            var mobileAppAttribute = new AttributeValueService( rockContext ).Queryable().AsNoTracking().Where( av => av.AttributeId == MobileAppVersionAttributeId ).SingleOrDefault();
             if ( mobileAppAttribute != null )
             {
                 int mobileAppVersion = 0;
@@ -48,7 +49,7 @@ namespace church.ccv.CCVRest.MobileApp
                 }
             }
 
-            return Common.Util.GenerateResponse( false, VersionResponse.Failed.ToString( ), null );
+            return Common.Util.GenerateResponse( false, VersionResponse.Failed.ToString(), null );
         }
 
         [Serializable]
@@ -64,7 +65,7 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/PersonalizedContent" )]
         [Authenticate, Secured]
-        public HttpResponseMessage GetPersonalizedContent(int numCampaigns = 1, int? primaryAliasId = null )
+        public HttpResponseMessage GetPersonalizedContent( int numCampaigns = 1, int? primaryAliasId = null )
         {
             const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
 
@@ -136,9 +137,9 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // if there's at least 1 campaign to return, respond 
-            if( itemsList.Count > 0 )
+            if ( itemsList.Count > 0 )
             {
-                return Common.Util.GenerateResponse( true, PersonalizedContentResponse.Success.ToString( ), itemsList );
+                return Common.Util.GenerateResponse( true, PersonalizedContentResponse.Success.ToString(), itemsList );
             }
             else
             {
@@ -162,17 +163,17 @@ namespace church.ccv.CCVRest.MobileApp
             const int MobileApp_ContentChannelId = 5;
 
             RockContext rockContext = new RockContext();
-            var ccItemQuery = new ContentChannelItemService( rockContext ).Queryable( ).AsNoTracking( );
+            var ccItemQuery = new ContentChannelItemService( rockContext ).Queryable().AsNoTracking();
 
-            var ccItems = ccItemQuery.Where( cci => 
+            var ccItems = ccItemQuery.Where( cci =>
                 cci.ContentChannelId == MobileApp_ContentChannelId && //Get all mobile app ads
-              ( cci.Status == ContentChannelItemStatus.Approved || (cci.Status == ContentChannelItemStatus.PendingApproval && includeUnpublished == true) ) && //That are approved (or Pending AND includeUnpublished is on)
+              ( cci.Status == ContentChannelItemStatus.Approved || ( cci.Status == ContentChannelItemStatus.PendingApproval && includeUnpublished == true ) ) && //That are approved (or Pending AND includeUnpublished is on)
               ( cci.StartDateTime < DateTime.Now || includeUnpublished == true ) && //That have started running (or includeUnpublished is on)
               ( cci.ExpireDateTime == null || cci.ExpireDateTime >= DateTime.Now || includeUnpublished == true ) ) //That have not expired, or have no expiration date (or includeUnpublished is on)
-                                           
+
             .ToList();
 
-            List<Model.Promotion> promotions = new List<MobileApp.Model.Promotion>( );
+            List<Model.Promotion> promotions = new List<MobileApp.Model.Promotion>();
 
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
@@ -191,11 +192,11 @@ namespace church.ccv.CCVRest.MobileApp
                     Title = item.Title,
                     Description = item.Content,
 
-                    SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean( ),
+                    SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean(),
 
                     DetailsURL = item.GetAttributeValue( "DetailsURL" ),
-                    LaunchExternalBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean( ),
-                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean( )
+                    LaunchExternalBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean(),
+                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean()
                 };
 
                 promotions.Add( promotion );
@@ -208,7 +209,7 @@ namespace church.ccv.CCVRest.MobileApp
             } );
 
             // return it!
-            return Common.Util.GenerateResponse( true, PromotionsResponse.Success.ToString( ), promotions );
+            return Common.Util.GenerateResponse( true, PromotionsResponse.Success.ToString(), promotions );
         }
 
         [Serializable]
@@ -275,7 +276,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                     DistanceFromSource = 0 //TODO: Do we support api driven distance calcs?
                 };
-                                             
+
                 // Grab Campus Pastor Info
                 if ( campusCache.LeaderPersonAliasId.HasValue )
                 {
@@ -404,14 +405,14 @@ namespace church.ccv.CCVRest.MobileApp
                 campusModel.Info_MapImageURL = publicAppRoot + "/Themes/church_ccv_External_v8/assets/images/home/locations/campus-landing/campus-maps/map-" + campusCache.ShortCode.ToLower() + ".jpg";
 
                 // and these values are hardcoded
-                campusModel.Info_FirstTimeArrival = "On your first visit, look for the designated New to CCV Guest Tables," + 
-                                                    " where one of our team members will provide you with a Welcome Packet and answer any questions you may have." + 
-                                                    " If you are checking in children, they will cover the first - time visit check-in process and lead you to your child's classroom." + 
+                campusModel.Info_FirstTimeArrival = "On your first visit, look for the designated New to CCV Guest Tables," +
+                                                    " where one of our team members will provide you with a Welcome Packet and answer any questions you may have." +
+                                                    " If you are checking in children, they will cover the first - time visit check-in process and lead you to your child's classroom." +
                                                     " You'll want to arrive about 15 - 20 minutes early.";
 
-                campusModel.Info_CheckingInKids = "Parents must check in their kids before service. Once your child is registered for the first time," + 
-                                                  " simply enter your phone number into one of the self-service or assisted kiosks to receive your child's name tag." +  
-                                                  " You will receive a matching pick-up receipt which will be required to pick your child up after service." + 
+                campusModel.Info_CheckingInKids = "Parents must check in their kids before service. Once your child is registered for the first time," +
+                                                  " simply enter your phone number into one of the self-service or assisted kiosks to receive your child's name tag." +
+                                                  " You will receive a matching pick-up receipt which will be required to pick your child up after service." +
                                                   " Jr High and High School Students are able to check themselves into class using the self-service kiosks.";
 
                 campusModelList.Add( campusModel );
@@ -471,6 +472,122 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 // send back that they aren't on campus
                 return Common.Util.GenerateResponse( true, IsOnCampusResponse.NotOnCampus.ToString(), null );
+            }
+        }
+
+
+        public enum PodcastSeriesResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            PodcastError
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Podcast/Series" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage Series( int numSeries = 12 )
+        {
+            List<MobileAppSeriesModel> seriesList = new List<MobileAppSeriesModel>();
+
+            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, numSeries );
+            if ( rootCategory == null )
+            {
+                // if this failed something really bad happened
+                return Common.Util.GenerateResponse( false, PodcastSeriesResponse.PodcastError.ToString(), null );
+            }
+
+            // iterate over each series
+            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
+            {
+                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
+                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
+
+                MobileAppSeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+                seriesList.Add( maSeriesModel );
+
+                // if we're beyond the number of series they wanted, stop.
+                if ( seriesList.Count >= numSeries )
+                {
+                    break;
+                }
+            }
+
+            return Common.Util.GenerateResponse( true, PodcastSeriesResponse.Success.ToString(), seriesList );
+        }
+
+
+        public enum PodcastLatestMessageResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            NotAvailable, 
+
+            PodcastError
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Podcast/LatestMessage" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage LatestMessage( )
+        {
+            // This is a little weird, but we need the "Latest Message" which is a very abstract concept.
+            MobileAppMessageModel latestMessage = null;
+
+            // Basically, it's the first Series we find that isn't Hidden. Within that, the first Message that isn't Hidden.
+            // That is the technical definition of "Latest Message".
+
+            // we will grab the 3 most recent series, because generally speaking that is more than enough to have a public message.
+            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, 3 );
+            if ( rootCategory == null )
+            {
+                // if this failed something really bad happened
+                return Common.Util.GenerateResponse( false, PodcastSeriesResponse.PodcastError.ToString(), null );
+            }
+
+            // iterate over each series
+            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
+            {
+                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
+                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
+
+                // this is terrible performance-wise, but simpler to maintain and read.
+
+                // Convert the series
+                MobileAppSeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+
+                // see if it's hidden
+                if ( maSeriesModel.Hidden == false )
+                {
+                    // it isn't, so it is GOING to have the message we want
+                    foreach ( MobileAppMessageModel maMessageModel in maSeriesModel.Messages )
+                    {
+                        if ( maMessageModel.Hidden == false )
+                        {
+                            // we found our message! Return it.
+                            latestMessage = maMessageModel;
+                            break;
+                        }
+                    }
+
+                    // we can break out of the series now because we know we have a latest message
+                    break;
+                }
+            }
+
+            // after all the searching above, if we have a latest message, yay.
+            if ( latestMessage != null )
+            {
+                return Common.Util.GenerateResponse( true, PodcastSeriesResponse.Success.ToString(), latestMessage );
+            }
+            else
+            {
+                // this should be extremely uncommon if not impossible, but handle it just in case
+                return Common.Util.GenerateResponse( false, PodcastLatestMessageResponse.NotAvailable.ToString(), null );
             }
         }
     }
