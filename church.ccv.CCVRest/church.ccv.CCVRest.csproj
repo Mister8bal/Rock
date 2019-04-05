@@ -102,6 +102,7 @@
     <Compile Include="MobileApp\Controllers\ContentMAController.cs" />
     <Compile Include="MobileApp\Controllers\GoupMAController.cs" />
     <Compile Include="MobileApp\Controllers\PersonMAController.cs" />
+    <Compile Include="MobileApp\Controllers\PodcastMAController.cs" />
     <Compile Include="MobileApp\Model\CampusModel.cs" />
     <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />
     <Compile Include="MobileApp\Model\JoinGroupModel.cs" />
