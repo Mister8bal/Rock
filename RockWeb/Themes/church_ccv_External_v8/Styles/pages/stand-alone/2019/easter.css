@@ -145,7 +145,6 @@
 }
 
 #section-c-bg {
-    /* background-color: #FFFFFF; */
     background-color: #ebebeb;
 }
 
@@ -237,28 +236,46 @@
     display: none;
 }
 
-.campus-container {
+.campus-dropdown li {
+    margin: 0%;
+}
+
+.campus-dropdown ul {
     width: 100%;
 }
 
-.campus-dropdown {
+.campus-dropdown button {
+    width: 100%;
+    padding: 5px 15px 5px 25px;
+    border: none;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.campus-dropdown button:hover {
+    background-color: #0e568e;
+    color: white;
+}
+
+.dropdown-menu {
+    top: unset;
+    width: 100%;
+    position: absolute;
+    float: left;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: none;
+}
+
+#btnCampusSelect {
     color: #FFFFFF;
-    display: flex;
-    align-items: center;
     width: 100%;
     background-color: #0e568e;
-    border-color: #0e568e;
+    border-color: #b2bdc5;
     border-radius: 10px;
-    height: 36px;
+    height: 30px;
     min-width: 200px;
     margin-bottom: 5%;
-}
-
-.campus-container .fa {
-    color: white;
-    position: absolute;
-    right: 30px;
-    padding: 2%;
 }
 
 .service-times strong {
@@ -334,7 +351,7 @@
     } 
 
     select {
-        -webkit-appearance: none;
+        -webkit-appearance: button-bevel;
         -moz-appearance: none;
         text-overflow: '';
     }
