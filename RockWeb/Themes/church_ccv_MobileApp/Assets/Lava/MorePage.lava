@@ -54,6 +54,33 @@
         <a href="/parent-kid-resources" class="btn btn-sm btn-default">Parent Resources</a>
       </p>
 
+      {% if CurrentPerson %}
+        {% comment %} enable links for kids coach toolboxes if needed {% endcomment %}
+        {% person dataview:'743' where:'Id == "{{ CurrentPerson.Id }}"' %}
+          {% for person in personItems %}
+            <p>
+              <a href="/later-kids-toolbox?client=mobile-app" class="btn btn-sm btn-default">Later Kids Toolbox</a>                  
+            </p>
+          {% endfor %}
+        {% endperson %}
+        
+        {% person dataview:'742' where:'Id == "{{ CurrentPerson.Id }}"' %}
+          {% for person in personItems %}
+            <p>
+              <a href="/early-kids-toolbox?client=mobile-app" class="btn btn-sm btn-default">Early Kids Toolbox</a>
+            </p>
+          {% endfor %}
+        {% endperson %}
+        
+        {% person dataview:'741' where:'Id == "{{ CurrentPerson.Id }}"' %}
+          {% for person in personItems %}
+            <p>
+              <a href="/two-year-olds-toolbox?client=mobile-app" class="btn btn-sm btn-default">Two Year Olds Toolbox</a>
+            </p>
+          {% endfor %}
+        {% endperson %}
+      {% endif %}
+
       {% comment %}<div class="row">
         <div class="col-sm-6 margin-b-lg">
           <a href="/parent-kid-resources" class="btn btn-block btn-default">Kids Weekend Content</a>

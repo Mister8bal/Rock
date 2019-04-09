@@ -29,7 +29,7 @@
     }
          
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-        // remove styling from default mobile panel - Jered better way?
+        // remove styling from default mobile panel
         $('#dashboard-mobile-button').removeClass('toolbox-subnav-div-selected');
 
         // turn off existing panel
