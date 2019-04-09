@@ -113,31 +113,33 @@
                                         </div>
                                     </div>
                                     <div class="person-profile-info">
-                                        <div class="person-info-details no-flex-zone">
-                                            <div class="boldThis">
-                                              <asp:Literal ID="lGroupMemberName" runat="server" /></b>
+                                        <div class="person-info-details">
+                                            <div>
+                                                <div class="boldThis">
+                                                  <asp:Literal ID="lGroupMemberName" runat="server" /></b>
+                                                </div>
+                                                <ul class="person-demographics list-unstyled">
+                                                    <li>
+                                                        <asp:Literal ID="lAge" runat="server" /></li>
+                                                    <li>
+                                                        <asp:Literal ID="lGender" runat="server" /></li>
+                                                    <li>
+                                                        <asp:Literal ID="lMaritalStatus" runat="server" /></li>
+                                                    <li>
+                                                        <asp:Literal ID="lGrade" runat="server" /></li>
+                                                </ul>
                                             </div>
-                                            <ul class="person-demographics list-unstyled">
-                                                <li>
-                                                    <asp:Literal ID="lAge" runat="server" /></li>
-                                                <li>
-                                                    <asp:Literal ID="lGender" runat="server" /></li>
-                                                <li>
-                                                    <asp:Literal ID="lMaritalStatus" runat="server" /></li>
-                                                <li>
-                                                    <asp:Literal ID="lGrade" runat="server" /></li>
-                                            </ul>
-                                        </div>
-                                        <div class="person-contact-info">
-                                            <ul class="phone-list list-unstyled">
-                                                <asp:Repeater ID="rptGroupMemberPhones" runat="server">
-                                                    <ItemTemplate>
-                                                        <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
-                                                    </ItemTemplate>
-                                                </asp:Repeater>
-                                                <asp:Literal ID="lGroupMemberEmail" runat="server" />
-                                            </ul>
-                                        </div>
+                                            <div class="person-contact-info">
+                                                <ul class="phone-list list-unstyled">
+                                                    <asp:Repeater ID="rptGroupMemberPhones" runat="server">
+                                                        <ItemTemplate>
+                                                            <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
+                                                        </ItemTemplate>
+                                                    </asp:Repeater>
+                                                    <asp:Literal ID="lGroupMemberEmail" runat="server" />
+                                                </ul>
+                                            </div>
+                                         </div>
                                     </div>
                                 </div>
                                
