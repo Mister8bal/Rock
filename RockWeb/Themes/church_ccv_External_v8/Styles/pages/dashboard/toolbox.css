@@ -827,3 +827,66 @@
 }
 
 /* End Area Toolbox */
+
+/* Kids Coach Toolbox */
+
+.weekend-navigation > div {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.weekend-navigation i {
+    font-size: 20px;
+}
+
+#coach-guide-panel .fluid-width-video-wrapper {
+    display: block;
+}
+
+#pdfCoachGuideDownload {
+    display: none;
+}
+
+@media screen and (max-width: 500px) {
+    .weekend-navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0 10px 0;
+    }
+
+    .weekend-navigation i {
+        font-size: 24px;
+    }
+
+    #coach-guide-panel .fluid-width-video-wrapper {
+        display: none;
+    }
+
+    #pdfCoachGuideDownload {
+        display: block;
+        padding: 50px 0;
+    }
+
+    #pdfCoachGuideDownload a:focus {
+        color: #FFFFFF;
+        text-decoration: none;
+    }
+
+    .coach-guide-pdf {
+        display: block;
+        font-weight: normal;
+        font-family: akrobat;
+        border-width: 2px;
+        color: #FFFFFF;
+        background-color: #7A1315;
+        border-color: #7A1315;
+        border-radius: 4px;
+        margin: 10px;
+        padding: 10px 0;
+        text-align: center;
+    }
+}
+
+/* End Kids Coach Toolbox  */
