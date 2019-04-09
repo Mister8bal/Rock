@@ -247,7 +247,23 @@ namespace church.ccv.MobileApp.Rest
             
             return new HttpResponseMessage( success == true ? HttpStatusCode.OK : HttpStatusCode.NotFound );
         }
-        
+
+        [HttpPost]
+        [System.Web.Http.Route( "api/Auth/FacebookLogin" )]
+        [Authenticate, Secured]
+        public void FacebookLogin( [FromBody]Rock.Security.ExternalAuthentication.Facebook.FacebookUser facebookUser )
+        {
+            string userName = Rock.Security.ExternalAuthentication.Facebook.GetFacebookUserName( facebookUser );
+            if ( !string.IsNullOrWhiteSpace( userName ) )
+            {
+                Rock.Security.Authorization.SetAuthCookie( userName, false, false );
+            }
+            else
+            {
+                throw new HttpResponseException( HttpStatusCode.Unauthorized );
+            }
+        }
+
         // Inherit StringWriter so we can set the encoding, which is protected
         public sealed class StringWriterWithEncoding : StringWriter
         {
