@@ -8,6 +8,7 @@
 
 .main-feature {
     padding-top: 100px;
+    height: unset;
 }
 
 #zone-feature {
@@ -23,6 +24,13 @@
     .main-feature {
         height: unset !important;
         padding-top: 75px !important;
+    }
+
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -250px;
+        visibility: hidden;
     }
 }
 
