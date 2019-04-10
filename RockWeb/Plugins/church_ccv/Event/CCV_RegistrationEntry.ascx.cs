@@ -1645,14 +1645,16 @@ namespace RockWeb.Plugins.church_ccv.Event
                 string appRoot = ResolveRockUrl( "~/" );
                 string themeRoot = ResolveRockUrl( "~~/" );
 
+                // Send/Resend a confirmation
+                var confirmation = new Rock.Transactions.SendRegistrationConfirmationTransaction();
+                confirmation.RegistrationId = registration.Id;
+                confirmation.AppRoot = appRoot;
+                confirmation.ThemeRoot = themeRoot;
+                Rock.Transactions.RockQueue.TransactionQueue.Enqueue( confirmation );
+
                 if ( isNewRegistration )
                 {
-                    var confirmation = new Rock.Transactions.SendRegistrationConfirmationTransaction();
-                    confirmation.RegistrationId = registration.Id;
-                    confirmation.AppRoot = appRoot;
-                    confirmation.ThemeRoot = themeRoot;
-                    Rock.Transactions.RockQueue.TransactionQueue.Enqueue( confirmation );
-
+                    // Send notice of a new registration
                     var notification = new Rock.Transactions.SendRegistrationNotificationTransaction();
                     notification.RegistrationId = registration.Id;
                     notification.AppRoot = appRoot;
