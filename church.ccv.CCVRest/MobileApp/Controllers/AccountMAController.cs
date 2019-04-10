@@ -149,7 +149,8 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage RegisterNewUser( [FromBody]NewUserModel newUserModel )
         {
-            if ( newUserModel == null )
+            // make sure the model was able to deserialize, and that the email IS an email address
+            if ( newUserModel == null || string.IsNullOrWhiteSpace( newUserModel.Email ) == true || newUserModel.Email.IsValidEmail() == false)
             {
                 return Common.Util.GenerateResponse( false, RegisterNewUserResponse.InvalidModel.ToString( ), null );
             }
