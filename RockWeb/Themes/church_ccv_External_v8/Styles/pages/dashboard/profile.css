@@ -14,6 +14,19 @@
     width: 80%;
 }
 
+.person-contact-info {
+    padding-left: unset;
+}
+
+.person-info-details {
+    justify-content: space-between;
+    width: 100%;
+}
+
+.person-profile-info {
+    width: 50%;
+}
+
 .profile-card hr {
     display: none;
 }
@@ -59,7 +72,7 @@
 .links {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 0 20px;
 }
 
 .balance-due {

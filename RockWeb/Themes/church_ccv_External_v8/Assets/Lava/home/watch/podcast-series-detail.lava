@@ -7,7 +7,7 @@
 {% endcontentchannel %}
 
 {% if seriesObject.ContentChannelTypeId == 8 %}
-    {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+    {% assign currentDate = 'Now' | Date:'yyyyMMddHmmss' %}
 	
 	{% capture twitterImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
 	{{ 'summary' | AddMetaTagToHead: 'property', 'twitter:card' }}
@@ -37,7 +37,7 @@
                 <ol class="messages">
                     {% for Message in Series.Messages reversed %}
                         {% assign messageActiveDate = '' %}
-                        {% assign messageActiveDate = Message.Date | Date:'yyyyMMdd' %}
+                        {% assign messageActiveDate = Message.Date | Date:'yyyyMMddHmmss' %}
                         {% if messageActiveDate != empty and messageActiveDate <= currentDate %}
                             <li><a href="{{ LinkedPages.MessageDetailPage }}?MessageId={{ Message.Id }}">{{ Message.Name }}</a></li>
                             {% assign hasActiveMessages = true %}

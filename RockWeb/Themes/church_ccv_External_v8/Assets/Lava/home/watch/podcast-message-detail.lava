@@ -11,7 +11,7 @@ REQUIRED VARIABLES
 
 {% assign Series = PodcastSeries %}
 {% assign Message = PodcastMessage %}
-{% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+{% assign currentDate = 'Now' | Date:'yyyyMMddHmmss' %}
 
 {% contentchannelitem where:'Id == "{{ Message.Id }}"' %}
 	{% for item in contentchannelitemItems %}
@@ -21,7 +21,7 @@ REQUIRED VARIABLES
 
 {% if messageObject.ContentChannelTypeId == 8 %}
     {% assign Series = PodcastSeries %}
-    {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+    {% assign currentDate = 'Now' | Date:'yyyyMMddHmmss' %}
 
 
     {% capture pageTitle %}{{ Series.Name }}: {{ Message.Name }}{% endcapture %}
@@ -77,7 +77,7 @@ REQUIRED VARIABLES
                 <ol>
                 {% for otherMessage in Series.Messages reversed %}
                     {% assign otherMessageActiveDate = '' %}
-                    {% assign otherMessageActiveDate = otherMessage.Date | Date:'yyyyMMdd' %}
+                    {% assign otherMessageActiveDate = otherMessage.Date | Date:'yyyyMMddHmmss' %}
                     {% if otherMessageActiveDate != empty and otherMessageActiveDate <= currentDate %}
                     <li><a href="?MessageId={{ otherMessage.Id }}">{{ otherMessage.Name }}</a></li>
                     {% endif %}

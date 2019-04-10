@@ -1,0 +1,56 @@
+{% comment %}
+    {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/coach-videos.lava' %}
+{% endcomment %}
+
+{% assign sortedItems = Items | Sort:'Id','desc'  %}
+
+{% comment %} set hidden fields for navigation {% endcomment %}
+<input type="hidden" name="TotalItems" value="{{ sortedItems | Size }}" />
+<input type="hidden" name="CurrentIndex" value="0" />
+
+{% for item in sortedItems %}
+    {% assign cssHiddenClass = "hidden" %}
+
+    {% if forloop.first %}
+        {% assign firstItem = item %}
+
+        {% comment %} first item will not be hidden {% endcomment %}
+        {% assign cssHiddenClass = "" %}
+    {% endif %}
+
+    <div id="divCoachVideos{{ forloop.index0 }}" class="{{ cssHiddenClass }}">
+        {% comment %} set hidden fields for updating values in other blocks {% endcomment %}
+        <input type="hidden" name="WeekendDates{{ forloop.index0 }}" value="{{ item.WeekendDates }}" />
+        <input type="hidden" name="Guide{{ forloop.index0 }}" value="{{ item | Attribute:'Guide', 'Url' }}" />
+
+        {% assign messageVideo = item | Attribute: 'LinktoWeekendMessageVideo' %}
+
+        {% if messageVideo != '' %}
+            <div class="header">
+                <h4>Weekend Message</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ messageVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign trainingVideo = item | Attribute: 'LinktoCoachTrainingVideo' %}
+
+        {% if trainingVideo != '' %}
+            <div class="header">
+                <h4>Coach Training Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<script>
+    $(document).ready(function(){
+        $('#weekendDates').text('{{ firstItem.WeekendDates }}');
+        $('#pdfCoachGuide').attr('data', "{{ firstItem | Attribute:'Guide', 'Url' }}");
+        $('#pdfCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'Guide', 'Url' }}" class="coach-guide-pdf">Download Guide</a>`);           
+    });
+</script>
