@@ -262,6 +262,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // first copy over simple native types from the model
                 Model.CampusModel campusModel = new Model.CampusModel
                 {
+                    Id = campusCache.Id,
                     Name = campusCache.Name,
 
                     PhoneNumber = campusCache.PhoneNumber,

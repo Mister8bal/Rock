@@ -7,6 +7,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
     [Serializable]
     public class CampusModel
     {
+        public int Id;
         public string Name;
 
         public string VideoURL;
