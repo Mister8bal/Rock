@@ -50,52 +50,79 @@ namespace RockWeb.Plugins.church_ccv.Core
 
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
+            int GroupId = 0;
 
-            if ( binaryFile != null )
+            var groupService = new GroupService(rockContext);
+            var groupMemberService = new GroupMemberService(rockContext);
+
+            Group selectedGroup = null;
+            IQueryable<GroupMember> groupMembers;
+            GroupMember groupMember = null;
+
+            if ( Int32.TryParse(tbGroupId.Text, out GroupId))
             {
-                using ( var reader = new StreamReader( binaryFile.ContentStream ) )
+                selectedGroup = groupService.Get(GroupId);
+            }
+
+            if ( binaryFile == null )
+            {
+                return;
+            }
+
+            using (var reader = new StreamReader(binaryFile.ContentStream))
+            {
+                using (var csvReader = new CsvHelper12.CsvReader(reader))
                 {
-                    using ( var csvReader = new CsvHelper12.CsvReader( reader ) )
+                    csvReader.Configuration.HasHeaderRecord = true;
+                    csvReader.Configuration.IgnoreBlankLines = true;
+                    var peopleList = csvReader.GetRecords<EventBriteAttendee>().ToList();
+                    Person ticketHolderPerson = null;
+                    bool importErrors = false;
+
+                    foreach (var person in peopleList)
                     {
-                        csvReader.Configuration.HasHeaderRecord = true;
-                        csvReader.Configuration.IgnoreBlankLines = true;
-                        var peopleList = csvReader.GetRecords<EventBriteAttendee>().ToList();
-                        Person ministrySafePerson = null;
-                        bool importErrors = false;
-
-                        foreach ( var mSafePerson in peopleList )
+                        using (var personRockContext = new RockContext())
                         {
-                            using ( var personRockContext = new RockContext() )
+
+                            PersonService personService = new PersonService(personRockContext);
+                            var attributeValueService = new AttributeValueService(personRockContext);
+
+                            // Try to find matching person
+                            var personMatches = personService.GetByMatch(person.FirstName, person.LastName, person.Email).Select(p => p.Id);
+
+                            if (personMatches.Count() < 1)
                             {
-                                // Get passing score from rock
-                                //int passingTrainingScore = GetAttributeValue( "PassingScore" ).AsInteger();
-
-                                PersonService personService = new PersonService( personRockContext );
-                                var attributeValueService = new AttributeValueService( personRockContext );
-
-                                // Try to find matching person
-                                var personMatches = personService.GetByMatch( mSafePerson.FirstName, mSafePerson.LastName, mSafePerson.EmailAddresses );
-                                if ( personMatches.Count() == 1 )
-                                {
-                                    // If one person with same name and email address exists, use that person
-                                    ministrySafePerson = personMatches.First();
-                                }
-                                
-
-                                // Load Attributes
-                                ministrySafePerson.LoadAttributes();
-                          
-                                
+                                continue;
                             }
+
+                            foreach (var pId in personMatches)
+                            {
+                                groupMembers = groupMemberService.GetByGroupIdAndPersonId(GroupId, pId);
+
+                                if (groupMembers.Count() < 1)
+                                {
+                                    continue;
+                                }
+
+                                groupMember = groupMembers.First();
+
+                                groupMember.LoadAttributes();
+
+                                groupMember.SetAttributeValue("Attended", "Yes");
+
+                                groupMember.SaveAttributeValues(rockContext);
+                            }
+
+
                         }
-                        if ( importErrors )
-                        {
-                            pnlError.Visible = true;
-                        }
-                        else
-                        {
-                            pnlDone.Visible = true;
-                        }
+                    }
+                    if (importErrors)
+                    {
+                        pnlError.Visible = true;
+                    }
+                    else
+                    {
+                        pnlDone.Visible = true;
                     }
                 }
             }
