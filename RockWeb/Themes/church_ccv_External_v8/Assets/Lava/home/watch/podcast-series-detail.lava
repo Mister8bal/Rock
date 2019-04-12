@@ -50,7 +50,6 @@
                 {% endif %}
             </div>
         </div>    
-        <div>
             <div class="content">
                 <div class="content-item">
                     <div class="item-share">
@@ -74,35 +73,34 @@
                     </div>
                 </div>
             </div>
-
-            <script>
-                // Get the modals
-                var shareModal = document.getElementById('shareModal');
-
-                // Get the buttons that opens the modals
-                var shareButton = document.getElementById('shareButton');
-
-                // When the user clicks the button, open the modal 
-                shareButton.onclick = function() {
-                    if (navigator.share) {
-                        navigator.share({
-                            title: '{{ Series.Name }}',
-                            text: 'Check out this series from CCV! I think you will like it.',
-                            url: 'https://ccv.church/watch/series?SeriesId={{Series.Id}}',
-                        })
-                    } else {
-                        shareModal.style.display = "block";
-                    }
-                }
-
-                // When the user clicks anywhere outside of the modals, close them
-                window.onclick = function(event) {
-                    if (event.target == shareModal ) {
-                        shareModal.style.display = "none";
-                    }
-                }            
-            </script>
-            </div>
         </div>
     </div>
 {% endif %}
+
+<script>
+    // Get the modals
+    var shareModal = document.getElementById('shareModal');
+
+    // Get the buttons that opens the modals
+    var shareButton = document.getElementById('shareButton');
+
+    // When the user clicks the button, open the modal 
+    shareButton.onclick = function() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ Series.Name }}',
+                text: 'Check out this series from CCV! I think you will like it.',
+                url: 'https://ccv.church/watch/series?SeriesId={{Series.Id}}',
+            })
+        } else {
+            shareModal.style.display = "block";
+        }
+    }
+
+    // When the user clicks anywhere outside of the modals, close them
+    window.onclick = function(event) {
+        if (event.target == shareModal ) {
+            shareModal.style.display = "none";
+        }
+    }            
+</script>
