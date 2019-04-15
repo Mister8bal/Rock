@@ -549,7 +549,11 @@ class EventBriteReponseAsync : IAsyncResult
         newGroupMember.GroupRoleId = group.GroupType.DefaultGroupRole.Id;
         newGroupMember.GroupMemberStatus = GroupMemberStatus.Active;
         newGroupMember.GroupId = group.Id;
-
+        
+        /**
+         * Set the ForeignId to the Eventbrite ticket id.
+         * Eventbrite refers to tickets as attendees.
+         */ 
         newGroupMember.ForeignKey = "EventBriteAttendeeId";
         newGroupMember.ForeignId = ticket.id;
         return newGroupMember;

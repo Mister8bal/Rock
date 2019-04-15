@@ -18,7 +18,10 @@ using CsvHelper12.Configuration.Attributes;
 namespace RockWeb.Plugins.church_ccv.Core
 {
     /// <summary>
-    /// Imports Ministry Safe Records
+    /// Imports Event Brite Attendee report and syncs attendance.  If 
+    /// a record in the csv matches a group member for the provided
+    /// GroupId, the Attended GroupMemberAttribute Value will be 
+    /// changed to Yes.
     /// </summary>
     [DisplayName( "CCV Eventbrite Sync" )]
     [Category( "CCV > Core" )]
@@ -59,6 +62,10 @@ namespace RockWeb.Plugins.church_ccv.Core
             IQueryable<GroupMember> groupMembers;
             GroupMember groupMember = null;
 
+            /**
+             * Parse the group ID from the from and
+             * attempt to located the associated group.
+             */ 
             if ( Int32.TryParse(tbGroupId.Text, out GroupId))
             {
                 selectedGroup = groupService.Get(GroupId);
@@ -76,7 +83,6 @@ namespace RockWeb.Plugins.church_ccv.Core
                     csvReader.Configuration.HasHeaderRecord = true;
                     csvReader.Configuration.IgnoreBlankLines = true;
                     var peopleList = csvReader.GetRecords<EventBriteAttendee>().ToList();
-                    Person ticketHolderPerson = null;
                     bool importErrors = false;
 
                     foreach (var person in peopleList)
@@ -95,6 +101,8 @@ namespace RockWeb.Plugins.church_ccv.Core
                                 continue;
                             }
 
+                            //Loop through list of matching people and attempt
+                            //to locate a group member.
                             foreach (var pId in personMatches)
                             {
                                 groupMembers = groupMemberService.GetByGroupIdAndPersonId(GroupId, pId);
