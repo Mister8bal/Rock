@@ -15,6 +15,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string LastName;
 
+        public bool IsChild;
+
         public string PhotoURL;
     }
 }

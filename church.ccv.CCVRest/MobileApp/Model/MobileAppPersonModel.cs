@@ -24,6 +24,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string PhotoURL;
 
+        public bool IsChild;
+
         public DateTime? Birthdate;
 
         public int? CampusId;
@@ -32,6 +34,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         // Family Info
         public int FamilyId;
         public List<FamilyMemberModel> FamilyMembers;
+        public bool FamilyHasChildren;
 
         // Group Info
         public List<MobileAppGroupModel> Groups { get; set; }

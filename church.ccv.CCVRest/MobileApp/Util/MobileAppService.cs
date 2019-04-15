@@ -19,6 +19,8 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MobileAppService
     {
+        const int GroupRoleId_ChildInFamily = 4;
+
         const int GroupRoleId_NeighborhoodGroupCoach = 50;
         const int GroupTypeId_NeighborhoodGroup = 49;
         
@@ -80,9 +82,11 @@ namespace church.ccv.CCVRest.MobileApp
             // set their campus
             personModel.CampusId = family.CampusId;
 
+            // set info about each family member
             personModel.FamilyMembers = new List<FamilyMemberModel>();
             foreach ( GroupMember groupMember in family.Members )
             {
+                // don't add the person we're getting info about into their list of family members
                 if ( groupMember.Person.Id != personId )
                 {
                     FamilyMemberModel familyMember = new FamilyMemberModel
@@ -101,7 +105,24 @@ namespace church.ccv.CCVRest.MobileApp
                         familyMember.PhotoURL = string.Empty;
                     }
 
+                    // if they're a child, set that, and also flag that this person HAS children
+                    if ( groupMember.GroupRoleId == GroupRoleId_ChildInFamily )
+                    {
+                        familyMember.IsChild = true;
+                        personModel.FamilyHasChildren = true;
+                    }
+
                     personModel.FamilyMembers.Add( familyMember );
+                }
+                // however, since this IS the group member for that person, we can see if they're a child / adult
+                else
+                {
+                    // if they're a child, set that, and also flag that this person HAS children
+                    if ( groupMember.GroupRoleId == GroupRoleId_ChildInFamily )
+                    {
+                        personModel.IsChild = true;
+                        personModel.FamilyHasChildren = true;
+                    }
                 }
             }
 
