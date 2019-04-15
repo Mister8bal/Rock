@@ -2,15 +2,13 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-group-members.lava' %}  
 {% endcomment %}
 
-{% comment %} {% assign group = Groups | First %} {% endcomment %}
+{% assign groupId = PageParameter.GroupId | Plus: 0 %}
 
-{% assign groupId = PageParameter.GroupId %}
-
-{% for currGroup in Groups %}
-   {% if currGroup.Group.Id == groupId %}
-      {% assign group = currGroup.Group %}
-   {% endif %}
-{% endfor %}
+{% group where:'Id == {{ groupId }} ' %}
+    {% for groupItem in groupItems %}
+            {% assign group = groupItem %}
+    {% endfor %}
+{% endgroup %}
 
 {% if group != null and group != '' %}
     {% comment %} Load default content for badges {% endcomment %}

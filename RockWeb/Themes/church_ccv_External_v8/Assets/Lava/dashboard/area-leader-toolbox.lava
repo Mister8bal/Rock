@@ -1,0 +1,57 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/area-leader-toolbox.lava' %}  
+{% endcomment %}
+
+{% assign parentGroupId = PageParameter.GroupId | Plus: 0 %}
+
+<div class="area-toolbox">
+    <div class="back-button">
+        {% if PageParameter.client != 'mobile-app' %}
+            <a class="btn btn-primary" href="##" onClick="history.go(-1); return false;">Back</a>
+        {% endif %}
+    </div>
+
+    {% for group in Groups %}
+        {% if group.Group.Id == parentGroupId %}
+            <div class="area-toolbox-row">
+                <h4>{{ group.Group.Name }}</h4>
+                <div class="area-toolbox-groups-row">
+                    {% for childGroup in group.Group.Groups %}
+                        {% if childGroup.ParentGroup.Id == parentGroupId %}
+                            {% comment %} get the geo coordinates {% endcomment %}
+                            {% assign groupLat = "" %}
+                            {% assign groupLong = "" %}
+
+                            {% for groupLocation in childGroup.GroupLocations %}
+                                {% if groupLocation.Location.GeoPoint != '' %}
+                                    {% assign groupGeo = groupLocation.Location.GeoPoint | Split: ',' %}
+                                    {% assign groupLat = groupGeo[0] %}
+                                    {% assign groupLong = groupGeo[1] %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% comment %} render the group {% endcomment %}
+                            <div class="area-toolbox-group-card">
+                                <div class="area-toolbox-group-image">
+                                    {% if groupLat != "" and groupLong != "" %}
+                                        <img class="img-responsive" src="https://maps.googleapis.com/maps/api/staticmap?zoom=13&amp;size=365x300&amp;markers=scale:2%7Cicon:http://bit.ly/2jvrYBp%7C{{ groupLat }},{{ groupLong }}&amp;sensor=false&amp;style=feature:all%7Csaturation:-100&amp;key={{ 'Global' | Attribute:'GoogleAPIKey' }}" alt="Map of Group Location">
+                                    {% else %}
+                                        <h4>No meeting location</h4>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <a href="/toolbox?GroupId={{ childGroup.Id }}">
+                                        <div class="area-toolbox-group-link">
+                                            <span>{{ childGroup.Name }}</span>
+                                            <i class="mdi mdi-chevron-right dashboard-icon" style="color: #7A1315; margin: 0;"></i>                                   
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

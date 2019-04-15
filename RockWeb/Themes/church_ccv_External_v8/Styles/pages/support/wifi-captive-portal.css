@@ -1,0 +1,31 @@
+.page-background {   
+    background-color: #000;
+}
+
+.main-feature {
+    height: unset;
+    padding-top: 62px;
+}
+
+#subnavbar-bg, #subnavbar-bg, #section-c-bg {
+    display: none;
+}
+
+#section-b-bg {
+    background-color: #ebebeb;
+}
+
+.captive-portal-form {
+    padding-bottom: 40px;
+}
+
+.terms-conditions {
+    padding-bottom: 40px;
+}
+
+    .terms-conditions p {
+        color: #535353;
+        font-size: 12px;
+        line-height: 14px;
+
+    }

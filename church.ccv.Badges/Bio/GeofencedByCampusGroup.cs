@@ -4,6 +4,8 @@ using Rock.Web.Cache;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using Rock.Web.UI;
+using Rock.Model;
 
 namespace church.ccv.Badges.Bio
 {
@@ -20,7 +22,7 @@ namespace church.ccv.Badges.Bio
         /// </summary>
         /// <param name="badge">The badge.</param>
         /// <param name="writer">The writer.</param>
-        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             Guid? groupTypeGuid = GetAttributeValue( badge, "GroupType" ).AsGuid();
             string badgeColor = GetAttributeValue( badge, "BadgeColor" );
@@ -66,7 +68,7 @@ namespace church.ccv.Badges.Bio
                     </script>
                 
                     ",
-                     Person.Id.ToString(),
+                     person.Id.ToString(),
                      groupTypeGuid.ToString(),
                      badge.Id ) );
             }

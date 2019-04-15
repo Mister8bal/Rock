@@ -419,6 +419,14 @@
             The duration.
             </value>
         </member>
+        <member name="P:Rock.Rest.Controllers.PresenceController.Presence.SessionId">
+            <summary>
+            Gets or sets the session identifier.
+            </summary>
+            <value>
+            The session identifier.
+            </value>
+        </member>
         <member name="T:Rock.Rest.Controllers.PresenceController.MACPresence">
             <summary>
             The presence for a device with specfic MAC address
@@ -564,30 +572,6 @@
             Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
             </summary>
             <param name="loginParameters">The login parameters.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.FacebookLogin(Rock.Security.ExternalAuthentication.Facebook.FacebookUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="facebookUser">The facebook user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.GoogleLogin(Rock.Security.ExternalAuthentication.Google.GoogleUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="googleUser">The google user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.TwitterLogin(Rock.Security.ExternalAuthentication.Twitter.TwitterUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="twitterUser">The twitter user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
             <exception cref="T:System.Web.Http.HttpResponseException"></exception>
         </member>
         <member name="T:Rock.Rest.Controllers.BinaryFilesController">
@@ -3064,6 +3048,13 @@
             </summary>
             <param name="personId">The person id.</param>
             <param name="siteId">The site identifier.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rock.Rest.Controllers.PersonBadgesController.GetPersonalDevicesNumber(System.Int32)">
+            <summary>
+            Gets the Total number of personal devices
+            </summary>
+            <param name="personId">The person id.</param>
             <returns></returns>
         </member>
         <member name="M:Rock.Rest.Controllers.PersonBadgesController.GetFamilyAttendance(System.Int32,System.Int32)">

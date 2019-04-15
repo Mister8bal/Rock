@@ -144,7 +144,6 @@ namespace RockWeb.Plugins.church_ccv.Security
                             numberType.Guid = phoneNumberType.Guid;
 
                             var phoneNumber = new PhoneNumber { NumberTypeValueId = numberType.Id, NumberTypeValue = numberType };
-
                             phoneNumbers.Add( phoneNumber );
                         }
 
@@ -648,14 +647,11 @@ namespace RockWeb.Plugins.church_ccv.Security
                 }
             }
 
-            bool smsSelected = false;
-
             foreach ( RepeaterItem item in rPhoneNumbers.Items )
             {
                 HiddenField hfPhoneType = item.FindControl( "hfPhoneType" ) as HiddenField;
                 PhoneNumberBox pnbPhone = item.FindControl( "pnbPhone" ) as PhoneNumberBox;
-                CheckBox cbUnlisted = item.FindControl( "cbUnlisted" ) as CheckBox;
-                CheckBox cbSms = item.FindControl( "cbSms" ) as CheckBox;
+                var mobilePhoneType = DefinedValueCache.Read( new Guid( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ) );
 
                 if ( !string.IsNullOrWhiteSpace( PhoneNumber.CleanNumber( pnbPhone.Number ) ) )
                 {
@@ -663,22 +659,16 @@ namespace RockWeb.Plugins.church_ccv.Security
                     if ( int.TryParse( hfPhoneType.Value, out phoneNumberTypeId ) )
                     {
                         var phoneNumber = new PhoneNumber { NumberTypeValueId = phoneNumberTypeId };
+
+                        // If the phone type is a mobile phone, default sms texting to true
+                        if ( phoneNumber.NumberTypeValueId == mobilePhoneType.Id )
+                        {
+                            phoneNumber.IsMessagingEnabled = true;
+                        }
+
                         person.PhoneNumbers.Add( phoneNumber );
                         phoneNumber.CountryCode = PhoneNumber.CleanNumber( pnbPhone.CountryCode );
                         phoneNumber.Number = PhoneNumber.CleanNumber( pnbPhone.Number );
-
-                        // Only allow one number to have SMS selected
-                        if ( smsSelected )
-                        {
-                            phoneNumber.IsMessagingEnabled = false;
-                        }
-                        else
-                        {
-                            phoneNumber.IsMessagingEnabled = cbSms.Checked;
-                            smsSelected = cbSms.Checked;
-                        }
-
-                        phoneNumber.IsUnlisted = cbUnlisted.Checked;
                     }
                 }
             }

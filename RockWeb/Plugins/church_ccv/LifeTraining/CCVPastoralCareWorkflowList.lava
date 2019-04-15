@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="/Styles/bootstrap-sortable.css">
+
+  <div class='panel panel-block'>
+    
+    {% if Workflows.size > 0 %}
+    <table class="table sortable">
+      <thead>
+        <tr>
+          <th>Created</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for workflow in Workflows %}
+        <tr>
+          <td data-dateformat="M/D/YY">{{ workflow.CreatedDateTime | Date:'M/d/yy' }}</td>
+          <td>
+            <a href='/MyDashboardWorkflowEntry/{{ workflow.WorkflowTypeId }}/{{ workflow.Id }}'>Pastoral Care Request</a>
+            {% if workflow.Status != 'Active' %}
+            <span class='label label-info'>{{ workflow.Status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="panel-body">
+      <div class='alert alert-info'>This person has no Pastoral Care Requests.</div>
+    </div>
+    {% endif %}
+  </div>
+
+
+  <script src="/Scripts/moment.min.js"></script>
+  <script src="/Scripts/bootstrap-sortable.js"></script>

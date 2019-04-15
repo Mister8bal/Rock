@@ -334,6 +334,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.7.11.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.7.11\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Rock.Version\AssemblySharedInfo.cs">
@@ -540,6 +543,7 @@
     <Compile Include="Data\NotEmptyGuidAttribute.cs" />
     <Compile Include="Data\NotExportable.cs" />
     <Compile Include="Data\PreviewableAttribute.cs" />
+    <Compile Include="Data\RockBulkUpdateExpressionVisitor.cs" />
     <Compile Include="Data\RockClientIncludeAttribute.cs" />
     <Compile Include="Data\RockContext.cs" />
     <Compile Include="Data\RockContextConfig.cs" />
@@ -1192,6 +1196,7 @@
     <Compile Include="PersonProfile\Badge\GroupTypeAttendance.cs" />
     <Compile Include="PersonProfile\Badge\InDataView.cs" />
     <Compile Include="PersonProfile\Badge\InteractionsInRange.cs" />
+    <Compile Include="PersonProfile\Badge\PersonalDevice.cs" />
     <Compile Include="Plugin\HotFixes\038_LabelFieldType.cs" />
     <Compile Include="Plugin\HotFixes\046_EnableSmartyStreetsIfNoActiveLocationSrv.cs" />
     <Compile Include="Plugin\HotFixes\045_FamilyRegistration.cs" />
@@ -1204,6 +1209,7 @@
     <Compile Include="Plugin\HotFixes\048_InteractionSessionPerformance.cs" />
     <Compile Include="Plugin\HotFixes\047_DataAutomation.cs" />
     <Compile Include="Plugin\HotFixes\049_UpdateGivingAnalyticsAccounts.cs" />
+    <Compile Include="Plugin\HotFixes\063_WhitelistBlacklist.cs" />
     <Compile Include="Plugin\HotFixes\HotFixMigrationResource.Designer.cs">
       <DependentUpon>HotFixMigrationResource.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1505,6 +1511,7 @@
     <Compile Include="Utility\FileUtilities.cs" />
     <Compile Include="Utility\FontAwesomeHelper.cs" />
     <Compile Include="Utility\IRockOwinStartup.cs" />
+    <Compile Include="Utility\RockObsolete.cs" />
     <Compile Include="Utility\Settings\DataAutomation\InactivatePeople.cs" />
     <Compile Include="Utility\Settings\DataAutomation\InteractionItem.cs" />
     <Compile Include="Utility\Settings\DataAutomation\MoveAdultChildren.cs" />

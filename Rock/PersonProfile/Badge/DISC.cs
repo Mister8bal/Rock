@@ -28,6 +28,7 @@ using System.Data;
 using System;
 using System.Diagnostics;
 using Rock.Web.Cache;
+using Rock.Web.UI;
 
 namespace Rock.PersonProfile.Badge
 {
@@ -51,34 +52,32 @@ namespace Rock.PersonProfile.Badge
         /// </summary>
         /// <param name="badge">The badge.</param>
         /// <param name="writer">The writer.</param>
-        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             // Grab the DISC Scores
-            bool isValidDiscScore = true;
-            int discStrength = 0;
-            int?[] discScores = new int?[] { Person.GetAttributeValue( "NaturalD" ).AsIntegerOrNull(), Person.GetAttributeValue( "NaturalI" ).AsIntegerOrNull(), Person.GetAttributeValue( "NaturalS" ).AsIntegerOrNull(), Person.GetAttributeValue( "NaturalC" ).AsIntegerOrNull() };
+            int?[] discScores = new int?[] { person.GetAttributeValue( "NaturalD" ).AsIntegerOrNull(), person.GetAttributeValue( "NaturalI" ).AsIntegerOrNull(), person.GetAttributeValue( "NaturalS" ).AsIntegerOrNull(), person.GetAttributeValue( "NaturalC" ).AsIntegerOrNull() };
 
-            // Validate the DISC Scores, find the strength
+            // now iterate over their scores and 
+            // 1. ensure they're all valid
+            // 2. track their strongest
+            bool isValidDiscScore = true;
+            int discStrengthIndex = -1;
+
             for ( int i = 0; i < discScores.Length; i++ )
             {
-                // Does the scores have values?
-                if ( !discScores[i].HasValue )
+                // first, is this score either blank or outside the valid range? 
+                if ( !discScores[i].HasValue || ( discScores[i].Value < 0 || discScores[i].Value > MAX ) )
                 {
+                    // then we're done, and they don't have a valid score
                     isValidDiscScore = false;
+                    break;
                 }
                 else
                 {
-                    // Are the scores valid values?
-                    if ( ( discScores[i].Value < 0 ) || ( discScores[i].Value > MAX ) )
+                    // if no strength has been found yet, or this one is stronger than their known highest, take it.
+                    if( discStrengthIndex == -1 || discScores[i].Value > discScores[discStrengthIndex].Value )
                     {
-                        isValidDiscScore = false;
-                    }
-                    else
-                    {
-                        if ( discScores[i].Value > discScores[discStrength].Value )
-                        {
-                            discStrength = i;
-                        }
+                        discStrengthIndex = i;
                     }
                 }
             }
@@ -88,7 +87,7 @@ namespace Rock.PersonProfile.Badge
             {
                 // Find the DISC Personality Type / Strength
                 String description = string.Empty;
-                string personalityType = Person.GetAttributeValue( "PersonalityType" );
+                string personalityType = person.GetAttributeValue( "PersonalityType" );
                 if ( !string.IsNullOrEmpty( personalityType ) )
                 {
                     var personalityValue = DefinedTypeCache.Read( Rock.SystemGuid.DefinedType.DISC_RESULTS_TYPE.AsGuid() ).DefinedValues.Where( v => v.Value == personalityType ).FirstOrDefault();
@@ -103,17 +102,17 @@ namespace Rock.PersonProfile.Badge
                 if ( !String.IsNullOrEmpty( GetAttributeValue( badge, "DISCResultDetail" ) ) )
                 {
                     int pageId = Rock.Web.Cache.PageCache.Read( Guid.Parse( GetAttributeValue( badge, "DISCResultDetail" ) ) ).Id;
-                    detailPageUrl = System.Web.VirtualPathUtility.ToAbsolute( String.Format( "~/page/{0}?Person={1}", pageId, Person.UrlEncodedKey ) );
+                    detailPageUrl = System.Web.VirtualPathUtility.ToAbsolute( String.Format( "~/page/{0}?Person={1}", pageId, person.UrlEncodedKey ) );
                     writer.Write( "<a href='{0}'>", detailPageUrl  );
                 }
 
                 //Badge HTML
                 writer.Write( String.Format( "<div class='badge badge-disc badge-id-{0}' data-toggle='tooltip' data-original-title='{1}'>", badge.Id, description ) );
                 writer.Write( "<ul class='badge-disc-chart list-unstyled'>" );
-                writer.Write( string.Format( "<li class='badge-disc-d {1}' title='D'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[0].Value / (double)MAX ) * 100 ), ( discStrength == 0 ) ? "badge-disc-primary" : String.Empty ) );
-                writer.Write( string.Format( "<li class='badge-disc-i {1}' title='I'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[1].Value / (double)MAX ) * 100 ), ( discStrength == 1 ) ? "badge-disc-primary" : String.Empty ) );
-                writer.Write( string.Format( "<li class='badge-disc-s {1}' title='S'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[2].Value / (double)MAX ) * 100 ), ( discStrength == 2 ) ? "badge-disc-primary" : String.Empty ) );
-                writer.Write( string.Format( "<li class='badge-disc-c {1}' title='C'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[3].Value / (double)MAX ) * 100 ), ( discStrength == 3 ) ? "badge-disc-primary" : String.Empty ) );
+                writer.Write( string.Format( "<li class='badge-disc-d {1}' title='D'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[0].Value / (double)MAX ) * 100 ), ( discStrengthIndex == 0 ) ? "badge-disc-primary" : String.Empty ) );
+                writer.Write( string.Format( "<li class='badge-disc-i {1}' title='I'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[1].Value / (double)MAX ) * 100 ), ( discStrengthIndex == 1 ) ? "badge-disc-primary" : String.Empty ) );
+                writer.Write( string.Format( "<li class='badge-disc-s {1}' title='S'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[2].Value / (double)MAX ) * 100 ), ( discStrengthIndex == 2 ) ? "badge-disc-primary" : String.Empty ) );
+                writer.Write( string.Format( "<li class='badge-disc-c {1}' title='C'><span style='height:{0}%'></span></li>", Math.Floor( (double)( (double)discScores[3].Value / (double)MAX ) * 100 ), ( discStrengthIndex == 3 ) ? "badge-disc-primary" : String.Empty ) );
                 writer.Write( "</ul></div>" );
 
                 if ( !String.IsNullOrEmpty( detailPageUrl ) )
@@ -124,7 +123,7 @@ namespace Rock.PersonProfile.Badge
             else
             {
                 // check for recent DISC request
-                DateTime? lastRequestDate = Person.GetAttributeValue( "LastDiscRequestDate" ).AsDateTime();
+                DateTime? lastRequestDate = person.GetAttributeValue( "LastDiscRequestDate" ).AsDateTime();
 
                 bool recentRequest = lastRequestDate.HasValue && lastRequestDate.Value > (RockDateTime.Now.AddDays( -30 ));
 

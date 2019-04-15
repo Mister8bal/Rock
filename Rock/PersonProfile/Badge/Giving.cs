@@ -23,6 +23,7 @@ using Rock.Attribute;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
+using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 
 namespace Rock.PersonProfile.Badge
@@ -44,7 +45,6 @@ namespace Rock.PersonProfile.Badge
 {% else %}
   {% assign dateRangeText = '' %}
 {% endif %}
-
 {% if Contributions and Contributions.Count > 0 %}
   {% assign iconColor = 'green' %}
   {% capture tooltipText %}{{ Person.NickName }} has contributed {{ Contributions.Count }} times{{ dateRangeText }}.{% endcapture %}
@@ -52,7 +52,6 @@ namespace Rock.PersonProfile.Badge
   {% assign iconColor = '#c4c4c4' %}
   {% capture tooltipText %}{{ Person.NickName }} has not contributed{{ dateRangeText }}.{% endcapture %}
 {% endif %}
-
 <div class='badge badge-giving badge-id-{{Badge.Id}}' data-toggle='tooltip' data-original-title='{{ tooltipText }}'>
   <i class='badge-icon fa fa-heartbeat' style='color: {{ iconColor }}'></i>
 </div>
@@ -64,7 +63,7 @@ namespace Rock.PersonProfile.Badge
         /// </summary>
         /// <param name="badge">The badge.</param>
         /// <param name="writer">The writer.</param>
-        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer )
+        public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
         {
             var accountGuids = this.GetAttributeValue( badge, "Accounts" )?.SplitDelimitedValues().AsGuidList();
             var minimumAmount = this.GetAttributeValue( badge, "MinimumAmount" )?.AsDecimalOrNull();
@@ -75,14 +74,14 @@ namespace Rock.PersonProfile.Badge
             var dateRangeSummary = SlidingDateRangePicker.FormatDelimitedValues( slidingDateRangeDelimitedValues );
 
             var mergeFields = Lava.LavaHelper.GetCommonMergeFields( null, null, new Lava.CommonMergeFieldsOptions { GetLegacyGlobalMergeFields = false } );
-            mergeFields.Add( "Person", this.Person );
+            mergeFields.Add( "Person", person );
             using ( var rockContext = new RockContext() )
             {
                 mergeFields.Add( "Badge", badge );
                 mergeFields.Add( "DateRange", new { Dates = dateRange, Summary = dateRangeSummary } );
 
                 // fetch all the possible PersonAliasIds that have this GivingID to help optimize the SQL
-                var personAliasIds = new PersonAliasService( rockContext ).Queryable().Where( a => a.Person.GivingId == this.Person.GivingId ).Select( a => a.Id ).ToList();
+                var personAliasIds = new PersonAliasService( rockContext ).Queryable().Where( a => a.Person.GivingId == person.GivingId ).Select( a => a.Id ).ToList();
 
                 var transactionTypeContributionValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.TRANSACTION_TYPE_CONTRIBUTION.AsGuid() ).Id;
                 var qry = new FinancialTransactionService( rockContext ).Queryable().Where( a => a.TransactionTypeValueId == transactionTypeContributionValueId );

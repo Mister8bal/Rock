@@ -11,7 +11,7 @@ REQUIRED VARIABLES
 
 {% assign Series = PodcastSeries %}
 {% assign Message = PodcastMessage %}
-{% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+{% assign currentDate = 'Now' | Date:'yyyyMMddHmmss' %}
 
 {% contentchannelitem where:'Id == "{{ Message.Id }}"' %}
 	{% for item in contentchannelitemItems %}
@@ -21,7 +21,7 @@ REQUIRED VARIABLES
 
 {% if messageObject.ContentChannelTypeId == 8 %}
     {% assign Series = PodcastSeries %}
-    {% assign currentDate = 'Now' | Date:'yyyyMMdd' %}
+    {% assign currentDate = 'Now' | Date:'yyyyMMddHmmss' %}
 
 
     {% capture pageTitle %}{{ Series.Name }}: {{ Message.Name }}{% endcapture %}
@@ -30,15 +30,19 @@ REQUIRED VARIABLES
         {% capture pageTitle %}{{ pageTitle }} (Full Service){% endcapture %}
     {% endif %}
 
-    {% comment %} {% capture ogImage %}http://my.ccv.church/GetImage.ashx?guid={{ Series.Attributes.HeaderImage }}{% endcapture %} {% endcomment %}
-
-    {{ 'photo' | AddMetaTagToHead: 'property', 'twitter:card' }}
+    {% capture twitterImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
+	{{ 'summary' | AddMetaTagToHead: 'property', 'twitter:card' }}
     {{ '@ccvonline' | AddMetaTagToHead: 'property', 'twitter:site' }}
+	{{ twitterImage | AddMetaTagToHead: 'property', 'twitter:image' }}
 
     {{ pageTitle | SetPageTitle }}
     {{ pageTitle | AddMetaTagToHead: 'property', 'og:title' }}
     {{ Message.Description | AddMetaTagToHead: 'property', 'og:description' }}
+	
+	{% capture ogImage %}https://ccv.church/GetImage.ashx?guid={{ Series.Attributes.Image_1_1 }}{% endcapture %}
     {{ ogImage | AddMetaTagToHead: 'property', 'og:image' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:width' }}
+	{{ '1000' | AddMetaTagToHead: 'property', 'og:image:height' }}
 
     <div class="message-card">
         {% if Message.Attributes.3rdPartyFullVideoUrl != empty %}
@@ -73,7 +77,7 @@ REQUIRED VARIABLES
                 <ol>
                 {% for otherMessage in Series.Messages reversed %}
                     {% assign otherMessageActiveDate = '' %}
-                    {% assign otherMessageActiveDate = otherMessage.Date | Date:'yyyyMMdd' %}
+                    {% assign otherMessageActiveDate = otherMessage.Date | Date:'yyyyMMddHmmss' %}
                     {% if otherMessageActiveDate != empty and otherMessageActiveDate <= currentDate %}
                     <li><a href="?MessageId={{ otherMessage.Id }}">{{ otherMessage.Name }}</a></li>
                     {% endif %}
