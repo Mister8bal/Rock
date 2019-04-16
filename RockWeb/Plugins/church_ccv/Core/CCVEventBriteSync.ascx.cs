@@ -26,7 +26,6 @@ namespace RockWeb.Plugins.church_ccv.Core
     [DisplayName( "CCV Eventbrite Sync" )]
     [Category( "CCV > Core" )]
     [Description( "Import an attendance CSV from Eventbrite to mark group members as attended." )]
-    [IntegerField("Group Id", "The Group to sync", true)]
     public partial class CCVEventBriteSync : RockBlock
     {
         public class EventBriteAttendee
@@ -62,10 +61,10 @@ namespace RockWeb.Plugins.church_ccv.Core
             IQueryable<GroupMember> groupMembers;
             GroupMember groupMember = null;
 
-            /**
-             * Parse the group ID from the from and
-             * attempt to located the associated group.
-             */ 
+            
+             //Parse the group ID from the from and
+             //attempt to located the associated group.
+             
             if ( Int32.TryParse(tbGroupId.Text, out GroupId))
             {
                 selectedGroup = groupService.Get(GroupId);
