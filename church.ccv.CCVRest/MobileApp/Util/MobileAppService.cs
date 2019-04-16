@@ -55,6 +55,7 @@ namespace church.ccv.CCVRest.MobileApp
             personModel.LastName = person.LastName;
             personModel.Email = person.Email;
             personModel.Birthdate = person.BirthDate;
+            personModel.Age = person.Age;
 
             if ( person.PhotoId.HasValue )
             {
@@ -93,7 +94,8 @@ namespace church.ccv.CCVRest.MobileApp
                     {
                         PrimaryAliasId = groupMember.Person.PrimaryAliasId ?? groupMember.Person.Id,
                         FirstName = groupMember.Person.FirstName,
-                        LastName = groupMember.Person.LastName
+                        LastName = groupMember.Person.LastName,
+                        Age = groupMember.Person.Age
                     };
 
                     if ( groupMember.Person.PhotoId.HasValue )
@@ -175,19 +177,12 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 DateTime? baptismDate;
                 personModel.IsBaptised = Actions_Adult.Baptised.IsBaptised( person.Id, out baptismDate );
-                personModel.IsERA = Actions_Adult.ERA.IsERA( person.Id );
+                personModel.IsWorshipping = Actions_Adult.ERA.IsERA( person.Id );
                 personModel.IsGiving = Actions_Adult.Give.IsGiving( person.Id );
-
-                DateTime? membershipDate;
-                personModel.IsMember = Actions_Adult.Member.IsMember( person.Id, out membershipDate );
-
-                Actions_Adult.Mentored.Result mentoredResult;
-                Actions_Adult.Mentored.IsMentored( person.Id, out mentoredResult );
-                personModel.IsMentored = mentoredResult.IsMentored;
-
+                
                 Actions_Adult.PeerLearning.Result peerLearningResult;
                 Actions_Adult.PeerLearning.IsPeerLearning( person.Id, out peerLearningResult );
-                personModel.IsPeerLearning = peerLearningResult.IsPeerLearning;
+                personModel.IsConnected = peerLearningResult.IsPeerLearning;
 
                 Actions_Adult.Serving.Result servingResult;
                 Actions_Adult.Serving.IsServing( person.Id, out servingResult );
@@ -195,10 +190,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                 Actions_Adult.Teaching.Result teachingResult;
                 Actions_Adult.Teaching.IsTeaching( person.Id, out teachingResult );
-                personModel.IsTeaching = teachingResult.IsTeaching;
-
-                DateTime? startingPointDate;
-                personModel.TakenStartingPoint = Actions_Adult.StartingPoint.TakenStartingPoint( person.Id, out startingPointDate );
+                personModel.IsCoaching = teachingResult.IsTeaching;
 
                 List<int> storyIds;
                 personModel.SharedStory = Actions_Adult.ShareStory.SharedStory( person.Id, out storyIds );
@@ -206,35 +198,71 @@ namespace church.ccv.CCVRest.MobileApp
             // get the students version
             else
             {
-                DateTime? baptismDate;
-                personModel.IsBaptised = Actions_Student.Baptised.IsBaptised( person.Id, out baptismDate );
-                personModel.IsERA = Actions_Student.ERA.IsERA( person.Id );
-                personModel.IsGiving = Actions_Student.Give.IsGiving( person.Id );
+                // for students, they become eligible for more badges as their age / grade goes up
+                
+                // note - this is intentionally NOT wrapped by one big age if-statement, even tho most of them are 9+ / 4th grade
 
-                DateTime? membershipDate;
-                personModel.IsMember = Actions_Student.Member.IsMember( person.Id, out membershipDate );
+                // worship - always eligible
+                personModel.IsWorshipping = Actions_Student.ERA.IsERA( person.Id );
 
-                Actions_Student.Mentored.Result mentoredResult;
-                Actions_Student.Mentored.IsMentored( person.Id, out mentoredResult );
-                personModel.IsMentored = mentoredResult.IsMentored;
+                // baptism is 9+ / 4th grade
+                if ( person.Age >= 9 )
+                {
+                    DateTime? baptismDate;
+                    personModel.IsBaptised = Actions_Student.Baptised.IsBaptised( person.Id, out baptismDate );
+                }
+                else
+                {
+                    personModel.IsBaptised = null;
+                }
 
-                Actions_Student.PeerLearning.Result peerLearningResult;
-                Actions_Student.PeerLearning.IsPeerLearning( person.Id, out peerLearningResult );
-                personModel.IsPeerLearning = peerLearningResult.IsPeerLearning;
+                // giving is 9+ / 4th grade
+                if ( person.Age >= 9 )
+                {
+                    personModel.IsGiving = Actions_Student.Give.IsGiving( person.Id );
+                }
+                else
+                {
+                    personModel.IsGiving = null;
+                }
 
-                Actions_Student.Serving.Result servingResult;
-                Actions_Student.Serving.IsServing( person.Id, out servingResult );
-                personModel.IsServing = servingResult.IsServing;
+                // connected is 9+ / 4th grade
+                if ( person.Age >= 9 )
+                {
+                    Actions_Student.PeerLearning.Result peerLearningResult;
+                    Actions_Student.PeerLearning.IsPeerLearning( person.Id, out peerLearningResult );
+                    personModel.IsConnected = peerLearningResult.IsPeerLearning;
+                }
+                else
+                {
+                    personModel.IsConnected = null;
+                }
 
-                Actions_Student.Teaching.Result teachingResult;
-                Actions_Student.Teaching.IsTeaching( person.Id, out teachingResult );
-                personModel.IsTeaching = teachingResult.IsTeaching;
+                // serving is 9+ / 4th grade
+                if ( person.Age >= 9 )
+                {
+                    Actions_Student.Serving.Result servingResult;
+                    Actions_Student.Serving.IsServing( person.Id, out servingResult );
+                    personModel.IsServing = servingResult.IsServing;
+                }
+                else
+                {
+                    personModel.IsServing = null;
+                }
 
-                DateTime? startingPointDate;
-                personModel.TakenStartingPoint = Actions_Student.StartingPoint.TakenStartingPoint( person.Id, out startingPointDate );
+                // shared story is 14+ / 9th grade
+                if ( person.Age >= 14 )
+                {
+                    List<int> storyIds;
+                    personModel.SharedStory = Actions_Student.ShareStory.SharedStory( person.Id, out storyIds );
+                }
+                else
+                {
+                    personModel.SharedStory = null;
+                }
 
-                List<int> storyIds;
-                personModel.SharedStory = Actions_Student.ShareStory.SharedStory( person.Id, out storyIds );
+                // Students are never eligible to be coaches
+                personModel.IsCoaching = null;
             }
 
             return personModel;

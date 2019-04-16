@@ -28,6 +28,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public DateTime? Birthdate;
 
+        public int? Age;
+
         public int? CampusId;
 
 
@@ -53,24 +55,18 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
 
         // Next Steps
-        public bool IsBaptised;
-
-        public bool IsERA;
-
-        public bool IsGiving;
-
-        public bool TakenStartingPoint;
-
-        public bool IsMember;
-
-        public bool IsServing;
-
-        public bool IsPeerLearning;
-
-        public bool IsMentored;
-
-        public bool IsTeaching;
-
-        public bool SharedStory;
+        public bool? IsBaptised;
+                   
+        public bool? IsWorshipping;
+                   
+        public bool? IsGiving;
+                   
+        public bool? IsServing;
+                   
+        public bool? IsConnected;
+                   
+        public bool? IsCoaching;
+                   
+        public bool? SharedStory;
     }
 }
