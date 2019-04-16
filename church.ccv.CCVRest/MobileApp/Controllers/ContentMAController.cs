@@ -475,5 +475,37 @@ namespace church.ccv.CCVRest.MobileApp
                 return Common.Util.GenerateResponse( true, IsOnCampusResponse.NotOnCampus.ToString(), null );
             }
         }
+
+        [Serializable]
+        public enum KidsContentResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            PersonNotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/KidsContent" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage KidsContent( int primaryAliasId )
+        {
+            // find the person thru their alias id
+            PersonAliasService paService = new PersonAliasService( new RockContext() );
+            PersonAlias personAlias = paService.Get( primaryAliasId );
+
+            if ( personAlias != null )
+            {
+                // we found them - now get the correct content
+                KidsContentModel contentModel = MobileAppService.BuildKidsContent( personAlias.Person );
+                return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModel );
+            }
+            else
+            {
+                return Common.Util.GenerateResponse( false, KidsContentResponse.PersonNotFound.ToString(), null );
+            }
+        }
+
     }
 }

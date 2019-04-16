@@ -106,6 +106,7 @@
     <Compile Include="MobileApp\Model\CampusModel.cs" />
     <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />
     <Compile Include="MobileApp\Model\JoinGroupModel.cs" />
+    <Compile Include="MobileApp\Model\KidsContentModel.cs" />
     <Compile Include="MobileApp\Model\MobileAppGroupModel.cs" />
     <Compile Include="MobileApp\Model\LoginModel.cs" />
     <Compile Include="MobileApp\Model\MobileAppMessageModel .cs" />

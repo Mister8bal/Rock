@@ -1024,5 +1024,126 @@ namespace church.ccv.CCVRest.MobileApp
 
             return maSeriesModel;
         }
+
+        internal static KidsContentModel BuildKidsContent( Person person )
+        {
+            // first, we need to know what grade range we'll be getting content for
+            const string GradeRange_EK = "Early Kids";
+            const string GradeRange_LK = "Later Kids";
+            const string GradeRange_JH = "Junior High";
+            const string GradeRange_HS = "High School";
+
+            // this is technically cheating, but Rock abstracts grade and doesn't natively
+            // know about the US standard. To simplify things, let's do the conversion here
+            int realGrade = 12;
+            if ( person.GradeOffset.HasValue )
+            {
+                realGrade -= person.GradeOffset.Value;
+            }
+
+            // now see which grade level they're in
+            string targetGradeRange = string.Empty;
+            if ( realGrade >= 9 )
+            {
+                targetGradeRange = GradeRange_HS;
+            }
+            else if ( realGrade >= 7 )
+            {
+                targetGradeRange = GradeRange_JH;
+            }
+            else if ( realGrade >= 5 )
+            {
+                targetGradeRange = GradeRange_LK;
+            }
+            else
+            {
+                targetGradeRange = GradeRange_EK;
+            }
+            
+            // now that we know the range, build the content channel queries
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            // first, get AtCCV
+            const int ContentChannelId_AtCCV = 285;
+            ContentChannel atCCV = contentChannelService.Get( ContentChannelId_AtCCV );
+
+            // sort by date
+            var atCCVItems = atCCV.Items.OrderByDescending( i => i.StartDateTime );
+
+            // now take the first one that matches our grade offset.
+
+            // while iterating over these in memory could become slow as the list grows, the business
+            // requirements of CCV mean it won't. Because there will always be a new entry each week for each grade level,
+            // it won't ever realistically go over the first 4 items
+            ContentChannelItem atCCVItem = null;
+            foreach ( var item in atCCVItems )
+            {
+                // this is the slow part. If it ever does become an issue, replace it with an AV table join.
+                item.LoadAttributes();
+                if ( item.AttributeValues["GradeLevel"].ToString() == targetGradeRange )
+                {
+                    atCCVItem = item;
+                    break;
+                }
+            }
+
+
+            // next, get Faith Building At Home
+            const int ContentChannelId_FaithBuilding = 286;
+            ContentChannel faithBuilding = contentChannelService.Get( ContentChannelId_FaithBuilding );
+
+            // sort by date
+            var faithBuildingItems = faithBuilding.Items.OrderByDescending( i => i.StartDateTime );
+
+            // as above, we'll iterate over the whole list in memory, knowing we'll actually only load attributes for about 4 items.
+            ContentChannelItem faithBuildingItem = null;
+            foreach ( var item in faithBuildingItems )
+            {
+                item.LoadAttributes();
+                if ( item.AttributeValues["GradeLevel"].ToString() == targetGradeRange )
+                {
+                    faithBuildingItem = item;
+                    break;
+                }
+            }
+
+
+            // finally, get the resources available for the grade level
+            const int ContentChannelId_Resources = 287;
+            ContentChannel resourceChannel = contentChannelService.Get( ContentChannelId_Resources );
+
+            List<ContentChannelItem> resourceList = new List<ContentChannelItem>();
+            foreach ( var item in resourceChannel.Items )
+            {
+                item.LoadAttributes();
+                if ( item.AttributeValues["GradeLevel"].ToString().Contains( targetGradeRange ) )
+                {
+                    resourceList.Add( item );
+                }
+            }
+
+            
+            // prepare our model - we'll require both main category items 
+            // and otherwise return failure (note that resources CAN be empty)
+            if ( atCCVItem != null && faithBuildingItem != null )
+            {
+                KidsContentModel contentModel = new KidsContentModel();
+
+                contentModel.AtCCV_Title = atCCVItem.Title;
+                contentModel.AtCCV_Content = atCCVItem.Content;
+                contentModel.AtCCV_Date = atCCVItem.StartDateTime;
+                contentModel.AtCCV_DiscussionTopic_One = atCCVItem.AttributeValues["DiscussionTopic1"].ToString();
+                contentModel.AtCCV_DiscussionTopic_Two = atCCVItem.AttributeValues["DiscussionTopic2"].ToString();
+
+                // todo: convert faith building and resources
+
+                return contentModel;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
