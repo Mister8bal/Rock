@@ -217,7 +217,12 @@ namespace RockWeb.Plugins.church_ccv.Reporting
 
                 // get the day and time from serviceTime
                 var serviceTimeArray = serviceTime.Split( '^' );
-                var day = serviceTimeArray[0];
+
+                // its possible day will have a date with it.
+                // try splitting on a space and assume first section is the day name
+                var dayArray = serviceTimeArray[0].Split( ' ');
+
+                var day = dayArray[0];
                 var time = serviceTimeArray[1].Replace( " ", "" );
 
                 // build name to match
