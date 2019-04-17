@@ -1035,10 +1035,29 @@ namespace church.ccv.CCVRest.MobileApp
 
             // this is technically cheating, but Rock abstracts grade and doesn't natively
             // know about the US standard. To simplify things, let's do the conversion here
-            int realGrade = 12;
+            int realGrade = 1; //(assume 1st grade)
             if ( person.GradeOffset.HasValue )
             {
-                realGrade -= person.GradeOffset.Value;
+                realGrade = 12 - person.GradeOffset.Value;
+            }
+            else
+            {
+                // before we completely assume 1st grade, see if we can use their age
+                if ( person.Age.HasValue )
+                {
+                    if ( person.Age >= 14 )
+                    {
+                        realGrade = 9;
+                    }
+                    else if ( person.Age >= 10 )
+                    {
+                        realGrade = 6;
+                    }
+                    else
+                    {
+                        realGrade = 1;
+                    }
+                }
             }
 
             // now see which grade level they're in
@@ -1128,15 +1147,46 @@ namespace church.ccv.CCVRest.MobileApp
             // and otherwise return failure (note that resources CAN be empty)
             if ( atCCVItem != null && faithBuildingItem != null )
             {
+                string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
                 KidsContentModel contentModel = new KidsContentModel();
 
+                // At CCV
                 contentModel.AtCCV_Title = atCCVItem.Title;
+                contentModel.AtCCV_Date = atCCVItem.StartDateTime;
                 contentModel.AtCCV_Content = atCCVItem.Content;
                 contentModel.AtCCV_Date = atCCVItem.StartDateTime;
                 contentModel.AtCCV_DiscussionTopic_One = atCCVItem.AttributeValues["DiscussionTopic1"].ToString();
                 contentModel.AtCCV_DiscussionTopic_Two = atCCVItem.AttributeValues["DiscussionTopic2"].ToString();
 
-                // todo: convert faith building and resources
+                string seriesImageGuid = atCCVItem.AttributeValues["SeriesImage"].Value.ToString();
+                if ( string.IsNullOrWhiteSpace( seriesImageGuid ) == false )
+                {
+                    contentModel.AtCCV_ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + seriesImageGuid;
+                }
+                else
+                {
+                    contentModel.AtCCV_ImageURL = string.Empty;
+                }
+
+                // Faith building
+                contentModel.FaithBuilding_Title = faithBuildingItem.Title;
+                contentModel.FaithBuilding_Content = faithBuildingItem.Content;
+
+                // resources CAN be empty, so just take whatever's available
+                contentModel.Resources = new List<KidsResourceModel>();
+
+                foreach ( var resourceItem in resourceList )
+                {
+                    KidsResourceModel resModel = new KidsResourceModel
+                    {
+                        Title = resourceItem.Title,
+                        Subtitle = resourceItem.AttributeValues["Subtitle"].ToString(),
+                        URL = resourceItem.AttributeValues["URL"].ToString()
+                    };
+
+                    contentModel.Resources.Add( resModel );
+                }
 
                 return contentModel;
             }

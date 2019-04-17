@@ -9,6 +9,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string AtCCV_Title;
         public DateTime AtCCV_Date;
         public string AtCCV_Content;
+        public string AtCCV_ImageURL;
         public string AtCCV_DiscussionTopic_One;
         public string AtCCV_DiscussionTopic_Two;
 

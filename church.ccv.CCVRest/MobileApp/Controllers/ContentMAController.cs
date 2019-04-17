@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
-using church.ccv.PersonalizationEngine.Model;
+using System.Threading.Tasks;
+using System.Web.Http;
+using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.PersonalizationEngine.Data;
+using church.ccv.PersonalizationEngine.Model;
+using Newtonsoft.Json.Linq;
 using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Web.Cache;
-using Newtonsoft.Json.Linq;
-using System.Web.Http;
-using church.ccv.CCVRest.MobileApp.Model;
-using church.ccv.Podcast;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -50,6 +50,64 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return Common.Util.GenerateResponse( false, VersionResponse.Failed.ToString(), null );
+        }
+
+        [Serializable]
+        public enum CCVLiveCountdownResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            BadResponse
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/CCVLiveCountdown" )]
+        [Authenticate, Secured]
+        public async Task<HttpResponseMessage> CCVLiveCountdown()
+        {
+            // make a request to the CCV Live API and get its status, then forward it to the client
+            const string CCVLiveAPI = "https://ccvlive.churchonline.org/api/v1/events/current";
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync( CCVLiveAPI );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            {
+                // we expect the a json formatted response with an ""response->item" in it. If any parsing fails,
+                // respond with BadResponse
+                var countdownResponse = await response.Content.ReadAsAsync<JObject>();
+                if ( countdownResponse == null )
+                {
+                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+                }
+
+                var responseJToken = countdownResponse["response"];
+                if ( responseJToken == null )
+                {
+                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+                }
+
+                JToken itemToken = responseJToken["item"];
+                if ( itemToken == null )
+                {
+                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+                }
+
+                CCVLiveCountdownModel liveResponse = itemToken.ToObject<CCVLiveCountdownModel>();
+                if ( liveResponse == null )
+                {
+                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+                }
+
+                // at long last we have the object--return it.
+                return Common.Util.GenerateResponse( true, CCVLiveCountdownResponse.Success.ToString(), liveResponse );
+            }
+            else
+            {
+                return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+            }
         }
 
         [Serializable]

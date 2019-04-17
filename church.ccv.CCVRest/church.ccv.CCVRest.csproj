@@ -104,6 +104,7 @@
     <Compile Include="MobileApp\Controllers\PersonMAController.cs" />
     <Compile Include="MobileApp\Controllers\PodcastMAController.cs" />
     <Compile Include="MobileApp\Model\CampusModel.cs" />
+    <Compile Include="MobileApp\Model\CCVLiveCountdownModel.cs" />
     <Compile Include="MobileApp\Model\FamilyMemberModel.cs" />
     <Compile Include="MobileApp\Model\JoinGroupModel.cs" />
     <Compile Include="MobileApp\Model\KidsContentModel.cs" />
