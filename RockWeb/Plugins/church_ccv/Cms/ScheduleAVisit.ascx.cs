@@ -25,6 +25,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [CampusesField( "Campuses", "Campuses that offer plan a visit scheduling", false, "", "", 3 )]
     [SystemEmailField( "Confirmation Email Template", "The system email to use to send the confirmation.", true, "", "", 4 )]
+    [WorkflowTypeField( "Planned Vists", "Workflow used by staff to process planned visit submitted from website", false, false, "", "", 5 )]
 
     public partial class ScheduleAVisit : RockBlock
     {
@@ -918,19 +919,18 @@ namespace RockWeb.Plugins.church_ccv.Cms
             var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() );
             var homeLocationType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
             var mobilePhoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
-            var noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
             
             // service objects
             AttributeValueService attributeValueService = new AttributeValueService( rockContext );
             PersonService personService = new PersonService( rockContext );
             GroupService groupService = new GroupService( rockContext );
             GroupMemberService groupMemberService = new GroupMemberService( rockContext );
-            NoteService noteService = new NoteService( rockContext );
             
             // person / family objects
             Rock.Model.Group family = null;
             Person person = null;
             Person spouse = null;
+            string visitNoteText = "";
 
             // use existing person if exists
             if ( _visit.PersonId > 0 )
@@ -960,25 +960,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId.AsInteger(), false );
 
-                // add person note
-                if ( noteType != null )
-                {
-                    Note note = new Note
-                    {
-                        NoteTypeId = noteType.Id,
-                        IsSystem = false,
-                        IsAlert = false,
-                        IsPrivateNote = false,
-                        EntityId = person.Id,
-                        Caption = string.Empty,
-                        Text = String.Format( "Visit planned by for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName )
-                    };
-
-                    noteService.Add( note );
-
-                    rockContext.SaveChanges();
-                }
-
                  // update visit object
                 _visit.FamilyId = family.Id;
                 _visit.PersonId = person.Id;
@@ -993,6 +974,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 return;
             }
+
+            // add person note
+            visitNoteText = String.Format( "Visit planned by for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName );
+
+            SavePersonNote( rockContext, person.Id, visitNoteText );
 
             // we should have a person by now, update survey answer if they answered
             if ( rblSurvey.SelectedValue.IsNotNullOrWhitespace() )
@@ -1100,25 +1086,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 groupMemberService.Add( newFamilyMember );
 
                 rockContext.SaveChanges();
+            }
 
-                // add person note for spouse
-                if ( noteType != null )
-                {
-                    Note note = new Note
-                    {
-                        NoteTypeId = noteType.Id,
-                        IsSystem = false,
-                        IsAlert = false,
-                        IsPrivateNote = false,
-                        EntityId = spouse.Id,
-                        Caption = string.Empty,
-                        Text = String.Format( "Visit planned by for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName )
-                    };
-
-                    noteService.Add( note );
-                }
-
-                rockContext.SaveChanges();
+            if ( spouse != null )
+            {
+                // add person note
+                SavePersonNote( rockContext, spouse.Id, visitNoteText );
             }
 
             // add children to family if specified
@@ -1153,24 +1126,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                         rockContext.SaveChanges();
 
-                        // add person note to child
-                        if ( noteType != null )
-                        {
-                            Note note = new Note
-                            {
-                                NoteTypeId = noteType.Id,
-                                IsSystem = false,
-                                IsAlert = false,
-                                IsPrivateNote = false,
-                                EntityId = newChild.Id,
-                                Caption = string.Empty,
-                                Text = String.Format( "Visit planned by for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName )
-                            };
-
-                            noteService.Add( note );
-                        }
-
-                        rockContext.SaveChanges();
+                        // add person note
+                        SavePersonNote( rockContext, newChild.Id, visitNoteText );
 
                         // update optional attributes (only doing this for new chidren added to family)
                         if ( newFamilyMember != null && ( child.Allergies.IsNotNullOrWhitespace() || child.Gender != Gender.Unknown || child.Grade.IsNotNullOrWhitespace() ) )
@@ -1234,7 +1191,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 mergeFields.Add( "VisitService", _visit.ServiceTime );
 
                 // Send confirmation email
-                var publicApplicationRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
+                var publicApplicationRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
 
                 var recipient = new List<RecipientData>
                 {
@@ -1248,14 +1205,59 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 emailMessage.CreateCommunicationRecord = true;
                 emailMessage.Send();
             }
-                       
+
             // Trigger workflow to add person to group
+            Guid? workflowTypeGuid = GetAttributeValue( "PlannedVisit" ).AsGuidOrNull();
+
+            if ( workflowTypeGuid.HasValue )
+            {
+                WorkflowTypeCache workflowType = WorkflowTypeCache.Read( workflowTypeGuid.Value );
+
+                if ( workflowType != null )
+                {
+                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
+
+                    Workflow workflow = Workflow.Activate( workflowType, workflowName );
+
+                    if ( workflow.AttributeValues.ContainsKey( "Person" ) )
+                    {
+                        PersonAlias personAlias = new PersonAliasService( rockContext ).Get( _visit.PersonId );
+
+                        if ( personAlias != null )
+                        {
+                            workflow.AttributeValues["Person"].Value = personAlias.Guid.ToString();
+                        }
+                    }
+
+                    if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
+                    {
+                        CampusCache campus = CampusCache.Read( _visit.CampusId.AsInteger(), rockContext );
+
+                        if ( campus != null )
+                        {
+                            workflow.AttributeValues["VisitCampus"].Value = campus.Guid.ToString();
+
+                        }
+
+                    }
+
+
+
+
+
+                }
+
+
+            }
+
 
             // change to success panel
             ShowFormPanel( pnlSuccess, null );
 
             WriteVisitToViewState();
         }
+
+
 
         protected void btnSubmitRetry_Click( object sender, EventArgs e )
         {
@@ -2028,6 +2030,36 @@ namespace RockWeb.Plugins.church_ccv.Cms
             ddlEditServiceTime.Visible = false;
 
             btnEditVisitDetails.Text = "Edit details";
+        }
+
+        /// <summary>
+        /// Save a person note to their profile
+        /// </summary>
+        /// <param name="rockContext"></param>
+        /// <param name="entityId"></param>
+        /// <param name="noteText"></param>
+        private void SavePersonNote( RockContext rockContext, int entityId, string noteText )
+        {
+            NoteService noteService = new NoteService( rockContext );
+            NoteTypeCache noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
+        
+            if ( noteType != null )
+            {
+                Note note = new Note
+                {
+                    NoteTypeId = noteType.Id,
+                    IsSystem = false,
+                    IsAlert = false,
+                    IsPrivateNote = false,
+                    EntityId = entityId,
+                    Caption = string.Empty,
+                    Text = noteText
+                };
+
+                noteService.Add( note );
+
+                rockContext.SaveChanges();
+            }
         }
 
         #endregion
