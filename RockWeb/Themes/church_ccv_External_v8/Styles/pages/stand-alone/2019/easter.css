@@ -8,6 +8,7 @@
 
 .main-feature {
     padding-top: 100px;
+    height: unset;
 }
 
 #zone-feature {
@@ -23,6 +24,13 @@
     .main-feature {
         height: unset !important;
         padding-top: 75px !important;
+    }
+
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -250px;
+        visibility: hidden;
     }
 }
 
@@ -145,7 +153,6 @@
 }
 
 #section-c-bg {
-    /* background-color: #FFFFFF; */
     background-color: #ebebeb;
 }
 
@@ -233,6 +240,56 @@
     color: #777777;
 }
 
+.campus-cards-row-mobile {
+    display: none;
+}
+
+#verrado-details li {
+    padding-left: 0px;
+}
+
+.campus-dropdown li {
+    margin: 0%;
+}
+
+.campus-dropdown ul {
+    width: 100%;
+}
+
+.campus-dropdown button {
+    width: 100%;
+    padding: 5px 15px 5px 25px;
+    border: none;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.campus-dropdown button:hover {
+    background-color: #0e568e;
+    color: white;
+}
+
+.dropdown-menu {
+    top: unset;
+    width: 100%;
+    position: absolute;
+    float: left;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: none;
+}
+
+#btnCampusSelect {
+    color: #FFFFFF;
+    width: 100%;
+    background-color: #0e568e;
+    border-color: #b2bdc5;
+    border-radius: 10px;
+    height: 30px;
+    min-width: 200px;
+    margin-bottom: 5%;
+}
+
 .service-times strong {
     font-weight: 700;
 }
@@ -272,28 +329,69 @@
 
 /* Mobile */
 @media screen and (max-width: 500px) {
-    .campus-cards-row {
-        justify-content: center;
+    #zone-sectionc {
+        margin: 0 5%;
+        padding-bottom: 5%;
     }
 
     .campus-card {
         width: 90%;
         padding-bottom: 15px;
     }
+
+    .campus-cards-row-mobile {
+        display: block;
+    }
+
+    .campus-cards-row {
+        display: none; 
+    }
+
+    .campus-card {
+        margin: 0;
+        min-width: unset;
+        max-width: unset;
+        width: unset;
+    }
+
+    .list-inline > ul {
+        padding: 5px 0;
+    }  
+
+    .list-inline {
+        margin-left: 0;
+    } 
+
+    select {
+        -webkit-appearance: button-bevel;
+        -moz-appearance: none;
+        text-overflow: '';
+    }
+    
+    .service-times-list {
+        display: flex;
+        flex-wrap: wrap;
+        text-decoration: none;
+        list-style: none;
+    }
+
+    li {
+        margin-right: 2%;
+    }
+
+    .csi {
+        margin: 0 3px;
+    }
 }
 /* End Campus Card Section */
 
 /* Plan Your Visit section */
 
-#zone-sectiond {
-
-}
-
 #section-d-bg {
     background-color: #ffffff; /* background-color: #ffffff; */
 }
 
-/* Plan Your Visit Section */
+/* End Plan Your Visit Section */
 
 /* Baptisms section */
 
@@ -320,25 +418,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.sunrise-button {
-    background-color: #FFFFFF;
-    border-color: #FFFFFF;
-    color: #0057ac;
-    font-family: Akrobat;
-    font-size: 20px;
-    font-weight: 600;
-    min-width: 200px;
-    max-width: 200px;
-    font-family: akrobat;
-}
-
-.sunrise-button:hover {
-    text-decoration: none;
-    background-color: #0057ac;
-    border-color: #0057ac;
-    color: #FFFFFF;
+    align-items: center;
 }
 
 .sunrise-section p {
@@ -362,7 +442,7 @@
     }
 }
 
-/* Sunrise Service Section */
+/* End Sunrise Service Section */
 
 /* Share Section */
 
@@ -522,9 +602,33 @@ a:focus {
     color: #e43d35;
 }
 
+.sunrise-button {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #0057ac;
+}
+
+.sunrise-button:hover {
+    background-color: #0057ac;
+    border-color: #0057ac;
+    color: #FFFFFF;
+}
+
 @media screen and (max-width: 500px) {
     .btn-primary, .contextsetter-campus .dropdown {
         max-width: unset;
+    }
+
+    .sunrise-button {
+        background-color: #FFFFFF;
+        border-color: #FFFFFF;
+        color: #0057ac;
+    }
+    
+    .sunrise-button:hover {
+        background-color: #0057ac;
+        border-color: #0057ac;
+        color: #FFFFFF;
     }
 }
 

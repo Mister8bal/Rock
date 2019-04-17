@@ -215,7 +215,7 @@
       result += '      <span class="phone">'+campus.phone+'</span>'
       result += '    </div>'
       result += '  </div>'
-      result += '  <a class="select" href="#' + campus.name.replace( ' ', '-' ).toLowerCase() + '"' + '>Service Times</a>'
+      result += '  <a class="select" href="#service-times">Service Times</a>'
       result += '</div>'
       return result
     }
