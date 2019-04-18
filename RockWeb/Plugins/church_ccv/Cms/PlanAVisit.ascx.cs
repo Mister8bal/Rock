@@ -18,16 +18,16 @@ using Rock.Web.UI.Controls;
 
 namespace RockWeb.Plugins.church_ccv.Cms
 {
-    [DisplayName( "Schedule A Visit" )]
+    [DisplayName( "Plan A Visit" )]
     [Category( "CCV > Cms" )]
     [Description( "Form used to preregister families for weekend service" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [CampusesField( "Campuses", "Campuses that offer plan a visit scheduling", false, "", "", 3 )]
     [SystemEmailField( "Confirmation Email Template", "The system email to use to send the confirmation.", true, "", "", 4 )]
-    [WorkflowTypeField( "Planned Vists", "Workflow used by staff to process planned visit submitted from website", false, false, "", "", 5 )]
+    [WorkflowTypeField( "Planned Vists Workflow", "Workflow used by staff to process planned visit submitted from website", false, false, "", "", 5 )]
 
-    public partial class ScheduleAVisit : RockBlock
+    public partial class PlanAVisit : RockBlock
     {
         const int AttributeId_Allergies = 676;
         const int AttributeId_HowDidYouHearAboutCCV = 719;

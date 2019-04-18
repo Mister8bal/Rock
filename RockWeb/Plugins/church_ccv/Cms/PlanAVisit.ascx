@@ -1,6 +1,6 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="ScheduleAVisit.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.ScheduleAVisit" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisit.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisit" %>
 
-<link rel="stylesheet" href="/Plugins/church_ccv/Cms/styles/schedule-a-visit-form.css">
+<link rel="stylesheet" href="/Plugins/church_ccv/Cms/styles/plan-a-visit-form.css">
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
@@ -15,7 +15,7 @@
         <%-- Form Panel --%>
         <asp:Panel ID="pnlForm" runat="server">
 
-            <div class="schedule-a-visit">
+            <div class="plan-a-visit">
 
                 <%-- Progress Tracker --%>
                 <div class="form-progress">
