@@ -72,39 +72,24 @@ namespace church.ccv.CCVRest.MobileApp
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync( CCVLiveAPI );
-
-            if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            if ( response.StatusCode != System.Net.HttpStatusCode.OK )
             {
-                // we expect the a json formatted response with an ""response->item" in it. If any parsing fails,
-                // respond with BadResponse
+                return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
+            }
+
+            // we expect the a json formatted response with an ""response->item" in it. If any parsing fails,
+            // respond with BadResponse
+            try
+            {
                 var countdownResponse = await response.Content.ReadAsAsync<JObject>();
-                if ( countdownResponse == null )
-                {
-                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
-                }
 
                 var responseJToken = countdownResponse["response"];
-                if ( responseJToken == null )
-                {
-                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
-                }
-
                 JToken itemToken = responseJToken["item"];
-                if ( itemToken == null )
-                {
-                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
-                }
-
                 CCVLiveCountdownModel liveResponse = itemToken.ToObject<CCVLiveCountdownModel>();
-                if ( liveResponse == null )
-                {
-                    return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
-                }
 
-                // at long last we have the object--return it.
                 return Common.Util.GenerateResponse( true, CCVLiveCountdownResponse.Success.ToString(), liveResponse );
             }
-            else
+            catch
             {
                 return Common.Util.GenerateResponse( false, CCVLiveCountdownResponse.BadResponse.ToString(), null );
             }
