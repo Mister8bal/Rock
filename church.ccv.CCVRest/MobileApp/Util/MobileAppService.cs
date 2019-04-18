@@ -1084,7 +1084,7 @@ namespace church.ccv.CCVRest.MobileApp
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
 
             // first, get AtCCV
-            const int ContentChannelId_AtCCV = 285;
+            const int ContentChannelId_AtCCV = 286;
             ContentChannel atCCV = contentChannelService.Get( ContentChannelId_AtCCV );
 
             // sort by date
@@ -1109,7 +1109,7 @@ namespace church.ccv.CCVRest.MobileApp
 
 
             // next, get Faith Building At Home
-            const int ContentChannelId_FaithBuilding = 286;
+            const int ContentChannelId_FaithBuilding = 287;
             ContentChannel faithBuilding = contentChannelService.Get( ContentChannelId_FaithBuilding );
 
             // sort by date
@@ -1129,7 +1129,7 @@ namespace church.ccv.CCVRest.MobileApp
 
 
             // finally, get the resources available for the grade level
-            const int ContentChannelId_Resources = 287;
+            const int ContentChannelId_Resources = 288;
             ContentChannel resourceChannel = contentChannelService.Get( ContentChannelId_Resources );
 
             List<ContentChannelItem> resourceList = new List<ContentChannelItem>();

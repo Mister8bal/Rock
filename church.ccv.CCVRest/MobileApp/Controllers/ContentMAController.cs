@@ -526,7 +526,9 @@ namespace church.ccv.CCVRest.MobileApp
 
             Success,
 
-            PersonNotFound
+            PersonNotFound,
+
+            ContentInvalid
         }
 
         [System.Web.Http.HttpGet]
@@ -541,8 +543,16 @@ namespace church.ccv.CCVRest.MobileApp
             if ( personAlias != null )
             {
                 // we found them - now get the correct content
-                KidsContentModel contentModel = MobileAppService.BuildKidsContent( personAlias.Person );
-                return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModel );
+                try
+                {
+                    KidsContentModel contentModel = MobileAppService.BuildKidsContent( personAlias.Person );
+                    return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModel );
+                }
+                catch
+                {
+                    // something went wrong with our content channels - at least let the caller know
+                    return Common.Util.GenerateResponse( false, KidsContentResponse.ContentInvalid.ToString(), null );
+                }
             }
             else
             {
