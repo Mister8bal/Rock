@@ -461,7 +461,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                     if ( user.EntityType != null )
                     {
                         var component = AuthenticationContainer.GetComponent( user.EntityType.Name );
-                        if ( component != null && !component.RequiresRemoteAuthentication && !component.RequiresRemoteAuthentication )
+                        if ( component != null && component.ServiceType == AuthenticationServiceType.Internal && !component.RequiresRemoteAuthentication )
                         {
                             users.Add( user );
                             hasAccountWithPasswordResetAbility = true;
