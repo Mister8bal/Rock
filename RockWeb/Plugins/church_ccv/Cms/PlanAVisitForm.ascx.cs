@@ -15,10 +15,11 @@ using Rock.Model;
 using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
+using church.ccv.CCVCore.PlanAVisit.Model;
 
 namespace RockWeb.Plugins.church_ccv.Cms
 {
-    [DisplayName( "Plan A Visit" )]
+    [DisplayName( "Plan A Visit Form" )]
     [Category( "CCV > Cms" )]
     [Description( "Form used to preregister families for weekend service" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
@@ -27,7 +28,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [SystemEmailField( "Confirmation Email Template", "The system email to use to send the confirmation.", true, "", "", 4 )]
     [WorkflowTypeField( "Planned Vists Workflow", "Workflow used by staff to process planned visit submitted from website", false, false, "", "", 5 )]
 
-    public partial class PlanAVisit : RockBlock
+    public partial class PlanAVisitForm : RockBlock
     {
         const int AttributeId_Allergies = 676;
         const int AttributeId_HowDidYouHearAboutCCV = 719;
@@ -217,7 +218,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     }
 
                     // set campusId in _visit and update viewstate
-                    _visit.CampusId = campus.Id.ToString();
+                    _visit.CampusId = campus.Id;
                     _visit.CampusName = campus.Name;
                     WriteVisitToViewState();
 
@@ -297,7 +298,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     }
 
                     // set VisitDate in _visit
-                    _visit.VisitDate = visitDateDropDownList.SelectedValue;
+                    _visit.VisitDate = DateTime.Parse( visitDateDropDownList.SelectedValue);
                     WriteVisitToViewState();
                     
                     BindServiceTimeDropDowns( campus, day );
@@ -925,6 +926,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             PersonService personService = new PersonService( rockContext );
             GroupService groupService = new GroupService( rockContext );
             GroupMemberService groupMemberService = new GroupMemberService( rockContext );
+            Service<PlanAVisit> planAVisitService = new Service<PlanAVisit>( rockContext );
             
             // person / family objects
             Rock.Model.Group family = null;
@@ -958,7 +960,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     RecordStatusValueId = recordStatusValue.Id
                 };
 
-                family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId.AsInteger(), false );
+                family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId, false );
 
                  // update visit object
                 _visit.FamilyId = family.Id;
@@ -1005,7 +1007,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 // update with the new value
                 attributeValueSurvey.Value = surveyAnswer.Guid.ToString();
 
-                _visit.Survey = rblSurvey.SelectedValue;
+                _visit.SurveyResponse = rblSurvey.SelectedValue;
             }
 
             // if address specified add it to family ***************************************************** Probably Remove
@@ -1172,83 +1174,104 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 }
             }
 
+            // add new plan a visit
+            PlanAVisit visit = new PlanAVisit
+            {
+                PersonAliasId = person.PrimaryAlias.Id,
+                FamilyId = _visit.FamilyId,
+                CampusId = _visit.CampusId,
+                ScheduledDate = _visit.VisitDate,
+                ServiceTimeScheduleId = _visit.ServiceTimeScheduleId,
+                BringingSpouse = _visit.SpouseFirstName.IsNotNullOrWhitespace() ? true : false,
+                BringingChildren = _visit.Children.Count > 0 ? true : false,
+                SurveyResponse = _visit.SurveyResponse,
+                CreatedDateTime = DateTime.Now,
+                ModifiedDateTime = DateTime.Now,
+                CreatedByPersonAliasId = person.PrimaryAlias.Id,
+                ModifiedByPersonAliasId = person.PrimaryAlias.Id
+            };
+
+            planAVisitService.Add( visit );
+
+            rockContext.SaveChanges();
+
             // Send email confirmation
-            Guid confirmationEmailTemplateGuid = Guid.Empty;
+            //Guid confirmationEmailTemplateGuid = Guid.Empty;
 
-            if ( !Guid.TryParse( GetAttributeValue( "ConfirmationEmailTemplate" ), out confirmationEmailTemplateGuid ) )
-            {
-                confirmationEmailTemplateGuid = Guid.Empty;
-            }
+            //if ( !Guid.TryParse( GetAttributeValue( "ConfirmationEmailTemplate" ), out confirmationEmailTemplateGuid ) )
+            //{
+            //    confirmationEmailTemplateGuid = Guid.Empty;
+            //}
 
-            if ( confirmationEmailTemplateGuid != Guid.Empty )
-            {
-                // Build merge fields
-                var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+            //if ( confirmationEmailTemplateGuid != Guid.Empty )
+            //{
+            //    // Build merge fields
+            //    var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
 
-                mergeFields.Add( "VisitPerson", person );
-                mergeFields.Add( "VisitCampus", _visit.CampusName );
-                mergeFields.Add( "VisitDate", _visit.VisitDate );
-                mergeFields.Add( "VisitService", _visit.ServiceTime );
+            //    mergeFields.Add( "VisitPerson", person );
+            //    mergeFields.Add( "VisitCampus", _visit.CampusName );
+            //    mergeFields.Add( "VisitDate", _visit.VisitDate );
+            //    mergeFields.Add( "VisitService", _visit.ServiceTime );
 
-                // Send confirmation email
-                var publicApplicationRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
+            //    // Send confirmation email
+            //    var publicApplicationRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
 
-                var recipient = new List<RecipientData>
-                {
-                    new RecipientData( person.Email, mergeFields )
-                };
+            //    var recipient = new List<RecipientData>
+            //    {
+            //        new RecipientData( person.Email, mergeFields )
+            //    };
 
-                var emailMessage = new RockEmailMessage( confirmationEmailTemplateGuid );
-                emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
-                emailMessage.AppRoot = ResolveRockUrl( "~/" );
-                emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
-                emailMessage.CreateCommunicationRecord = true;
-                emailMessage.Send();
-            }
+            //    var emailMessage = new RockEmailMessage( confirmationEmailTemplateGuid );
+            //    emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
+            //    emailMessage.AppRoot = ResolveRockUrl( "~/" );
+            //    emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
+            //    emailMessage.CreateCommunicationRecord = true;
+            //    emailMessage.Send();
+            //}
 
             // Trigger workflow to add person to group
-            Guid? workflowTypeGuid = GetAttributeValue( "PlannedVisit" ).AsGuidOrNull();
+            //Guid? workflowTypeGuid = GetAttributeValue( "PlannedVisit" ).AsGuidOrNull();
 
-            if ( workflowTypeGuid.HasValue )
-            {
-                WorkflowTypeCache workflowType = WorkflowTypeCache.Read( workflowTypeGuid.Value );
+            //if ( workflowTypeGuid.HasValue )
+            //{
+            //    WorkflowTypeCache workflowType = WorkflowTypeCache.Read( workflowTypeGuid.Value );
 
-                if ( workflowType != null )
-                {
-                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
+            //    if ( workflowType != null )
+            //    {
+            //        string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
 
-                    Workflow workflow = Workflow.Activate( workflowType, workflowName );
+            //        Workflow workflow = Workflow.Activate( workflowType, workflowName );
 
-                    if ( workflow.AttributeValues.ContainsKey( "Person" ) )
-                    {
-                        PersonAlias personAlias = new PersonAliasService( rockContext ).Get( _visit.PersonId );
+            //        if ( workflow.AttributeValues.ContainsKey( "Person" ) )
+            //        {
+            //            PersonAlias personAlias = new PersonAliasService( rockContext ).Get( _visit.PersonId );
 
-                        if ( personAlias != null )
-                        {
-                            workflow.AttributeValues["Person"].Value = personAlias.Guid.ToString();
-                        }
-                    }
+            //            if ( personAlias != null )
+            //            {
+            //                workflow.AttributeValues["Person"].Value = personAlias.Guid.ToString();
+            //            }
+            //        }
 
-                    if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
-                    {
-                        CampusCache campus = CampusCache.Read( _visit.CampusId.AsInteger(), rockContext );
+            //        if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
+            //        {
+            //            CampusCache campus = CampusCache.Read( _visit.CampusId, rockContext );
 
-                        if ( campus != null )
-                        {
-                            workflow.AttributeValues["VisitCampus"].Value = campus.Guid.ToString();
+            //            if ( campus != null )
+            //            {
+            //                workflow.AttributeValues["VisitCampus"].Value = campus.Guid.ToString();
 
-                        }
+            //            }
 
-                    }
-
-
+            //        }
 
 
 
-                }
 
 
-            }
+            //    }
+
+
+            //}
 
 
             // change to success panel
@@ -2071,11 +2094,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
         protected class Visit
         {
             // Visit Info
-            public string VisitDate { get; set; }
-            public string CampusId { get; set; }
+            public DateTime? VisitDate { get; set; }
+            public int CampusId { get; set; }
             public string CampusName { get; set; }
             public string ServiceTime { get; set; }
-            public string Survey { get; set; }
+            public int ServiceTimeScheduleId { get; set; }
+            public string SurveyResponse { get; set; }
 
             // Adult
             public string FirstName { get; set; }
