@@ -131,7 +131,11 @@
 .links {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 0 20px;
+}
+
+h1.title {
+    font-size: 30px;
 }
 
 .balance-due {

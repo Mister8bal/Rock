@@ -101,7 +101,7 @@ class EventBriteReponseAsync : IAsyncResult
 
     static HttpClient Client = new HttpClient();
     int GroupId = 2557652;
-    
+
     // Pull the Eventbrite OAuth Token from global attributes
     string EVB_TOKEN = GlobalAttributesCache.Read().GetValue("EventBritePersonalOAuthToken").ToString();
 
@@ -221,7 +221,7 @@ class EventBriteReponseAsync : IAsyncResult
         }
         return order;
     }
-    
+
     /// <summary>
     /// Submit a request to the EventBrite Api for individual ticket / Attendee 
     /// Info.  Eventbrite refers to tickets as attendees.  The terms are used
@@ -239,7 +239,7 @@ class EventBriteReponseAsync : IAsyncResult
         }
         return ticket;
     }
-    
+
     /// <summary>
     /// Handles any webhook request with the action "order.placed"  
     /// Uses the GetOrderAsync method to retreive the data from the
@@ -259,10 +259,10 @@ class EventBriteReponseAsync : IAsyncResult
 
         foreach(Ticket ticket in orderData.attendees)
         {
-            RegisterPersonInGroup(ticket.profile, GroupId);
+            RegisterPersonInGroup(ticket, GroupId);
         }
     }
-    
+
     /// <summary>
     /// Handles any webhook request with the action "barcode.checked_in"  
     /// Uses the GetTicketAsync method to retreive the data from the.  
@@ -320,7 +320,7 @@ class EventBriteReponseAsync : IAsyncResult
         }
 
     }
-    
+
     /// <summary>
     /// Handles any webhook request with the action "order.updated"  
     /// Uses the GetOrderAsync method to retreive the order data from Eventbrite.  
@@ -356,7 +356,7 @@ class EventBriteReponseAsync : IAsyncResult
 
 
     }
-    
+
     /// <summary>
     /// Handles any webhook request with the action "attendee.updated"  
     /// Uses the GetTicketAsync method to retreive the attendee data from Eventbrite.  
@@ -400,7 +400,7 @@ class EventBriteReponseAsync : IAsyncResult
 
 
     }
-    
+
     /// <summary>
     /// Attempts to locate a GroupMember using data from a 
     /// supplied Eventbrite Ticket object.
@@ -421,7 +421,7 @@ class EventBriteReponseAsync : IAsyncResult
         Group requestedGroup = groupService.Get(GroupId);
         //This is where we need to find the person, pull the group memeber and update the attribute.
         var matches = personService.GetByMatch(ticket.profile.first_name.Trim(), ticket.profile.last_name.Trim(), ticket.profile.email.Trim());
-        if (matches.Count() == 1)
+        if (matches.Count() >= 1)
         {
             person = matches.First();
         }
@@ -430,14 +430,14 @@ class EventBriteReponseAsync : IAsyncResult
 
         return groupMember;
     }
-    
+
     /// <summary>
     /// Attempts to register a person in a group.  
     /// </summary>
     /// <param name="attendeeProfile">A valid EventBrite attendee Profile object</param>
     /// <param name="requestedGroupId">The id of the group to register the user in if found.</param>
     /// <returns>Boolean: True if registration was successfull.</returns>
-    public static bool RegisterPersonInGroup(AttendeeProfile attendeeProfile, int requestedGroupId)
+    public static bool RegisterPersonInGroup(Ticket ticket, int requestedGroupId)
     {
         bool success = false;
 
@@ -445,6 +445,7 @@ class EventBriteReponseAsync : IAsyncResult
         var rockContext = new RockContext();
         var personService = new PersonService(rockContext);
         var groupService = new GroupService(rockContext);
+        AttendeeProfile attendeeProfile = ticket.profile;
 
         DefinedValueCache connectionStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT);
         DefinedValueCache recordStatusPending = DefinedValueCache.Read(Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING);
@@ -498,7 +499,7 @@ class EventBriteReponseAsync : IAsyncResult
 
             // now, it's time to either add them to the group,
             // (Or nothing if there's no problem but they're already in the group)
-            GroupMember primaryGroupMember = PersonToGroupMember(rockContext, person, requestedGroup);
+            GroupMember primaryGroupMember = PersonToGroupMember(rockContext, person, requestedGroup, ticket);
 
 
             // try to add them to the group (would only fail if the're already in it)
@@ -530,7 +531,7 @@ class EventBriteReponseAsync : IAsyncResult
 
         return false;
     }
-    
+
     /// <summary>
     /// Builds a GroupMember from a vaid Rock Person.  This method simply instantiates
     /// the object.  In order to persist the data, save must be called on the
@@ -540,7 +541,7 @@ class EventBriteReponseAsync : IAsyncResult
     /// <param name="person">A valid instantiated Person object<see cref="Rock.Model.Person"/></param>
     /// <param name="group">A valid group object representing the group to add the the Person to.</param>
     /// <returns></returns>
-    private static GroupMember PersonToGroupMember(RockContext rockContext, Person person, Group group)
+    private static GroupMember PersonToGroupMember(RockContext rockContext, Person person, Group group, Ticket ticket)
     {
         // puts a person into a group member object, so that we can pass it to a workflow
         GroupMember newGroupMember = new GroupMember();
@@ -548,7 +549,13 @@ class EventBriteReponseAsync : IAsyncResult
         newGroupMember.GroupRoleId = group.GroupType.DefaultGroupRole.Id;
         newGroupMember.GroupMemberStatus = GroupMemberStatus.Active;
         newGroupMember.GroupId = group.Id;
-
+        
+        /**
+         * Set the ForeignId to the Eventbrite ticket id.
+         * Eventbrite refers to tickets as attendees.
+         */ 
+        newGroupMember.ForeignKey = "EventBriteAttendeeId";
+        newGroupMember.ForeignId = ticket.id;
         return newGroupMember;
     }
 
@@ -605,6 +612,7 @@ public class Ticket
     public bool cancelled { get; set; }
     public bool refunded { get; set; }
     public string status;
+    public int id;
 
 }
 
