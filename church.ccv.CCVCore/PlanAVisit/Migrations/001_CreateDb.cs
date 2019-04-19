@@ -24,6 +24,9 @@ namespace church.ccv.CommandCenter.Migrations
 	    [ModifiedDateTime] [datetime] NOT NULL,
 	    [CreatedByPersonAliasId] [int] NOT NULL,
 	    [ModifiedByPersonAliasId] [int] NOT NULL,
+        [ForeignKey] [nvarchar](100) NULL,
+        [ForeignGuid] [uniqueidentifier] NULL,
+        [ForeignId] [int] NULL,
      CONSTRAINT [PK_dbo._church_ccv_PlanAVisit_Visit] PRIMARY KEY CLUSTERED 
     (
 	    [Id] ASC

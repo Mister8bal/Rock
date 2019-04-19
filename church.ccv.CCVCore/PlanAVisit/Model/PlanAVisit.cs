@@ -5,9 +5,9 @@ using Rock.Data;
 
 namespace church.ccv.CCVCore.PlanAVisit.Model
 {
-    [Table( "_church_ccv_PlanAVisit ")]
+    [Table( "_church_ccv_PlanAVisit_Visit ")]
     [DataContract]
-    public class PlanAVisit : Model<PlanAVisit>, IRockEntity
+    public class PlanAVisit : Entity<PlanAVisit>, IRockEntity
     {
         [DataMember]
         public int PersonAliasId { get; set; }
@@ -36,7 +36,16 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         [DataMember]
         public string SurveyResponse { get; set; }
 
+        [DataMember]
+        public DateTime CreatedDateTime { get; set; }
 
+        [DataMember]
+        public DateTime ModifiedDateTime { get; set; }
 
+        [DataMember]
+        public int CreatedByPersonAliasId { get; set; }
+
+        [DataMember]
+        public int ModifiedByPersonAliasId { get; set; }
     }
 }
