@@ -118,21 +118,6 @@
 
 /* Share Section */
 
-.flex-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-  
-.flex-container > div {
-    background-color: #f1f1f1;
-    margin: 10px;
-    text-align: center;
-    height: 250px;
-    width: 25%;
-    font-size: 30px;
-}
-
 .share {
     text-align: center;
     padding: 40px 20px;
@@ -193,17 +178,5 @@ a:focus {
    color: white;
    border-radius: 5px;
 } 
-
-.sunrise-button {
-   background-color: #FFFFFF;
-   border-color: #FFFFFF;
-   color: #b91f72;
-}
-
-.sunrise-button:hover {
-   background-color: #b91f72;
-   border-color: #b91f72;
-   color: #FFFFFF;
-}
 
 /* End Overrides */
