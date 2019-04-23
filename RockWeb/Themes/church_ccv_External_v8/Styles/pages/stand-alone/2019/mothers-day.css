@@ -8,12 +8,12 @@
 }
 
 .main-feature {
-    height: 820px;
-    padding-top: 480px;
+    padding-top: 100px;
+    height: unset;
 }
 
 #zone-feature {
-    margin: 0 25%;
+    margin: 0 auto;
 }
 
 strong {
@@ -61,13 +61,14 @@ strong {
 .title {
     display: flex;
     flex-direction: column;
-    padding: 0 20px;
+    padding: 0 20px 30px 20px;
 }
 
 .title h3 {
     font-size: 44px;
     line-height: 46px;
     font-weight: 700;
+    margin: 0 15%;
 }
 
 .title p {
@@ -101,6 +102,11 @@ strong {
     color: #FFFFFF;
 }
 
+.title img {
+    margin: 0 auto;
+    width: 90%;
+}
+
 @media screen and (max-width: 768px) {
     .title-buttons {
         flex-direction: column;
@@ -124,12 +130,21 @@ strong {
     .title h3 {
         font-size: 26px;
         line-height: 28px;
+        margin: 0;
     }
 
     .title p {
         font-size: 16px;
         line-height: 18px;
     }   
+
+    .title img {
+        display: none;
+    }
+
+    .left-and-right-container {
+        flex-direction: column-reverse;
+    }    
 }
 
 /* End Feature Title Section */
@@ -300,10 +315,6 @@ strong {
  /* Overrides */
  h2, h3 {
     color: #b91f72;
-}
-
-.left-and-right-container {
-    flex-direction: column-reverse;
 }
 
 .infoSection p {
