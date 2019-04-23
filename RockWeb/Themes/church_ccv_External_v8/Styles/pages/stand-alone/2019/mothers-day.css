@@ -1,7 +1,6 @@
 .page-background {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-mothers-day.jpg") !important;
     background-attachment: scroll;
-    background-size: contain;
 }
 
 #subnavbar-bg {
@@ -17,10 +16,22 @@
     margin: 0 25%;
 }
 
+strong {
+    font-weight: 700;
+}
+
+/* Tablet View */
+@media screen and (max-width: 1080px) {
+    #zone-feature {
+        margin: unset;
+    }
+}
+
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/stand-alone/2019/hero-mobile-mothers-day.jpg") !important;
+        background-size: contain;
     }
 
     .main-feature {
@@ -289,6 +300,10 @@
  /* Overrides */
  h2, h3 {
     color: #b91f72;
+}
+
+.left-and-right-container {
+    flex-direction: column-reverse;
 }
 
 .infoSection p {
