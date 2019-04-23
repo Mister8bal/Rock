@@ -1028,6 +1028,7 @@ namespace church.ccv.CCVRest.MobileApp
         internal static KidsContentModel BuildKidsContent( Person person )
         {
             // first, we need to know what grade range we'll be getting content for
+            const string GradeRange_Infants = "Infants";
             const string GradeRange_EK = "Early Kids";
             const string GradeRange_LK = "Later Kids";
             const string GradeRange_JH = "Junior High";
@@ -1035,7 +1036,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // this is technically cheating, but Rock abstracts grade and doesn't natively
             // know about the US standard. To simplify things, let's do the conversion here
-            int realGrade = 1; //(assume 1st grade)
+            int realGrade = 0; //(assume infant / pre-k)
             if ( person.GradeOffset.HasValue )
             {
                 realGrade = 12 - person.GradeOffset.Value;
@@ -1053,9 +1054,13 @@ namespace church.ccv.CCVRest.MobileApp
                     {
                         realGrade = 6;
                     }
-                    else
+                    else if ( person.Age >= 6 )
                     {
                         realGrade = 1;
+                    }
+                    else
+                    {
+                        realGrade = 0;
                     }
                 }
             }
@@ -1074,9 +1079,13 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 targetGradeRange = GradeRange_LK;
             }
-            else
+            else if ( realGrade >= 1 )
             {
                 targetGradeRange = GradeRange_EK;
+            }
+            else
+            {
+                targetGradeRange = GradeRange_Infants;
             }
             
             // now that we know the range, build the content channel queries
