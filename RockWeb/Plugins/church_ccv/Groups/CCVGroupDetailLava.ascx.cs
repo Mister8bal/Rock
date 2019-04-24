@@ -182,6 +182,70 @@ namespace RockWeb.Plugins.church_ccv.Groups
             sm.AddHistoryPoint( "Action", "ViewGroup" );
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnResetGroup_Click control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void btnResetGroup_Click( object sender, EventArgs e )
+        {
+            RockContext rockContext = new RockContext();
+            GroupService groupService = new GroupService( rockContext );
+            GroupMemberService groupMemberService = new GroupMemberService( rockContext );
+
+            var qry = groupService
+                   .Queryable( "GroupLocations,Members,Members.Person,Members.Person.PhoneNumbers,GroupType" )
+                   .Where( g => g.Id == _groupId );
+
+            var group = qry.FirstOrDefault();
+
+            // order group members by name
+            //var groupMembers = groupMemberService.Queryable().Where( gm => gm.GroupId == group.Id ).OrderBy( m => m.Person.LastName ).ThenBy( m => m.Person.FirstName );
+
+            var groupMembers = groupMemberService.Queryable().Where( gm => (gm.GroupId == group.Id ) &&
+                                                                   (  !gm.GroupRole.IsLeader ));
+
+            foreach ( GroupMember member in groupMembers )
+            {
+                // Create Note
+                var noteService = new NoteService( rockContext );
+
+                var note = new Note();
+                note.NoteTypeId = 8;
+                note.IsSystem = false;
+                note.IsAlert = false;
+                note.IsPrivateNote = false;
+                note.EntityId = member.Person.Id;
+                note.Caption = string.Empty;
+                note.Text = "Completed Course: " + group.Name;
+
+                // Add note to persons profile
+                noteService.Add( note );
+
+                if ( member != null )
+                {
+                    group.Members.Remove( member );
+                    groupMemberService.Delete( member );
+                }
+            }
+
+            // delete attribute values
+            group.LoadAttributes( rockContext );
+            if ( group.AttributeValues != null )
+            {
+                var attributeValueService = new AttributeValueService( rockContext );
+                foreach ( var entry in group.AttributeValues )
+                {
+                    var attributeValue = attributeValueService.GetByAttributeIdAndEntityId( entry.Value.AttributeId, group.Id );
+                    if ( attributeValue != null )
+                    {
+                        attributeValueService.Delete( attributeValue );
+                    }
+                }
+            }
+            rockContext.SaveChanges();
+        }
+
         #region Models
         public class GroupMemberWithFamily : Rock.Lava.ILiquidizable
         {

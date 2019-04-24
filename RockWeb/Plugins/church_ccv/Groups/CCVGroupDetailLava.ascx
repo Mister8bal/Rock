@@ -40,6 +40,7 @@
                 <div class="actions">
                     <asp:Button ID="btnSaveGroup" runat="server" AccessKey="s" CssClass="btn btn-primary" Text="Save" OnClick="btnSaveGroup_Click" />
                     <asp:LinkButton id="lbCancelGroup" runat="server" AccessKey="c" CssClass="btn btn-link" OnClick="lbCancelGroup_Click" CausesValidation="false">Cancel</asp:LinkButton>
+                    <asp:Button ID="btnResetGroup" runat="server" AccessKey="s" CssClass="btn btn-primary" Text="Reset Group" OnClick="btnResetGroup_Click" />
                 </div>
             </div>
         </asp:Panel>
