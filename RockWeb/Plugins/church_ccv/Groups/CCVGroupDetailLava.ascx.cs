@@ -44,6 +44,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [LinkedPage( "Roster Page", "The page to link to to view the roster.", false, "", "", 2 )]
     [LinkedPage( "Communication Page", "The communication page to use for sending emails to the group members.", false, "", "", 4 )]
     [BooleanField( "Enable Group Capacity", "When set to true, groups will take into account the Capacity attribute set in rock.", true )]
+    [BooleanField( "Enable Group Reset", "When set to true, Course Leader will have the ability to reset the group by clicking reset button under group details tab.", false )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
     [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
     public partial class CCVGroupDetailLava : RockBlock
@@ -209,7 +210,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 var noteService = new NoteService( rockContext );
 
                 var note = new Note();
-                note.NoteTypeId = 8;
+                note.NoteTypeId = 36;
                 note.IsSystem = false;
                 note.IsAlert = false;
                 note.IsPrivateNote = false;
@@ -688,6 +689,17 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     {
                         groupCapacity.Visible = false;
                     }
+
+                    // if the EnableGroupReset is enabled, display "Reset Group" button that will give the course leader the ability to clear all members from group.
+                    if ( GetAttributeValue( "EnableGroupReset" ).AsBoolean() )
+                    {
+                        btnResetGroup.Visible = true;
+                    }
+                    else
+                    {
+                        btnResetGroup.Visible = false;
+                    }
+
                     group.LoadAttributes();
                     AttributesPlaceholder.Controls.Clear();
                     Rock.Attribute.Helper.AddEditControls( group, AttributesPlaceholder, true, BlockValidationGroup, ExcludedAttribKeys );
