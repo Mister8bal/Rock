@@ -59,12 +59,12 @@
                                     <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="" />
                                 </div>
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="tester" />
+                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="Workflow" />
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" Text="l@safety.netz" />
+                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" Text="w@safety.netz" />
                                 </div>
                             </div>
                             <div class="form-row">
@@ -303,7 +303,7 @@
                             <Rock:RockRadioButtonList ID="rblSurvey" runat="server" RepeatLayout="Flow" RepeatDirection="Horizontal" ClientIDMode="Static">
                                 <asp:ListItem Value="Drive-by">Drive By / New to area</asp:ListItem>
                                 <asp:ListItem Value="Current Member">Current Member</asp:ListItem>
-                                <asp:ListItem Value="Online Search">Online Search</asp:ListItem>
+                                <asp:ListItem Value="Online / Website">Online Search</asp:ListItem>
                                 <asp:ListItem Value="Advertisement">Advertising</asp:ListItem>
                                 <asp:ListItem Value="STARS">Stars sports program</asp:ListItem>
                                 <asp:ListItem Value="Other">Other</asp:ListItem>

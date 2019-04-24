@@ -25,8 +25,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [CampusesField( "Campuses", "Campuses that offer plan a visit scheduling", false, "", "", 3 )]
-    [SystemEmailField( "Confirmation Email Template", "The system email to use to send the confirmation.", true, "", "", 4 )]
-    [WorkflowTypeField( "Planned Vists Workflow", "Workflow used by staff to process planned visit submitted from website", false, false, "", "", 5 )]
+    [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
+    [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 5 )]
+    [WorkflowTypeField( "Plan A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 6 )]
 
     public partial class PlanAVisitForm : RockBlock
     {
@@ -299,6 +300,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                     // set VisitDate in _visit
                     _visit.VisitDate = DateTime.Parse( visitDateDropDownList.SelectedValue);
+
                     WriteVisitToViewState();
                     
                     BindServiceTimeDropDowns( campus, day );
@@ -362,7 +364,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 lblSubmitServiceTime.Text = rockDropDownList.SelectedItem.Text;
 
                 // set service time in _visit
-                _visit.ServiceTime = rockDropDownList.SelectedValue;
+                _visit.ServiceTime = rockDropDownList.SelectedItem.Text;
+                _visit.ServiceTimeScheduleId = rockDropDownList.SelectedItem.Value.AsInteger();
+
                 WriteVisitToViewState();
             }
             else
@@ -550,13 +554,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     _visit.Email = person.Email;
 
                     // if no mobile number was entered on adult form, get from person if it exists
-                    string personMobileNumber = person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() ).ToString();
+                    PhoneNumber personMobileNumber = person.GetPhoneNumber( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
 
-                    if ( personMobileNumber.IsNotNullOrWhitespace() )
+                    if ( personMobileNumber.IsNotNull() )
                     {
-                        _visit.MobileNumber = personMobileNumber;
-                        tbAdultFormMobile.Text = personMobileNumber;
-                        tbChildrenFormMobile.Text = personMobileNumber;
+                        _visit.MobileNumber = personMobileNumber.ToString();
+                        tbAdultFormMobile.Text = personMobileNumber.ToString();
+                        tbChildrenFormMobile.Text = personMobileNumber.ToString();
                     }
                     // otherwise use mobile number from text box
                     else
@@ -1196,83 +1200,92 @@ namespace RockWeb.Plugins.church_ccv.Cms
             rockContext.SaveChanges();
 
             // Send email confirmation
-            //Guid confirmationEmailTemplateGuid = Guid.Empty;
+            Guid confirmationEmailTemplateGuid = Guid.Empty;
 
-            //if ( !Guid.TryParse( GetAttributeValue( "ConfirmationEmailTemplate" ), out confirmationEmailTemplateGuid ) )
-            //{
-            //    confirmationEmailTemplateGuid = Guid.Empty;
-            //}
+            if ( !Guid.TryParse( GetAttributeValue( "ConfirmationEmailTemplate" ), out confirmationEmailTemplateGuid ) )
+            {
+                confirmationEmailTemplateGuid = Guid.Empty;
+            }
 
-            //if ( confirmationEmailTemplateGuid != Guid.Empty )
-            //{
-            //    // Build merge fields
-            //    var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+            if ( confirmationEmailTemplateGuid != Guid.Empty )
+            {
+                // Build merge fields
+                var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
 
-            //    mergeFields.Add( "VisitPerson", person );
-            //    mergeFields.Add( "VisitCampus", _visit.CampusName );
-            //    mergeFields.Add( "VisitDate", _visit.VisitDate );
-            //    mergeFields.Add( "VisitService", _visit.ServiceTime );
+                mergeFields.Add( "VisitPerson", person );
+                mergeFields.Add( "VisitCampus", _visit.CampusName );
+                mergeFields.Add( "VisitDate", _visit.VisitDate );
+                mergeFields.Add( "VisitService", _visit.ServiceTime );
 
-            //    // Send confirmation email
-            //    var publicApplicationRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
+                // Send confirmation email
+                var publicApplicationRoot = GlobalAttributesCache.Read( rockContext ).GetValue( "PublicApplicationRoot" );
 
-            //    var recipient = new List<RecipientData>
-            //    {
-            //        new RecipientData( person.Email, mergeFields )
-            //    };
+                var recipient = new List<RecipientData>
+                {
+                    new RecipientData( person.Email, mergeFields )
+                };
 
-            //    var emailMessage = new RockEmailMessage( confirmationEmailTemplateGuid );
-            //    emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
-            //    emailMessage.AppRoot = ResolveRockUrl( "~/" );
-            //    emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
-            //    emailMessage.CreateCommunicationRecord = true;
-            //    emailMessage.Send();
-            //}
+                var emailMessage = new RockEmailMessage( confirmationEmailTemplateGuid );
+                emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
+                emailMessage.AppRoot = ResolveRockUrl( "~/" );
+                emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
+                emailMessage.CreateCommunicationRecord = true;
+                emailMessage.Send();
+            }
 
-            // Trigger workflow to add person to group
-            //Guid? workflowTypeGuid = GetAttributeValue( "PlannedVisit" ).AsGuidOrNull();
+            // Activate Plan A Visit workflow
+            Guid? workflowTypeGuid = GetAttributeValue( "PlanAVisitWorkflow" ).AsGuidOrNull();
 
-            //if ( workflowTypeGuid.HasValue )
-            //{
-            //    WorkflowTypeCache workflowType = WorkflowTypeCache.Read( workflowTypeGuid.Value );
+            if ( workflowTypeGuid.HasValue )
+            {
+                WorkflowTypeCache workflowType = WorkflowTypeCache.Read( workflowTypeGuid.Value );
 
-            //    if ( workflowType != null )
-            //    {
-            //        string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
+                if ( workflowType != null )
+                {
+                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
 
-            //        Workflow workflow = Workflow.Activate( workflowType, workflowName );
+                    try
+                    {
+                        Workflow workflow = Workflow.Activate( workflowType, workflowName );
 
-            //        if ( workflow.AttributeValues.ContainsKey( "Person" ) )
-            //        {
-            //            PersonAlias personAlias = new PersonAliasService( rockContext ).Get( _visit.PersonId );
+                        if ( workflow.AttributeValues.ContainsKey( "Person" ) )
+                        {
+                            workflow.AttributeValues["Person"].Value = person.PrimaryAlias.Guid.ToString();
+                        }
 
-            //            if ( personAlias != null )
-            //            {
-            //                workflow.AttributeValues["Person"].Value = personAlias.Guid.ToString();
-            //            }
-            //        }
+                        if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
+                        {
+                            CampusCache campus = CampusCache.Read( _visit.CampusId, rockContext );
 
-            //        if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
-            //        {
-            //            CampusCache campus = CampusCache.Read( _visit.CampusId, rockContext );
+                            if ( campus != null )
+                            {
+                                workflow.AttributeValues["VisitCampus"].Value = campus.Guid.ToString();
 
-            //            if ( campus != null )
-            //            {
-            //                workflow.AttributeValues["VisitCampus"].Value = campus.Guid.ToString();
+                            }
+                        }
 
-            //            }
+                        if ( workflow.AttributeValues.ContainsKey( "ServiceSchedule" ) )
+                        {
+                            ScheduleService scheduleService = new ScheduleService( rockContext );
 
-            //        }
+                            Schedule schedule = scheduleService.Get( _visit.ServiceTimeScheduleId );
 
+                            if ( schedule.IsNotNull() )
+                            {
+                                workflow.AttributeValues["ServiceSchedule"].Value = schedule.Guid.ToString();
+                            }
+                        }
 
-
-
-
-            //    }
-
-
-            //}
-
+                        List<string> workflowErrors;
+                        new WorkflowService( rockContext ).Process( workflow, person, out workflowErrors );
+                    }
+                    catch ( Exception ex )
+                    {
+                        // TODO: Add error handling
+                        throw;
+                    }
+                }
+            }
 
             // change to success panel
             ShowFormPanel( pnlSuccess, null );
@@ -1417,20 +1430,38 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // reset dropdowns before populating
             ResetVisitDropDowns( false, false, true );
 
-            // add each service time for the campus
+            // setup schedule service, schedule lookup list, and selected schedules
+            RockContext rockContext = new RockContext();
+            ScheduleService scheduleService = new ScheduleService( rockContext );
+
+            var scheduleLookupList = scheduleService.Queryable().Where( a => a.Name != null && a.Name != "" ).ToList().Select( a => new
+            {
+                a.Id,
+                a.Name
+            } );
+
+            var selectedScheduleIds = new ScheduleService( rockContext ).GetByGuids( this.GetAttributeValue( "ServiceSchedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
+
             foreach ( var serviceTime in campus.ServiceTimes )
             {
-                // if service time day matches passed day
+                // check if service time matches day selected
                 if ( serviceTime.Day == day)
                 {
-                    // remove special characters used for special needs, hearing impaired, etc
-                    string time = serviceTime.Time.Replace( "%", "" ).Replace( "*", "" );
+                    string time = serviceTime.Time.Replace( "%", "" ).Replace( "*", "" ).Trim();
 
-                    // add time to service time dropdowns
-                    ListItem item = new ListItem( time, time );
+                    // look for a matching schedule from schedules block setting
+                    string scheduleName = String.Format( "{0} {1}", day, time.RemoveSpaces() );
 
-                    ddlServiceTime.Items.Add( item );
-                    ddlEditServiceTime.Items.Add( item );
+                    var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.Name == scheduleName );
+
+                    if ( scheduleLookup != null && selectedScheduleIds.Contains(scheduleLookup.Id) )
+                    {
+                        // schedule found, add to drop down lists
+                        ListItem item = new ListItem( time, scheduleLookup.Id.ToString() );
+
+                        ddlServiceTime.Items.Add( item );
+                        ddlEditServiceTime.Items.Add( item );
+                    }
                 }
             }
         }
