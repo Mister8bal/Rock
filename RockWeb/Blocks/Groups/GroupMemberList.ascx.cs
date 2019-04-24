@@ -560,7 +560,7 @@ namespace RockWeb.Blocks.Groups
         /// <exception cref="System.NotImplementedException"></exception>
         protected void gGroupMembers_GridRebind( object sender, GridRebindEventArgs e )
         {
-            BindGroupMembersGrid( e.IsExporting, e.IsCommunication );
+            BindGroupMembersGrid( e.IsExporting );
         }
 
         #endregion
@@ -936,7 +936,7 @@ namespace RockWeb.Blocks.Groups
         /// <summary>
         /// Binds the group members grid.
         /// </summary>
-        protected void BindGroupMembersGrid( bool isExporting = false, bool isCommunication = false )
+        protected void BindGroupMembersGrid( bool isExporting = false )
         {
             if ( _group != null )
             {
@@ -970,11 +970,6 @@ namespace RockWeb.Blocks.Groups
                     GroupMemberService groupMemberService = new GroupMemberService( rockContext );
                     var qry = groupMemberService.Queryable( "Person,GroupRole", true ).AsNoTracking()
                         .Where( m => m.GroupId == _group.Id );
-
-                    if ( isCommunication )
-                    {
-                        qry = qry.Where( a => a.GroupMemberStatus != GroupMemberStatus.Inactive );
-                    }
 
                     // Filter by First Name
                     string firstName = tbFirstName.Text;
