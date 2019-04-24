@@ -199,9 +199,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
 
             var group = qry.FirstOrDefault();
 
-            // order group members by name
-            //var groupMembers = groupMemberService.Queryable().Where( gm => gm.GroupId == group.Id ).OrderBy( m => m.Person.LastName ).ThenBy( m => m.Person.FirstName );
-
+            // Get all group members except for group leaders
             var groupMembers = groupMemberService.Queryable().Where( gm => (gm.GroupId == group.Id ) &&
                                                                    (  !gm.GroupRole.IsLeader ));
 
@@ -222,6 +220,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 // Add note to persons profile
                 noteService.Add( note );
 
+                // Remove member from group
                 if ( member != null )
                 {
                     group.Members.Remove( member );
@@ -243,6 +242,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     }
                 }
             }
+            // Save changes
             rockContext.SaveChanges();
         }
 
