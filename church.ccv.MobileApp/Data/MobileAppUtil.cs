@@ -16,18 +16,15 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Net;
+using church.ccv.Actions;
+using church.ccv.MobileApp.Models;
 using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
-using System.Data.Entity;
-using church.ccv.MobileApp.Models;
-using System.Net;
-using church.ccv.Actions;
-using System.Data.Entity.Spatial;
 
 namespace church.ccv.MobileApp
 {

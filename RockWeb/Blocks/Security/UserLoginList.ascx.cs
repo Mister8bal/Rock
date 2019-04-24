@@ -256,7 +256,17 @@ namespace RockWeb.Blocks.Security
                 var rockContext = new RockContext();
                 UserLogin userLogin = null;
                 var service = new UserLoginService( rockContext );
+
+                // guard against invalid usernames
                 string newUserName = tbUserNameEdit.Text.Trim();
+                if ( UserLoginService.IsUsernameValid( tbUserNameEdit.Text ) )
+                {
+                    nbErrorMessage.NotificationBoxType = NotificationBoxType.Warning;
+                    nbErrorMessage.Title = "Invalid User Name";
+                    nbErrorMessage.Text = "The User Name you selected contains invalid characters, or is not a valid length.";
+                    nbErrorMessage.Visible = true;
+                    return;
+                }
 
                 int userLoginId = int.Parse( hfIdValue.Value );
 

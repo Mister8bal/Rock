@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Security;
 
 using Rock.Data;
 using Rock.Security;
@@ -241,6 +240,27 @@ namespace Rock.Model
 
             return null;
         }
+        
+        /// <summary>
+        /// Checks to see if the given username is valid, according to length and content.
+        /// Does not check for duplicates
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public static bool IsUsernameValid( string username )
+        {
+            var globalAttributes = GlobalAttributesCache.Read();
+            string usernameRegex = globalAttributes.GetValue( "core.ValidUsernameRegularExpression" );
+            if ( string.IsNullOrEmpty( usernameRegex ) )
+            {
+                return true;
+            }
+            else
+            {
+                var regex = new Regex( usernameRegex );
+                return regex.IsMatch( username );
+            }
+        }
 
         /// <summary>
         /// Checks to see if the given password is valid according to the PasswordRegex (if defined).
@@ -311,6 +331,10 @@ namespace Rock.Model
         {
             if ( person != null )
             {
+                // guard against invalid usernames
+                if ( IsUsernameValid( username ) == false )
+                    throw new ArgumentException( "Username contains invalid characters" );
+
                 var userLoginService = new UserLoginService( rockContext );
 
                 var entityType = EntityTypeCache.Read( entityTypeId );
