@@ -1151,6 +1151,23 @@ namespace church.ccv.CCVRest.MobileApp
                 }
             }
 
+            // sort the resource list by priority
+            resourceList.Sort( delegate ( ContentChannelItem a, ContentChannelItem b )
+            {
+                if ( a.Priority < b.Priority )
+                {
+                    return -1;
+                }
+                else if ( a.Priority == b.Priority )
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            } );
+
             
             // prepare our model - we'll require both main category items 
             // and otherwise return failure (note that resources CAN be empty)
