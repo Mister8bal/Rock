@@ -64,6 +64,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
         //public override CheckBox IsActive { get { return cbIsActive; } }
 
         const int CCV_GroupRole_Attendee = 49;
+        const int NoteTypeIdLifeTraining = 36;
 
         // Stores a list of group attribute keys that should not be editable by the coach.
         // by default, it's an empty list.
@@ -210,7 +211,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 var noteService = new NoteService( rockContext );
 
                 var note = new Note();
-                note.NoteTypeId = 36;
+                note.NoteTypeId = NoteTypeIdLifeTraining;
                 note.IsSystem = false;
                 note.IsAlert = false;
                 note.IsPrivateNote = false;
@@ -229,22 +230,11 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 }
             }
 
-            // delete attribute values
-            group.LoadAttributes( rockContext );
-            if ( group.AttributeValues != null )
-            {
-                var attributeValueService = new AttributeValueService( rockContext );
-                foreach ( var entry in group.AttributeValues )
-                {
-                    var attributeValue = attributeValueService.GetByAttributeIdAndEntityId( entry.Value.AttributeId, group.Id );
-                    if ( attributeValue != null )
-                    {
-                        attributeValueService.Delete( attributeValue );
-                    }
-                }
-            }
             // Save changes
             rockContext.SaveChanges();
+
+            // reload the group info
+            Page.Response.Redirect( Page.Request.Url.ToString(), true );
         }
 
         #region Models
