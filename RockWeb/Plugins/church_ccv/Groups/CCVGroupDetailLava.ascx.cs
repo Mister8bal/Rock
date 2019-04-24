@@ -47,6 +47,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [BooleanField( "Enable Group Reset", "When set to true, Course Leader will have the ability to reset the group by clicking reset button under group details tab.", false )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
     [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
+    [TextField("Excluded Attributes for Edit", "Comma delimited list of Attribute Keys that should not be editable", false)]
     public partial class CCVGroupDetailLava : RockBlock
     {
         public UpdatePanel MainPanel { get { return upnlContent; } }
@@ -223,11 +224,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 noteService.Add( note );
 
                 // Remove member from group
-                if ( member != null )
-                {
-                    group.Members.Remove( member );
-                    groupMemberService.Delete( member );
-                }
+                group.Members.Remove( member );
+                groupMemberService.Delete( member );
             }
 
             // Save changes
@@ -341,7 +339,16 @@ namespace RockWeb.Plugins.church_ccv.Groups
         {
             base.OnInit( e );
 
-            ExcludedAttribKeys = new List<string>();
+            // setup the attributes that should not be editable by the leader
+            string excludedAttribsVal = GetAttributeValue( "ExcludedAttributesforEdit" );
+            if ( string.IsNullOrWhiteSpace( excludedAttribsVal ) == false )
+            {
+                ExcludedAttribKeys = excludedAttribsVal.Split( ',' ).ToList();
+            }
+            else
+            {
+                ExcludedAttribKeys = new List<string>();
+            }
 
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
