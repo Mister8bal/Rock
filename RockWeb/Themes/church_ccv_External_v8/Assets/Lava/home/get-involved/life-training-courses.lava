@@ -39,6 +39,8 @@
                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-sex-and-sexuality.jpg"/>
                                         {% elseif topic == "Pain & Suffering" %}
                                             <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg"/>
+                                        {% elseif topic == "Premarital" %}
+                                            <img class="pull-left" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-premarital.jpg"/>
                                     {% endif %}
                                  {% endif %}
                             {% endif %}
