@@ -259,7 +259,7 @@ namespace RockWeb.Blocks.Security
 
                 // guard against invalid usernames
                 string newUserName = tbUserNameEdit.Text.Trim();
-                if ( UserLoginService.IsUsernameValid( tbUserNameEdit.Text ) )
+                if ( UserLoginService.IsUsernameValid( tbUserNameEdit.Text ) == false )
                 {
                     nbErrorMessage.NotificationBoxType = NotificationBoxType.Warning;
                     nbErrorMessage.Title = "Invalid User Name";
