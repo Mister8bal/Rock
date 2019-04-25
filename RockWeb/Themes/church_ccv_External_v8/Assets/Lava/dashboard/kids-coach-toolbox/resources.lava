@@ -1,0 +1,9 @@
+{% comment %}
+  {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/resources.lava' %}
+{% endcomment %}
+
+<br />
+
+<h4 style="padding-left: 100px;">Videos Coming Soon</h4>
+
+<br />

@@ -843,7 +843,7 @@
     display: block;
 }
 
-#pdfCoachGuideDownload {
+#pdfCoachGuideDownload, #pdfEKCoachGuideDownload, #pdfLKCoachGuideDownload {
     display: none;
 }
 
@@ -864,12 +864,12 @@
         display: none;
     }
 
-    #pdfCoachGuideDownload {
+    #pdfCoachGuideDownload, #pdfEKCoachGuideDownload, #pdfLKCoachGuideDownload {
         display: block;
         padding: 50px 0;
     }
 
-    #pdfCoachGuideDownload a:focus {
+    #pdfCoachGuideDownload a:focus, #pdfEKCoachGuideDownload a:focus, #pdfLKCoachGuideDownload a:focus {
         color: #FFFFFF;
         text-decoration: none;
     }
