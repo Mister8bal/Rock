@@ -457,8 +457,7 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         // This is the Id for the attendance group created in the Check-In system within Rock. It should never change.
-        //const int Attendance_GroupId_CCVMobileAttendance = 2595385; //Production Value - Can't use in MA3 until we refresh the server.
-        const int Attendance_GroupId_CCVMobileAttendance = 2588359; //Temp MA3 value - Remove once we refresh MA3.
+        const int Attendance_GroupId_CCVMobileAttendance = 2595385;
 
         public static bool HasAttendanceRecord( PersonAlias personAlias )
         {
@@ -528,8 +527,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             const string Interaction_Operation = "Attend";
 
-            //const int InteractionComponent_Id = 156245; //Production Value - Can't use in MA3 until we refresh the server
-            const int InteractionComponent_Id = 151588; //Temp MA3 value - Remove once we refresh MA3.
+            const int InteractionComponent_Id = 156245;
 
             // first, see if there's already a device type matching this requester - We store device types 
             // with our defined InteractionDeviceTypeData above, and the userAgent string. That's it.
