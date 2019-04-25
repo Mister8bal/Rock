@@ -51,7 +51,7 @@ strong {
 }
 
 #section-b-bg, #section-d-bg {
-	background-color: #fafafa;
+	background-color: #f0f0f0;
 }
 
 /* End Section Background Colors */
@@ -154,7 +154,7 @@ strong {
 .share {
     text-align: center;
     padding: 40px 20px;
-    width: 40%;
+    width: 37%;
     margin: auto;
     padding-bottom: 50px;
 }
@@ -185,9 +185,7 @@ strong {
     }
 }
 
-/* End Share Section */
-
- /* Share Section */
+/* Modals */
  .share-modal-header h4 {
     font-family: akrobat;
     padding: 0;
@@ -196,7 +194,6 @@ strong {
     font-weight: 300;
 }
 
-/* Modals */
 .share-modal {
     display: none; 
     position: fixed;
