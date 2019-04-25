@@ -79,6 +79,14 @@
             </p>
           {% endfor %}
         {% endperson %}
+
+        {% person dataview:'752' where:'Id == "{{ CurrentPerson.Id }}"' %}
+        {% for person in personItems %}
+            <p>
+              <a href="/special-needs-toolbox?client=mobile-app" class="btn btn-sm btn-default">Special Needs Toolbox</a>
+            </p>
+        {% endfor %}
+    {% endperson %}
       {% endif %}
 
       {% comment %}<div class="row">

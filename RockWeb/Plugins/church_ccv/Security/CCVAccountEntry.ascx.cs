@@ -203,7 +203,15 @@ namespace RockWeb.Plugins.church_ccv.Security
 
                     if ( userLogin == null )
                     {
-                        DisplayDuplicates( Direction.Forward );
+                        // make sure the username only has legal characters
+                        if ( UserLoginService.IsUsernameValid( tbUserName.Text ) )
+                        {
+                            DisplayDuplicates( Direction.Forward );
+                        }
+                        else
+                        {
+                            ShowErrorMessage( "Username is not valid" );
+                        }
                     }
                     else
                     {
@@ -451,6 +459,9 @@ namespace RockWeb.Plugins.church_ccv.Security
                 mergeObjects.Add( "ConfirmAccountUrl", RootPath + url.TrimStart( new char[] { '/' } ) );
                 var results = new List<IDictionary<string, object>>();
 
+                bool hasAccountWithPasswordResetAbility = false;
+                List<string> accountTypes = new List<string>();
+
                 var users = new List<UserLogin>();
                 var userLoginService = new UserLoginService( rockContext );
                 foreach ( UserLogin user in userLoginService.GetByPersonId( person.Id ) )
@@ -458,10 +469,13 @@ namespace RockWeb.Plugins.church_ccv.Security
                     if ( user.EntityType != null )
                     {
                         var component = AuthenticationContainer.GetComponent( user.EntityType.Name );
-                        if ( component.ServiceType == AuthenticationServiceType.Internal )
+                        if ( component != null && component.ServiceType == AuthenticationServiceType.Internal && !component.RequiresRemoteAuthentication )
                         {
                             users.Add( user );
+                            hasAccountWithPasswordResetAbility = true;
                         }
+
+                        accountTypes.Add( user.EntityType.FriendlyName );
                     }
                 }
 
@@ -470,12 +484,29 @@ namespace RockWeb.Plugins.church_ccv.Security
                 resultsDictionary.Add( "Users", users );
                 results.Add( resultsDictionary );
 
-                mergeObjects.Add( "Results", results.ToArray() );
+                if ( results.Count > 0 && hasAccountWithPasswordResetAbility )
+                {
+                    mergeObjects.Add( "Results", results.ToArray() );
 
-                var emailMessage = new RockEmailMessage( GetAttributeValue( "ForgotUsernameTemplate" ).AsGuid() );
-                emailMessage.AddRecipient( new RecipientData( person.Email, mergeObjects ) );
-                emailMessage.CreateCommunicationRecord = false;
-                emailMessage.Send();
+                    var emailMessage = new RockEmailMessage( GetAttributeValue( "ForgotUsernameTemplate" ).AsGuid() );
+                    emailMessage.AddRecipient( new RecipientData( person.Email, mergeObjects ) );
+                    emailMessage.CreateCommunicationRecord = false;
+                    emailMessage.Send();
+                }
+                else if ( results.Count > 0 )
+                {
+                    // the person has user accounts but none of them are allowed to have their passwords reset (Facebook/Google/etc)
+                    ShowErrorMessage( string.Format( @"<p>It looks like you have a {0} account that you have used to log onto the CCV website.  
+                                                          Please use your {0} login to access CCV.</p>"
+                                        , string.Join( ",", accountTypes ) ) );
+
+                    lSentLoginCaption.Visible = false;
+                }
+                else
+                {
+                    // the person should never arrive here but we will display a message just in case...
+                    ShowErrorMessage( "We were unable to find any accounts." );
+                }
             }
             else
             {

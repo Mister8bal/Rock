@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Rock;
@@ -220,7 +219,15 @@ namespace RockWeb.Blocks.Security
 
                     if ( userLogin == null )
                     {
-                        DisplayDuplicates( Direction.Forward );
+                        // make sure the username only has legal characters
+                        if( UserLoginService.IsUsernameValid( tbUserName.Text ) )
+                        {
+                            DisplayDuplicates( Direction.Forward );
+                        }
+                        else
+                        {
+                            ShowErrorMessage( "Username is not valid" );
+                        }
                     }
                     else
                     {
