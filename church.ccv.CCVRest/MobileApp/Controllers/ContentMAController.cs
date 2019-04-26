@@ -11,6 +11,7 @@ using church.ccv.PersonalizationEngine.Model;
 using Newtonsoft.Json.Linq;
 using Rock;
 using Rock.Data;
+using Rock.Lava;
 using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Web.Cache;
@@ -560,5 +561,81 @@ namespace church.ccv.CCVRest.MobileApp
             }
         }
 
+        [Serializable]
+        public enum BaptismResponse
+        {
+            NotSet = -1,
+            Success
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Baptisms" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage Baptisms( int campusId, int maxCount = 4 )
+        {
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            const int BaptismEventId = 6;
+
+            RockContext rockContext = new RockContext();
+
+            // get event occurrences
+            var eventItems = new EventItemOccurrenceService( rockContext ).Queryable().AsNoTracking()
+                                                    // Take active Baptism events for this campus that have exactly ONE registration attached and ONE schedule attached
+                                                    .Where( e => e.EventItem.IsActive && 
+                                                                 e.EventItemId == BaptismEventId && 
+                                                                 e.CampusId == campusId &&
+                                                                 e.ScheduleId.HasValue &&
+                                                                 e.Linkages.Count() == 1 &&
+                                                                 e.Linkages.FirstOrDefault().RegistrationInstanceId.HasValue )
+
+                                                    // And only with registrations that are open
+                                                    .Where( e => e.Linkages.FirstOrDefault().RegistrationInstance.StartDateTime <= DateTime.Now &&
+                                                                 e.Linkages.FirstOrDefault().RegistrationInstance.EndDateTime > DateTime.Now )
+                                                    .ToList( );
+
+            List<BaptismModel> baptisms = new List<BaptismModel>();
+            foreach ( var eventItem in eventItems )
+            {
+                BaptismModel baptismModel = new BaptismModel();
+
+                var dateList = RockFilters.DatesFromICal( (object) eventItem.Schedule.iCalendarContent, null, null );
+
+                // in practice, a baptism event should have ONE date attached to it. Ignore anything else.
+                if ( dateList.Count() == 1 )
+                {
+                    baptismModel.Date = dateList[0];
+
+                    // Note that we're guaranteed Linkage and RegInstanceId are valid because we only take those from the query above
+                    int regInstanceId = eventItem.Linkages.First().RegistrationInstanceId.Value;
+                    baptismModel.RegistrationURL = publicAppRoot + "/get-involved/next-steps/baptism/registration?RegistrationInstanceId=" + regInstanceId + "&EventOccurrenceID=" + eventItem.Id;
+
+                    baptisms.Add( baptismModel );
+                }
+            }
+
+
+            // unfortunately we have to sort and take NOW, because
+            // we need to sort by time, which isn't available in the linq query up top
+            baptisms.Sort( delegate ( BaptismModel x, BaptismModel y )
+            {
+                if ( x.Date < y.Date )
+                {
+                    return -1;
+                }
+                else if ( x.Date == y.Date )
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            } );
+
+            // and only take the number requested
+            baptisms = baptisms.Take( maxCount ).ToList();
+
+            return Common.Util.GenerateResponse( true, BaptismResponse.Success.ToString(), baptisms );
+        }
     }
 }
