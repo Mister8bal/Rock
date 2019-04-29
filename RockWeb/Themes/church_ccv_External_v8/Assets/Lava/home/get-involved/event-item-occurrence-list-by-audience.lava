@@ -25,12 +25,23 @@ list, but marked differently.
   {% else %}
 	  {% if EventItemOccurrences != empty %}
 	      <div class="event-item-list-container">
-	        {% for occurrence in EventItemOccurrences limit:6 %}
+
+            {% comment %} 
+            We should only show 6. Since the list contains more than that, keep a counter that we'll decrement each time we render a valid event.
+            If we just limit the list to 6 using limit:6, its possible some of those 6 dont have open registrations, and therefore we'd show less than we should.
+            {% endcomment %}
+
+            {% assign maxNum = 6 %}
+
+	        {% for occurrence in EventItemOccurrences %}
 	            {% assign linkage = occurrence.Linkages | First %}
 	            {% if linkage.RegistrationInstance.IsActive %}
 	                {% assign currentDateTime = 'Now' | Date:'yyyy/MM/dd hh:mm:ss tt' %}
 	                {% if linkage.RegistrationInstance.StartDateTime <= currentDateTime and linkage.RegistrationInstance.EndDateTime >= currentDateTime %}
-	                    {% if occurrence.EventItemId == regularEventId %}              
+                        
+                        {% assign maxNum = maxNum | Minus:1 %}
+	                    
+                        {% if occurrence.EventItemId == regularEventId %}              
 					        <a class="event-item-container" href="{{ RegistrationPage }}?RegistrationInstanceId={{ linkage.RegistrationInstanceId }}&EventOccurrenceID={{ occurrence.Id }}">
 	                            <div class="event-item">
 	                                {{ occurrence.Schedule.iCalendarContent | DatesFromICal| First | Date: 'ddd, MMM d'  }}<br />
@@ -51,6 +62,10 @@ list, but marked differently.
 	                    {% endif %}          
 	                {% endif %}
 	            {% endif %}
+
+                {% if maxNum == 0 %}
+                    {% break %}
+                {% endif %}
 	        {% endfor %}
 	      </div>
 	  {% else %}
