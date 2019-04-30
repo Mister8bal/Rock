@@ -769,7 +769,10 @@ namespace church.ccv.CCVRest.MobileApp
                 {
                     // build a URL for retrieving the group's pic
                     Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
-                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                    if ( photoGuid.IsEmpty() == false )
+                    {
+                        groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                    }
                 }
 
                 // get the childcare description whether the Childcare filter is set or NOT. This is
