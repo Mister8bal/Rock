@@ -562,7 +562,7 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [Serializable]
-        public enum BaptismsResponse
+        public enum BaptismResponse
         {
             NotSet = -1,
             Success,
@@ -570,15 +570,15 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [System.Web.Http.HttpGet]
-        [System.Web.Http.Route( "api/NewMobileApp/Baptisms" )]
+        [System.Web.Http.Route( "api/NewMobileApp/Baptism" )]
         [Authenticate, Secured]
-        public HttpResponseMessage Baptisms( int campusId, int maxCount = 4 )
+        public HttpResponseMessage Baptism( int campusId, int maxCount = 4 )
         {
             // verify they are asking for a valid campus
             CampusCache campus = CampusCache.Read( campusId );
             if ( campus == null )
             {
-                return Common.Util.GenerateResponse( false, BaptismsResponse.CampusNotFound.ToString(), null );
+                return Common.Util.GenerateResponse( false, BaptismResponse.CampusNotFound.ToString(), null );
             }
 
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
@@ -643,7 +643,7 @@ namespace church.ccv.CCVRest.MobileApp
             // and only take the number requested
             baptisms = baptisms.Take( maxCount ).ToList();
 
-            return Common.Util.GenerateResponse( true, BaptismsResponse.Success.ToString(), baptisms );
+            return Common.Util.GenerateResponse( true, BaptismResponse.Success.ToString(), baptisms );
         }
     }
 }
