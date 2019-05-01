@@ -96,6 +96,7 @@
   <ItemGroup>
     <Compile Include="CCVLive\AttendanceController.cs" />
     <Compile Include="CCVLive\Model\AttendanceModel.cs" />
+    <Compile Include="Common\Model\PersonPhotoModel.cs" />
     <Compile Include="Common\Model\ResponseModel.cs" />
     <Compile Include="Common\Util\Util.cs" />
     <Compile Include="MobileApp\Controllers\AccountMAController.cs" />

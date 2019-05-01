@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -112,6 +113,81 @@ namespace church.ccv.CCVRest.Common
             {
                 ExceptionLogService.LogException( ex, null );
             }
+        }
+
+        public enum UpdatePersonPhotoResult
+        {
+            Success,
+            PersonNotFound,
+            InvalidImage
+        }
+
+        public static UpdatePersonPhotoResult UpdatePersonPhoto( PersonPhotoModel personPhoto )
+        {
+            const int ProfilePicture_BinaryFileTypeId = 5;
+            const int PhotoReview_GroupId = 1207885;
+            const int PhotoReviewPending_GroupRoleId = 59;
+
+            RockContext rockContext = new RockContext();
+
+            // get the person ID by their primary alias id
+            PersonAliasService paService = new PersonAliasService( rockContext );
+            PersonAlias personAlias = paService.Get( personPhoto.PrimaryAliasId );
+
+            if ( personAlias == null )
+            {
+                return UpdatePersonPhotoResult.PersonNotFound;
+            }
+
+            // validate the image
+            byte[] imageBuffer = null;
+            try
+            {
+                imageBuffer = Convert.FromBase64String( personPhoto.Base64ImageBuffer );
+            }
+            catch
+            {
+                return UpdatePersonPhotoResult.InvalidImage;
+            }
+
+            // setup the binary file model
+            var binaryFile = new BinaryFile();
+
+            binaryFile.IsTemporary = false;
+            binaryFile.BinaryFileTypeId = ProfilePicture_BinaryFileTypeId;
+            binaryFile.MimeType = "image/jpg";
+            binaryFile.FileSize = imageBuffer.Length;
+            binaryFile.FileName = "profile-picture-" + personPhoto.PrimaryAliasId + ".jpg";
+            binaryFile.ContentStream = new MemoryStream( imageBuffer );
+
+            // add to the database
+            var binaryFileService = new BinaryFileService( rockContext );
+            binaryFileService.Add( binaryFile );
+            rockContext.SaveChanges();
+
+            // update the photo id for the person
+            personAlias.Person.PhotoId = binaryFile.Id;
+            rockContext.SaveChanges();
+
+            // lastly, put this person in the Photo Review group so their picture can be reviewed
+            // ( or reset their status to pending if they're already in it)    
+            var groupMemberService = new GroupMemberService( rockContext );
+            GroupMember groupMember = groupMemberService.Queryable().Where( gm => gm.GroupId == PhotoReview_GroupId &&
+                                                                                  gm.PersonId == personAlias.PersonId ).SingleOrDefault();
+            if ( groupMember == null )
+            {
+                groupMember = new GroupMember();
+                groupMember.PersonId = personAlias.PersonId;
+                groupMember.GroupRoleId = PhotoReviewPending_GroupRoleId;
+                groupMember.GroupId = PhotoReview_GroupId;
+
+                groupMemberService.Add( groupMember );
+            }
+
+            groupMember.GroupMemberStatus = GroupMemberStatus.Pending;
+            rockContext.SaveChanges();
+
+            return UpdatePersonPhotoResult.Success;
         }
     }
 }

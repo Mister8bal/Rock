@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -162,7 +163,36 @@ namespace church.ccv.CCVRest.MobileApp
                 return Common.Util.GenerateResponse( true, AccessTokenResponse.Success.ToString(), "rckipid=" + personAlias.Person.GetImpersonationToken() );
             }
 
-            return Common.Util.GenerateResponse( false, CheckAttendanceResponse.PersonNotFound.ToString(), string.Empty );
+            return Common.Util.GenerateResponse( false, CheckAttendanceResponse.PersonNotFound.ToString(), null );
+        }
+
+
+        [Serializable]
+        public enum PersonPhotoResponse
+        {
+            NotSet = -1,
+            Success,
+            PersonNotFound,
+            InvalidModel
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route( "api/NewMobileApp/PersonPhoto" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage PersonPhoto( [FromBody] PersonPhotoModel personPhoto )
+        {
+            Common.Util.UpdatePersonPhotoResult photoResult = Common.Util.UpdatePersonPhoto( personPhoto );
+            switch( photoResult )
+            {
+                case Common.Util.UpdatePersonPhotoResult.Success:
+                    return Common.Util.GenerateResponse( true, PersonPhotoResponse.Success.ToString(), null );
+
+                case Common.Util.UpdatePersonPhotoResult.PersonNotFound:
+                    return Common.Util.GenerateResponse( false, PersonPhotoResponse.PersonNotFound.ToString(), null );
+
+                default:
+                    return Common.Util.GenerateResponse( false, PersonPhotoResponse.InvalidModel.ToString(), null );
+            }
         }
     }
 }
