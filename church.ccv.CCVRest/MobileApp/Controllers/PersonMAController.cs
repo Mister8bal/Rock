@@ -87,7 +87,22 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 case MobileAppService.UpdateMobileAppResult.Success:
                 {
-                    return Common.Util.GenerateResponse( true, UpdatePersonResponse.Success.ToString(), null );
+                    // Everything worked, and we want to make things easy on the Mobile App, so now
+                    // grab the updated person and return it.
+                    // (we have to grab them based 
+                    int personId = new PersonAliasService( new RockContext() ).Get( mobileAppPerson.PrimaryAliasId ).PersonId;
+                    MobileAppPersonModel updatedModel = MobileAppService.GetMobileAppPerson( personId );
+
+                    if ( updatedModel != null )
+                    {
+                        return Common.Util.GenerateResponse( true, UpdatePersonResponse.Success.ToString(), updatedModel );
+                    }
+                    else
+                    {
+                        // somehow we saved the person...but couldn't re-load them? Makes no sense and shouldn't happen,
+                        // but if it DOES, tell the Mobile App we failed so they don't overwrite their existing data.
+                        return Common.Util.GenerateResponse( false, UpdatePersonResponse.NotSet.ToString(), null );
+                    }
                 }
 
                 case MobileAppService.UpdateMobileAppResult.PersonNotFound:
