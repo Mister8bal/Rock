@@ -27,7 +27,7 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage Series( int numSeries = 12 )
         {
-            List<MobileAppSeriesModel> seriesList = new List<MobileAppSeriesModel>();
+            List<MASeriesModel> seriesList = new List<MASeriesModel>();
 
             PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, numSeries );
             if ( rootCategory == null )
@@ -42,7 +42,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
                 PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
 
-                MobileAppSeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+                MASeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
                 seriesList.Add( maSeriesModel );
 
                 // if we're beyond the number of series they wanted, stop.
@@ -95,7 +95,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // this is terrible performance-wise, but simpler to maintain and read.
 
                 // Convert the series
-                MobileAppSeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+                MASeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
 
                 // see if it's hidden
                 if ( maSeriesModel.Hidden == false )

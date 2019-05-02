@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    public class MobileAppPersonModel
+    public class MAPersonModel
     {
         // Person Info
 
@@ -39,7 +36,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public bool FamilyHasChildren;
 
         // Group Info
-        public List<MobileAppGroupModel> Groups { get; set; }
+        public List<MAGroupModel> Groups { get; set; }
         
 
         // Address Info
@@ -68,5 +65,21 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public bool? IsCoaching;
                    
         public bool? SharedStory;
+    }
+
+    [Serializable]
+    public class FamilyMemberModel
+    {
+        public int PrimaryAliasId;
+
+        public string FirstName;
+
+        public string LastName;
+
+        public int? Age;
+
+        public bool IsChild;
+
+        public string PhotoURL;
     }
 }

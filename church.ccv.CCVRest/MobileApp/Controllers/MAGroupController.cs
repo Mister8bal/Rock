@@ -59,7 +59,7 @@ namespace church.ccv.CCVRest.MobileApp
                 }
             }
 
-            List<MobileAppGroupModel> groupResults = MobileAppService.GetMobileAppGroups( nameKeyword, descriptionKeyword, locationForDistance, requiresChildcare, skip, top );
+            List<MAGroupModel> groupResults = MAGroupService.GetMobileAppGroups( nameKeyword, descriptionKeyword, locationForDistance, requiresChildcare, skip, top );
 
             return Common.Util.GenerateResponse( true, SearchGroupsResponse.Success.ToString(), groupResults );
         }
@@ -79,6 +79,27 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage Group( int groupId )
         {
+            return InternalGroup( groupId, MAGroupService.MAGroupMemberView.NonMemberView);
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Group/MemberView" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage GroupMemberView( int groupId )
+        {
+            return InternalGroup( groupId, MAGroupService.MAGroupMemberView.MemberView );
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Group/CoachView" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage GroupCoachView( int groupId )
+        {
+            return InternalGroup( groupId, MAGroupService.MAGroupMemberView.CoachView );
+        }
+
+        private HttpResponseMessage InternalGroup( int groupId, MAGroupService.MAGroupMemberView memberView )
+        {
             // find the Rock group, and then we'll get a mobile app group from that
             RockContext rockContext = new RockContext();
             GroupService groupService = new GroupService( rockContext );
@@ -86,7 +107,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( group != null )
             {
-                MobileAppGroupModel mobileAppGroup = MobileAppService.GetMobileAppGroup( group );
+                MAGroupModel mobileAppGroup = MAGroupService.GetMobileAppGroup( group, memberView );
 
                 return Common.Util.GenerateResponse( true, GroupResponse.Success.ToString(), mobileAppGroup );
             }
@@ -129,19 +150,19 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // try letting them join the group
-            MobileAppService.RegisterPersonResult result = MobileAppService.RegisterPersonInGroup( joinGroupModel );
+            MAGroupService.RegisterPersonResult result = MAGroupService.RegisterPersonInGroup( joinGroupModel );
             switch ( result )
             {
-                case MobileAppService.RegisterPersonResult.Success:
+                case MAGroupService.RegisterPersonResult.Success:
                     return Common.Util.GenerateResponse( true, JoinGroupResponse.Success.ToString(), null );
 
-                case MobileAppService.RegisterPersonResult.SecurityIssue:
+                case MAGroupService.RegisterPersonResult.SecurityIssue:
                     return Common.Util.GenerateResponse( true, JoinGroupResponse.Success_SecurityIssue.ToString(), null );
 
-                case MobileAppService.RegisterPersonResult.GroupNotFound:
+                case MAGroupService.RegisterPersonResult.GroupNotFound:
                     return Common.Util.GenerateResponse( true, JoinGroupResponse.GroupNotFound.ToString(), null );
 
-                case MobileAppService.RegisterPersonResult.AlreadyInGroup:
+                case MAGroupService.RegisterPersonResult.AlreadyInGroup:
                     return Common.Util.GenerateResponse( true, JoinGroupResponse.AlreadyInGroup.ToString(), null );
 
                 default:

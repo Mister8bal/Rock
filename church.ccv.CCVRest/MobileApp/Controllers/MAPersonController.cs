@@ -39,7 +39,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( personId.HasValue )
             {
-                MobileAppPersonModel personModel = MobileAppService.GetMobileAppPerson( personId.Value );
+                MAPersonModel personModel = MobileAppService.GetMobileAppPerson( personId.Value );
 
                 return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
@@ -60,7 +60,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( personAlias != null )
             {
-                MobileAppPersonModel personModel = MobileAppService.GetMobileAppPerson( personAlias.PersonId );
+                MAPersonModel personModel = MobileAppService.GetMobileAppPerson( personAlias.PersonId );
 
                 return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
@@ -80,7 +80,7 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route( "api/NewMobileApp/UpdatePerson" )]
         [Authenticate, Secured]
-        public HttpResponseMessage UpdatePerson( [FromBody] MobileAppPersonModel mobileAppPerson )
+        public HttpResponseMessage UpdatePerson( [FromBody] MAPersonModel mobileAppPerson )
         {
             MobileAppService.UpdateMobileAppResult result = MobileAppService.UpdateMobileAppPerson( mobileAppPerson );
             switch ( result )
@@ -91,7 +91,7 @@ namespace church.ccv.CCVRest.MobileApp
                     // grab the updated person and return it.
                     // (we have to grab them based 
                     int personId = new PersonAliasService( new RockContext() ).Get( mobileAppPerson.PrimaryAliasId ).PersonId;
-                    MobileAppPersonModel updatedModel = MobileAppService.GetMobileAppPerson( personId );
+                    MAPersonModel updatedModel = MobileAppService.GetMobileAppPerson( personId );
 
                     if ( updatedModel != null )
                     {

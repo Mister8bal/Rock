@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    public class MobileAppSeriesModel
+    public class MASeriesModel
     {
         public string Name;
 
