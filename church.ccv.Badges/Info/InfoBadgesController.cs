@@ -1,13 +1,14 @@
-﻿using church.ccv.Actions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
+
 using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
-using Rock.Web.Cache;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+
+using church.ccv.Actions;
 
 namespace church.ccv.Badges.Bio
 {
@@ -198,6 +199,78 @@ namespace church.ccv.Badges.Bio
             NotTaken,
             Taken,
             Registered
+        }
+
+        /// <summary>
+        /// Returns the result of a person's mission status
+        /// </summary>
+        /// <param name="personId">The person id.</param>
+        /// <returns></returns>
+        [Authenticate, Secured]
+        [HttpGet]
+        [System.Web.Http.Route( "api/CCV/Badges/IsMissions/{personId}" )]
+        public MissionsResult IsMissions( int personId )
+        {
+            var rockContext = new RockContext();
+            var personService = new PersonService( rockContext );
+
+            Person person = personService.Queryable().Where( p => p.Id == personId ).SingleOrDefault();
+            bool isAdult = new PersonService( rockContext ).GetAllAdults().Where( p => p.Id == personId ).Count() > 0 ? true : false;
+
+            MissionsResult missionsResult = new MissionsResult();
+            Actions_Adult.Missions.Result result = new Actions_Adult.Missions.Result();
+            if ( person != null )
+            {
+                List<int> groupIds = new List<int>();
+                if ( isAdult )
+                {
+                    Actions_Adult.Missions.IsMissions( person.Id, out result );
+                }
+                else
+                {
+                    return null;
+                }
+
+                if ( result.GroupIdTripDatePairs.IsNotNull() )
+                {
+                    var groupService = new GroupService( rockContext );
+
+                    foreach ( var keyValue in result.GroupIdTripDatePairs )
+                    {
+                        int? groupId = keyValue.Key.AsIntegerOrNull();
+                        DateTime? tripDate = keyValue.Value.AsDateTime();
+
+                        if ( groupId.HasValue && tripDate.HasValue )
+                        {
+                            var missionSummary = new MissionSummary();
+                            missionSummary.GroupId = keyValue.Key.AsInteger();
+                            missionSummary.TripDate = keyValue.Value.AsDateTime().Value.ToShortDateString();
+                            missionSummary.GroupName = groupService.Get( groupId.Value ).Name;
+
+                            missionsResult.MissionSummaries.Add( missionSummary );
+                        }
+                    }
+                }
+            }
+
+            return missionsResult;
+        }
+
+        public class MissionsResult
+        {
+            public List<MissionSummary> MissionSummaries { get; set; }
+
+            public MissionsResult()
+            {
+                this.MissionSummaries = new List<MissionSummary>();
+            }
+        }
+
+        public class MissionSummary
+        {
+            public int GroupId { get; set; }
+            public string GroupName { get; set; }
+            public string TripDate { get; set; }
         }
     }
 }
