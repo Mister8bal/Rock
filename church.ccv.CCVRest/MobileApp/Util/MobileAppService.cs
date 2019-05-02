@@ -300,18 +300,16 @@ namespace church.ccv.CCVRest.MobileApp
             personAlias.Person.LastName = mobileAppPerson.LastName.Trim();
             personAlias.Person.Email = mobileAppPerson.Email.Trim();
 
-            // update their phone
-            if ( string.IsNullOrWhiteSpace( mobileAppPerson.PhoneNumberDigits ) == false )
-            {
-                //todo: update phone number
-            }
-            else
-            {
-                // todo: remove phone number
-            }
+            // set the phone number (we only support Cell Phone for the Mobile App)
+            DefinedValueCache cellPhoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE );
+            personAlias.Person.UpdatePhoneNumber( cellPhoneType.Id, PhoneNumber.DefaultCountryCode(), mobileAppPerson.PhoneNumberDigits, null, null, rockContext );
 
-            // todo below - address isn't saving--campus is.
-
+            // set their birthday, if provided
+            if ( mobileAppPerson.Birthdate.HasValue )
+            {
+                personAlias.Person.SetBirthDate( mobileAppPerson.Birthdate );
+            }
+            
             // for address / campus updating, only do it if the person is in ONE family
             // otherwise a kid in a split family might update their address, only to
             // update mommy's address when they meant to update daddy's, and then mommy
