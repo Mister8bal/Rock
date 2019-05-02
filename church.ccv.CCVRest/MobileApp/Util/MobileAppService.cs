@@ -289,7 +289,8 @@ namespace church.ccv.CCVRest.MobileApp
             // verify the core info is still valid
             if ( string.IsNullOrWhiteSpace( mobileAppPerson.FirstName ) == true ||
                  string.IsNullOrWhiteSpace( mobileAppPerson.LastName ) == true ||
-                 string.IsNullOrWhiteSpace( mobileAppPerson.Email ) == true )
+                 string.IsNullOrWhiteSpace( mobileAppPerson.Email ) == true ||
+                 mobileAppPerson.Email.IsValidEmail( ) == false )
             {
                 return UpdateMobileAppResult.InvalidData;
             }
