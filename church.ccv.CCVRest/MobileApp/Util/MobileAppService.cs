@@ -268,6 +268,102 @@ namespace church.ccv.CCVRest.MobileApp
             return personModel;
         }
 
+        public enum UpdateMobileAppResult
+        {
+            Success,
+            PersonNotFound,
+            InvalidData
+        }
+        public static UpdateMobileAppResult UpdateMobileAppPerson( MobileAppPersonModel mobileAppPerson )
+        {
+            RockContext rockContext = new RockContext();
+            
+            // find this person
+            PersonAliasService personAliasService = new PersonAliasService( rockContext );
+            PersonAlias personAlias = personAliasService.Get( mobileAppPerson.PrimaryAliasId );
+            if ( personAlias == null )
+            {
+                return UpdateMobileAppResult.PersonNotFound;
+            }
+
+            // verify the core info is still valid
+            if ( string.IsNullOrWhiteSpace( mobileAppPerson.FirstName ) == true ||
+                 string.IsNullOrWhiteSpace( mobileAppPerson.LastName ) == true ||
+                 string.IsNullOrWhiteSpace( mobileAppPerson.Email ) == true )
+            {
+                return UpdateMobileAppResult.InvalidData;
+            }
+
+            // update the person's core info
+            personAlias.Person.FirstName = mobileAppPerson.FirstName.Trim();
+            personAlias.Person.NickName = mobileAppPerson.FirstName.Trim();
+            personAlias.Person.LastName = mobileAppPerson.LastName.Trim();
+            personAlias.Person.Email = mobileAppPerson.Email.Trim();
+
+            // update their phone
+            if ( string.IsNullOrWhiteSpace( mobileAppPerson.PhoneNumberDigits ) == false )
+            {
+                //todo: update phone number
+            }
+            else
+            {
+                // todo: remove phone number
+            }
+
+            // todo below - address isn't saving--campus is.
+
+            // for address / campus updating, only do it if the person is in ONE family
+            // otherwise a kid in a split family might update their address, only to
+            // update mommy's address when they meant to update daddy's, and then mommy
+            // thinks daddy is hacking her and they fight.
+            List<Group> families = personAlias.Person.GetFamilies( rockContext ).ToList();
+            if ( families.Count == 1 )
+            {
+                Group personFamily = families.First();
+
+                // update their address if all fields are valid (street2 being optional)
+                if ( string.IsNullOrWhiteSpace( mobileAppPerson.Street1 ) == false &&
+                     string.IsNullOrWhiteSpace( mobileAppPerson.State ) == false &&
+                     string.IsNullOrWhiteSpace( mobileAppPerson.City ) == false &&
+                     string.IsNullOrWhiteSpace( mobileAppPerson.Zip ) == false )
+                {
+                    // get the location
+                    var homeAddressDv = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
+                    
+                    // take the group location flagged as a home address and mapped
+                    GroupLocation familyAddress = personFamily.GroupLocations
+                        .Where( l =>
+                            l.GroupLocationTypeValueId == homeAddressDv.Id &&
+                            l.IsMappedLocation )
+                        .FirstOrDefault();
+
+                    if ( familyAddress != null )
+                    {
+                        familyAddress.Location.Street1 = mobileAppPerson.Street1;
+                        familyAddress.Location.Street2 = mobileAppPerson.Street2;
+                        familyAddress.Location.City = mobileAppPerson.City;
+                        familyAddress.Location.State = mobileAppPerson.State;
+                        familyAddress.Location.PostalCode = mobileAppPerson.Zip;
+                    }
+                }
+
+                // verify they're setting a valid campus
+                if ( mobileAppPerson.CampusId.HasValue )
+                {
+                    CampusCache campus = CampusCache.Read( mobileAppPerson.CampusId.Value );
+                    if ( campus != null )
+                    {
+                        personFamily.CampusId = mobileAppPerson.CampusId;
+                    }
+                }
+            }
+
+            // save changes and we're done!
+            rockContext.SaveChanges();
+
+            return UpdateMobileAppResult.Success;
+        }
+
         public static UserLogin CreateNewLogin( NewUserModel newUserModel, Person person, bool autoConfirm )
         {
             RockContext rockContext = new RockContext();

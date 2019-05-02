@@ -69,6 +69,40 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [Serializable]
+        public enum UpdatePersonResponse
+        {
+            NotSet = -1,
+            Success,
+            PersonNotFound,
+            InvalidModel
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route( "api/NewMobileApp/UpdatePerson" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage UpdatePerson( [FromBody] MobileAppPersonModel mobileAppPerson )
+        {
+            MobileAppService.UpdateMobileAppResult result = MobileAppService.UpdateMobileAppPerson( mobileAppPerson );
+            switch ( result )
+            {
+                case MobileAppService.UpdateMobileAppResult.Success:
+                {
+                    return Common.Util.GenerateResponse( true, UpdatePersonResponse.Success.ToString(), null );
+                }
+
+                case MobileAppService.UpdateMobileAppResult.PersonNotFound:
+                {
+                    return Common.Util.GenerateResponse( false, UpdatePersonResponse.PersonNotFound.ToString(), null );
+                }
+
+                default:
+                {
+                    return Common.Util.GenerateResponse( false, UpdatePersonResponse.InvalidModel.ToString(), null );
+                }
+            }
+        }
+
+        [Serializable]
         public enum RecordAttendanceResponse
         {
             NotSet = -1,
