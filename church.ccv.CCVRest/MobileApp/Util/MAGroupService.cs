@@ -23,6 +23,34 @@ namespace church.ccv.CCVRest.MobileApp
         const string GroupFilters_Key = "GroupFilters";
         const string ChildcareProvided_FilterKey = "Childcare Provided";
 
+        public static bool IsNeighborhoodGroup( Group group )
+        {
+            if ( group.GroupTypeId == GroupTypeId_NeighborhoodGroup )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static MAGroupMemberView GetViewForMember( GroupMember groupMember )
+        {
+            // simply use the status and role of the group member to determine
+            // which MemberView they should get access to
+            if ( groupMember.GroupRoleId == GroupRoleId_NeighborhoodGroupCoach )
+            {
+                return MAGroupMemberView.CoachView;
+            }
+            else if ( groupMember.GroupMemberStatus == GroupMemberStatus.Active )
+            {
+                return MAGroupMemberView.MemberView;
+            }
+            else
+            {
+                return MAGroupMemberView.NonMemberView;
+            }
+        }
+
         public static List<MAGroupModel> GetMobileAppGroups( string nameKeyword,
                                                                     string descriptionKeyword,
                                                                     Location locationForDistance,
@@ -185,7 +213,10 @@ namespace church.ccv.CCVRest.MobileApp
                                                                   .SingleOrDefault();
             }
 
-            var groupMemberPersons = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach != gm.GroupRole.Id ).Select( gm => gm.Person ).ToList();
+            // take the person object and status for all active & pending non-coach members of the group
+            var nonCoachGroupMembers = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach != gm.GroupRole.Id && gm.GroupMemberStatus != GroupMemberStatus.Inactive )
+                                                    .Select( gm => new { gm.GroupMemberStatus, gm.Person }  )
+                                                    .ToList();
 
             // Now setup the group members. The role passed in to this function determines the level of info we grab for each member
             groupResult.Members = new List<MAGroupMemberModel>();
@@ -203,10 +234,10 @@ namespace church.ccv.CCVRest.MobileApp
                     MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                     groupResult.Members.Add( coachGroupMember );
 
-                    // And all members
-                    foreach ( Person person in groupMemberPersons )
+                    // And all members (pending AND active)
+                    foreach ( var groupMember in nonCoachGroupMembers )
                     {
-                        MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( person, MAGroupRole.Member, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                        MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( groupMember.Person, MAGroupRole.Member, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                         groupResult.Members.Add( maGroupMember );
                     }
                     break;
@@ -223,11 +254,14 @@ namespace church.ccv.CCVRest.MobileApp
                     MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                     groupResult.Members.Add( coachGroupMember );
 
-                    // Add all members
-                    foreach ( Person person in groupMemberPersons )
+                    // And all ACTIVE members, without their contact info
+                    foreach ( var groupMember in nonCoachGroupMembers )
                     {
-                        MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( person, MAGroupRole.Member, false, Guid.Empty );
-                        groupResult.Members.Add( maGroupMember );
+                        if ( groupMember.GroupMemberStatus == GroupMemberStatus.Active )
+                        {
+                            MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( groupMember.Person, MAGroupRole.Member, false, Guid.Empty );
+                            groupResult.Members.Add( maGroupMember );
+                        }
                     }
                     break;
                 }

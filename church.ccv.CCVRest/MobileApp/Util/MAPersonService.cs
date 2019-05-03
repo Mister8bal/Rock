@@ -13,7 +13,6 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MAPersonService
     {
-        const int GroupTypeId_NeighborhoodGroup = 49;
         const int GroupRoleId_ChildInFamily = 4;
         const int Attendance_GroupId_CCVMobileAttendance = 2595385;
 
@@ -117,15 +116,17 @@ namespace church.ccv.CCVRest.MobileApp
             // now get the neighborhood groups (and classes?) they're in
             personModel.Groups = new List<MAGroupModel>();
 
-            // lazily load each group member
+            // lazily load each group member & group
             foreach ( GroupMember member in person.Members )
             {
-                // and group; to see if it's a neighborhood group
-                if ( member.Group.GroupTypeId == GroupTypeId_NeighborhoodGroup )
+                // if we're not inactive, and it's a NH group
+                if( member.GroupMemberStatus != GroupMemberStatus.Inactive && MAGroupService.IsNeighborhoodGroup( member.Group ) )
                 {
-                    // it is, so add it (we can take just the non member view since specifics about the people in it doesn't matter)
-                    MAGroupModel groupResult = MAGroupService.GetMobileAppGroup( member.Group, MAGroupService.MAGroupMemberView.NonMemberView );
+                    // get the group using the scope appropriate to their role
+                    MAGroupService.MAGroupMemberView memberView = MAGroupService.GetViewForMember( member );
 
+                    // it is, so add it (using the scope appropriate for their member)
+                    MAGroupModel groupResult = MAGroupService.GetMobileAppGroup( member.Group, memberView );
                     if ( groupResult != null )
                     {
                         personModel.Groups.Add( groupResult );
