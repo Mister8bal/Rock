@@ -59,10 +59,18 @@ namespace church.ccv.PersonalizationEngine.Data
                 foreach( var persona in personaQuery )
                 {
                     // for each persona, execute the sql defining that persona
-                    if ( PersonaFits( persona, personId ) )
+                    try
                     {
-                        // if it returned true, then the persona fit, so add it to the list
-                        personaList.Add( persona );
+                        if ( PersonaFits( persona, personId ) )
+                        {
+                            // if it returned true, then the persona fit, so add it to the list
+                            personaList.Add( persona );
+                        }
+                    }
+                    catch
+                    {
+                        // guard against bad SQL causing an exception - if that happens,
+                        // just ignore the campaign.
                     }
                 }
 
@@ -287,13 +295,21 @@ namespace church.ccv.PersonalizationEngine.Data
                 foreach( var persona in personas )
                 {
                     // as soon as we find a matching persona, take this campaign and stop searching
-                    if( PersonaFits( persona, personId ) )
+                    try
                     {
-                        relevantCampaigns.Add( campaign );
+                        if ( PersonaFits( persona, personId ) )
+                        {
+                            relevantCampaigns.Add( campaign );
 
-                        // subtract off each time we find a campaign, and when this is 0, we're done
-                        numCampaigns--;
-                        break;
+                            // subtract off each time we find a campaign, and when this is 0, we're done
+                            numCampaigns--;
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        // guard against bad SQL causing an exception - if that happens,
+                        // just ignore the campaign.
                     }
                 }
 
