@@ -67,50 +67,26 @@
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" Text="qa" />
+                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" />
 
                                 </div>
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" Text="tester" />
-
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-field">
-
-                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" Label="Email" Required="true" Text="w@safety.netz" />
+                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" />
 
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultAddress" runat="server" Label="Address" Required="false" Text="123 test st" Visible="false" />
+                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" ClientIDMode="Static" Label="Email" Required="true" />
 
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultCity" runat="server" Label="City" Required="false" Text="Test" Visible="false" />
-
-                                </div>
-                                <div class="form-field">
-
-                                    <Rock:RockDropDownList ID="ddlAdultState" runat="server" Label="State" Required="false" Visible="false" />
-
-                                </div>
-                                <div class="form-field">
-
-                                    <Rock:RockTextBox ID="tbAdultPostalCode" runat="server" Label="Zipcode" Required="false" Text="12345" Visible="false" />
-
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-field">
-
-                                    <Rock:RockTextBox ID="tbAdultFormMobile" runat="server" Label="Mobile" Required="false" Text="6231234576" />
+                                    <Rock:RockTextBox ID="tbAdultFormMobile" runat="server" ClientIDMode="Static" Label="Mobile" Required="false" CssClass="mobile-number" />
 
                                 </div>
                                 <div class="form-field">
@@ -155,7 +131,7 @@
                         </div>
                         <div class="form-navigation">
 
-                            <asp:Button ID="btnAdultsNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsNext_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" Text="Next" CssClass="btn btn-primary" Enabled="false" /> 
+                            <asp:Button ID="btnAdultsNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsNext_Click" Text="Next" CssClass="btn btn-primary" Enabled="false" /> 
                             
                         </div>
 
@@ -188,9 +164,9 @@
                         </div>
                         <div class="form-navigation">
 
-                            <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />
+                            <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />
 
-                            <asp:Button ID="btnAdultsExistingNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsExistingNext_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" Text="Next" CssClass="btn btn-primary" />    
+                            <asp:Button ID="btnAdultsExistingNext" runat="server" ClientIDMode="Static" OnClick="btnAdultsExistingNext_Click" Text="Next" CssClass="btn btn-primary" />    
                             
                         </div>
 
@@ -270,7 +246,7 @@
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbChildrenFormMobile" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required" />
+                                    <Rock:RockTextBox ID="tbChildrenFormMobile" ClientIDMode="Static" runat="server" Label="Mobile (Parent or Guardian)" CssClass="required mobile-number" />
 
                                 </div>
                             </div>
@@ -349,15 +325,15 @@
 
                     <div class="form-navigation">
 
-                        <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" Text="Add another child?" CssClass="btn btn-default" Visible="false" />
+                        <asp:Button ID="btnChildrenAddAnother" runat="server" ClientIDMode="Static" OnClick="btnChildrenAddAnother_Click" Text="Add another child?" CssClass="btn btn-default" Visible="false" />
 
                     </div>
                       
                     <div class="form-navigation">
 
-                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />  
+                        <asp:Button ID="btnChildrenBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />  
                         
-                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" Text="Next" CssClass="btn btn-primary" Visible="false" />
+                        <asp:Button ID="btnChildrenNext" runat="server" ClientIDMode="Static" OnClick="btnChildrenNext_Click" Text="Next" CssClass="btn btn-primary" Visible="false" />
 
                     </div>
 
@@ -417,9 +393,9 @@
                         </div>
                         <div class="form-navigation">
 
-                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" CommandName="pnlChildren" Text="Back" CssClass="btn btn-default" /> 
+                            <asp:Button ID="btnSubmitBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlChildren" Text="Back" CssClass="btn btn-default" /> 
                             
-                            <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" OnClientClick="window.scrollTo(scrollToX,scrollToY); return true;" Text="Submit" CssClass="btn btn-primary" />
+                            <asp:Button ID="btnSubmitNext" runat="server" ClientIDMode="Static" OnClick="btnSubmitNext_Click" Text="Submit" CssClass="btn btn-primary" />
 
                         </div>
 
@@ -433,7 +409,7 @@
             
             <div class="form-header">
                 <h2>Thank you!</h2>
-                <p>You will be receiving a confirmation email with helpful information, including a map link to make getting to <asp:Label ID="lblCampusVisit" runat="server" Text="Campus" /> a breeze</p>
+                <p>You will be receiving a confirmation email with helpful information, including a map link to make getting to the <asp:Label ID="lblCampusVisit" runat="server" Text="" /> campus a breeze</p>
             </div>
             <div class="form-navigation">
                 <a href="/plan-a-visit#form" class="btn btn-primary start-over">Plan Another Visit</a>
@@ -447,12 +423,16 @@
 </asp:UpdatePanel>
 
 <script>
+    // values need to scroll window back to form on postback
     var scrollToPAV = $('#pavForm').offset();
     var scrollToX = scrollToPAV.left;
     var scrollToY = scrollToPAV.top - 50;
+    var needScroll;
 
     function pageLoad() {
         restoreFormState();
+
+        resetScrollPosition();
 
         $('#rblAllergies').on('change', function () {
             // get selected value
@@ -466,7 +446,6 @@
             else {
                 $('#tbAllergies').addClass('hidden');
                 $('#hfAllergiesFormState').attr('value', 'No');
-
             }
 
             // toggle active class to change color of selected item
@@ -487,6 +466,27 @@
         });
 
         // error checking
+        // Validate email input
+        $('#tbAdultEmail').on('input', function () {
+            if (!/^\w([\.-]?\w)*@\w([\.-]?\w)*(\.\w{2,15})+$/.test($(this).val())) {
+                $(this).parents('div.form-group').addClass('has-error');
+            } else {
+                $(this).parents('div.form-group').removeClass('has-error');
+            }
+        });
+
+        // Validate mobile number inputs
+        $('.mobile-number').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, "")
+
+            if (this.value.length !== 10 && this.value.length !== 0 ) {
+                $(this).parents('div.form-group').addClass('has-error');
+            } else {
+                $(this).parents('div.form-group').removeClass('has-error');
+            }
+        });
+
+        // re-validate item with error
         $('.has-error').on('change', function () {
             var value = "";
 
@@ -521,8 +521,49 @@
                     $(this).addClass('has-error');
                 }
             }
+        });
+
+        // validate no errors exist and mobile number is valid number
+        $('#btnAdultsNext').click(function (e) {
+            // ensure no errors exist
+            if ($('.has-error')[0]) {
+                e.preventDefault();
+            }
+
+            // if mobile number has value, ensure its 10 numbers
+            if ($('#tbAdultFormMobile').val().length !== 10 && $('#tbAdultFormMobile').val().length !== 0 ) {
+                $('#tbAdultFormMobile').parents('div.form-group').addClass('has-error');
+                e.preventDefault();
+            } else {
+                $('#tbAdultFormMobile').parents('div.form-group').removeClass('has-error');
+            }
 
         });
+
+        // validate no errors exist and mobile number is valid number
+        $('#btnChildrenNext').click(function (e) {
+            // ensure no errors exist
+            if ($('.has-error')[0]) {
+                e.preventDefault();
+            }
+
+            // if mobile number has value, ensure its 10 numbers
+            if ($('#tbChildrenFormMobile').val().length !== 10 && $('#tbChildrenFormMobile').val().length !== 0 ) {
+                $('#tbChildrenFormMobile').parents('div.form-group').addClass('has-error');
+                e.preventDefault();
+            } else {
+                $('#tbChildrenFormMobile').parents('div.form-group').removeClass('has-error');
+            }
+        });        
+    }
+
+    // scrolls window position to top of form
+    function resetScrollPosition() {
+        if (needScroll) {
+            window.scrollTo(scrollToX, scrollToY);
+
+            needScroll = false;
+        }
     }
 
     function restoreFormState() {
