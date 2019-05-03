@@ -203,7 +203,15 @@ namespace RockWeb.Plugins.church_ccv.Security
 
                     if ( userLogin == null )
                     {
-                        DisplayDuplicates( Direction.Forward );
+                        // make sure the username only has legal characters
+                        if ( UserLoginService.IsUsernameValid( tbUserName.Text ) )
+                        {
+                            DisplayDuplicates( Direction.Forward );
+                        }
+                        else
+                        {
+                            ShowErrorMessage( "Username is not valid" );
+                        }
                     }
                     else
                     {

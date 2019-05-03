@@ -44,8 +44,10 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [LinkedPage( "Roster Page", "The page to link to to view the roster.", false, "", "", 2 )]
     [LinkedPage( "Communication Page", "The communication page to use for sending emails to the group members.", false, "", "", 4 )]
     [BooleanField( "Enable Group Capacity", "When set to true, groups will take into account the Capacity attribute set in rock.", true )]
+    [BooleanField( "Enable Group Reset", "When set to true, Course Leader will have the ability to reset the group by clicking reset button under group details tab.", false )]
     [CodeEditorField( "Lava Template", "The lava template to use to format the group details.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, true, "{% include '~~/Assets/Lava/GroupDetail.lava' %}", "", 8 )]
     [BooleanField( "Enable Debug", "Shows the fields available to merge in lava.", false, "", 10 )]
+    [TextField("Excluded Attributes for Edit", "Comma delimited list of Attribute Keys that should not be editable", false)]
     public partial class CCVGroupDetailLava : RockBlock
     {
         public UpdatePanel MainPanel { get { return upnlContent; } }
@@ -63,6 +65,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
         //public override CheckBox IsActive { get { return cbIsActive; } }
 
         const int CCV_GroupRole_Attendee = 49;
+        const int NoteTypeIdLifeTraining = 36;
 
         // Stores a list of group attribute keys that should not be editable by the coach.
         // by default, it's an empty list.
@@ -182,6 +185,56 @@ namespace RockWeb.Plugins.church_ccv.Groups
             sm.AddHistoryPoint( "Action", "ViewGroup" );
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnResetGroup_Click control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void btnResetGroup_Click( object sender, EventArgs e )
+        {
+            RockContext rockContext = new RockContext();
+            GroupService groupService = new GroupService( rockContext );
+            GroupMemberService groupMemberService = new GroupMemberService( rockContext );
+
+            var qry = groupService
+                   .Queryable( "GroupLocations,Members,Members.Person,Members.Person.PhoneNumbers,GroupType" )
+                   .Where( g => g.Id == _groupId );
+
+            var group = qry.FirstOrDefault();
+
+            // Get all group members except for group leaders
+            var groupMembers = groupMemberService.Queryable().Where( gm => (gm.GroupId == group.Id ) &&
+                                                                   (  !gm.GroupRole.IsLeader ));
+
+            foreach ( GroupMember member in groupMembers )
+            {
+                // Create Note
+                var noteService = new NoteService( rockContext );
+
+                var note = new Note();
+                note.NoteTypeId = NoteTypeIdLifeTraining;
+                note.IsSystem = false;
+                note.IsAlert = false;
+                note.IsPrivateNote = false;
+                note.EntityId = member.Person.Id;
+                note.Caption = string.Empty;
+                note.Text = "Completed Course: " + group.Name;
+
+                // Add note to persons profile
+                noteService.Add( note );
+
+                // Remove member from group
+                group.Members.Remove( member );
+                groupMemberService.Delete( member );
+            }
+
+            // Save changes
+            rockContext.SaveChanges();
+
+            // reload the group info
+            Page.Response.Redirect( Page.Request.Url.ToString(), true );
+        }
+
         #region Models
         public class GroupMemberWithFamily : Rock.Lava.ILiquidizable
         {
@@ -286,7 +339,16 @@ namespace RockWeb.Plugins.church_ccv.Groups
         {
             base.OnInit( e );
 
-            ExcludedAttribKeys = new List<string>();
+            // setup the attributes that should not be editable by the leader
+            string excludedAttribsVal = GetAttributeValue( "ExcludedAttributesforEdit" );
+            if ( string.IsNullOrWhiteSpace( excludedAttribsVal ) == false )
+            {
+                ExcludedAttribKeys = excludedAttribsVal.Split( ',' ).ToList();
+            }
+            else
+            {
+                ExcludedAttribKeys = new List<string>();
+            }
 
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
@@ -624,6 +686,17 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     {
                         groupCapacity.Visible = false;
                     }
+
+                    // if the EnableGroupReset is enabled, display "Reset Group" button that will give the course leader the ability to clear all members from group.
+                    if ( GetAttributeValue( "EnableGroupReset" ).AsBoolean() )
+                    {
+                        btnResetGroup.Visible = true;
+                    }
+                    else
+                    {
+                        btnResetGroup.Visible = false;
+                    }
+
                     group.LoadAttributes();
                     AttributesPlaceholder.Controls.Clear();
                     Rock.Attribute.Helper.AddEditControls( group, AttributesPlaceholder, true, BlockValidationGroup, ExcludedAttribKeys );

@@ -14,21 +14,19 @@
 // limitations under the License.
 // </copyright>
 //
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
-using Rock.Model;
-using Newtonsoft.Json;
-using System.Net;
-using church.ccv.MobileApp;
-using church.ccv.MobileApp.Models;
 using System.Web.Http;
-using System.Web.Routing;
+using church.ccv.MobileApp.Models;
+using Newtonsoft.Json;
+using Rock.Data;
+using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Security;
-using Rock.Data;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace church.ccv.MobileApp.Rest
 {
@@ -185,6 +183,10 @@ namespace church.ccv.MobileApp.Rest
                 UserLogin userLogin = userLoginService.GetByUserName( regAccountData.Username );
                 if( userLogin != null ) { statusCode = HttpStatusCode.Unauthorized; break; }
 
+                // JHM hack 4-24-19: Until the new mobile app comes out, prevent usernames with invalid characters
+                // by saying the username already exists..even tho it doesn't.
+                bool validUsername = UserLoginService.IsUsernameValid( regAccountData.Username );
+                if ( validUsername == false ) { statusCode = HttpStatusCode.Unauthorized; break; }
 
 
                 // since the username doesn't exist, make sure this person doesn't already exist. If they do, we need to deny

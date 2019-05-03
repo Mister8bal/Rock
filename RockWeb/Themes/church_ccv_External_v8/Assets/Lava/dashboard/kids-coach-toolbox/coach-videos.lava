@@ -23,6 +23,7 @@
         <input type="hidden" name="WeekendDates{{ forloop.index0 }}" value="{{ item.WeekendDates }}" />
         <input type="hidden" name="Guide{{ forloop.index0 }}" value="{{ item | Attribute:'Guide', 'Url' }}" />
 
+        {% comment %} EK, 2YO, and LK toolboxes {% endcomment %}
         {% assign messageVideo = item | Attribute: 'LinktoWeekendMessageVideo' %}
 
         {% if messageVideo != '' %}
@@ -44,13 +45,87 @@
                 <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
             </div>
         {% endif %}
+
+        {% assign introVideo = item | Attribute: 'LinktoIntroVideo' %}
+
+        {% if introVideo != '' %}
+            <div class="header">
+                <h4>Intro Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ introVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% comment %} Special Needs toolbox videos {% endcomment %}
+        {% assign ekTrainingVideo = item | Attribute: 'LinktoEKCoachTrainingVideo' %}
+
+        {% if ekTrainingVideo != '' %}
+            <div class="header">
+                <h4>Early Kids Training Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekTrainingVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign ekMessageVideo = item | Attribute: 'LinktoEKWeekendMessageVideo' %}
+
+        {% if ekMessageVideo != '' %}
+            <div class="header">
+                <h4>Early Kids Message Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekMessageVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkIntroVideo = item | Attribute: 'LinktoLKWeekendIntroVideo' %}
+
+        {% if lkIntroVideo != '' %}
+            <div class="header">
+                <h4>Later Kids Intro Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkIntroVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkMessageVideo = item | Attribute: 'LinktoLKWeekendMessageVideo' %}
+
+        {% if lkMessageVideo != '' %}
+            <div class="header">
+                <h4>Later Kids Message Video</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkMessageVideo }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
     </div>
 {% endfor %}
 
 <script>
     $(document).ready(function(){
         $('#weekendDates').text('{{ firstItem.WeekendDates }}');
-        $('#pdfCoachGuide').attr('data', "{{ firstItem | Attribute:'Guide', 'Url' }}");
-        $('#pdfCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'Guide', 'Url' }}" class="coach-guide-pdf">Download Guide</a>`);           
+
+        var currentPath = "{{ 'Global' | Page:'Path' }}"
+
+        console.log(currentPath);
+
+        if ( currentPath.includes('special-needs') )
+        {
+            console.log('sn')
+            $('#pdfEKCoachGuide').attr('data', "{{ firstItem | Attribute:'EKCoachGuide', 'Url' }}");
+            $('#pdfEKCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'EKCoachGuide', 'Url' }}" class="coach-guide-pdf">Download Early Kids Guide</a>`);  
+
+            $('#pdfLKCoachGuide').attr('data', "{{ firstItem | Attribute:'LKCoachGuide', 'Url' }}");
+            $('#pdfLKCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'LKCoachGuide', 'Url' }}" class="coach-guide-pdf">Download Later Kids Guide</a>`);
+        }
+        else 
+        {
+            console.log('notsn')
+            $('#pdfCoachGuide').attr('data', "{{ firstItem | Attribute:'Guide', 'Url' }}");
+            $('#pdfCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'Guide', 'Url' }}" class="coach-guide-pdf">Download Guide</a>`);  
+        }
     });
 </script>

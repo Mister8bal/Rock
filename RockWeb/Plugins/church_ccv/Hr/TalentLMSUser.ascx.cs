@@ -311,13 +311,14 @@ namespace RockWeb.Plugins.church_ccv.Hr
                             {
                                 Name = ( string ) c["name"],
                                 Description = ( string ) c["description"],
-                                Id = ( string ) c["id"]
+                                Id = ( string ) c["id"],
+                                HideFromCatalog = ( string ) c["hide_from_catalog"]
                             };
 
             foreach ( var course in allCourses )
             {
-                // add course to list if not enrolled
-                if ( !_userEnrolledCourses.Any( i => i.Id == course.Id ) )
+                // add course to list if not enrolled and course not hidden from catalog
+                if ( !_userEnrolledCourses.Any( i => i.Id == course.Id ) && course.HideFromCatalog != "1" )
                 {
                     availableCourses.Add( course );
                 }
@@ -428,6 +429,7 @@ namespace RockWeb.Plugins.church_ccv.Hr
             public string Description { get; set; }
             public string Progress { get; set; }
             public string LaunchButton { get; set; }
+            public string HideFromCatalog { get; set; }
 
             public Course()
             {
