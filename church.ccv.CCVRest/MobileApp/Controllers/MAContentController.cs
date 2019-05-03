@@ -507,7 +507,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // see if the location is within maxDistanceMeters meters of the campus
             double maxDistanceMeters = 750;
-            int? campusForLocation = MobileAppService.GetNearestCampus( isOnCampusModel.Longitude, isOnCampusModel.Latitude, maxDistanceMeters );
+            int? campusForLocation = MAContentService.GetNearestCampus( isOnCampusModel.Longitude, isOnCampusModel.Latitude, maxDistanceMeters );
             if ( campusForLocation.HasValue )
             {
                 // Send back a response that says yes, and includes the campusId for the campus they're on.
@@ -546,7 +546,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // we found them - now get the correct content
                 try
                 {
-                    KidsContentModel contentModel = MobileAppService.BuildKidsContent( personAlias.Person );
+                    KidsContentModel contentModel = MAContentService.BuildKidsContent( personAlias.Person );
                     return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModel );
                 }
                 catch

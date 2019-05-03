@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Net.Http;
-using church.ccv.PersonalizationEngine.Model;
-using church.ccv.PersonalizationEngine.Data;
-using Rock;
+using System.Web.Http;
+using church.ccv.CCVRest.MobileApp.Model;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
 using Rock.Web.Cache;
-using Newtonsoft.Json.Linq;
-using church.ccv.CCVRest.MobileApp.Model;
-using church.ccv.Datamart.Model;
-using System.Web.Http;
 
 namespace church.ccv.CCVRest.MobileApp
 {

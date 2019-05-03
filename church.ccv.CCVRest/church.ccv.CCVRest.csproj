@@ -118,7 +118,11 @@
     <Compile Include="MobileApp\Model\PersonalizedItemModel.cs" />
     <Compile Include="MobileApp\Model\MASeriesModel.cs" />
     <Compile Include="MobileApp\Model\PromotionModel.cs" />
+    <Compile Include="MobileApp\Util\MAAccountService.cs" />
+    <Compile Include="MobileApp\Util\MAContentService.cs" />
     <Compile Include="MobileApp\Util\MAGroupService.cs" />
+    <Compile Include="MobileApp\Util\MAPersonService.cs" />
+    <Compile Include="MobileApp\Util\MAPodcastService.cs" />
     <Compile Include="MobileApp\Util\MobileAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

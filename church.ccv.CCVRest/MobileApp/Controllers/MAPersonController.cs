@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -39,7 +38,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( personId.HasValue )
             {
-                MAPersonModel personModel = MobileAppService.GetMobileAppPerson( personId.Value );
+                MAPersonModel personModel = MAPersonService.GetMobileAppPerson( personId.Value );
 
                 return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
@@ -60,7 +59,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( personAlias != null )
             {
-                MAPersonModel personModel = MobileAppService.GetMobileAppPerson( personAlias.PersonId );
+                MAPersonModel personModel = MAPersonService.GetMobileAppPerson( personAlias.PersonId );
 
                 return Common.Util.GenerateResponse( true, PersonResponse.Success.ToString( ), personModel );
             }
@@ -82,16 +81,16 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage UpdatePerson( [FromBody] MAPersonModel mobileAppPerson )
         {
-            MobileAppService.UpdateMobileAppResult result = MobileAppService.UpdateMobileAppPerson( mobileAppPerson );
+            MAPersonService.UpdateMobileAppResult result = MAPersonService.UpdateMobileAppPerson( mobileAppPerson );
             switch ( result )
             {
-                case MobileAppService.UpdateMobileAppResult.Success:
+                case MAPersonService.UpdateMobileAppResult.Success:
                 {
                     // Everything worked, and we want to make things easy on the Mobile App, so now
                     // grab the updated person and return it.
                     // (we have to grab them based 
                     int personId = new PersonAliasService( new RockContext() ).Get( mobileAppPerson.PrimaryAliasId ).PersonId;
-                    MAPersonModel updatedModel = MobileAppService.GetMobileAppPerson( personId );
+                    MAPersonModel updatedModel = MAPersonService.GetMobileAppPerson( personId );
 
                     if ( updatedModel != null )
                     {
@@ -105,7 +104,7 @@ namespace church.ccv.CCVRest.MobileApp
                     }
                 }
 
-                case MobileAppService.UpdateMobileAppResult.PersonNotFound:
+                case MAPersonService.UpdateMobileAppResult.PersonNotFound:
                 {
                     return Common.Util.GenerateResponse( false, UpdatePersonResponse.PersonNotFound.ToString(), null );
                 }
@@ -140,7 +139,7 @@ namespace church.ccv.CCVRest.MobileApp
             if ( personAlias != null )
             {
                 // try saving the attendance record--if it returns true we did, if not they've already marked attendance this weekend.
-                if ( MobileAppService.SaveAttendanceRecord( personAlias, campusId, Request.Headers.Host, Request.Headers.UserAgent.ToString( ) ) )
+                if ( MAPersonService.SaveAttendanceRecord( personAlias, campusId, Request.Headers.Host, Request.Headers.UserAgent.ToString( ) ) )
                 {
                     return Common.Util.GenerateResponse( true, RecordAttendanceResponse.Success.ToString(), null );
                 }
@@ -175,7 +174,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( personAlias != null )
             {
-                if ( MobileAppService.HasAttendanceRecord( personAlias ) )
+                if ( MAPersonService.HasAttendanceRecord( personAlias ) )
                 {
                     return Common.Util.GenerateResponse( true, CheckAttendanceResponse.Attended.ToString(), null );
                 }

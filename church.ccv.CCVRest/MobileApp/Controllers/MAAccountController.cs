@@ -187,10 +187,10 @@ namespace church.ccv.CCVRest.MobileApp
                 else
                 {
                     // we'll create a login but will make them confirm it (proving they own the provided email)
-                    UserLogin newLogin = MobileAppService.CreateNewLogin( newUserModel, foundPerson, false );
+                    UserLogin newLogin = MAAccountService.CreateNewLogin( newUserModel, foundPerson, false );
                     if ( newLogin != null )
                     {
-                        MobileAppService.SendConfirmAccountEmail( foundPerson, newLogin );
+                        MAAccountService.SendConfirmAccountEmail( foundPerson, newLogin );
                         return Common.Util.GenerateResponse( true, RegisterNewUserResponse.Success_NeedsConfirmation.ToString(), null );
                     }
                     else
@@ -203,7 +203,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // we know we can create the person. So first, begin tracking who made these changes, and then
             // create the person with their login
-            if ( MobileAppService.RegisterNewPerson( newUserModel ) == false )
+            if ( MAAccountService.RegisterNewPerson( newUserModel ) == false )
             {
                 return Common.Util.GenerateResponse( false, RegisterNewUserResponse.CreationError.ToString( ), null );
             }
@@ -235,7 +235,7 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // try building and sending the email--if it isn't found, this will return false
-            if ( MobileAppService.SendForgotPasswordEmail( emailAddress ) )
+            if ( MAAccountService.SendForgotPasswordEmail( emailAddress ) )
             {
                 return Common.Util.GenerateResponse( true, ForgotPasswordResponse.Success.ToString(), null );
             }

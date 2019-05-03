@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Podcast;
 using Rock.Rest.Filters;
@@ -42,7 +39,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
                 PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
 
-                MASeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+                MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
                 seriesList.Add( maSeriesModel );
 
                 // if we're beyond the number of series they wanted, stop.
@@ -95,7 +92,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // this is terrible performance-wise, but simpler to maintain and read.
 
                 // Convert the series
-                MASeriesModel maSeriesModel = MobileAppService.PodcastSeriesToMobileAppSeries( series );
+                MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
 
                 // see if it's hidden
                 if ( maSeriesModel.Hidden == false )
