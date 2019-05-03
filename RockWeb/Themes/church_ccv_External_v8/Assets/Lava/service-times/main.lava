@@ -16,6 +16,10 @@ Service Times - Main style (like footer times)
 <span class="csi csi-special-needs"></span>
 {% endcapture %}
 
+{% capture espanolIcon %}
+<span class="csi csi-espanol"></span>
+{% endcapture %}
+
 {% if times %}
 
   {% if isComingSoon %}
@@ -40,7 +44,7 @@ Service Times - Main style (like footer times)
       {% for time in times %}
         {% assign split = time | Split: '^' %}
         {% if split[0] == 'Saturday' %}
-          <li>{{ split[1] | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+          <li>{{ split[1] | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
         {% endif %}
       {% endfor %}
     </ul>
@@ -52,7 +56,7 @@ Service Times - Main style (like footer times)
       {% for time in times %}
         {% assign split = time | Split: '^' %}
         {% if split[0] == 'Sunday' %}
-          <li>{{ split[1] | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+          <li>{{ split[1] | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
         {% endif %}
       {% endfor %}
     </ul>
