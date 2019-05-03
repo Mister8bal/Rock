@@ -114,5 +114,75 @@ namespace church.ccv.CCVRest.MobileApp
 
             return maSeriesModel;
         }
+
+        public static List<ToolboxResourceModel> PodcastSeriesToToolboxResources( PodcastUtil.PodcastSeries series, ref int resourcesRemaining )
+        {
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            // for toolbox resources, we don't store the series hierarhcy--each message is its own item,
+            // so a single series could spawn multiple resource models
+            List<ToolboxResourceModel> toolboxResources = new List<ToolboxResourceModel>();
+
+            // use an i iterator so we can get the "WeekNumber" more easily
+            int i = 0;
+            for( i = 0; i < series.Messages.Count; i++ )
+            //foreach ( PodcastUtil.PodcastMessage message in series.Messages )
+            {
+                PodcastUtil.PodcastMessage message = series.Messages[i];
+
+                ToolboxResourceModel resource = new ToolboxResourceModel();
+
+                // (because this is a new attrib, and not all messages have it, check for null. default to TRUE since that's what thye'll want the majority of the time.)
+                // This is totally confusing, but the KEY is called "Active", however, its name in Rock is "Approved". So confusing. My mistake. Ugh.
+                bool messageActive = true;
+                if ( message.Attributes.ContainsKey( "Active" ) )
+                {
+                    messageActive = bool.Parse( message.Attributes["Active"] );
+                }
+
+                if ( messageActive && message.Date <= RockDateTime.Now  )
+                {
+                    resource.SeriesName = series.Name;
+                    resource.MessageName = message.Name;
+
+                    if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
+                    {
+                        resource.SeriesImageURL = publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"];
+                    }
+
+                    // Get the most recent sunday date
+                    if ( message.Date.HasValue )
+                    {
+                        resource.WeekendDate = message.Date.Value.StartOfWeek( DayOfWeek.Sunday );
+                    }
+
+                    resource.WeekNumber = series.Messages.Count - i;
+
+                    string wistiaId = message.Attributes["WistiaId"];
+                    if ( string.IsNullOrWhiteSpace( wistiaId ) == false )
+                    {
+                        resource.WistiaId = wistiaId;
+                    }
+
+                    string discussionGuideUrlValue = null;
+                    message.Attributes.TryGetValue( "DiscussionGuideUrl", out discussionGuideUrlValue );
+                    if ( string.IsNullOrWhiteSpace( discussionGuideUrlValue ) == false )
+                    {
+                        resource.DiscussionGuideURL = discussionGuideUrlValue;
+                    }
+
+                    toolboxResources.Add( resource );
+
+                    // stop if we've reached our limit
+                    resourcesRemaining--;
+                    if ( resourcesRemaining == 0 )
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return toolboxResources;
+        }
     }
 }
