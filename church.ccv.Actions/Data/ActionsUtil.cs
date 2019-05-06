@@ -224,13 +224,13 @@ namespace church.ccv.Actions
                 public Dictionary<string, string> GroupIdTripDatePairs { get; set; }
             }
 
-            public static void IsMissions( int personId, out Result returnResult )
+            public static void TakenMissionTrip( int personId, out Result returnResult )
             {
                 // call the function
                 RockContext rockContext = new RockContext();
                 var sqlResultTable = rockContext.Database.SqlQuery<ResultTable>
                     (
-                        "SELECT TOP 1 * FROM dbo._church_ccv_ufnActions_Adult_IsMissions(@PersonId)",
+                        "SELECT TOP 1 * FROM dbo._church_ccv_ufnActions_Adult_TakenMissionTrip(@PersonId)",
                         new SqlParameter( "@PersonId", personId ) { SqlDbType = SqlDbType.Int, IsNullable = false }
                     ).ToList().SingleOrDefault();
 
@@ -586,6 +586,45 @@ namespace church.ccv.Actions
                 }
                         
                 return result.SharedStory;
+            }
+        }
+
+        /// <summary>
+        /// Missions
+        /// </summary>
+        public static class Missions
+        {
+            class ResultTable
+            {
+                public int PersonId { get; set; }
+                public bool IsMissions { get; set; }
+                public string GroupIdAndTripDates { get; set; }
+            }
+
+            public class Result
+            {
+                public bool IsMissions { get; set; }
+                public Dictionary<string, string> GroupIdTripDatePairs { get; set; }
+            }
+
+            public static void TakenMissionTrip( int personId, out Result returnResult )
+            {
+                // call the function
+                RockContext rockContext = new RockContext();
+                var sqlResultTable = rockContext.Database.SqlQuery<ResultTable>
+                    (
+                        "SELECT TOP 1 * FROM dbo._church_ccv_ufnActions_Student_TakenMissionTrip(@PersonId)",
+                        new SqlParameter( "@PersonId", personId ) { SqlDbType = SqlDbType.Int, IsNullable = false }
+                    ).ToList().SingleOrDefault();
+
+                // convert the resultTable into a result for the caller
+                returnResult = new Result()
+                {
+                    IsMissions = sqlResultTable.IsMissions,
+                    GroupIdTripDatePairs = sqlResultTable.GroupIdAndTripDates != null ?
+                        sqlResultTable.GroupIdAndTripDates.AsDictionary() :
+                        new Dictionary<string, string>()
+                };
             }
         }
 

@@ -14,7 +14,7 @@ namespace church.ccv.Badges.Info
     [Export( typeof( Rock.PersonProfile.BadgeComponent ) )]
     [ExportMetadata( "ComponentName", "Missions" )]
 
-    [TextField( "Badge Color", "The color of the badge (#ffffff).", true, "#00ff00", "",  0)]
+    [TextField( "Badge Color", "The color of the badge (#ffffff).", true, "#8b9064", "",  0)]
     class Missions : Rock.PersonProfile.BadgeComponent
     {
         public override void Render( PersonBadgeCache badge, System.Web.UI.HtmlTextWriter writer, Person person, PersonBlock parentPersonBlock )
@@ -37,12 +37,12 @@ namespace church.ccv.Badges.Info
                                                 
                         $.ajax({{
                                 type: 'GET',
-                                url: Rock.settings.get('baseUrl') + 'api/CCV/Badges/IsMissions/{0}' ,
+                                url: Rock.settings.get('baseUrl') + 'api/CCV/Badges/TakenMissionTrip/{0}' ,
                                 statusCode: {{
                                     200: function (data, status, xhr) {{
                                         var $badge = $('.badge.badge-id-{2}');
                                         
-                                        if ( data.MissionSummaries != null ) {{
+                                        if ( Array.isArray( data.MissionSummaries ) && data.MissionSummaries.length ) {{
                                             
                                             $badge.find( '.badge-icon-id-{2}' ).attr('style', 'opacity: .5' );
                                             $badge.find( '.badge-icon-id-{2}' ).removeClass( 'badge-disabled' );
