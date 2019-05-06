@@ -113,11 +113,11 @@ namespace RockWeb.Plugins.church_ccv.Core
 
                                 groupMember = groupMembers.First();
 
-                                groupMember.LoadAttributes();
+                                //groupMember.LoadAttributes();
 
-                                groupMember.SetAttributeValue("Attended", "Yes");
+                                groupMember.SetAttributeValue("Attended", "No");
 
-                                groupMember.SaveAttributeValues(rockContext);
+                                groupMember.SaveAttributeValues(personRockContext);
                             }
 
 
