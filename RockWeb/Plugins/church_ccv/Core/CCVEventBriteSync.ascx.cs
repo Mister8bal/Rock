@@ -55,7 +55,6 @@ namespace RockWeb.Plugins.church_ccv.Core
             int GroupId = 0;
 
             var groupService = new GroupService(rockContext);
-            var groupMemberService = new GroupMemberService(rockContext);
 
             Group selectedGroup = null;
             IQueryable<GroupMember> groupMembers;
@@ -91,6 +90,7 @@ namespace RockWeb.Plugins.church_ccv.Core
 
                             PersonService personService = new PersonService(personRockContext);
                             var attributeValueService = new AttributeValueService(personRockContext);
+                            var groupMemberService = new GroupMemberService(personRockContext);
 
                             // Try to find matching person
                             var personMatches = personService.GetByMatch(person.FirstName, person.LastName, person.Email).Select(p => p.Id);
