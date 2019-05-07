@@ -64,16 +64,24 @@ namespace church.ccv.CCVRest.Common
         public static bool HasAttendanceRecord(
             int personId,
             int attendanceGroupId,
-            DateTime startDateTime,
-            DateTime endDateTime,
+            DateTime startDateTimeWindow,
+            DateTime endDateTimeWindow,
             AttendanceService attendanceService,
             RockContext rockContext
         )
         {
+            // allow a window of time to control the validity of the attendance.
+            // For example: If you want to know if the user has attended on a "Saturday, 5-11-19",
+            // startDateTimeWindow would be 5-11-19 at 12:00am and endDateTimeWindow would be 5-11-19 at 11:59pm.
+            // If attendnace fell within that window, they attended.
+
+            // If you wanted to allow attendance within the past "hour", it would be
+            // startDateTimeWindow = Now.AddHour( -1 ) and endDateTimeWindow = Now.
+            // That creates a sliding window where attendance marked for now will be counted for the next hour.
             Attendance attendance = attendanceService.Queryable( "Group,PersonAlias.Person" )
                 .Where( a =>
-                    a.StartDateTime >= startDateTime &&
-                    a.StartDateTime < endDateTime &&
+                    a.StartDateTime >= startDateTimeWindow &&
+                    a.StartDateTime < endDateTimeWindow &&
                     a.GroupId == attendanceGroupId &&
                     a.PersonAlias.PersonId == personId )
                 .FirstOrDefault();
