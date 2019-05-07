@@ -355,10 +355,18 @@ namespace church.ccv.CCVRest.MobileApp
             RockContext rockContext = new RockContext();
             AttendanceService attendanceService = new AttendanceService( rockContext );
 
-            var dt = DateTime.Now;
-            dt = TimeZoneInfo.ConvertTime( dt, RockDateTime.OrgTimeZoneInfo );
+            // We want attendance records to be limited to "once a day". This is not the same as
+            // once every 24 hours.
 
-            return Common.Util.HasAttendanceRecord( personAlias.PersonId, Attendance_GroupId_CCVMobileAttendance, dt, attendanceService, rockContext );
+            // create a start date that's the start of today
+            var startDateTime = DateTime.Now.Date;
+            startDateTime = TimeZoneInfo.ConvertTime( startDateTime, RockDateTime.OrgTimeZoneInfo );
+
+            // and an end date that's 24 hours later, the exact end of the day
+            DateTime endDateTime = startDateTime.AddDays( 1 );
+
+            // now determine whether they've already recorded an attendance record for "today"
+            return Common.Util.HasAttendanceRecord( personAlias.PersonId, Attendance_GroupId_CCVMobileAttendance, startDateTime, endDateTime, attendanceService, rockContext );
         }
 
         public static bool SaveAttendanceRecord( PersonAlias personAlias, int? campusId, string host, string userAgent )
@@ -367,24 +375,26 @@ namespace church.ccv.CCVRest.MobileApp
             AttendanceService attendanceService = new AttendanceService( rockContext );
             PersonAliasService paService = new PersonAliasService( rockContext );
 
-            var dt = DateTime.Now;
-            dt = TimeZoneInfo.ConvertTime( dt, RockDateTime.OrgTimeZoneInfo );
-
-            // attempt to save the record. if we did, this will return true
-            if ( Common.Util.CreateAttendanceRecord( personAlias.PersonId, campusId, Attendance_GroupId_CCVMobileAttendance, dt, attendanceService, paService, rockContext ) )
+            if ( HasAttendanceRecord( personAlias ) == false )
             {
-                // log the interaction
-                AddMobileAppAttendanceInteraction( personAlias, dt, host, userAgent, rockContext );
+                // when recording an attendance record, use the actual date / time so we get an idea of when they were at service
+                var startDateTime = DateTime.Now;
+                startDateTime = TimeZoneInfo.ConvertTime( startDateTime, RockDateTime.OrgTimeZoneInfo );
 
-                rockContext.SaveChanges();
+                // attempt to save the record. if we did, this will return true
+                if ( Common.Util.CreateAttendanceRecord( personAlias.PersonId, campusId, Attendance_GroupId_CCVMobileAttendance, startDateTime, attendanceService, paService, rockContext ) )
+                {
+                    // log the interaction
+                    AddMobileAppAttendanceInteraction( personAlias, startDateTime, host, userAgent, rockContext );
 
-                return true;
+                    rockContext.SaveChanges();
+
+                    return true;
+                }
             }
-            // if a record already existed, false will be returned
-            else
-            {
-                return false;
-            }
+
+            // an attendance record already exists (or, extremely unlikely, the person couldn't be found)
+            return false;
         }
 
         private static void AddMobileAppAttendanceInteraction( PersonAlias personAlias, DateTime interactionDateTime, string host, string userAgent, RockContext rockContext )

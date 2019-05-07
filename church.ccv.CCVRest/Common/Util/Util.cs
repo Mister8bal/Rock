@@ -43,34 +43,19 @@ namespace church.ccv.CCVRest.Common
             RockContext rockContext
         )
         {
-            // if we already have an attendance record for this start time, don't count it again.
-            DateTime beginDate = startDateTime.Date;
-            DateTime endDate = beginDate.AddDays( 1 );
-
-            Attendance attendance = attendanceService.Queryable( "Group,PersonAlias.Person" )
-                .Where( a =>
-                    a.StartDateTime >= beginDate &&
-                    a.StartDateTime < endDate &&
-                    a.GroupId == attendanceGroupId &&
-                    a.PersonAlias.PersonId == personId )
-                .FirstOrDefault();
-
-            if ( attendance == null )
+            PersonAlias primaryAlias = personAliasService.GetPrimaryAlias( personId );
+            if ( primaryAlias != null )
             {
-                PersonAlias primaryAlias = personAliasService.GetPrimaryAlias( personId );
-                if ( primaryAlias != null )
-                {
-                    attendance = rockContext.Attendances.Create();
-                    attendance.CampusId = campusId;
-                    attendance.GroupId = attendanceGroupId;
-                    attendance.PersonAlias = primaryAlias;
-                    attendance.PersonAliasId = primaryAlias.Id;
-                    attendance.StartDateTime = startDateTime;
-                    attendance.DidAttend = true;
-                    attendanceService.Add( attendance );
+                var attendance = rockContext.Attendances.Create();
+                attendance.CampusId = campusId;
+                attendance.GroupId = attendanceGroupId;
+                attendance.PersonAlias = primaryAlias;
+                attendance.PersonAliasId = primaryAlias.Id;
+                attendance.StartDateTime = startDateTime;
+                attendance.DidAttend = true;
+                attendanceService.Add( attendance );
 
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -80,18 +65,15 @@ namespace church.ccv.CCVRest.Common
             int personId,
             int attendanceGroupId,
             DateTime startDateTime,
+            DateTime endDateTime,
             AttendanceService attendanceService,
             RockContext rockContext
         )
         {
-            // see if there's an attendance record on the provided startDateTime and within the group.
-            DateTime beginDate = startDateTime.Date;
-            DateTime endDate = beginDate.AddDays( 1 );
-
             Attendance attendance = attendanceService.Queryable( "Group,PersonAlias.Person" )
                 .Where( a =>
-                    a.StartDateTime >= beginDate &&
-                    a.StartDateTime < endDate &&
+                    a.StartDateTime >= startDateTime &&
+                    a.StartDateTime < endDateTime &&
                     a.GroupId == attendanceGroupId &&
                     a.PersonAlias.PersonId == personId )
                 .FirstOrDefault();

@@ -129,7 +129,10 @@ namespace church.ccv.CCVRest.CCVLive
             /**
              * Create a new attendance record
              */
-            attendanceLogged = Util.CreateAttendanceRecord(person.Id, CampusId, AttendanceGroupId, dt, attendanceService, personAliasService, rockContext);
+            if ( Common.Util.HasAttendanceRecord( person.Id, AttendanceGroupId, dt.Date, dt.Date.AddDays( 1 ), attendanceService, rockContext ) == false )
+            {
+                attendanceLogged = Util.CreateAttendanceRecord( person.Id, CampusId, AttendanceGroupId, dt.Date, attendanceService, personAliasService, rockContext );
+            }
 
             rockContext.SaveChanges();
 
