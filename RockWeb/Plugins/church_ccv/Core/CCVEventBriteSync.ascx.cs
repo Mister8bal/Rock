@@ -52,25 +52,20 @@ namespace RockWeb.Plugins.church_ccv.Core
 
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
-            int GroupId = 0;
-
-            var groupService = new GroupService(rockContext);
-
-            Group selectedGroup = null;
-            IQueryable<GroupMember> groupMembers;
-            GroupMember groupMember = null;
-
+            int syncGroupId = 0;
             
              //Parse the group ID from the from and
              //attempt to located the associated group.
              
-            if ( Int32.TryParse(tbGroupId.Text, out GroupId))
+            if ( Int32.TryParse(tbGroupId.Text, out syncGroupId ) == false)
             {
-                selectedGroup = groupService.Get(GroupId);
+                pnlError.Visible = true;
+                return;
             }
 
             if ( binaryFile == null )
             {
+                pnlError.Visible = true;
                 return;
             }
 
@@ -85,43 +80,39 @@ namespace RockWeb.Plugins.church_ccv.Core
 
                     foreach (var person in peopleList)
                     {
-                        using (var personRockContext = new RockContext())
+
+                        PersonService personService = new PersonService( rockContext );
+
+                        // Try to find matching person
+                        var personMatches = personService.GetByMatch(person.FirstName, person.LastName, person.Email).Select(p => p.Id);
+
+                        if (personMatches.Count() < 1)
+                        {
+                            continue;
+                        }
+
+                            //Loop through list of matching people and attempt
+                            //to locate a group member.
+                        foreach (var pId in personMatches)
                         {
 
-                            PersonService personService = new PersonService(personRockContext);
-                            var attributeValueService = new AttributeValueService(personRockContext);
-                            var groupMemberService = new GroupMemberService(personRockContext);
+                            var groupMemberService = new GroupMemberService(rockContext);
+                            var groupMembers = groupMemberService.GetByGroupIdAndPersonId(syncGroupId, pId);
 
-                            // Try to find matching person
-                            var personMatches = personService.GetByMatch(person.FirstName, person.LastName, person.Email).Select(p => p.Id);
-
-                            if (personMatches.Count() < 1)
+                            if (groupMembers.Count() < 1)
                             {
                                 continue;
                             }
 
-                            //Loop through list of matching people and attempt
-                            //to locate a group member.
-                            foreach (var pId in personMatches)
-                            {
-                                groupMembers = groupMemberService.GetByGroupIdAndPersonId(GroupId, pId);
+                            var groupMember = groupMembers.First();
 
-                                if (groupMembers.Count() < 1)
-                                {
-                                    continue;
-                                }
+                            groupMember.LoadAttributes();
 
-                                groupMember = groupMembers.First();
+                            groupMember.SetAttributeValue("Attended", "Yes");
 
-                                //groupMember.LoadAttributes();
-
-                                groupMember.SetAttributeValue("Attended", "Yes");
-
-                                groupMember.SaveAttributeValues(personRockContext);
-                            }
-
-
+                            groupMember.SaveAttributeValues(rockContext);
                         }
+                        
                     }
                     if (importErrors)
                     {
