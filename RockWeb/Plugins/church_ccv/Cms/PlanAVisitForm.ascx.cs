@@ -1101,7 +1101,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 FamilyId = _visit.FamilyId,
                 CampusId = _visit.CampusId,
                 ScheduledDate = _visit.VisitDate,
-                ServiceTimeScheduleId = _visit.ServiceTimeScheduleId,
+                ScheduledServiceScheduleId = _visit.ServiceTimeScheduleId,
                 BringingSpouse = _visit.SpouseFirstName.IsNotNullOrWhitespace() ? true : false,
                 BringingChildren = _visit.Children.Count > 0 ? true : false,
                 SurveyResponse = _visit.SurveyResponse,
