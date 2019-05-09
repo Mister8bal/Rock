@@ -22,10 +22,7 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         public DateTime? ScheduledDate { get; set; }
 
         [DataMember]
-        public DateTime? AttendedDate { get; set; }
-
-        [DataMember]
-        public int ServiceTimeScheduleId { get; set; }
+        public int ScheduledServiceScheduleId { get; set; }
 
         [DataMember]
         public bool BringingSpouse { get; set; }
@@ -35,6 +32,12 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
 
         [DataMember]
         public string SurveyResponse { get; set; }
+
+        [DataMember]
+        public DateTime? AttendedDate { get; set; }
+
+        [DataMember]
+        public int? AttendedServiceScheduleId { get; set; }
 
         [DataMember]
         public DateTime CreatedDateTime { get; set; }

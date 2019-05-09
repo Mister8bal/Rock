@@ -14,11 +14,12 @@ namespace church.ccv.CommandCenter.Migrations
         [FamilyId] [int] NOT NULL,
 	    [CampusId] [int] NOT NULL,
 	    [ScheduledDate] [datetime] NOT NULL,
-        [AttendedDate] [datetime] NULL,
-        [ServiceTimeScheduleId] [int] NOT NULL,
+        [ScheduledServiceScheduleId] [int] NOT NULL,
         [BringingSpouse] [bit] NOT NULL,
         [BringingChildren] [bit] NOT NULL,
 	    [SurveyResponse] [nvarchar](100) NULL,
+        [AttendedDate] [datetime] NULL,
+        [AttendedServiceScheduleId] [int] NULL,
         [Guid] [uniqueidentifier] NOT NULL,
 	    [CreatedDateTime] [datetime] NOT NULL,
 	    [ModifiedDateTime] [datetime] NOT NULL,
@@ -47,6 +48,16 @@ namespace church.ccv.CommandCenter.Migrations
     REFERENCES [dbo].[Campus] ([Id])
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_CampusId]
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_ScheduledServiceScheduleId] FOREIGN KEY([ScheduledServiceScheduleId])
+    REFERENCES [dbo].[Schedule] ([Id])
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_ScheduledServiceScheduleId]
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_AttendedServiceScheduleId] FOREIGN KEY([AttendedServiceScheduleId])
+    REFERENCES [dbo].[Schedule] ([Id])
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_AttendedServiceScheduleId]
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_CreatedByPersonAliasId] FOREIGN KEY([CreatedByPersonAliasId])
     REFERENCES [dbo].[PersonAlias] ([Id])
