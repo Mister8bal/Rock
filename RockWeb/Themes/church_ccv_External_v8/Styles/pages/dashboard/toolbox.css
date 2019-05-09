@@ -890,3 +890,16 @@
 }
 
 /* End Kids Coach Toolbox  */
+
+/* Overrides */
+.rock-modal .modal-footer .btn {
+    float: right;
+    margin-left: 5px;
+    min-width: 200px;
+    max-width: 200px;
+}
+
+.modal.modal-overflow {
+    top: 200px;
+}
+/* End Overrides */

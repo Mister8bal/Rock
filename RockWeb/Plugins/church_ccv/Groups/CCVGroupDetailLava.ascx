@@ -40,11 +40,16 @@
                 <div class="actions">
                     <asp:Button ID="btnSaveGroup" runat="server" AccessKey="s" CssClass="btn btn-primary" Text="Save" OnClick="btnSaveGroup_Click" />
                     <asp:LinkButton id="lbCancelGroup" runat="server" AccessKey="c" CssClass="btn btn-primary" OnClick="lbCancelGroup_Click" CausesValidation="false">Cancel</asp:LinkButton>
-                    <asp:Button ID="btnResetGroup" runat="server" AccessKey="s" CssClass="btn btn-primary" Text="Reset Group" OnClick="btnResetGroup_Click" />
+                    <asp:Button ID="btnResetGroup" runat="server" Text="Reset Group" CssClass="btn btn-primary" OnClick="btnReset_Click" />
                 </div>
             </div>
         </asp:Panel>
 
+        <Rock:ModalDialog ID="mdResetGroup" runat="server" Title="Please Confirm" SaveButtonText="Yes" OnSaveClick="btnResetGroup_Click">
+            <Content>
+                <asp:Literal ID="lConfirmResetGroupMsg" runat="server" />
+            </Content>
+        </Rock:ModalDialog>
 
         <asp:Panel ID="pnlEditGroupMember" runat="server" Visible="false">
             
