@@ -42,6 +42,8 @@ namespace church.ccv.CCVRest.MobileApp
             personModel.Birthdate = person.BirthDate;
             personModel.Age = person.Age;
 
+            personModel.DisplayAge = GetDisplayAge( person );
+
             if ( person.PhotoId.HasValue )
             {
                 personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId;
@@ -82,6 +84,8 @@ namespace church.ccv.CCVRest.MobileApp
                         LastName = groupMember.Person.LastName,
                         Age = groupMember.Person.Age
                     };
+
+                    familyMember.DisplayAge = GetDisplayAge( groupMember.Person );
 
                     if ( groupMember.Person.PhotoId.HasValue )
                     {
@@ -162,8 +166,7 @@ namespace church.ccv.CCVRest.MobileApp
             // their age determines whether we use adult vs student actions. If they have no age, or are >= 18, they're an adult
             if ( person.Age.HasValue == false || person.Age >= 18 )
             {
-                DateTime? baptismDate;
-                personModel.IsBaptised = Actions_Adult.Baptised.IsBaptised( person.Id, out baptismDate );
+                personModel.IsBaptised = Actions_Adult.Baptised.IsBaptised( person.Id, out personModel.BaptismDate );
                 personModel.IsWorshipping = Actions_Adult.ERA.IsERA( person.Id );
                 personModel.IsGiving = Actions_Adult.Give.IsGiving( person.Id );
 
@@ -195,8 +198,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // baptism is 9+ / 4th grade
                 if ( person.Age >= 9 )
                 {
-                    DateTime? baptismDate;
-                    personModel.IsBaptised = Actions_Student.Baptised.IsBaptised( person.Id, out baptismDate );
+                    personModel.IsBaptised = Actions_Student.Baptised.IsBaptised( person.Id, out personModel.BaptismDate );
                 }
                 else
                 {
@@ -481,6 +483,52 @@ namespace church.ccv.CCVRest.MobileApp
                 InteractionSessionId = interactionSession.Id
             };
             interactionService.Add( thisInteraction );
+        }
+
+        private static string GetDisplayAge( Person person )
+        {
+            string displayAge = string.Empty;
+
+            string formattedAge = person.FormatAge();
+
+            if ( string.IsNullOrWhiteSpace( formattedAge ) == false )
+            {
+                // take just the age NUMBER
+                string ageNumberStr = formattedAge.Split( ' ' )[0];
+
+                displayAge = "Age " + ageNumberStr;
+
+                // now determine the suffix. If it's years we do nothing. If it's months or days,
+                // we'll add it.
+                if ( formattedAge.Contains( "mo" ) )
+                {
+                    if ( ageNumberStr == "1" )
+                    {
+                        displayAge += " month";
+                    }
+                    else
+                    {
+                        displayAge += " months";
+                    }
+                }
+                else if ( formattedAge.Contains( "day" ) )
+                {
+                    if ( ageNumberStr == "0" )
+                    {
+                        displayAge = "Born today!";
+                    }
+                    else if ( ageNumberStr == "1" )
+                    {
+                        displayAge += " day";
+                    }
+                    else
+                    {
+                        displayAge += " days";
+                    }
+                }
+            }
+
+            return displayAge;
         }
     }
 }

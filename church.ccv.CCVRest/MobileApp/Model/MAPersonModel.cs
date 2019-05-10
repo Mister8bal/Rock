@@ -27,6 +27,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public int? Age;
 
+        public string DisplayAge;
+
         public int? CampusId;
 
 
@@ -53,6 +55,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         // Next Steps
         public bool? IsBaptised;
+        public DateTime? BaptismDate;
                    
         public bool? IsWorshipping;
                    
@@ -77,6 +80,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string LastName;
 
         public int? Age;
+
+        public string DisplayAge;
 
         public bool IsChild;
 
