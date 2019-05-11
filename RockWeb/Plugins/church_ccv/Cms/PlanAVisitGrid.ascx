@@ -27,20 +27,27 @@
                             <asp:ListItem Text="Yes" Value="Yes"></asp:ListItem>
                             <asp:ListItem Text="No" Value="No"></asp:ListItem>
                         </Rock:RockDropDownList>
+                        <Rock:RockDropDownList ID="ddlHasAttendedFilter" runat="server" Label="Has Attended">
+                            <asp:ListItem></asp:ListItem>
+                            <asp:ListItem Text="Yes" Value="Yes"></asp:ListItem>
+                            <asp:ListItem Text="No" Value="No"></asp:ListItem>
+                        </Rock:RockDropDownList>
                         <Rock:RockCheckboxList ID="cblAttendedServiceFilter" runat="server" Label="Attended Service" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                         <Rock:DateRangePicker ID="drpAttendedDateFilter" runat="server" Label="Attended Date" />
                     </Rock:GridFilter>
 
                     <Rock:Grid ID="gGrid" runat="server" AutoGenerateColumns="False" OnRowSelected="gGrid_RowSelected">
                         <Columns>
-                            <Rock:RockBoundField DataField="Campus" HeaderText="Campus"/>
-                            <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" />
-                            <Rock:RockBoundField DataField="ScheduledService" HeaderText="Scheduled Service" />
+                            <Rock:SelectField />
                             <Rock:RockBoundField DataField="Person" HeaderText="Person" HtmlEncode="false" />
+                            <Rock:RockBoundField DataField="PersonId" Visible="false" />
+                            <Rock:RockBoundField DataField="CampusName" HeaderText="Campus"/>
+                            <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" />
+                            <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" />
                             <Rock:RockBoundField DataField="BringingSpouse" HeaderText="Bringing Spouse" />                    
                             <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" />
                             <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" />
-                            <Rock:RockBoundField DataField="AttendedService" HeaderText="Attended Service" />
+                            <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" />
                             <Rock:DeleteField OnClick="gGrid_Delete" />
                         </Columns>
                     </Rock:Grid>

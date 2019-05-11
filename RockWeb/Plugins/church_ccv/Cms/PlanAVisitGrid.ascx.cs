@@ -20,7 +20,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [DisplayName( "Plan A Visit Grid" )]
     [Category( "CCV > Cms" )]
     [Description( "Grid used to display / manage Plan A Visit" )]
-    [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 0 )]
+    [CampusField( "Campus", "Limit results to campus specified", false, "", "", 0)]
+    [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 1 )]
     public partial class PlanAVisitGrid : RockBlock
     {
         #region Control Methods
@@ -141,6 +142,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                         break;
                     }
+                case "Has Attended":
+                    {
+                        e.Value = rFilter.GetUserPreference( "Has Attended" );
+
+                        break;
+                    }
                 case "Attended Service":
                     {
                         List<string> values = new List<string>();
@@ -183,7 +190,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             rFilter.SaveUserPreference( "Person's Name", tbPersonNameFilter.Text );
             rFilter.SaveUserPreference( "Bringing Spouse", ddlBringingSpouseFilter.SelectedValue );
             rFilter.SaveUserPreference( "Bringing Kids", ddlBringingChildrenFilter.SelectedValue );
-
+            rFilter.SaveUserPreference( "Has Attended", ddlHasAttendedFilter.SelectedValue );
             rFilter.SaveUserPreference( "Attended Service", cblAttendedServiceFilter.SelectedValues.AsDelimited( ";" ) );
             rFilter.SaveUserPreference( "Attended Date", drpAttendedDateFilter.DelimitedValues );
 
@@ -338,7 +345,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // load user preferences
             string campusValue = rFilter.GetUserPreference( "Campus" );
 
-            if ( campusValue.IsNotNullOrWhitespace() )S
+            if ( campusValue.IsNotNullOrWhitespace() )
             {
                 cblCampusFilter.SetValues( campusValue.Split( ';' ).ToList() );
             }
@@ -357,6 +364,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             ddlBringingSpouseFilter.SelectedValue = rFilter.GetUserPreference( "Bringing Spouse" );
 
             ddlBringingChildrenFilter.SelectedValue = rFilter.GetUserPreference( "Bringing Kids" );
+
+            ddlHasAttendedFilter.SelectedValue = rFilter.GetUserPreference( "Has Attended" );
 
             string attendedServiceValue = rFilter.GetUserPreference( "Attended Service" );
 
@@ -422,10 +431,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
             gGrid.Actions.Visible = true;
             gGrid.Actions.Enabled = true;
             gGrid.Actions.ShowBulkUpdate = false;
-            gGrid.Actions.ShowCommunicate = false;
+            gGrid.Actions.ShowCommunicate = true;
             gGrid.Actions.ShowExcelExport = true;
             gGrid.Actions.ShowMergePerson = false;
-            gGrid.Actions.ShowMergeTemplate = false;
+            gGrid.Actions.ShowMergeTemplate = true;
+
+            gGrid.CommunicationRecipientPersonIdFields = new List<string> { "PersonId" };
+
 
             gGrid.GridRebind += gGrid_Rebind;
         }
@@ -437,27 +449,235 @@ namespace RockWeb.Plugins.church_ccv.Cms
         {
             RockContext rockContext = new RockContext();
 
-            Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
+            // services for query
+            var planAVisitTable = new Service<PlanAVisit>( rockContext ).Queryable().AsNoTracking();
+            var campusTable = new CampusService( rockContext ).Queryable().AsNoTracking();
+            var personAliasTable = new PersonAliasService( rockContext ).Queryable().AsNoTracking();
+            var personTable = new PersonService( rockContext ).Queryable().AsNoTracking();
+            var scheduleTable = new ScheduleService( rockContext ).Queryable().AsNoTracking();
 
-            var pavQuery = pavService.Queryable().AsNoTracking();
+            var pavQuery = 
+                from planAVisit in planAVisitTable
+                join campus in campusTable on planAVisit.CampusId equals campus.Id into campuses
+                from campus in campuses.DefaultIfEmpty()
+                join personAlias in personAliasTable on planAVisit.PersonAliasId equals personAlias.Id into personAliases
+                from personAlias in personAliases.DefaultIfEmpty()
+                join person in personTable on personAlias.PersonId equals person.Id into people
+                from person in people.DefaultIfEmpty()
+                join scheduledSchedule in scheduleTable on planAVisit.ScheduledServiceScheduleId equals scheduledSchedule.Id into scheduleSchedules
+                from scheduledSchedule in scheduleSchedules.DefaultIfEmpty()
+                join attendedSchedule in scheduleTable on planAVisit.AttendedServiceScheduleId equals attendedSchedule.Id into attendedSchedules
+                from attendedSchedule in attendedSchedules.DefaultIfEmpty()
+                select new
+                {
+                    planAVisit.Id,
+                    planAVisit.PersonAliasId,
+                    PersonId = person.Id,
+                    person.FirstName,
+                    person.NickName,
+                    person.LastName,
+                    planAVisit.CampusId,
+                    CampusName = campus.Name,
+                    CampusGuid = campus.Guid,
+                    planAVisit.ScheduledDate,
+                    planAVisit.ScheduledServiceScheduleId,
+                    ScheduledServiceName = scheduledSchedule.Name,
+                    planAVisit.BringingSpouse,
+                    planAVisit.BringingChildren,
+                    planAVisit.AttendedDate,
+                    planAVisit.AttendedServiceScheduleId,
+                    AttendedServiceName = attendedSchedule.Name                    
+                };
 
-            var filteredQuery = pavQuery.AsEnumerable().Select( pav => 
+            // limit results to campus if specified in block settings
+            string avCampus = GetAttributeValue( "Campus" );
+
+            if ( avCampus.IsNotNullOrWhitespace() )
+            {
+                Guid campusGuid = avCampus.AsGuid();
+
+                pavQuery = pavQuery.Where( a => a.CampusGuid == campusGuid );
+            }
+
+            //
+            // apply user filters if needed
+            //
+            var filteredQuery = pavQuery.AsQueryable();
+
+            // by campus
+            if ( cblCampusFilter.SelectedValues.Count > 0 )
+            {
+                filteredQuery = filteredQuery.Where( a => cblCampusFilter.SelectedValues.Contains( a.CampusId.ToString() ) );
+            }
+
+            // by Scheduled Service
+            if ( cblScheduledServiceFilter.SelectedValues.Count > 0 )
+            {
+                filteredQuery = filteredQuery.Where( a => cblScheduledServiceFilter.SelectedValues.Contains( a.ScheduledServiceScheduleId.ToString() ) );
+            }
+
+            // by Scheduled Date
+            if ( drpScheduledDateFilter.DelimitedValues.IsNotNullOrWhitespace() )
+            {
+                DateTime? startDate = drpScheduledDateFilter.DateRange.Start;
+                DateTime? endDate = drpScheduledDateFilter.DateRange.End;
+
+                if ( startDate.HasValue )
+                {
+                    filteredQuery = filteredQuery.Where( a => a.ScheduledDate >= startDate );
+                }
+
+                if ( endDate.HasValue )
+                {
+                    filteredQuery = filteredQuery.Where( a => a.ScheduledDate <= endDate );
+                }
+            }
+
+            // by person's name
+            if ( tbPersonNameFilter.Text.IsNotNullOrWhitespace() )
+            {
+                filteredQuery = filteredQuery.Where( a => a.FirstName.Contains( tbPersonNameFilter.Text ) || a.NickName.Contains( tbPersonNameFilter.Text ) || a.LastName.Contains( tbPersonNameFilter.Text ) );
+            }
+
+            // by Bringing Spouse
+            if ( ddlBringingSpouseFilter.SelectedValue == "Yes")
+            {
+                filteredQuery = filteredQuery.Where( a => a.BringingSpouse == true );
+            }
+            else if ( ddlBringingSpouseFilter.SelectedValue == "No")
+            {
+                filteredQuery = filteredQuery.Where( a => a.BringingSpouse == false );
+            }
+
+            // by bringing Children
+            if ( ddlBringingChildrenFilter.SelectedValue == "Yes")
+            {
+                filteredQuery = filteredQuery.Where( a => a.BringingChildren == true );
+            }
+            else if ( ddlBringingChildrenFilter.SelectedValue == "No")
+            {
+                filteredQuery = filteredQuery.Where( a => a.BringingChildren == false );
+            }
+
+            // by Attended
+            if ( ddlHasAttendedFilter.SelectedValue == "Yes")
+            {
+                filteredQuery = filteredQuery.Where( a => a.AttendedDate.HasValue == true );
+
+            }
+            else if ( ddlHasAttendedFilter.SelectedValue == "No")
+            {
+                filteredQuery = filteredQuery.Where( a => a.AttendedDate.HasValue == false );
+            }
+                      
+            // by Attended Service
+            if ( cblAttendedServiceFilter.SelectedValues.Count > 0)
+            {
+                filteredQuery = filteredQuery.Where( a => cblAttendedServiceFilter.SelectedValues.Contains( a.AttendedServiceScheduleId.ToString() ) );
+            }
+
+            // by Attended Dated
+            if ( drpAttendedDateFilter.DelimitedValues.IsNotNullOrWhitespace() )
+            {
+                DateTime? startDate = drpAttendedDateFilter.DateRange.Start;
+                DateTime? endDate = drpAttendedDateFilter.DateRange.End;
+
+                if ( startDate.HasValue )
+                {
+                    filteredQuery = filteredQuery.Where( a => a.AttendedDate >= startDate );
+                }
+
+                if ( endDate.HasValue )
+                {
+                    filteredQuery = filteredQuery.Where( a => a.AttendedDate <= endDate );
+                }
+            }
+
+            // end filters
+
+            // sort results
+            SortProperty sortProperty = gGrid.SortProperty;
+
+            if ( sortProperty.IsNotNull() )
+            {
+                if ( sortProperty.Direction == SortDirection.Ascending )
+                {
+                    switch ( sortProperty.Property )
+                    {
+                        case "Campus":
+                            filteredQuery = filteredQuery.OrderBy( a => a.CampusName );
+                            break;
+                        case "ScheduledDate":
+                            filteredQuery = filteredQuery.OrderBy( a => a.ScheduledDate );
+                            break;
+                        case "ScheduledServiceName":
+                            filteredQuery = filteredQuery.OrderBy( a => a.ScheduledServiceName );
+                            break;
+                        case "BringingSpouse":
+                            filteredQuery = filteredQuery.OrderBy( a => a.BringingSpouse );
+                            break;
+                        case "BringingChildren":
+                            filteredQuery = filteredQuery.OrderBy( a => a.BringingChildren );
+                            break;
+                        case "AttendedDate":
+                            filteredQuery = filteredQuery.OrderBy( a => a.AttendedDate );
+                            break;
+                        case "AttendedServiceName":
+                            filteredQuery = filteredQuery.OrderBy( a => a.AttendedServiceName );
+                            break;
+                    }
+                }
+                else
+                {
+                    switch ( sortProperty.Property )
+                    {
+                        case "Campus":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.CampusName );
+                            break;
+                        case "ScheduledDate":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledDate );
+                            break;
+                        case "ScheduledServiceName":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledServiceName );
+                            break;
+                        case "BringingSpouse":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.BringingSpouse );
+                            break;
+                        case "BringingChildren":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.BringingChildren );
+                            break;
+                        case "AttendedDate":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.AttendedDate );
+                            break;
+                        case "AttendedServiceName":
+                            filteredQuery = filteredQuery.OrderByDescending( a => a.AttendedServiceName );
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                filteredQuery.OrderByDescending( a => a.ScheduledDate );
+            }
+            
+            // bind list to the grind
+            var filteredList = filteredQuery.AsEnumerable().Select( pav => 
                                     new {
-                                        Id = pav.Id,
-                                        ScheduledDate = pav.ScheduledDate,
-                                        ScheduledService = GetServiceTime(pav.ScheduledServiceScheduleId),
-                                        Campus = CampusCache.All().SingleOrDefault( a => a.Id == pav.CampusId ).Name,
+                                        pav.Id,
+                                        pav.ScheduledDate,
+                                        pav.ScheduledServiceName,
+                                        pav.CampusName,
+                                        pav.PersonId,
                                         Person = GetPersonLink(pav.PersonAliasId),
                                         BringingSpouse = pav.BringingSpouse ? "Yes" : "No",
                                         BringingChildren = pav.BringingChildren ? "Yes" : "No",
-                                        AttendedDate = pav.AttendedDate,
-                                        AttendedService = GetServiceTime(pav.AttendedServiceScheduleId)
+                                        pav.AttendedDate,
+                                        pav.AttendedServiceName,
                                     } ).ToList();
 
-            gGrid.DataSource = filteredQuery;
+            gGrid.DataSource = filteredList;
 
             gGrid.DataBind();
-
         }
 
         #endregion
@@ -548,24 +768,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             return String.Format( "<a href=/person/{0}>{1}</a>", person.Id, person.FullName);
         }
 
-        /// <summary>
-        /// Return the time from a schedule using the schedule Id
-        /// </summary>
-        /// <param name="serviceTimeScheduleId"></param>
-        /// <returns></returns>
-        private object GetServiceTime( int? serviceTimeScheduleId )
-        {
-            if ( serviceTimeScheduleId > 0 )
-            {
-                Schedule schedule = new ScheduleService( new RockContext() ).Get( serviceTimeScheduleId ?? default(int) );
-
-                // only return the time. IE Saturday 4:00pm returns just 4:00pm
-                return schedule.Name.Substring( schedule.Name.IndexOf( ' ' ) + 1 );
-            }
-
-            return null;
-        }
-
         #endregion
+
     }
 }
