@@ -14,6 +14,7 @@ namespace church.ccv.CCVRest.MobileApp
     public class MAPersonService
     {
         const int GroupRoleId_ChildInFamily = 4;
+        const int RecordStatusId_InActive = 1;
         const int Attendance_GroupId_CCVMobileAttendance = 2595385;
 
         public static MAPersonModel GetMobileAppPerson( int personId )
@@ -74,8 +75,12 @@ namespace church.ccv.CCVRest.MobileApp
             personModel.FamilyMembers = new List<FamilyMemberModel>();
             foreach ( GroupMember groupMember in family.Members )
             {
-                // don't add the person we're getting info about into their list of family members
-                if ( groupMember.Person.Id != personId )
+                // don't add the person we're getting info about into their list of family members,
+                // and don't take family members that have an InActive record status
+                // and to be extra safe, don't include deceased persons
+                if ( groupMember.Person.Id != personId && 
+                     groupMember.Person.RecordStatusValueId != RecordStatusId_InActive && 
+                     groupMember.Person.IsDeceased == false )
                 {
                     FamilyMemberModel familyMember = new FamilyMemberModel
                     {
