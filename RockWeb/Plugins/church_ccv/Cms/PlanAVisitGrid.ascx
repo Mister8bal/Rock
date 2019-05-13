@@ -43,7 +43,7 @@
                             <Rock:SelectField />
                             <Rock:RockBoundField DataField="Person" HeaderText="Person" HtmlEncode="false" />
                             <Rock:RockBoundField DataField="PersonId" Visible="false" />
-                            <Rock:RockBoundField DataField="CampusName" HeaderText="Campus" SortExpression="Campus"/>
+                            <Rock:RockBoundField DataField="Campus" HeaderText="Campus" SortExpression="Campus"/>
                             <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="ScheduledDate" />
                             <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" SortExpression="ScheduledServiceName" />
                             <Rock:RockBoundField DataField="BringingSpouse" HeaderText="Bringing Spouse" SortExpression="BringingSpouse" />                    

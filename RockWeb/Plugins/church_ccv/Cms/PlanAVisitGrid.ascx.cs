@@ -617,71 +617,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             // end filters
-
-            // sort the results
-            SortProperty sortProperty = gGrid.SortProperty;
-
-            if ( sortProperty.IsNotNull() )
-            {
-                if ( sortProperty.Direction == SortDirection.Ascending )
-                {
-                    switch ( sortProperty.Property )
-                    {
-                        case "Campus":
-                            filteredQuery = filteredQuery.OrderBy( a => a.CampusName );
-                            break;
-                        case "ScheduledDate":
-                            filteredQuery = filteredQuery.OrderBy( a => a.ScheduledDate );
-                            break;
-                        case "ScheduledServiceName":
-                            filteredQuery = filteredQuery.OrderBy( a => a.ScheduledServiceName );
-                            break;
-                        case "BringingSpouse":
-                            filteredQuery = filteredQuery.OrderBy( a => a.BringingSpouse );
-                            break;
-                        case "BringingChildren":
-                            filteredQuery = filteredQuery.OrderBy( a => a.BringingChildren );
-                            break;
-                        case "AttendedDate":
-                            filteredQuery = filteredQuery.OrderBy( a => a.AttendedDate );
-                            break;
-                        case "AttendedServiceName":
-                            filteredQuery = filteredQuery.OrderBy( a => a.AttendedServiceName );
-                            break;
-                    }
-                }
-                else
-                {
-                    switch ( sortProperty.Property )
-                    {
-                        case "Campus":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.CampusName );
-                            break;
-                        case "ScheduledDate":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledDate );
-                            break;
-                        case "ScheduledServiceName":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledServiceName );
-                            break;
-                        case "BringingSpouse":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.BringingSpouse );
-                            break;
-                        case "BringingChildren":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.BringingChildren );
-                            break;
-                        case "AttendedDate":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.AttendedDate );
-                            break;
-                        case "AttendedServiceName":
-                            filteredQuery = filteredQuery.OrderByDescending( a => a.AttendedServiceName );
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledDate );
-            }
             
             // bind list to the grind
             var filteredList = filteredQuery.AsEnumerable().Select( pav => 
@@ -689,16 +624,29 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                         pav.Id,
                                         pav.ScheduledDate,
                                         pav.ScheduledServiceName,
-                                        pav.CampusName,
+                                        Campus = pav.CampusName,
                                         pav.PersonId,
                                         Person = GetPersonLink(pav.PersonAliasId),
                                         BringingSpouse = pav.BringingSpouse ? "Yes" : "No",
                                         BringingChildren = pav.BringingChildren ? "Yes" : "No",
                                         pav.AttendedDate,
                                         pav.AttendedServiceName,
-                                    } ).ToList();
+                                    } ).ToList().AsQueryable();
 
-            gGrid.DataSource = filteredList;
+            // sort the results
+            SortProperty sortProperty = gGrid.SortProperty;
+
+            if ( sortProperty.IsNotNull() )
+            {
+                filteredList = filteredList.Sort( sortProperty );
+
+            }
+            else
+            {
+                filteredList = filteredList.OrderByDescending( a => a.ScheduledDate );
+            }
+
+            gGrid.DataSource = filteredList.ToList();
 
             gGrid.DataBind();
         }
