@@ -1,6 +1,342 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisitForm" %>
 
-<link rel="stylesheet" href="/Plugins/church_ccv/Cms/styles/plan-a-visit-form.css">
+<style>
+    .plan-a-visit {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 100px 0 150px;
+    }
+
+    h2 {
+        line-height: 100%;
+    }
+
+    p {
+        color: #333;
+    }
+
+    /* Progress Header */
+    .form-progress {
+        display: flex;
+        justify-content: center;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+    }
+
+    .step-number {
+        border-bottom: none;
+        background-color: #7A1315;
+        color: #FFFFFF;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .inactive .step-number {
+        background-color: #999999;
+    }
+
+    .inactive h5 {
+        color: #999999;
+    }
+         
+    /* Form */
+    .form-header {
+        text-align: center;
+    }
+
+    .required-key {
+        align-self: flex-end;
+    }
+
+    .required-key:before {
+        margin-right: 4px;
+        font-family: FontAwesome;
+        font-size: 4px;
+        color: #eca9a7;
+        vertical-align: super;
+        content: '\f111';
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-row-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .form-field, .input-group.input-width-md {
+        width: 100%;
+    }
+
+    .form-navigation {
+        display: flex;
+        justify-content: center;
+        padding: 40px 0 0 0;
+    }
+
+    .form-navigation .btn {
+        margin: 0 10px;
+        min-width: 100px;
+        max-width: 200px;
+    }
+
+    .row-centered {
+        text-align: center;
+    }
+
+    /* Adults Form */
+    .existing-people {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    #rblExisting {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    #rblExisting .radio:last-child {
+        align-self: center;
+    }
+
+    #rblExisting .radio label {
+        width: 100%;
+    }
+
+    .existing-person {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .existing-person p {
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .existing-person-name {
+        color: #000;
+        font-weight: 900;
+    }
+
+    /* Children Form */
+    .existing-children-vertical {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .existing-children-vertical .existing-child {
+        font-family: heebo;
+        color: #7c7c7c;
+        font-weight: 900;
+        padding: 10px 0;
+    }
+
+    .existing-children-buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .existing-children-buttons .btn {
+        margin: 10px 0;
+    }
+
+    .child-optional-toggles {
+        flex-direction: column-reverse;
+    }
+
+    .existing-children-horizontal {
+        display: flex;
+    }
+
+    .existing-children-horizontal .existing-child {
+        background-color: #e2e1e1;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .child-optional {
+        background-color: #ebebeb;
+        padding: 0 10px 20px 10px;
+    }
+
+    .rock-radio-button-list {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #rblAllergies, #rblGender {
+        display: flex;
+    }
+
+    #rblAllergies .radio-inline:first-of-type, #rblGender .radio-inline:first-of-type {
+        margin-right: 20px;
+    }
+
+    #rblAllergies label, #rblGender label, #rblSurvey label {
+        font-family: heebo;
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: normal;
+        white-space: normal;
+        border-radius: 4px;
+        background-color: #FFFFFF;
+        border: 2px solid #b8b8b8;
+        text-transform: uppercase;
+        color: #000000;
+    }
+
+    #rblAllergies label, #rblGender label {
+        height: 50px;
+        width: 120px;
+        padding: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 0;
+    }
+
+    #rblSurvey label {
+        width: 300px;
+        margin: 0;
+        padding: 12px;
+        font-size: 16px;
+        font-family: akrobat;
+        line-height: 16px;
+        margin: 5px 3px;
+    }
+
+    #rblAllergies input[type="radio"], #rblGender input[type="radio"], #rblSurvey input[type="radio"] {
+        width: 0px;
+        height: 0px;
+        display: none;
+    }
+
+    .child-optional .form-row {
+        padding: 20px 10px;
+    }
+
+    .field-allergies textarea {
+        background-color: #FFFFFF;
+        border-bottom: none;
+        border-radius: 4px;
+    }
+
+    #btnChildrenAddAnother {
+        margin-top: 20px;
+        max-width: unset;
+    }
+
+    .radio-inline.active {
+        background-color: #7A1315 !important;
+        border-color: #7A1315 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Confirm Your Visit */
+    .visit-details {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 0 30px 0;
+    }
+
+    .visit-details input {
+        padding-top: 14px;
+        font-size: 12px;
+        color: #7A1315;
+        text-transform: uppercase;
+    }
+
+    .confirm-detail {
+        padding: 3px 0;
+        font-weight: bold;
+    }
+
+    .confirm-detail select {
+        min-width: 200px;
+    }
+
+    /* spacer for anchor tag to move it below header */
+    :target:before {
+        content: "";
+        display: block;
+        height: 50px;
+        margin: -50px 0 0;
+    }
+
+    /* overrides */
+    .btn[disabled] {
+        background-color: #999999;
+        border-color: #999999;
+    }
+
+    .form-control:focus {
+        border-color: #ccc; 
+    }
+
+    .plan-a-visit select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    /* Desktop Styling */
+    @media screen and (min-width: 500px) {
+        .form-row {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .form-field:nth-child(2), .form-field:nth-child(3) {
+            margin-left: 30px;
+        }
+
+        .existing-people {
+            width: 75%;
+        }
+
+        .existing-children-buttons {
+            flex-direction: row;
+        }
+
+        #btnChildrenAddAnother {
+            max-width: 200px;
+        }
+
+        .field-grade {
+            width: 22%;
+            margin-right: 20px;
+        }
+
+        /* overrides */
+        .plan-a-visit .btn {
+            min-width: 150px;
+            margin: 0 10px;
+        }
+
+        .form-navigation .btn.btn-primary.start-over {
+            min-width: 200px;
+            max-width: 200px;
+        }
+    }
+</style>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
 
