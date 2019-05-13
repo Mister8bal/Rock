@@ -186,12 +186,25 @@ namespace RockWeb.Plugins.church_ccv.Groups
         }
 
         /// <summary>
+        /// Handles the Click event of the btnReset_Click control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void btnReset_Click( object sender, EventArgs e )
+        {
+            lConfirmResetGroupMsg.Text = string.Format( "Are you sure you want to reset this group?" );
+            mdResetGroup.Show();
+        }
+
+        /// <summary>
         /// Handles the Click event of the btnResetGroup_Click control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnResetGroup_Click( object sender, EventArgs e )
         {
+            mdResetGroup.Hide();
+
             RockContext rockContext = new RockContext();
             GroupService groupService = new GroupService( rockContext );
             GroupMemberService groupMemberService = new GroupMemberService( rockContext );

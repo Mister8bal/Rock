@@ -17,7 +17,7 @@
 
     {% unless upcomingMaintenance == '' %}
         <div class="announcement-bar">
-            CCV's website will be temporarily unavailable for scheduled maintenance starting at {{ upcomingMaintenance }}.
+            CCV STARS's website will be temporarily unavailable for scheduled maintenance starting at {{ upcomingMaintenance }}.
         </div>
     {% endunless %}
 {% endif %}

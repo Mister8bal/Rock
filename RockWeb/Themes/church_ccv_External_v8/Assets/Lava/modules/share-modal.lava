@@ -1,0 +1,184 @@
+{% comment %}
+    Paste this wherever you want the Share Feature: (Don't include the BEGIN / END copy lines. Duh.)
+
+    <!--BEGIN COPY-->
+    <div class="content">
+        <div class="content-item">
+            <div class="item-share">
+                <p>Share this Series:</p>
+                <span id="shareButton" class="mdi mdi-launch"></span>
+            </div>
+        </div>
+    </div>
+        
+    {% capture shareUrl %}https://ccv.church/watch/stories/story/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
+
+    {% assign navigatorTitle = 'Share Story' %}
+    {% assign navigatorText = 'Share this story' %}
+    {% assign navigatorUrl = {{shareUrl}} %}
+
+    {% assign smsBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+    {% assign emailSubject = 'Check out this story!' %}
+    {% assign emailBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+    {% assign fbBody = 'Check out this story from CCV' %}
+    {% assign twitterBody = 'Check out this story from CCV' %}
+
+    {% include '~~/Assets/Lava/modules/share-modal.lava' %}
+    <!--END COPY-->
+{% endcomment %}
+
+<!-- The Modal -->
+<div id="shareModal" class="share-modal">
+    <div class="share-modal-content">
+        <div class="share-modal-header">
+            <h4>Share via:</h4>
+        </div>
+        <div class="share-modal-body">
+            <a href="sms:&body={{smsBody}}"><i class="fa fa-comment share-sms"></i></a>
+            <a href="mailto:?subject={{emailSubject}}&body={{emailBody}}"><i class="fa fa-envelope share-email"></i></a>
+            <a target="blank" href="https://www.facebook.com/dialog/share?app_id=495461873811179&display=page&href={{shareUrl}}&quote={{fbBody}}."><i class="fa fa-facebook-square share-facebook"></i></a>
+            <a target="blank" href="https://twitter.com/intent/tweet?url={{shareUrl}}&text={{twitterBody}}"><i class="fa fa-twitter-square share-twitter"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modals
+    var shareModal = document.getElementById('shareModal');
+
+    // Get the buttons that opens the modals
+    var shareButton = document.getElementById('shareButton');
+
+    // When the user clicks the button, open the modal 
+    shareButton.onclick = function() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ navigatorTitle }}',
+                text: '{{ navigatorText }}',
+                url: '{{ shareUrl }}',
+            })
+        } else {
+            shareModal.style.display = "block";
+        }
+    }
+
+    // When the user clicks anywhere outside of the modals, close them
+    window.onclick = function(event) {
+        if (event.target == shareModal ) {
+            shareModal.style.display = "none";
+        }
+    }            
+</script>
+
+<style>
+    /* Share Section */
+    .share-modal-header h4 {
+        font-family: akrobat;
+        padding: 0;
+        color: rgb(85, 85, 85);
+        font-size: 20px;
+        font-weight: 300;
+    }
+
+    .item-share {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 5%;
+    }
+
+    .item-share p {
+        text-transform: uppercase;
+        font-size: 18px;
+        margin: 10px 0 0 0;
+        color: rgb(85, 85, 85);
+    }
+
+    .item-share p {
+        font-size: 18px;
+        font-family: akrobat;
+    }
+
+    .item-share .mdi-launch {
+        font-size: 35px;
+    }
+
+    #shareButton {
+        background-color: #7A1315;
+        cursor: pointer;
+        color: #fefefe;
+        border-radius: 50%;
+        width: 50px;
+    }
+
+    /* Modals */
+    .share-modal {
+        display: none; 
+        position: fixed;
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgb(0,0,0); 
+        background-color: rgba(0,0,0,0.4); 
+        -webkit-animation-name: fadeIn; 
+        -webkit-animation-duration: 0.4s;
+        animation-name: fadeIn;
+        animation-duration: 0.4s;
+    }
+
+    /* Share Modal Content */
+    .share-modal-content {
+        position: fixed;
+        bottom: 0;
+        background-color: #fefefe;
+        width: 100%;
+        -webkit-animation-name: slideIn;
+        -webkit-animation-duration: 0.4s;
+        animation-name: slideIn;
+        animation-duration: 0.4s;
+        padding-bottom: 100px;
+        text-align: center;
+    }
+
+    .share-modal-header {
+        padding: 9px 16px;
+        background-color: #FFFFFF;
+        color: white;
+    }
+
+    .share-modal-body {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 30px;
+        margin: 0 40%;
+    }
+
+    .share-sms, .share-email, .share-facebook, .share-twitter {
+        font-size: 32px;
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes slideIn {
+        from {bottom: -300px; opacity: 0} 
+        to {bottom: 0; opacity: 1}
+    }
+
+    @keyframes slideIn {
+        from {bottom: -300px; opacity: 0}
+        to {bottom: 0; opacity: 1}
+    }
+
+    @-webkit-keyframes fadeIn {
+        from {opacity: 0} 
+        to {opacity: 1}
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0} 
+        to {opacity: 1}
+    }
+</style>
