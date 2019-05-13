@@ -11,6 +11,7 @@ using Rock;
 using Rock.Attribute;
 using Rock.Data;
 using Rock.Model;
+using Rock.Security;
 using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
@@ -56,7 +57,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 BindFilter();
                 BindGrid();
             }
-
         }
 
         #endregion
@@ -86,6 +86,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             {
                 case "Campus":
                     {
+                        // show campus names in filter
                         List<string> values = new List<string>();
 
                         foreach ( string value in e.Value.Split( ';' ) )
@@ -103,6 +104,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     }
                 case "Scheduled Service":
                     {
+                        // show schedule name in filter
                         List<string> values = new List<string>();
 
                         foreach ( string value in e.Value.Split( ';' ) )
@@ -150,6 +152,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     }
                 case "Attended Service":
                     {
+                        // show schedule name in filter
                         List<string> values = new List<string>();
 
                         foreach ( string value in e.Value.Split( ';' ) )
@@ -216,7 +219,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             Person person = new PersonAliasService( rockContext ).Get( visit.PersonAliasId ).Person;
 
-            mdManageVisit.Title = string.Format( "WHen did {0} attend?", person.FullName );
+            mdManageVisit.Title = string.Format( "When did {0} attend?", person.FullName );
         
             // update date picker
             if ( visit.AttendedDate.HasValue )
@@ -233,7 +236,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // Bind the proper options for service time dropdown
             BindServicesTimesDropdown( visit.CampusId, dpDateAttended.SelectedDate );
 
-            // if visit has an attended date, select it
+            // if visit has an attended service, select it
             ddlServiceAttended.SelectedIndex = ddlServiceAttended.Items.IndexOf( ddlServiceAttended.Items.FindByValue( visit.AttendedServiceScheduleId.ToString() ) );
 
             // set hidden field with visit id for save event
@@ -253,26 +256,29 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             PlanAVisit visit = new Service<PlanAVisit>( rockContext ).Get( int.Parse( hfModalVisitId.Value ) );
 
-            // update attended date if it doesnt match existing value
-            if ( dpDateAttended.SelectedDate != visit.AttendedDate )
+            if ( visit.IsNotNull() )
             {
-                visit.AttendedDate = dpDateAttended.SelectedDate;
+                // update attended date if it doesnt match existing value
+                if ( dpDateAttended.SelectedDate != visit.AttendedDate )
+                {
+                    visit.AttendedDate = dpDateAttended.SelectedDate;
+                }
+
+                // update service time if selected doesnt match existing value
+                if ( ddlServiceAttended.SelectedValue != visit.AttendedServiceScheduleId.ToString() )
+                {
+                    visit.AttendedServiceScheduleId = ddlServiceAttended.SelectedValue.AsInteger() > 0 ? ddlServiceAttended.SelectedValue.AsInteger() : null as int?;
+                }
+
+                rockContext.SaveChanges();
+
+                // reset date picker to empty
+                dpDateAttended.SelectedDate = new DateTime( 0 );
+
+                mdManageVisit.Hide();
+
+                BindGrid();
             }
-
-            // update service time if selected doesnt match existing value
-            if ( ddlServiceAttended.SelectedValue != visit.AttendedServiceScheduleId.ToString() )
-            {
-                visit.AttendedServiceScheduleId = ddlServiceAttended.SelectedValue.AsInteger() > 0 ? ddlServiceAttended.SelectedValue.AsInteger() : null as int?;
-            }
-
-            rockContext.SaveChanges();
-
-            // reset date picker to empty
-            dpDateAttended.SelectedDate = new DateTime( 0 );
-
-            mdManageVisit.Hide();
-
-            BindGrid();
         }
 
         /// <summary>
@@ -282,17 +288,21 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e"></param>
         protected void gGrid_Delete( object sender, RowEventArgs e )
         {
-            RockContext rockContext = new RockContext();
+            // ensure current user has edit access before deleting
+            if ( IsUserAuthorized( Authorization.EDIT ) )
+            {
+                RockContext rockContext = new RockContext();
 
-            Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
+                Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
 
-            PlanAVisit visit = pavService.Get( e.RowKeyId );
+                PlanAVisit visit = pavService.Get( e.RowKeyId );
 
-            pavService.Delete( visit );
+                pavService.Delete( visit );
 
-            rockContext.SaveChanges();
+                rockContext.SaveChanges();
 
-            BindGrid();
+                BindGrid();
+            }                
         }
 
         /// <summary>
@@ -302,7 +312,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e"></param>
         private void gGrid_Rebind( object sender, EventArgs e )
         {
-            //BindFilter();
+            BindFilter();
             BindGrid();
         }
 
@@ -316,8 +326,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // load the visit being updated
             PlanAVisit visit = new Service<PlanAVisit>( new RockContext() ).Get( int.Parse( hfModalVisitId.Value ) );
 
+            // update dropdown to include service times for selected date
             BindServicesTimesDropdown( visit.CampusId, dpDateAttended.SelectedDate );
-
         }
 
         #endregion
@@ -328,11 +338,17 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
         #region Filter Methods
 
+        /// <summary>
+        /// Initialize the grid filter
+        /// </summary>
         void InitFilter()
         {
             rFilter.ApplyFilterClick += rFilter_ApplyFilterClick;
         }
 
+        /// <summary>
+        /// Bind the grid filter
+        /// </summary>
         private void BindFilter()
         {
             // bind campuses
@@ -342,7 +358,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // bind service times
             BindServiceTimesCheckBoxList();
 
+            //
             // load user preferences
+            //
+
             string campusValue = rFilter.GetUserPreference( "Campus" );
 
             if ( campusValue.IsNotNullOrWhitespace() )
@@ -387,8 +406,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             cblAttendedServiceFilter.Items.Clear();
 
             // setup schedule service, schedule lookup list, and selected schedules
-            RockContext rockContext = new RockContext();
-            ScheduleService scheduleService = new ScheduleService( rockContext );
+            ScheduleService scheduleService = new ScheduleService( new RockContext() );
 
             var scheduleLookupList = scheduleService.Queryable().Where( a => a.Name != null && a.Name != "" ).ToList().Select( a => new
             {
@@ -396,7 +414,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 a.Name
             } );
 
-            var selectedScheduleIds = new ScheduleService( rockContext ).GetByGuids( this.GetAttributeValue( "ServiceSchedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
+            var selectedScheduleIds = scheduleService.GetByGuids( this.GetAttributeValue( "ServiceSchedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
 
             // loop through each selected schedule and add to checkbox lists
             foreach ( var selectedSchedule in selectedScheduleIds )
@@ -405,7 +423,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 if ( scheduleLookup.IsNotNull() )
                 {
-                    // yes we need a unique schedule item for each list
+                    // yes we need unique list items for ScheduledService and AttendedService
                     ListItem itemScheduled = new ListItem( scheduleLookup.Name, scheduleLookup.Id.ToString() );
 
                     cblScheduledServiceFilter.Items.Add( itemScheduled );
@@ -438,6 +456,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             gGrid.CommunicationRecipientPersonIdFields = new List<string> { "PersonId" };
 
+            // show Delete column if current user has edit access
+            if ( IsUserAuthorized( Authorization.EDIT ) )
+            {
+                gGrid.Columns[10].Visible = true;
+            }
 
             gGrid.GridRebind += gGrid_Rebind;
         }
@@ -500,7 +523,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             //
-            // apply user filters if needed
+            // apply user filters if specified
             //
             var filteredQuery = pavQuery.AsQueryable();
 
@@ -595,7 +618,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             // end filters
 
-            // sort results
+            // sort the results
             SortProperty sortProperty = gGrid.SortProperty;
 
             if ( sortProperty.IsNotNull() )
@@ -657,7 +680,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
             else
             {
-                filteredQuery.OrderByDescending( a => a.ScheduledDate );
+                filteredQuery = filteredQuery.OrderByDescending( a => a.ScheduledDate );
             }
             
             // bind list to the grind
@@ -704,7 +727,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 a.Name
             } );
 
-            var selectedScheduleIds = new ScheduleService( rockContext ).GetByGuids( this.GetAttributeValue( "ServiceSchedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
+            var selectedScheduleIds = scheduleService.GetByGuids( this.GetAttributeValue( "ServiceSchedules" ).SplitDelimitedValues().AsGuidList() ).Select( a => a.Id ).ToList();
 
             // get the campus
             CampusCache campus = CampusCache.Read( campusId, rockContext );

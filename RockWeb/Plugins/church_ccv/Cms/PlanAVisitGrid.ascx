@@ -2,7 +2,9 @@
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
-        <asp:Panel ID="pVolunteerScreeningList" runat="server" class="panel panel-block">
+
+        <asp:Panel ID="pnlPlanAVisitGrid" runat="server" class="panel panel-block">
+
             <div class="panel-heading">
                 <div class="row col-sm-4">
                     <h4 class="panel-title">Plan A Visit</h4>
@@ -36,19 +38,19 @@
                         <Rock:DateRangePicker ID="drpAttendedDateFilter" runat="server" Label="Attended Date" />
                     </Rock:GridFilter>
 
-                    <Rock:Grid ID="gGrid" runat="server" AutoGenerateColumns="False" OnRowSelected="gGrid_RowSelected">
+                    <Rock:Grid ID="gGrid" runat="server" AutoGenerateColumns="False" OnRowSelected="gGrid_RowSelected" AllowSorting="true">
                         <Columns>
                             <Rock:SelectField />
                             <Rock:RockBoundField DataField="Person" HeaderText="Person" HtmlEncode="false" />
                             <Rock:RockBoundField DataField="PersonId" Visible="false" />
-                            <Rock:RockBoundField DataField="CampusName" HeaderText="Campus"/>
-                            <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" />
-                            <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" />
-                            <Rock:RockBoundField DataField="BringingSpouse" HeaderText="Bringing Spouse" />                    
-                            <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" />
-                            <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" />
-                            <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" />
-                            <Rock:DeleteField OnClick="gGrid_Delete" />
+                            <Rock:RockBoundField DataField="CampusName" HeaderText="Campus" SortExpression="Campus"/>
+                            <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="ScheduledDate" />
+                            <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" SortExpression="ScheduledServiceName" />
+                            <Rock:RockBoundField DataField="BringingSpouse" HeaderText="Bringing Spouse" SortExpression="BringingSpouse" />                    
+                            <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" SortExpression="BringingChildren" />
+                            <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="AttendedDate" />
+                            <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" SortExpression="AttendedServiceName" />
+                            <Rock:DeleteField OnClick="gGrid_Delete" Visible="false" ID="gGridDeleteField" />
                         </Columns>
                     </Rock:Grid>
 
@@ -70,6 +72,7 @@
 
                 </div>
             </div>
+
         </asp:Panel>
 
     </ContentTemplate>
