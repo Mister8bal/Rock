@@ -1,5 +1,13 @@
 {% comment %}
   {% assign returnPage = '/watch/stories' %}
+  
+  {% capture shareUrl %}https://ccv.church/watch/stories/story/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
+  {% assign smsBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+  {% assign emailSubject = 'Check out this story!' %}
+  {% assign emailBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+  {% assign fbBody = 'Check out this story from CCV' %}
+  {% assign twitterBody = 'Check out this story from CCV' %}
+  
   {% include '~~/Assets/Lava/watch/stories-detail.lava' %}
 {% endcomment %}
 
@@ -53,17 +61,9 @@
             </div>
         </div>
         
-        {% capture shareUrl %}https://ccv.church{{returnPage}}/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
-
         {% assign navigatorTitle = 'Share Story' %}
         {% assign navigatorText = 'Share this story' %}
         {% assign navigatorUrl = {{shareUrl}} %}
-
-        {% assign smsBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
-        {% assign emailSubject = 'Check out this story!' %}
-        {% assign emailBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
-        {% assign fbBody = 'Check out this story from CCV' %}
-        {% assign twitterBody = 'Check out this story from CCV' %}
 
         {% include '~~/Assets/Lava/modules/share-modal.lava' %}
     </div>
