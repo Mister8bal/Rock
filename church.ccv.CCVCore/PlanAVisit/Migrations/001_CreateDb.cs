@@ -10,12 +10,12 @@ namespace church.ccv.CommandCenter.Migrations
             Sql( @"
     CREATE TABLE [dbo].[_church_ccv_PlanAVisit_Visit](
 	    [Id] [int] IDENTITY(1,1) NOT NULL,
-        [PersonAliasId] [int] NOT NULL,
+        [AdultOnePersonAliasId] [int] NOT NULL,
+        [AdultTwoPersonAliasId] [int] NULL,
         [FamilyId] [int] NOT NULL,
 	    [CampusId] [int] NOT NULL,
 	    [ScheduledDate] [datetime] NOT NULL,
         [ScheduledServiceScheduleId] [int] NOT NULL,
-        [BringingSpouse] [bit] NOT NULL,
         [BringingChildren] [bit] NOT NULL,
 	    [SurveyResponse] [nvarchar](100) NULL,
         [AttendedDate] [datetime] NULL,
@@ -34,10 +34,15 @@ namespace church.ccv.CommandCenter.Migrations
     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
     ) ON [PRIMARY]
 
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_PersonAliasId] FOREIGN KEY([PersonAliasId])
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_AdultOnePersonAliasId] FOREIGN KEY([AdultOnePersonAliasId])
     REFERENCES [dbo].[PersonAlias] ([Id])
 
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_PersonAliasId]
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_AdultOnePersonAliasId]
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_AdultTwoPersonAliasId] FOREIGN KEY([AdultTwoPersonAliasId])
+    REFERENCES [dbo].[PersonAlias] ([Id])
+
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.PersonAlias_AdultTwoPersonAliasId]
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Group_FamilyId] FOREIGN KEY([FamilyId])
     REFERENCES [dbo].[Group] ([Id])

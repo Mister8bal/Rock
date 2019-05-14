@@ -191,7 +191,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             rFilter.SaveUserPreference( "Scheduled Service", cblScheduledServiceFilter.SelectedValues.AsDelimited( ";" ) );
             rFilter.SaveUserPreference( "Scheduled Date", drpScheduledDateFilter.DelimitedValues );
             rFilter.SaveUserPreference( "Person's Name", tbPersonNameFilter.Text );
-            rFilter.SaveUserPreference( "Bringing Spouse", ddlBringingSpouseFilter.SelectedValue );
+            rFilter.SaveUserPreference( "Bringing Spouse", ddlBringingAnotherAdultFilter.SelectedValue );
             rFilter.SaveUserPreference( "Bringing Kids", ddlBringingChildrenFilter.SelectedValue );
             rFilter.SaveUserPreference( "Has Attended", ddlHasAttendedFilter.SelectedValue );
             rFilter.SaveUserPreference( "Attended Service", cblAttendedServiceFilter.SelectedValues.AsDelimited( ";" ) );
@@ -217,9 +217,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             PlanAVisit visit = new Service<PlanAVisit>( rockContext ).Get( e.RowKeyId );
 
-            Person person = new PersonAliasService( rockContext ).Get( visit.PersonAliasId ).Person;
+            Person adultOne = new PersonAliasService( rockContext ).Get( visit.AdultOnePersonAliasId ).Person;
 
-            mdManageVisit.Title = string.Format( "When did {0} attend?", person.FullName );
+            mdManageVisit.Title = string.Format( "When did {0} attend?", adultOne.FullName );
         
             // update date picker
             if ( visit.AttendedDate.HasValue )
@@ -380,7 +380,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             tbPersonNameFilter.Text = rFilter.GetUserPreference( "Person's Name" );
 
-            ddlBringingSpouseFilter.SelectedValue = rFilter.GetUserPreference( "Bringing Spouse" );
+            ddlBringingAnotherAdultFilter.SelectedValue = rFilter.GetUserPreference( "Bringing Spouse" );
 
             ddlBringingChildrenFilter.SelectedValue = rFilter.GetUserPreference( "Bringing Kids" );
 
@@ -483,7 +483,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 from planAVisit in planAVisitTable
                 join campus in campusTable on planAVisit.CampusId equals campus.Id into campuses
                 from campus in campuses.DefaultIfEmpty()
-                join personAlias in personAliasTable on planAVisit.PersonAliasId equals personAlias.Id into personAliases
+                join personAlias in personAliasTable on planAVisit.AdultOnePersonAliasId equals personAlias.Id into personAliases
                 from personAlias in personAliases.DefaultIfEmpty()
                 join person in personTable on personAlias.PersonId equals person.Id into people
                 from person in people.DefaultIfEmpty()
@@ -494,7 +494,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 select new
                 {
                     planAVisit.Id,
-                    planAVisit.PersonAliasId,
+                    planAVisit.AdultOnePersonAliasId,
                     PersonId = person.Id,
                     person.FirstName,
                     person.NickName,
@@ -505,7 +505,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     planAVisit.ScheduledDate,
                     planAVisit.ScheduledServiceScheduleId,
                     ScheduledServiceName = scheduledSchedule.Name,
-                    planAVisit.BringingSpouse,
+                    BringingAnotherAdult = planAVisit.AdultTwoPersonAliasId.HasValue,
                     planAVisit.BringingChildren,
                     planAVisit.AttendedDate,
                     planAVisit.AttendedServiceScheduleId,
@@ -563,13 +563,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             // by Bringing Spouse
-            if ( ddlBringingSpouseFilter.SelectedValue == "Yes")
+            if ( ddlBringingAnotherAdultFilter.SelectedValue == "Yes")
             {
-                filteredQuery = filteredQuery.Where( a => a.BringingSpouse == true );
+                filteredQuery = filteredQuery.Where( a => a.BringingAnotherAdult == true );
             }
-            else if ( ddlBringingSpouseFilter.SelectedValue == "No")
+            else if ( ddlBringingAnotherAdultFilter.SelectedValue == "No")
             {
-                filteredQuery = filteredQuery.Where( a => a.BringingSpouse == false );
+                filteredQuery = filteredQuery.Where( a => a.BringingAnotherAdult == false );
             }
 
             // by bringing Children
@@ -626,8 +626,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                         pav.ScheduledServiceName,
                                         Campus = pav.CampusName,
                                         pav.PersonId,
-                                        Person = GetPersonLink(pav.PersonAliasId),
-                                        BringingSpouse = pav.BringingSpouse ? "Yes" : "No",
+                                        Person = GetPersonLink(pav.AdultOnePersonAliasId),
+                                        BringingAnotherAdult = pav.BringingAnotherAdult ? "Yes" : "No",
                                         BringingChildren = pav.BringingChildren ? "Yes" : "No",
                                         pav.AttendedDate,
                                         pav.AttendedServiceName,
