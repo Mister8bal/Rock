@@ -10,7 +10,10 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
     public class PlanAVisit : Entity<PlanAVisit>, IRockEntity
     {
         [DataMember]
-        public int PersonAliasId { get; set; }
+        public int AdultOnePersonAliasId { get; set; }
+
+        [DataMember]
+        public int? AdultTwoPersonAliasId { get; set; }
 
         [DataMember]
         public int FamilyId { get; set; }
@@ -23,9 +26,6 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
 
         [DataMember]
         public int ScheduledServiceScheduleId { get; set; }
-
-        [DataMember]
-        public bool BringingSpouse { get; set; }
 
         [DataMember]
         public bool BringingChildren { get; set; }

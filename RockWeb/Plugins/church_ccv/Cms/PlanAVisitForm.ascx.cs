@@ -329,8 +329,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     case MainPanel.Adults:
                         ddlEditServiceTime.SelectedValue = rockDropDownList.SelectedValue;
 
-                        // unhide spouse form fields
-                        divSpouse.Attributes["class"] = "";
+                        // unhide adultTwo form fields
+                        divAdultTwo.Attributes["class"] = "";
                         break;
                     case MainPanel.Submit:
                         ddlServiceTime.SelectedValue = rockDropDownList.SelectedValue;
@@ -376,9 +376,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             // first look for matching people
             PersonService.PersonMatchQuery searchParameters = new PersonService.PersonMatchQuery( 
-                firstName: tbAdultFirstName.Text,
-                lastName: tbAdultLastName.Text,
-                email: tbAdultEmail.Text,
+                firstName: tbAdultOneFirstName.Text,
+                lastName: tbAdultOneLastName.Text,
+                email: tbAdultOneEmail.Text,
                 mobilePhone: tbAdultFormMobile.Text );
 
             var personQry = personService.FindPersons( searchParameters, false, false );
@@ -430,7 +430,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     rblExisting.Items.Add( new ListItem( itemText, prsn.Guid.ToString() ) );
 
                     // check if they were previously selected
-                    if ( _visit.PersonId == prsn.Id )
+                    if ( _visit.AdultOnePersonId == prsn.Id )
                     {
                         // since items added in order, the current person index should be 1 less than the count
                         selectedRadioIndex = rblExisting.Items.Count - 1;
@@ -453,11 +453,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
             
             if ( newPerson == true )
             {
-                _visit.FirstName = tbAdultFirstName.Text;
-                _visit.LastName = tbAdultLastName.Text;
-                _visit.Email = tbAdultEmail.Text;
-                _visit.SpouseFirstName = tbSpouseFirstName.Text;
-                _visit.SpouseLastName = tbSpouseLastName.Text;
+                _visit.AdultOneFirstName = tbAdultOneFirstName.Text;
+                _visit.AdultOneLastName = tbAdultOneLastName.Text;
+                _visit.AdultOneEmail = tbAdultOneEmail.Text;
+                _visit.AdultTwoFirstName = tbAdultTwoFirstName.Text;
+                _visit.AdultTwoLastName = tbAdultTwoLastName.Text;
 
                 if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace())
                 {
@@ -508,12 +508,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 if ( person != null )
                 {
-                    _visit.PersonId = person.Id;
-                    _visit.FirstName = person.FirstName;
-                    _visit.LastName = person.LastName;
-                    _visit.Email = person.Email;
-                    _visit.SpouseFirstName = tbSpouseFirstName.Text;
-                    _visit.SpouseLastName = tbSpouseLastName.Text;
+                    _visit.AdultOnePersonId = person.Id;
+                    _visit.AdultOneFirstName = person.FirstName;
+                    _visit.AdultOneLastName = person.LastName;
+                    _visit.AdultOneEmail = person.Email;
+                    _visit.AdultTwoFirstName = tbAdultTwoFirstName.Text;
+                    _visit.AdultTwoLastName = tbAdultTwoLastName.Text;
 
                     if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace() )
                     {
@@ -887,18 +887,18 @@ namespace RockWeb.Plugins.church_ccv.Cms
             
             // person / family objects
             Group family = null;
-            Person person = null;
-            Person spouse = null;
+            Person adultOne = null;
+            Person adultTwo = null;
             string visitNoteText = "";
 
             // use existing person if exists
-            if ( _visit.PersonId > 0 )
+            if ( _visit.AdultOnePersonId > 0 )
             {
-                person = personService.Get( _visit.PersonId );
+                adultOne = personService.Get( _visit.AdultOnePersonId );
 
-                if ( person != null )
+                if ( adultOne != null )
                 {
-                    family = person.GetFamily();
+                    family = adultOne.GetFamily();
 
                     newFamily = false;
                 }
@@ -908,20 +908,20 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // also failing back to this if a person was found, but could not load their family
             if ( newFamily )
             {
-                person = new Person
+                adultOne = new Person
                 {
-                    FirstName = _visit.FirstName,
-                    LastName = _visit.LastName,
-                    Email = _visit.Email,
+                    FirstName = _visit.AdultOneFirstName,
+                    LastName = _visit.AdultOneLastName,
+                    Email = _visit.AdultOneEmail,
                     ConnectionStatusValueId = connectionStatusValue.Id,
                     RecordTypeValueId = recordTypePersonId,
                     RecordStatusValueId = recordStatusValue.Id
                 };
 
-                family = PersonService.SaveNewPerson( person, rockContext, _visit.CampusId, false );
+                family = PersonService.SaveNewPerson( adultOne, rockContext, _visit.CampusId, false );
 
                 _visit.FamilyId = family.Id;
-                _visit.PersonId = person.Id;
+                _visit.AdultOnePersonId = adultOne.Id;
             }
 
             if ( family == null )
@@ -936,7 +936,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // add person note
             visitNoteText = String.Format( "Visit planned for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName );
 
-            SavePersonNote( person.Id, visitNoteText );
+            SavePersonNote( adultOne.Id, visitNoteText );
 
             // update survey answer if they answered
             if ( rblSurvey.SelectedValue.IsNotNullOrWhitespace() )
@@ -949,14 +949,14 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 if ( surveyAnswer.IsNotNull() )
                 {
                     // check to see if currently exists - to prevent duplicates if the attribute was created with person creation
-                    AttributeValue attributeValueSurvey = attributeValueService.Queryable().Where( av => av.EntityId == person.Id && av.AttributeId == AttributeId_HowDidYouHearAboutCCV ).SingleOrDefault();
+                    AttributeValue attributeValueSurvey = attributeValueService.Queryable().Where( av => av.EntityId == adultOne.Id && av.AttributeId == AttributeId_HowDidYouHearAboutCCV ).SingleOrDefault();
 
                     if ( attributeValueSurvey == null )
                     {
                         // doesnt exist - create a new attribute value tied to the person, and of attribute type "HowDidYouHearAboutCCV"
                         attributeValueSurvey = new AttributeValue
                         {
-                            EntityId = person.Id,
+                            EntityId = adultOne.Id,
                             AttributeId = AttributeId_HowDidYouHearAboutCCV
                         };
                         attributeValueService.Add( attributeValueSurvey );
@@ -975,7 +975,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 PhoneNumber phoneNumber = phoneNumberService.Queryable()
                     .Where( a =>
-                        a.PersonId == person.Id &&
+                        a.PersonId == adultOne.Id &&
                         a.NumberTypeValueId.HasValue &&
                         a.NumberTypeValueId.Value == mobilePhoneType.Id )
                     .FirstOrDefault();
@@ -985,7 +985,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     // person doesnt have a mobile number, create new one
                     phoneNumber = new PhoneNumber
                     {
-                        PersonId = person.Id,
+                        PersonId = adultOne.Id,
                         NumberTypeValueId = mobilePhoneType.Id
                     };
 
@@ -998,36 +998,36 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 rockContext.SaveChanges();
             }
 
-            // if not a new family, check if spouse already in family
-            if ( !newFamily && _visit.SpouseFirstName.IsNotNullOrWhitespace() )
+            // if not a new family, check if adult two already in family
+            if ( !newFamily && _visit.AdultTwoFirstName.IsNotNullOrWhitespace() )
             {
-                GroupMember member = family.Members.FirstOrDefault( a => (a.Person.FirstName == _visit.SpouseFirstName || a.Person.NickName == _visit.SpouseFirstName) && a.GroupRoleId == adultRoleId );
+                GroupMember member = family.Members.FirstOrDefault( a => (a.Person.FirstName == _visit.AdultTwoFirstName || a.Person.NickName == _visit.AdultTwoFirstName) && a.GroupRoleId == adultRoleId );
 
                 if ( member != null )
                 {
-                    spouse = personService.Get( member.Person.Guid );
+                    adultTwo = personService.Get( member.Person.Guid );
                 }
             }
 
-            // if spouse not found, add new if specified
-            if ( spouse == null && _visit.SpouseFirstName.IsNotNullOrWhitespace() )
+            // if adult two not found, add new if specified
+            if ( adultTwo == null && _visit.AdultTwoFirstName.IsNotNullOrWhitespace() )
             {
-                spouse = new Person()
+                adultTwo = new Person()
                 {
-                    FirstName = _visit.SpouseFirstName,
-                    LastName = _visit.SpouseLastName.IsNotNullOrWhitespace() ? _visit.SpouseLastName : _visit.LastName,
+                    FirstName = _visit.AdultTwoFirstName,
+                    LastName = _visit.AdultTwoLastName.IsNotNullOrWhitespace() ? _visit.AdultTwoLastName : _visit.AdultOneLastName,
                     ConnectionStatusValueId = connectionStatusValue.Id,
                     RecordTypeValueId = recordTypePersonId,
                     RecordStatusValueId = recordStatusValue.Id
                 };
 
-                PersonService.AddPersonToFamily( spouse, true, family.Id, adultRoleId, rockContext );
+                PersonService.AddPersonToFamily( adultTwo, true, family.Id, adultRoleId, rockContext );
             }
 
-            if ( spouse != null )
+            if ( adultTwo != null )
             {
                 // add person note
-                SavePersonNote( spouse.Id, visitNoteText );
+                SavePersonNote( adultTwo.Id, visitNoteText );
             }
 
             // add children to family if specified
@@ -1097,18 +1097,18 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // add new plan a visit
             PlanAVisit visit = new PlanAVisit
             {
-                PersonAliasId = person.PrimaryAlias.Id,
+                AdultOnePersonAliasId = adultOne.PrimaryAlias.Id,
+                AdultTwoPersonAliasId = adultTwo.IsNotNull() ? adultTwo.PrimaryAlias.Id : (int?)null,
                 FamilyId = _visit.FamilyId,
                 CampusId = _visit.CampusId,
                 ScheduledDate = _visit.VisitDate,
                 ScheduledServiceScheduleId = _visit.ServiceTimeScheduleId,
-                BringingSpouse = _visit.SpouseFirstName.IsNotNullOrWhitespace() ? true : false,
                 BringingChildren = _visit.Children.Count > 0 ? true : false,
                 SurveyResponse = _visit.SurveyResponse,
                 CreatedDateTime = DateTime.Now,
                 ModifiedDateTime = DateTime.Now,
-                CreatedByPersonAliasId = person.PrimaryAlias.Id,
-                ModifiedByPersonAliasId = person.PrimaryAlias.Id
+                CreatedByPersonAliasId = adultOne.PrimaryAlias.Id,
+                ModifiedByPersonAliasId = adultOne.PrimaryAlias.Id
             };
 
             planAVisitService.Add( visit );
@@ -1132,7 +1132,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 var visitMergeFields = new Dictionary<string, object>
                 {
-                    { "Person", person },
+                    { "Person", adultOne },
                     { "Campus", _visit.CampusName },
                     { "Date", _visit.VisitDate },
                     { "Service", _visit.ServiceTime }
@@ -1145,11 +1145,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 var recipient = new List<RecipientData>
                 {
-                    new RecipientData( person.Email, mergeFields )
+                    new RecipientData( adultOne.Email, mergeFields )
                 };
 
                 var emailMessage = new RockEmailMessage( confirmationEmailTemplateGuid );
-                emailMessage.AddRecipient( new RecipientData( person.Email, mergeFields ) );
+                emailMessage.AddRecipient( new RecipientData( adultOne.Email, mergeFields ) );
                 emailMessage.AppRoot = ResolveRockUrl( "~/" );
                 emailMessage.ThemeRoot = ResolveRockUrl( "~~/" );
                 emailMessage.CreateCommunicationRecord = true;
@@ -1165,13 +1165,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 if ( workflowType != null )
                 {
-                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.FirstName, _visit.LastName );
+                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.AdultOneFirstName, _visit.AdultOneLastName );
 
                     Workflow workflow = Workflow.Activate( workflowType, workflowName );
 
                     if ( workflow.AttributeValues.ContainsKey( "Person" ) )
                     {
-                        workflow.AttributeValues["Person"].Value = person.PrimaryAlias.Guid.ToString();
+                        workflow.AttributeValues["Person"].Value = adultOne.PrimaryAlias.Guid.ToString();
                     }
 
                     if ( workflow.AttributeValues.ContainsKey( "VisitCampus" ) )
@@ -1203,7 +1203,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     }
 
                     List<string> workflowErrors;
-                    new WorkflowService( rockContext ).Process( workflow, person, out workflowErrors );
+                    new WorkflowService( rockContext ).Process( workflow, adultOne, out workflowErrors );
                 }
             }
 
@@ -1450,7 +1450,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             _visit = new Visit
             {
                 Children = new List<Child>(),
-                PersonId = -1   // -1 indicates a new person needs to be created
+                AdultOnePersonId = -1   // -1 indicates a new person needs to be created
             };
         }
 
@@ -1463,12 +1463,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
             InitializeVisitObject();
 
             // populate visit object
-            _visit.FirstName = tbAdultFirstName.Text;
-            _visit.LastName = tbAdultLastName.Text;
-            _visit.Email = tbAdultEmail.Text;
+            _visit.AdultOneFirstName = tbAdultOneFirstName.Text;
+            _visit.AdultOneLastName = tbAdultOneLastName.Text;
+            _visit.AdultOneEmail = tbAdultOneEmail.Text;
             _visit.MobileNumber = tbAdultFormMobile.Text;
-            _visit.SpouseFirstName = tbSpouseFirstName.Text;
-            _visit.SpouseLastName = tbSpouseLastName.Text;
+            _visit.AdultTwoFirstName = tbAdultTwoFirstName.Text;
+            _visit.AdultTwoLastName = tbAdultTwoLastName.Text;
             _visit.CampusId = ddlCampus.SelectedItem.Value.AsInteger();
             _visit.CampusName = ddlCampus.SelectedItem.Text;
             _visit.VisitDate = DateTime.Parse( ddlVisitDate.SelectedValue );
@@ -1637,7 +1637,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Child newChild = new Child
             {
                 FirstName = tbChildFirstName.Text,
-                LastName = tbChildLastName.Text.IsNotNullOrWhitespace() ? tbChildLastName.Text : _visit.LastName
+                LastName = tbChildLastName.Text.IsNotNullOrWhitespace() ? tbChildLastName.Text : _visit.AdultOneLastName
             };
 
             if ( ddlChildBdayYear.SelectedValue.IsNotNullOrWhitespace() && ddlChildBdayMonth.SelectedValue.IsNotNullOrWhitespace() && ddlChildBdayDay.SelectedValue.IsNotNullOrWhitespace() )
@@ -1721,7 +1721,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             if ( ddlServiceTime.SelectedValue.IsNotNullOrWhitespace())
             {
-                divSpouse.Attributes["class"] = "";
+                divAdultTwo.Attributes["class"] = "";
             }           
         }
 
@@ -2006,17 +2006,17 @@ namespace RockWeb.Plugins.church_ccv.Cms
             public int ServiceTimeScheduleId { get; set; }
             public string SurveyResponse { get; set; }
 
-            // Adult
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public int PersonId { get; set; }
+            // Adult One
+            public string AdultOneFirstName { get; set; }
+            public string AdultOneLastName { get; set; }
+            public string AdultOneEmail { get; set; }
+            public int AdultOnePersonId { get; set; }
             public int FamilyId { get; set; }            
             public string MobileNumber { get; set; }
 
-            // Spouse
-            public string SpouseFirstName { get; set; }
-            public string SpouseLastName { get; set; }
+            // Adult Two
+            public string AdultTwoFirstName { get; set; }
+            public string AdultTwoLastName { get; set; }
 
             // Children
             public List<Child> Children { get; set; }

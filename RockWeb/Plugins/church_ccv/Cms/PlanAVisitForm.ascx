@@ -4,7 +4,7 @@
     .plan-a-visit {
         max-width: 800px;
         margin: 0 auto;
-        padding: 100px 0 150px;
+        padding: 50px 0 150px;
     }
 
     h2 {
@@ -403,19 +403,19 @@
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultFirstName" runat="server" Label="First" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultOneFirstName" runat="server" Label="First" Required="true" />
 
                                 </div>
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultLastName" runat="server" Label="Last" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultOneLastName" runat="server" Label="Last" Required="true" />
 
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockTextBox ID="tbAdultEmail" runat="server" ClientIDMode="Static" Label="Email" Required="true" />
+                                    <Rock:RockTextBox ID="tbAdultOneEmail" runat="server" ClientIDMode="Static" Label="Email" Required="true" />
 
                                 </div>
                             </div>
@@ -448,18 +448,18 @@
                                 </div>
                             </div>
 
-                            <div id="divSpouse" runat="server" ClientIDMode="Static" class="hidden">
+                            <div id="divAdultTwo" runat="server" ClientIDMode="Static" class="hidden">
 
                                 <h4>Your spouse (optional)</h4>
                                 <div class="form-row">
                                     <div class="form-field">
 
-                                        <Rock:RockTextBox ID="tbSpouseFirstName" runat="server" Label="First" />
+                                        <Rock:RockTextBox ID="tbAdultTwoFirstName" runat="server" Label="First" />
 
                                     </div>
                                     <div class="form-field">
 
-                                        <Rock:RockTextBox ID="tbSpouseLastName" runat="server" Label="Last" />
+                                        <Rock:RockTextBox ID="tbAdultTwoLastName" runat="server" Label="Last" />
 
                                     </div>
                                 </div>
@@ -759,13 +759,17 @@
 </asp:UpdatePanel>
 
 <script>
-    // values need to scroll window back to form on postback
-    var scrollToPAV = $('#pavForm').offset();
-    var scrollToX = scrollToPAV.left;
-    var scrollToY = scrollToPAV.top - 50;
+    var scrollToPAV;
+    var scrollToX;
+    var scrollToY;
     var needScroll;
 
     function pageLoad() {
+        // values need to scroll window back to form on postback
+        scrollToPAV = $('#pavForm').offset();
+        scrollToX = scrollToPAV.left;
+        scrollToY = scrollToPAV.top - 50;
+        
         restoreFormState();
 
         resetScrollPosition();
@@ -803,7 +807,7 @@
 
         // error checking
         // Validate email input
-        $('#tbAdultEmail').on('input', function () {
+        $('#tbAdultOneEmail').on('input', function () {
             if (!/^\w([\.-]?\w)*@\w([\.-]?\w)*(\.\w{2,15})+$/.test($(this).val())) {
                 $(this).parents('div.form-group').addClass('has-error');
             } else {

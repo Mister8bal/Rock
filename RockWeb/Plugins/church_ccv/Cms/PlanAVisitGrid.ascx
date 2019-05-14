@@ -19,7 +19,7 @@
                         <Rock:RockCheckBoxList ID="cblScheduledServiceFilter" runat="server" Label="Scheduled Service" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                         <Rock:DateRangePicker ID="drpScheduledDateFilter" runat="server" Label="Scheduled Date" />
                         <Rock:RockTextBox ID="tbPersonNameFilter" runat="server" Label="Person's Name" />
-                        <Rock:RockDropDownList ID="ddlBringingSpouseFilter" runat="server" Label="Bringing Spouse">
+                        <Rock:RockDropDownList ID="ddlBringingAnotherAdultFilter" runat="server" Label="Bringing Spouse">
                             <asp:ListItem></asp:ListItem>
                             <asp:ListItem Text="Yes" Value="Yes"></asp:ListItem>
                             <asp:ListItem Text="No" Value="No"></asp:ListItem>
@@ -46,7 +46,7 @@
                             <Rock:RockBoundField DataField="Campus" HeaderText="Campus" SortExpression="Campus"/>
                             <Rock:RockBoundField DataField="ScheduledDate" HeaderText="Scheduled Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="ScheduledDate" />
                             <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" SortExpression="ScheduledServiceName" />
-                            <Rock:RockBoundField DataField="BringingSpouse" HeaderText="Bringing Spouse" SortExpression="BringingSpouse" />                    
+                            <Rock:RockBoundField DataField="BringingAnotherAdult" HeaderText="Bringing Spouse" SortExpression="BringingAnotherAdult" />                    
                             <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" SortExpression="BringingChildren" />
                             <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="AttendedDate" />
                             <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" SortExpression="AttendedServiceName" />

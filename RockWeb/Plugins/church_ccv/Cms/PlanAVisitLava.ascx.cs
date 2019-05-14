@@ -89,7 +89,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 from planAVisit in planAVisitTable
                 join campus in campusTable on planAVisit.CampusId equals campus.Id into campuses
                 from campus in campuses.DefaultIfEmpty()
-                join personAlias in personAliasTable on planAVisit.PersonAliasId equals personAlias.Id into personAliases
+                join personAlias in personAliasTable on planAVisit.AdultOnePersonAliasId equals personAlias.Id into personAliases
                 from personAlias in personAliases.DefaultIfEmpty()
                 join person in personTable on personAlias.PersonId equals person.Id into people
                 from person in people.DefaultIfEmpty()
@@ -100,18 +100,15 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 select new
                 {
                     planAVisit.Id,
-                    planAVisit.PersonAliasId,
-                    //PersonId = person.Id,
-                    //person.FirstName,
-                    //person.NickName,
-                    person.LastName,
+                    planAVisit.AdultOnePersonAliasId,
+                    planAVisit.AdultTwoPersonAliasId,
+                    FamilyLastName = person.LastName,
                     planAVisit.CampusId,
                     CampusName = campus.Name,
                     CampusGuid = campus.Guid,
                     planAVisit.ScheduledDate,
                     planAVisit.ScheduledServiceScheduleId,
                     ScheduledServiceName = scheduledSchedule.Name,
-                    planAVisit.BringingSpouse,
                     planAVisit.BringingChildren,
                     planAVisit.AttendedDate,
                     planAVisit.AttendedServiceScheduleId,
@@ -128,7 +125,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             contents = contents.Replace( "~~/", themeRoot ).Replace( "~/", appRoot );
 
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
-            mergeFields.Add( "Visits", filteredQuery.OrderByDescending( a => a.ScheduledDate ).ThenBy( b => b.LastName ) );
+            mergeFields.Add( "Visits", filteredQuery.OrderByDescending( a => a.ScheduledDate ).ThenBy( b => b.FamilyLastName ) );
 
             lContents.Text = contents.ResolveMergeFields( mergeFields );     
         }
