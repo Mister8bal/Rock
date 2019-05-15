@@ -243,5 +243,99 @@ namespace church.ccv.CCVRest.MobileApp
                 return null;
             }
         }
+
+        public static List<LifeTrainingContentModel> BuildLifeTrainingContent( )
+        {
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            // first, get the Life Training Topics
+            //const int ContentChannelId_LifeTrainingTopics = 295; //PRODUCTION VALUE
+            const int ContentChannelId_LifeTrainingTopics = 294; //JEREDDEV VALUE
+            ContentChannel lifeTrainingTopics  = contentChannelService.Get( ContentChannelId_LifeTrainingTopics );
+
+            // sort by priority
+            var ltTopicItems = lifeTrainingTopics.Items.OrderByDescending( i => i.Priority);
+
+
+            // next, get the Life Training Resources
+            //const int ContentChannelId_LifeTrainingResources = 296; //PRODUCTION VALUE
+            const int ContentChannelId_LifeTrainingResources = 293; //JEREDDEV VALUE
+            ContentChannel ltResources = contentChannelService.Get( ContentChannelId_LifeTrainingResources );
+
+            // sort by priority
+            var ltResourceItems = ltResources.Items.OrderByDescending( i => i.Priority );
+
+            // now build the list of models we'll send down
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            List<LifeTrainingContentModel> ltContentModels = new List<LifeTrainingContentModel>();
+            foreach ( var ltTopic in ltTopicItems )
+            {
+                ltTopic.LoadAttributes();
+
+                LifeTrainingContentModel ltContentModel = new LifeTrainingContentModel();
+                ltContentModel.Title = ltTopic.Title;
+                ltContentModel.Content = ltTopic.Content;
+
+                // try getting the image
+                string ltItemImageGuid = ltTopic.AttributeValues["Image"].Value.ToString();
+                if ( string.IsNullOrWhiteSpace( ltItemImageGuid ) == false )
+                {
+                    ltContentModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid;
+                }
+                else
+                {
+                    ltContentModel.ImageURL = string.Empty;
+                }
+
+                // try getting the "Talk to Someone" URL
+                string ltItemTalkURL = ltTopic.AttributeValues["TalktoSomeoneURL"].Value.ToString();
+                if ( string.IsNullOrWhiteSpace( ltItemTalkURL ) == false )
+                {
+                    ltContentModel.TalkToSomeoneURL = ltItemTalkURL;
+                }
+                else
+                {
+                    ltContentModel.TalkToSomeoneURL = string.Empty;
+                }
+
+                // now add all associated resources
+                ltContentModel.Resources = new List<LifeTrainingResourceModel>();
+                foreach ( var resource in ltResourceItems )
+                {
+                    resource.LoadAttributes();
+
+                    // is this resource associated with this topic?
+                    string associatedTopics = resource.AttributeValues["AssociatedLifeTrainingTopics"].Value.ToString();
+                    if ( associatedTopics.Contains( ltTopic.Title ) )
+                    {
+                        // then add it
+                        LifeTrainingResourceModel resourceModel = new LifeTrainingResourceModel();
+                        resourceModel.Title = resource.Title;
+                        resourceModel.Content = resource.Content;
+                        resourceModel.Author = resource.AttributeValues["Author"].Value.ToString();
+                        resourceModel.URL = resource.AttributeValues["URL"].Value.ToString();
+
+                        // is there an image?
+                        string resourceImageGuid = resource.AttributeValues["Image"].Value.ToString();
+                        if ( string.IsNullOrWhiteSpace( resourceImageGuid ) == false )
+                        {
+                            resourceModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + resourceImageGuid;
+                        }
+                        else
+                        {
+                            resourceModel.ImageURL = string.Empty;
+                        }
+
+                        ltContentModel.Resources.Add( resourceModel );
+                    }
+                }
+
+                ltContentModels.Add( ltContentModel );
+            }
+
+            return ltContentModels;
+        }
     }
 }

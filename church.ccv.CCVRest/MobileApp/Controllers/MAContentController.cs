@@ -645,5 +645,33 @@ namespace church.ccv.CCVRest.MobileApp
 
             return Common.Util.GenerateResponse( true, BaptismResponse.Success.ToString(), baptisms );
         }
+
+        [Serializable]
+        public enum LifeTrainingContentResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            ContentInvalid
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/LifeTraining" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage LifeTraining( )
+        {
+            try
+            {
+                List<LifeTrainingContentModel> contentModelList = MAContentService.BuildLifeTrainingContent();
+
+                return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModelList );
+            }
+            catch
+            {
+                // something went wrong with our content channels - at least let the caller know
+                return Common.Util.GenerateResponse( false, LifeTrainingContentResponse.ContentInvalid.ToString(), null );
+            }
+        }
     }
 }
