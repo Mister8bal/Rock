@@ -11,9 +11,12 @@
                 <p>{{item.Content}}
                 </p>
                 <div class="btn-row">
-                    {% assign learnMoreVal = item | Attribute:'LearnMoreURL' %}
-                    {% if learnMoreVal != '' %}
-                        <a href="{{learnMoreVal}}" target="_blank" class="btn btn-default">Learn More</a>
+                    {% assign learnMoreResourceVal = item | Attribute:'LearnMoreResource', 'RawValue' %}
+                    {% assign learnMoreUrlVal = item | Attribute:'LearnMoreURL' %}
+                    {% if learnMoreResourceVal != '' %}
+                        <a href="/GetFile.ashx?Guid={{learnMoreResourceVal}}" target="_blank" class="btn btn-default">Learn More</a>
+                    {% elsif learnMoreUrlVal != '' %}
+                        <a href="{{learnMoreUrlVal}}" target="_blank" class="btn btn-default">Learn More</a>
                     {% endif %}
 
                     {% assign talkToSomeoneVal = item | Attribute:'TalktoSomeoneURL' %}
