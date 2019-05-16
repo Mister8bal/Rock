@@ -647,7 +647,7 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [Serializable]
-        public enum LifeTrainingContentResponse
+        public enum LifeTrainingResponse
         {
             NotSet = -1,
 
@@ -663,14 +663,14 @@ namespace church.ccv.CCVRest.MobileApp
         {
             try
             {
-                List<LifeTrainingContentModel> contentModelList = MAContentService.BuildLifeTrainingContent();
+                List<LifeTrainingTopicModel> topicModelList = MAContentService.BuildLifeTrainingContent();
 
-                return Common.Util.GenerateResponse( true, KidsContentResponse.Success.ToString(), contentModelList );
+                return Common.Util.GenerateResponse( true, LifeTrainingResponse.Success.ToString(), topicModelList );
             }
             catch
             {
                 // something went wrong with our content channels - at least let the caller know
-                return Common.Util.GenerateResponse( false, LifeTrainingContentResponse.ContentInvalid.ToString(), null );
+                return Common.Util.GenerateResponse( false, LifeTrainingResponse.ContentInvalid.ToString(), null );
             }
         }
     }

@@ -244,14 +244,13 @@ namespace church.ccv.CCVRest.MobileApp
             }
         }
 
-        public static List<LifeTrainingContentModel> BuildLifeTrainingContent( )
+        public static List<LifeTrainingTopicModel> BuildLifeTrainingContent( )
         {
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
 
             // first, get the Life Training Topics
-            //const int ContentChannelId_LifeTrainingTopics = 295; //PRODUCTION VALUE
-            const int ContentChannelId_LifeTrainingTopics = 294; //JEREDDEV VALUE
+            const int ContentChannelId_LifeTrainingTopics = 295;
             ContentChannel lifeTrainingTopics  = contentChannelService.Get( ContentChannelId_LifeTrainingTopics );
 
             // sort by priority
@@ -259,8 +258,7 @@ namespace church.ccv.CCVRest.MobileApp
 
 
             // next, get the Life Training Resources
-            //const int ContentChannelId_LifeTrainingResources = 296; //PRODUCTION VALUE
-            const int ContentChannelId_LifeTrainingResources = 293; //JEREDDEV VALUE
+            const int ContentChannelId_LifeTrainingResources = 296;
             ContentChannel ltResources = contentChannelService.Get( ContentChannelId_LifeTrainingResources );
 
             // sort by priority
@@ -269,39 +267,39 @@ namespace church.ccv.CCVRest.MobileApp
             // now build the list of models we'll send down
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
-            List<LifeTrainingContentModel> ltContentModels = new List<LifeTrainingContentModel>();
+            List<LifeTrainingTopicModel> ltTopicModels = new List<LifeTrainingTopicModel>();
             foreach ( var ltTopic in ltTopicItems )
             {
                 ltTopic.LoadAttributes();
 
-                LifeTrainingContentModel ltContentModel = new LifeTrainingContentModel();
-                ltContentModel.Title = ltTopic.Title;
-                ltContentModel.Content = ltTopic.Content;
+                LifeTrainingTopicModel ltTopicModel = new LifeTrainingTopicModel();
+                ltTopicModel.Title = ltTopic.Title;
+                ltTopicModel.Content = ltTopic.Content;
 
                 // try getting the image
                 string ltItemImageGuid = ltTopic.AttributeValues["Image"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( ltItemImageGuid ) == false )
                 {
-                    ltContentModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid;
+                    ltTopicModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid;
                 }
                 else
                 {
-                    ltContentModel.ImageURL = string.Empty;
+                    ltTopicModel.ImageURL = string.Empty;
                 }
 
                 // try getting the "Talk to Someone" URL
                 string ltItemTalkURL = ltTopic.AttributeValues["TalktoSomeoneURL"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( ltItemTalkURL ) == false )
                 {
-                    ltContentModel.TalkToSomeoneURL = ltItemTalkURL;
+                    ltTopicModel.TalkToSomeoneURL = ltItemTalkURL;
                 }
                 else
                 {
-                    ltContentModel.TalkToSomeoneURL = string.Empty;
+                    ltTopicModel.TalkToSomeoneURL = string.Empty;
                 }
 
                 // now add all associated resources
-                ltContentModel.Resources = new List<LifeTrainingResourceModel>();
+                ltTopicModel.Resources = new List<LifeTrainingResourceModel>();
                 foreach ( var resource in ltResourceItems )
                 {
                     resource.LoadAttributes();
@@ -328,14 +326,14 @@ namespace church.ccv.CCVRest.MobileApp
                             resourceModel.ImageURL = string.Empty;
                         }
 
-                        ltContentModel.Resources.Add( resourceModel );
+                        ltTopicModel.Resources.Add( resourceModel );
                     }
                 }
 
-                ltContentModels.Add( ltContentModel );
+                ltTopicModels.Add( ltTopicModel );
             }
 
-            return ltContentModels;
+            return ltTopicModels;
         }
     }
 }

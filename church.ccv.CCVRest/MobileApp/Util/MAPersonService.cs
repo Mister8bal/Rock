@@ -259,6 +259,19 @@ namespace church.ccv.CCVRest.MobileApp
                 personModel.IsCoaching = null;
             }
 
+            // JHM 5-15-2019 HACK - Turn on all steps for test user
+            if ( person.Id == 666918 )
+            {
+                personModel.BaptismDate = DateTime.Now.AddYears( -1 );
+                personModel.IsBaptised = true;
+                personModel.IsWorshipping = true;
+                personModel.IsGiving = true;
+                personModel.IsServing = true;
+                personModel.IsConnected = true;
+                personModel.IsCoaching = true;
+                personModel.SharedStory = true;
+            }
+
             return personModel;
         }
 

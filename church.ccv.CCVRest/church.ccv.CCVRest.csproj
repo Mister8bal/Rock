@@ -109,7 +109,7 @@
     <Compile Include="MobileApp\Model\CCVLiveCountdownModel.cs" />
     <Compile Include="MobileApp\Model\JoinGroupModel.cs" />
     <Compile Include="MobileApp\Model\KidsContentModel.cs" />
-    <Compile Include="MobileApp\Model\LifeTrainingContentModel.cs" />
+    <Compile Include="MobileApp\Model\LifeTrainingTopicModel.cs" />
     <Compile Include="MobileApp\Model\MAGroupModel.cs" />
     <Compile Include="MobileApp\Model\LoginModel.cs" />
     <Compile Include="MobileApp\Model\MAMessageModel .cs" />

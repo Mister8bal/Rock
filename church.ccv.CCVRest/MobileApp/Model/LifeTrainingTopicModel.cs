@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace church.ccv.CCVRest.MobileApp.Model
 {
     [Serializable]
-    public class LifeTrainingContentModel
+    public class LifeTrainingTopicModel
     {
         public string Title;
         public string Content;
