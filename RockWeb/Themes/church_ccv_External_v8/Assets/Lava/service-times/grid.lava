@@ -15,6 +15,10 @@ Service Times - Grid style (like our-campuses page)
 <span class="csi csi-special-needs"></span>
 {% endcapture %}
 
+{% capture espanolIcon %}
+<span class="csi csi-espanol"></span>
+{% endcapture %}
+
 {% assign hasSaturday = false %}
 {% assign hasSunday = false %}
 
@@ -48,7 +52,7 @@ Is this campus coming soon?
         {% if hasSaturday %}
             {% for time in campus.ServiceTimes %}
                 {% if time.Day == 'Saturday' %}
-                    <li>{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                    <li>{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
                 {% endif %}
             {% endfor %}
         {% else %}
@@ -61,7 +65,7 @@ Is this campus coming soon?
         {% if hasSunday %}
             {% for time in campus.ServiceTimes %}
                 {% if time.Day == 'Sunday' %}
-                    <li>{{ time.Time | Replace: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+                    <li>{{ time.Time | Replace: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
                 {% endif %}
             {% endfor %}
         {% else %}
