@@ -30,13 +30,13 @@ namespace RockWeb.Plugins.church_ccv.Core
     {
         public class EventBriteAttendee
         {
-            [Name("First Name")]
+            [Name( "First Name" )]
             public string FirstName { get; set; }
             [Name( "Last Name" )]
             public string LastName { get; set; }
             [Name( "Email" )]
             public string Email { get; set; }
-         
+
         }
 
         /// <summary>
@@ -52,78 +52,64 @@ namespace RockWeb.Plugins.church_ccv.Core
 
             var binaryFileService = new BinaryFileService( rockContext );
             var binaryFile = binaryFileService.Get( fuImport.BinaryFileId ?? 0 );
-            int GroupId = 0;
+            int syncGroupId = 0;
 
-            var groupService = new GroupService(rockContext);
-            var groupMemberService = new GroupMemberService(rockContext);
-
-            Group selectedGroup = null;
-            IQueryable<GroupMember> groupMembers;
-            GroupMember groupMember = null;
-
-            
-             //Parse the group ID from the from and
-             //attempt to located the associated group.
-             
-            if ( Int32.TryParse(tbGroupId.Text, out GroupId))
+            //Parse the group ID
+            if ( Int32.TryParse( tbGroupId.Text, out syncGroupId ) == false )
             {
-                selectedGroup = groupService.Get(GroupId);
+                pnlError.Visible = true;
+                return;
             }
 
             if ( binaryFile == null )
             {
+                pnlError.Visible = true;
                 return;
             }
 
-            using (var reader = new StreamReader(binaryFile.ContentStream))
+            using ( var reader = new StreamReader( binaryFile.ContentStream ) )
             {
-                using (var csvReader = new CsvHelper12.CsvReader(reader))
+                using ( var csvReader = new CsvHelper12.CsvReader( reader ) )
                 {
                     csvReader.Configuration.HasHeaderRecord = true;
                     csvReader.Configuration.IgnoreBlankLines = true;
                     var peopleList = csvReader.GetRecords<EventBriteAttendee>().ToList();
                     bool importErrors = false;
 
-                    foreach (var person in peopleList)
+                    foreach ( var person in peopleList )
                     {
-                        using (var personRockContext = new RockContext())
+                        // Try to find matching person
+                        PersonService personService = new PersonService( rockContext );
+                        var personMatches = personService.GetByMatch( person.FirstName, person.LastName, person.Email ).Select( p => p.Id );
+
+                        if ( personMatches.Count() < 1 )
                         {
+                            continue;
+                        }
 
-                            PersonService personService = new PersonService(personRockContext);
-                            var attributeValueService = new AttributeValueService(personRockContext);
+                        //Loop through list of matching people and attempt
+                        //to locate a group member.
+                        foreach ( var pId in personMatches )
+                        {
+                            var groupMemberService = new GroupMemberService( rockContext );
+                            var groupMembers = groupMemberService.GetByGroupIdAndPersonId( syncGroupId, pId );
 
-                            // Try to find matching person
-                            var personMatches = personService.GetByMatch(person.FirstName, person.LastName, person.Email).Select(p => p.Id);
-
-                            if (personMatches.Count() < 1)
+                            if ( groupMembers.Count() < 1 )
                             {
                                 continue;
                             }
 
-                            //Loop through list of matching people and attempt
-                            //to locate a group member.
-                            foreach (var pId in personMatches)
-                            {
-                                groupMembers = groupMemberService.GetByGroupIdAndPersonId(GroupId, pId);
+                            var groupMember = groupMembers.First();
 
-                                if (groupMembers.Count() < 1)
-                                {
-                                    continue;
-                                }
+                            groupMember.LoadAttributes();
 
-                                groupMember = groupMembers.First();
+                            groupMember.SetAttributeValue( "Attended", "Yes" );
 
-                                groupMember.LoadAttributes();
-
-                                groupMember.SetAttributeValue("Attended", "Yes");
-
-                                groupMember.SaveAttributeValues(rockContext);
-                            }
-
-
+                            groupMember.SaveAttributeValues();
                         }
                     }
-                    if (importErrors)
+
+                    if ( importErrors )
                     {
                         pnlError.Visible = true;
                     }

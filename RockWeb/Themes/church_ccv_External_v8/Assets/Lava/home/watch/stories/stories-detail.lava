@@ -1,0 +1,83 @@
+{% comment %}
+  {% assign returnPage = '/watch/stories' %}
+  
+  {% capture shareUrl %}https://ccv.church/watch/stories/story/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
+  {% assign smsBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+  {% assign emailSubject = 'Check out this story!' %}
+  {% assign emailBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
+  {% assign fbBody = 'Check out this story from CCV' %}
+  {% assign twitterBody = 'Check out this story from CCV' %}
+  
+  {% include '~~/Assets/Lava/watch/stories-detail.lava' %}
+{% endcomment %}
+
+{% assign item = Items | First %}
+
+{% if item %}
+    {% capture pageTitle %}{{ item.Title }} - Stories | {{ 'Global' | Attribute:'OrganizationAbbreviation' }}{% endcapture %}
+    {{ pageTitle | SetPageTitle }}
+
+    {% comment %}
+        Grab the secondary image that will be displayed in the content
+    {% endcomment %}
+    {% assign image2Val = item | Attribute: 'Image2' %}
+    {% capture image2 %}
+        {% if image2Val != '' %}
+            <img src="{{ item | Attribute: 'Image2', 'Url' }}&maxwidth=700" />
+        {% endif %}
+    {% endcapture %}
+
+    {% comment %}
+        If there's no video, show the lead image. Otherwise, show the video
+    {% endcomment %}
+    {% assign itemWistiaId = item | Attribute:'WistiaId' %}
+    {% if itemWistiaId == empty %}
+        <header class="storythumb" style="background-image: url('{{ item | Attribute: 'Image', 'Url' }}&maxwidth=1140'); background-position: {{ item | Attribute: 'ImageFocalPoint', 'RawValue' }};">
+        </header>
+    {% else %}
+        <script charset="ISO-8859-1" src="//fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><div class="wistia_embed wistia_async_{{ itemWistiaId }} videoFoam=true trackEmail={{ CurrentPerson.PrimaryAliasId }},{{ CurrentPerson.FullName | Replace: ' ', '' }}" style="height:100%;width:100%">&nbsp;</div></div></div>
+    {% endif %}
+
+    <div class="story-content">
+        <h1>{{ item.Title }}</h1>
+        <div class="text-responsive">
+            {{ item.Content }}
+        </div>
+        {% if image2Val != '' %}
+            <div class="bottom-image">
+                <img class="img img-responsive" src="{{ item | Attribute: 'Image2', 'Url' }}&maxwidth=700" />
+            </div>
+        {% endif %}
+    </div>
+    <div class="nav-content">
+        <a class="btn btn-primary" href="{{returnPage}}">BACK TO STORIES</a>
+        
+        <div class="content">
+            <div class="content-item">
+                <div class="item-share">
+                    <p>Share this Story:</p>
+                    <span id="shareButton" class="mdi mdi-launch"></span>
+                </div>
+            </div>
+        </div>
+        
+        {% assign navigatorTitle = 'Share Story' %}
+        {% assign navigatorText = 'Share this story' %}
+        {% assign navigatorUrl = {{shareUrl}} %}
+
+        {% include '~~/Assets/Lava/modules/share-modal.lava' %}
+    </div>
+{% else %}
+	{% comment %} Invalid story id, redirect unless admin {% endcomment %}
+	{% assign groupMembers = CurrentPerson | Group: "2",'All' %}
+
+	{% for member in groupMembers %}
+		{% assign admin = member  %}
+	{% endfor %}
+	
+	{% if admin %}
+        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href={{returnPage}}>Stories</a> because the story id is invalid</p>
+    {% else %}
+		{{ '/watch/stories' | PageRedirect }}
+    {% endif %}
+{% endif %}

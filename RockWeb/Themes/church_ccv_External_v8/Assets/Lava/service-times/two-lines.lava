@@ -16,6 +16,10 @@ Service Times - Two Line style (like mobile app more page)
 <span class="csi csi-special-needs"></span>
 {% endcapture %}
 
+{% capture espanolIcon %}
+<span class="csi csi-espanol"></span>
+{% endcapture %}
+
 {% if times %}
 
   {% assign times = times | Split: '|' %}
@@ -36,7 +40,7 @@ Service Times - Two Line style (like mobile app more page)
       {% for time in times %}
         {% assign split = time | Split: '^' %}
         {% if split[0] == 'Saturday' %}
-          <li>{{ split[1] | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+          <li>{{ split[1] | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
         {% endif %}
       {% endfor %}
     </ul>
@@ -48,7 +52,7 @@ Service Times - Two Line style (like mobile app more page)
       {% for time in times %}
         {% assign split = time | Split: '^' %}
         {% if split[0] == 'Sunday' %}
-          <li>{{ split[1] | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</li>
+          <li>{{ split[1] | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</li>
         {% endif %}
       {% endfor %}
     </ul>

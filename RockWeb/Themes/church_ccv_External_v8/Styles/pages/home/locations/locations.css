@@ -23,104 +23,116 @@
     }
 }
 
-/*force section A (where the map is) to take the full width of the screen*/
-#section-a-bg {
-   padding: 0;
-}
-
+/* Map Section */
 #zone-sectiona {
-   max-width: 100%;
-   margin: unset;
-}
+    max-width: 100%;
+    margin: unset;
+ }
 
-#section-b-bg {
-   background-color: #ffffff;
-}
+/* Full width for map*/
+#section-a-bg {
+    padding: 0;
+ }
+ 
+ #section-b-bg {
+    background-color: #ffffff;
+ }
 
 .our-campuses-map-window {
-   background: #777;
+    background: #777;
+ }
+ 
+ .our-campuses-map {
+    min-height: 550px;
+ }
+
+ /* End Map Section */
+
+/* Campus Card Section */
+.campus-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px 0px;
 }
 
-.our-campuses-map {
-   min-height: 550px;
+.campus-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px;
+    width: 31%;
+    min-height: 500px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+    border: unset;
+    border-width: unset;
+    background-color: #FFFFFF;
+    z-index: 1;
+    overflow: hidden;
 }
 
-.event-cards-row {
-   flex-wrap: wrap;
-   justify-content: space-between;
-   margin-bottom: 0;
+.campus-card .image img {
+    object-fit: cover;
+    width: 100%;
 }
 
-.event-card {
-   width: 30%;
-   height: 525px;
-   margin-bottom: 20px;
-   justify-content: flex-start;
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 10px 16px;
 }
 
-.event-card.our-campuses-card-override .image img {
-   object-fit: cover;
-}
-
-.event-card .content {
+.campus-card .content {
    height: auto;
 }
 
-.event-card .link {
-   margin: auto 20px 20px 10px;
+.campus-card .link {
+    text-align: right;
 }
 
-.event-card .link a {
-    height: unset;
-    line-height: unset;
-    color: #FFFFFF;
-}
-
-.event-card .location-contact {
+.campus-card .location-contact {
     display: flex;
-    flex-direction: column;   
-}
-
-@media screen and (min-width: 362px) {
-    .event-card .location-contact {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-}
-
-.event-card .content.service-times {
-    color: #777777;
-}
-
-.icon-details {
-    display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    margin-left: 50px;
-    max-width: 300px;
-    width: 300px;
 }
 
-/* Tablet Styling */
-@media screen and (max-width: 768px) {
-    .event-card {
-        max-width: unset;
+.campus-card .header h4 {
+    font-size: 24px;
+}
+
+.address p {
+    margin: 0;
+}
+
+/* Laptops */
+@media screen and (max-width: 1024px) {
+    .campus-card {
         width: 45%;
+        padding-bottom: 15px;
     }
 }
 
-/* Mobile Styling */
+/* Tablet */
+@media screen and (max-width: 768px) {
+    .campus-card {
+        width: 45%;
+        padding-bottom: 15px;
+    }
+}
+
+/* Mobile */
 @media screen and (max-width: 500px) {
-    .event-cards-row {
-        margin-bottom: 0;
+    #zone-sectionb {
+        margin: 0 5%;
+        padding-bottom: 5%;
     }
 
-    .event-card {
+    .campus-card {
         width: 100%;
-    }
-
-    .event-card .link {
-        align-self: stretch;
-        margin: auto 10px 10px 10px;
+        padding-bottom: 15px;
+        margin: 0 0 20px 0;
     }
 
     .icon-details {

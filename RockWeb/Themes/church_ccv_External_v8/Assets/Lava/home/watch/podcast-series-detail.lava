@@ -88,7 +88,7 @@
     shareButton.onclick = function() {
         if (navigator.share) {
             navigator.share({
-                title: '{{ Series.Name }}',
+                title: '{{ Series.Name | Escape | StripNewlines}}',
                 text: 'Check out this series from CCV! I think you will like it.',
                 url: 'https://ccv.church/watch/series?SeriesId={{Series.Id}}',
             })

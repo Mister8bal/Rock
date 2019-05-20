@@ -1,0 +1,37 @@
+<div class="main-container">
+    {% for item in Items %}
+        <div class="life-training-container">
+            <div class="life-training-image">
+                    {{item | Attribute:'Image' }}
+            </div>
+            <div class="life-training-section-desc">
+                <div class="life-training-header">
+                    <h2>{{item.Title}}</h2>
+                </div>
+                <p>{{item.Content}}
+                </p>
+                <div class="btn-row">
+                    {% assign learnMoreResourceVal = item | Attribute:'LearnMoreResource', 'RawValue' %}
+                    {% assign learnMoreUrlVal = item | Attribute:'LearnMoreURL' %}
+                    {% if learnMoreResourceVal != '' %}
+                        <a href="/GetFile.ashx?Guid={{learnMoreResourceVal}}" target="_blank" class="btn btn-default">Learn More</a>
+                    {% elsif learnMoreUrlVal != '' %}
+                        <a href="{{learnMoreUrlVal}}" target="_blank" class="btn btn-default">Learn More</a>
+                    {% endif %}
+
+                    {% assign talkToSomeoneVal = item | Attribute:'TalktoSomeoneURL' %}
+                    {% if talkToSomeoneVal != '' %}
+                        <a href="{{talkToSomeoneVal}}" target="_blank" class="btn btn-default">Talk to Someone</a>
+                    {% endif %}
+                    
+                    {% assign resourceLabel = item | Attribute:'AdditionalResourceLabel' %}
+                    {% if resourceLabel != '' %}
+                        {% assign resourceValue = item | Attribute:'AdditionalResourceValue' %}
+                        <a href="{{resourceValue}}" target="_blank" class="btn btn-default">{{resourceLabel}}</a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

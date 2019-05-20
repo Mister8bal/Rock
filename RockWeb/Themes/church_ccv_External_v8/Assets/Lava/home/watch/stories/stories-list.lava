@@ -1,0 +1,20 @@
+{% comment %}
+
+  {% assign detailPage = 'stories/story' %}
+  {% include '~~/Assets/Lava/home/watch/stories-list.lava' %}
+
+{% endcomment %}
+
+<div class="stories">
+    {% for item in Items offset: 1 %}
+    <div class="story">
+        {% if item.WistiaId != '' %}
+            <script src="https://fast.wistia.com/embed/medias/{{item.WistiaId}}.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_{{item.WistiaId}} popover=true popoverAnimateThumbnail=true videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>
+        {% else %}
+            <div class="thumbnail" style="background-image: url('{{ item | Attribute: 'Image', 'Url' }}&maxwidth=555'); background-position: {{ item | Attribute: 'ImageFocalPoint', 'RawValue' }};"></div>
+        {% endif %}
+        <a href="{{ detailPage }}/{{ item | Attribute:'ShortUrl' }}"><h4 class="title">{{item.Title}}</h4></a>
+        <p class="summary">{{item.Summary}}</p>
+    </div>
+    {% endfor %}
+</div>

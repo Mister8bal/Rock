@@ -137,8 +137,6 @@
 }
 
 .icon-details {
-    display: flex;
-    justify-content: space-between;
     margin-top: 10px;
     max-width: 300px;
     width: 300px;
@@ -150,11 +148,9 @@
     }
 
     .icon-details {
-        justify-content: flex-start;
         max-width: unset;
         width: unset;
         margin-left: unset;
-        flex-direction: column;
     }
 }
 

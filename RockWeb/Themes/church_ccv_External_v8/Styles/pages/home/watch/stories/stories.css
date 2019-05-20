@@ -1,0 +1,127 @@
+
+.page-background {   
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/hero-stories.jpg");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/hero-mobile-stories.jpg");
+    }
+}
+
+#section-a-bg {
+    padding: 20px;
+    background-color: #ebebeb;
+}
+
+#section-b-bg {
+    padding: 100px;
+    background-color: white;
+}
+
+@media screen and (max-width: 500px) {
+    #section-b-bg {
+        padding: 25px 5px 25px 5px;
+    }
+}
+
+#section-c-bg {
+    padding: 100px;
+    background-color: #ebebeb;
+}
+
+@media screen and (max-width: 500px) {
+    #section-c-bg {
+        padding: 25px 5px 25px 5px;
+    }
+}
+
+#ternavbar-bg {
+    display: flex;
+}
+
+.feature .thumbnail:before {
+    content: ' ';
+    padding-top: 56.25%;
+    display: block;
+}
+
+.feature .thumbnail {
+    display: block;
+    position: relative;
+    background-size: cover;
+    background-position: center center;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.feature .title {
+    text-align: center;
+}
+
+.feature .summary {
+    text-align: center;
+}
+
+.feature a {
+    text-decoration: none;
+}
+
+.stories {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stories .story {
+    width: 30%;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 50px;
+    min-height: 360px;
+    max-height: 360px;
+}
+
+@media screen and (max-width: 500px) {
+    .stories .story {
+        width: 100%;
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-bottom: 20px;
+        min-height: unset;
+        max-height: unset;
+    }
+}
+
+.stories .story .thumbnail:before {
+    content: ' ';
+    padding-top: 56.25%;
+    display: block;
+}
+
+.stories .story .thumbnail {
+    display: block;
+    position: relative;
+    background-size: cover;
+    background-position: center center;
+    color: #fff;
+    margin-bottom: 0px;
+}
+
+.story .title {
+    text-align: center;
+}
+
+.story .summary {
+    text-align: center;
+}
+
+.story a {
+    text-decoration: none;
+}
+
+.share-your-story-cta {
+    margin-left: 10%;
+    margin-right: 10%;
+    text-align: center;
+}

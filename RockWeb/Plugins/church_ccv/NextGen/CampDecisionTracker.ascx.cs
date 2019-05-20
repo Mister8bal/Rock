@@ -285,14 +285,15 @@ namespace RockWeb.Plugins.church_ccv.NextGen
             // Junior High and Kids camps have a subset of the full High School list. So,
             // we can default to the full list, and then simply trim off 1 or 2 based on the camp.
             int numDecisions = availableDecisions.Count;
-
-            if ( campGroupName.ToLower( ).Contains( "junior high" ) )
+            
+            // Update 5/19 BT - We now only have one decision type that is only available for HS and JH Students
+            //if ( campGroupName.ToLower( ).Contains( "junior high" ) )
+            //{
+            //    numDecisions--; //junior high has one less decision that high school
+            //}
+            if ( campGroupName.ToLower( ).Contains( "kids" ) )
             {
-                numDecisions--; //junior high has one less decision that high school
-            }
-            else if ( campGroupName.ToLower( ).Contains( "kids" ) )
-            {
-                numDecisions -= 2; //kids has two less than high school
+                numDecisions -= 1; //kids has two less than high school
             }
             
             return availableDecisions.Take( numDecisions ).ToList( );

@@ -48,7 +48,8 @@
                     <div class="course-info">
                         <div class="info-wrapper">
                             <p><%# Eval("Description") %></p>
-                            <asp:Button runat="server" ID="btnEnroll" CssClass="btn btn-primary btn-talentlms btn-enroll" OnClick="btnEnroll_Click" Text="Enroll" CommandArgument='<%# Eval("Id") %>' />
+                            <!-- Disabling Enroll button from Rock, Enroll rights are set at the talent LMS security group level and we need to discuss if its needed adding this -->
+                            <!-- <asp:Button runat="server" ID="btnEnroll" CssClass="btn btn-primary btn-talentlms btn-enroll" OnClick="btnEnroll_Click" Text="Enroll" CommandArgument='<%# Eval("Id") %>' /> -->
                         </div>
                     </div>       
 
