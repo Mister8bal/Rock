@@ -3,13 +3,13 @@
  */
 .page-background {   
     background-color: #EBEBEB;
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps-special-needs.png");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps-special-needs.jpg");
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 768px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps-special-needs.png");
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps-special-needs.jpg");
     }
 }
 
