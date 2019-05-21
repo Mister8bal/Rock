@@ -124,55 +124,5 @@ namespace church.ccv.CCVRest.MobileApp
                 return Common.Util.GenerateResponse( false, PodcastLatestMessageResponse.NotAvailable.ToString(), null );
             }
         }
-
-        [Serializable]
-        public enum PodcastToolboxResourcesResponse
-        {
-            NotSet = -1,
-
-            Success,
-
-            PodcastError
-        }
-
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route( "api/NewMobileApp/Podcast/ToolboxResources" )]
-        [Authenticate, Secured]
-        public HttpResponseMessage ToolboxResources(int primaryAliasId)
-        {
-            List<ToolboxResourceModel> toolboxResourceList = new List<ToolboxResourceModel>();
-
-            // track the resources we need to get, so we don't go over the limit
-            int resourcesRemaining = 4;
-
-            // ultimately, we want 4 resources/messages. However, because some could be private, and we also need to know the index
-            // of the messsage within its series (For the Week Number: N feature), we have to take whole series. 
-            // Grab the most recent six, which should be more than enough to cover 4 messages.
-            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( 470, false, 6, int.MaxValue, primaryAliasId );
-            if ( rootCategory == null )
-            {
-                // if this failed something really bad happened
-                return Common.Util.GenerateResponse( false, PodcastSeriesResponse.PodcastError.ToString(), null );
-            }
-
-            // iterate over each series
-            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
-            {
-                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
-                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
-
-                // use the resourcesRemaining int to track when we've hit our total number
-                List<ToolboxResourceModel> resourceList  = MAPodcastService.PodcastSeriesToToolboxResources( series, ref resourcesRemaining );
-                toolboxResourceList.AddRange( resourceList );
-
-                // if parsing this latest series caused us to hit our goal, break.
-                if ( resourcesRemaining == 0 )
-                {
-                    break;
-                }
-            }
-
-            return Common.Util.GenerateResponse( true, PodcastToolboxResourcesResponse.Success.ToString(), toolboxResourceList );
-        }
     }
 }

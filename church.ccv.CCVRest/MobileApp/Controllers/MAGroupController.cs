@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http;
 using church.ccv.CCVRest.MobileApp.Model;
+using church.ccv.Podcast;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
@@ -161,6 +162,60 @@ namespace church.ccv.CCVRest.MobileApp
                 default:
                     return Common.Util.GenerateResponse( false, JoinGroupResponse.Failed.ToString(), null );
             }
+        }
+
+        [Serializable]
+        public enum ToolboxContentResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            ContentError
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/ToolboxContent" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage ToolboxContent( int primaryAliasId )
+        {
+            ToolboxContentModel toolboxContent = new ToolboxContentModel();
+            toolboxContent.ResourceList = new List<ToolboxResourceModel>();
+
+            // track the resources we need to get, so we don't go over the limit
+            int resourcesRemaining = 4;
+
+            // ultimately, we want 4 resources/messages. However, because some could be private, and we also need to know the index
+            // of the messsage within its series (For the Week Number: N feature), we have to take whole series. 
+            // Grab the most recent six, which should be more than enough to cover 4 messages.
+            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( 470, false, 6, int.MaxValue, primaryAliasId );
+            if ( rootCategory == null )
+            {
+                // if this failed something really bad happened
+                return Common.Util.GenerateResponse( false, ToolboxContentResponse.ContentError.ToString(), null );
+            }
+
+            // iterate over each series
+            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
+            {
+                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
+                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
+
+                // use the resourcesRemaining int to track when we've hit our total number
+                List<ToolboxResourceModel> resourceList = MAPodcastService.PodcastSeriesToToolboxResources( series, ref resourcesRemaining );
+                toolboxContent.ResourceList.AddRange( resourceList );
+
+                // if parsing this latest series caused us to hit our goal, break.
+                if ( resourcesRemaining == 0 )
+                {
+                    break;
+                }
+            }
+
+            // Grab the content for the Associate Pastor board (if there was an error and null was returned, that's fine)
+            toolboxContent.APBoardContent = MAGroupService.GetAPBoardContent( primaryAliasId );
+
+            return Common.Util.GenerateResponse( true, ToolboxContentResponse.Success.ToString(), toolboxContent );
         }
     }
 }

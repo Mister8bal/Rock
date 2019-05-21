@@ -227,8 +227,11 @@ namespace church.ccv.CCVRest.MobileApp
                 case MAGroupMemberView.CoachView:
                 {
                     // AP
-                    MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
-                    groupResult.Members.Add( maAssociatePastor );
+                    if ( associatePastor != null )
+                    {
+                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
+                        groupResult.Members.Add( maAssociatePastor );
+                    }
 
                     // Coach (could be themself)
                     MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
@@ -247,8 +250,11 @@ namespace church.ccv.CCVRest.MobileApp
                 case MAGroupMemberView.MemberView:
                 {
                     // AP
-                    MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
-                    groupResult.Members.Add( maAssociatePastor );
+                    if ( associatePastor != null )
+                    {
+                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
+                        groupResult.Members.Add( maAssociatePastor );
+                    }
 
                     // Coach
                     MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
@@ -270,8 +276,11 @@ namespace church.ccv.CCVRest.MobileApp
                 case MAGroupMemberView.NonMemberView:
                 {
                     // AP
-                    MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, false, Guid.Empty );
-                    groupResult.Members.Add( maAssociatePastor );
+                    if ( associatePastor != null )
+                    {
+                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, false, Guid.Empty );
+                        groupResult.Members.Add( maAssociatePastor );
+                    }
 
                     // Coach
                     MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, false, Guid.Empty );
@@ -468,6 +477,82 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return false;
+        }
+
+        internal static APBoardModel GetAPBoardContent( int primaryAliasId )
+        {
+            // this will find the Content Channel associated with the coach's Associate Pastor
+            // and package it into an APBoardModel
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            RockContext rockContext = new RockContext();
+
+            // first, find the coach
+            PersonAliasService paService = new PersonAliasService( rockContext );
+            PersonAlias personAlias = paService.Get( primaryAliasId );
+            if ( personAlias == null )
+            {
+                return null;
+            }
+
+            // make sure the coach has a datamart entry
+            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == personAlias.PersonId ).SingleOrDefault();
+            if ( datamartPerson == null )
+            {
+                return null;
+            }
+
+            // now get the associate pastor for the coach--if we can't, there's no way to get APBoard content
+            Person associatePastor = null;
+            if ( datamartPerson.NeighborhoodPastorId.HasValue )
+            {
+                associatePastor = new PersonService( rockContext ).Queryable().AsNoTracking()
+                                                                    .Where( p => p.Id == datamartPerson.NeighborhoodPastorId.Value )
+                                                                    .SingleOrDefault();
+            }
+
+            if ( associatePastor == null )
+            {
+                return null;
+            }
+
+            
+            // the APBoard is tied to a Group Region of which the Associate Pastor is a member of.
+            // so first, get all the APBoard content channel items
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+            const int ContentChannelId_ToolboxAPBoard = 295; //dev value
+            ContentChannel apBoard = contentChannelService.Get( ContentChannelId_ToolboxAPBoard );
+
+            // now go through each APBoard Item (there's one per Region per Campus)
+            ContentChannelItem apBoardItem = null;
+            foreach ( var item in apBoard.Items )
+            {
+                item.LoadAttributes();
+
+                // Get the Group Region this item is tied to, which will contain the Associate Pastor
+                string regionVal = item.AttributeValues["Region"].Value.ToString();
+                var group = new GroupService( rockContext ).Get( regionVal.AsGuid() );
+
+                // now see if this Region contains the Coach's associate pastor
+                if ( group.Members.Where( m => m.PersonId == associatePastor.Id ).Count() != 0 )
+                {
+                    // It did, so this is the appropriate AP Board item
+                    apBoardItem = item;
+                    break;
+                }
+            }
+
+            // package it up
+            APBoardModel apBoardModel = new APBoardModel();
+            apBoardModel.AssociatePastorName = associatePastor.FirstName + " " + associatePastor.LastName;
+            apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
+
+            apBoardModel.Summary = apBoardItem.Content;
+            apBoardModel.Date = apBoardItem.StartDateTime.Date;
+            apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+
+            return apBoardModel;
         }
     }
 }
