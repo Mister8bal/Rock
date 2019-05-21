@@ -12,12 +12,11 @@
 
 #section-a-bg {
     padding: 20px;
-    background-color: #ebebeb;
+    background-color: white;
 }
 
 #section-b-bg {
-    padding: 100px;
-    background-color: white;
+    display: none;
 }
 
 @media screen and (max-width: 500px) {
@@ -71,6 +70,7 @@
 .stories {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .stories .story {
@@ -124,4 +124,9 @@
     margin-left: 10%;
     margin-right: 10%;
     text-align: center;
+}
+
+.story p
+{
+    font-size: 12px;
 }
