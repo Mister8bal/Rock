@@ -1,7 +1,8 @@
 {% comment %}
   {% assign returnPage = '/watch/stories' %}
-  
-  {% capture shareUrl %}https://ccv.church/watch/stories/story/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
+  {% assign sharePage = '/watch/stories/story' %}
+
+  {% capture shareUrl %}https://ccv.church{{sharePage}}/{{ item | Attribute:'ShortUrl' }}{%endcapture%}
   {% assign smsBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
   {% assign emailSubject = 'Check out this story!' %}
   {% assign emailBody = 'Check out this story from CCV ' | Append: {{shareUrl}} %}
