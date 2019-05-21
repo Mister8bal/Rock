@@ -545,7 +545,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // package it up
             APBoardModel apBoardModel = new APBoardModel();
-            apBoardModel.AssociatePastorName = associatePastor.FirstName + " " + associatePastor.LastName;
+            apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
             apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
 
             apBoardModel.Summary = apBoardItem.Content;
