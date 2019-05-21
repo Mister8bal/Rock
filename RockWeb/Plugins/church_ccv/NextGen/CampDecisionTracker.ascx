@@ -67,12 +67,11 @@
 
         <div class="well" style="margin-top: 25px;">
             <ul style="padding-left: 10px;">
-                <li><strong>No Decision:</strong> Decided not to make any commitments during camp</li>
-                <li><strong>Follow Jesus + Baptism:</strong> 1st time decision to follow Jesus paired with getting baptism</li>
-                <li><strong>Baptism:</strong> Already follows Jesus – wants to get baptized</li>
-                <li><strong>Return:</strong> Renew commitment to Jesus</li>
-                <li><strong>Next Step:</strong> Wants to serve at CCV</li>
-                <li><strong>Vocational Ministry:</strong> Called to full-time ministry</li>
+                <li><strong>Baptism:</strong> Decided to follow Jesus and get baptized</li>
+                <li><strong>Worship:</strong> Decided to attend the weekend experience at CCV regularly</li>
+                <li><strong>Serve:</strong> Decided to sign up to serve</li>
+                <li><strong>Share:</strong> Decided to invite friends to the weekend experience at CCV</li>
+                <li><strong>Vocational Ministry:</strong> Decided to enter full-time ministry</li>
             </ul>
         </div>
         
