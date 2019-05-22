@@ -8144,9 +8144,6 @@ img.mfp-img {
     -moz-osx-font-smoothing: grayscale;
   }
   
-  .csi-special-needs:before {
-    content: "\e909";
-  }
   .csi-slt:before {
     content: "\e900";
   }
@@ -8155,12 +8152,6 @@ img.mfp-img {
   }
   .csi-map-marker:before {
     content: "\e902";
-  }
-  .csi-cog:before {
-    content: "\f013";
-  }
-  .csi-gear:before {
-    content: "\f013";
   }
   .csi-phone:before {
     content: "\e903";
@@ -8174,14 +8165,26 @@ img.mfp-img {
   .csi-caret-down:before {
     content: "\e906";
   }
-  .csi-location-arrow:before {
-    content: "\f124";
-  }
   .csi-instagram:before {
     content: "\e907";
   }
   .csi-facebook:before {
     content: "\e908";
+  }
+  .csi-special-needs:before {
+    content: "\e909";
+  }
+  .csi-espanol:before {
+    content: "\e90a";
+  }
+  .csi-cog:before {
+    content: "\f013";
+  }
+  .csi-gear:before {
+    content: "\f013";
+  }
+  .csi-location-arrow:before {
+    content: "\f124";
   }
   
 

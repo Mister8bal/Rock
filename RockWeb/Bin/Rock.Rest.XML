@@ -574,30 +574,6 @@
             <param name="loginParameters">The login parameters.</param>
             <exception cref="T:System.Web.Http.HttpResponseException"></exception>
         </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.FacebookLogin(Rock.Security.ExternalAuthentication.Facebook.FacebookUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="facebookUser">The facebook user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.GoogleLogin(Rock.Security.ExternalAuthentication.Google.GoogleUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="googleUser">The google user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
-        <member name="M:Rock.Rest.Controllers.AuthController.TwitterLogin(Rock.Security.ExternalAuthentication.Twitter.TwitterUser)">
-            <summary>
-            Use this to Login a user and return an AuthCookie which can be used in subsequent REST calls
-            </summary>
-            <param name="twitterUser">The twitter user.</param>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-            <exception cref="T:System.Web.Http.HttpResponseException"></exception>
-        </member>
         <member name="T:Rock.Rest.Controllers.BinaryFilesController">
              <summary>
             

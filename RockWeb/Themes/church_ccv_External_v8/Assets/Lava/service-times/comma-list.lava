@@ -15,6 +15,10 @@ Service Times - Comma list style (like campus page)
 <span class="csi csi-special-needs"></span>
 {% endcapture %}
 
+{% capture espanolIcon %}
+<span class="csi csi-espanol"></span>
+{% endcapture %}
+
 {% assign hasSaturday = false %}{% assign hasSunday = false %}
 {% for time in campus.ServiceTimes %}
   {% if time.Day == 'Saturday' %}
@@ -29,7 +33,7 @@ Service Times - Comma list style (like campus page)
   <strong class="margin-r-sm">Saturday</strong>
   {% for time in campus.ServiceTimes %}
     {% if time.Day == 'Saturday' %}
-      <span class="commalist-item">{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</span>
+      <span class="commalist-item">{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</span>
     {% endif %}
   {% endfor %}
   <br>
@@ -39,7 +43,7 @@ Service Times - Comma list style (like campus page)
   <strong class="margin-r-sm">Sunday</strong>
   {% for time in campus.ServiceTimes %}
     {% if time.Day == 'Sunday' %}
-      <span class="commalist-item">{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon }}</span>
+      <span class="commalist-item">{{ time.Time | Remove: ' ' | Replace: '*', deafIcon | Replace: '%', specialNeedsIcon | Replace: '#', espanolIcon }}</span>
     {% endif %}
   {% endfor %}
 {% endif %}
