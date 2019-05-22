@@ -23,7 +23,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [CodeEditorField( "Contents", @"The Lava template to use for displaying the visits.", CodeEditorMode.Lava, CodeEditorTheme.Rock, 400, false, "", "", 3 )]
 
 
-    public partial class PlanAVisitLava : RockBlock
+    public partial class PlanAVisitListLava : RockBlock
     {
 
         #region Control Methods
