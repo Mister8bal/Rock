@@ -26,7 +26,8 @@ using System.Linq;
 using System.Data.Entity;
 using System;
 using church.ccv.CCVRest.CCVLive.Model;
-
+using church.ccv.CCVRest.Common.Model;
+using church.ccv.CCVRest.Common;
 
 namespace church.ccv.CCVRest.CCVLive
 {
@@ -113,12 +114,12 @@ namespace church.ccv.CCVRest.CCVLive
 
             /** 
              * Instantiate the interaction
-             */ 
+             */
             Interaction thisInteraction = new Interaction()
             {
                 Operation = attendanceModel.Operation,
                 InteractionDateTime = dt,
-                PersonAliasId = person.Id,
+                PersonAliasId = person.PrimaryAliasId,
                 InteractionComponentId = attendanceModel.InteractionComponentId,
                 InteractionSessionId = attendanceModel.InteractionSessionId
             };
@@ -128,7 +129,10 @@ namespace church.ccv.CCVRest.CCVLive
             /**
              * Create a new attendance record
              */
-            attendanceLogged = CreateAttendanceRecord(person.Id, CampusId, dt, attendanceService, personAliasService, rockContext);
+            if ( Common.Util.HasAttendanceRecord( person.Id, AttendanceGroupId, dt.Date, dt.Date.AddDays( 1 ), attendanceService, rockContext ) == false )
+            {
+                attendanceLogged = Util.CreateAttendanceRecord( person.Id, CampusId, AttendanceGroupId, dt.Date, attendanceService, personAliasService, rockContext );
+            }
 
             rockContext.SaveChanges();
 
@@ -167,48 +171,6 @@ namespace church.ccv.CCVRest.CCVLive
 
             return null;
 
-        }
-
-        private bool CreateAttendanceRecord(
-            int personId, 
-            int? campusId, 
-            DateTime startDateTime, 
-            AttendanceService attendanceService, 
-            PersonAliasService personAliasService, 
-            RockContext rockContext
-        )
-        {
-            // if we already have an attendance record for this start time, don't count it again.
-            DateTime beginDate = startDateTime.Date;
-            DateTime endDate = beginDate.AddDays(1);
-
-            Attendance attendance = attendanceService.Queryable("Group,PersonAlias.Person")
-                .Where(a =>
-                   a.StartDateTime >= beginDate &&
-                   a.StartDateTime < endDate &&
-                   a.GroupId == AttendanceGroupId &&
-                   a.PersonAlias.PersonId == personId)
-                .FirstOrDefault();
-
-            if (attendance == null)
-            {
-                PersonAlias primaryAlias = personAliasService.GetPrimaryAlias(personId);
-                if (primaryAlias != null)
-                {
-                    attendance = rockContext.Attendances.Create();
-                    attendance.CampusId = campusId;
-                    attendance.GroupId = AttendanceGroupId;
-                    attendance.PersonAlias = primaryAlias;
-                    attendance.PersonAliasId = primaryAlias.Id;
-                    attendance.StartDateTime = startDateTime;
-                    attendance.DidAttend = true;
-                    attendanceService.Add(attendance);
-
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
