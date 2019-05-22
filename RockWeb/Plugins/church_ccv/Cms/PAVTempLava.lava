@@ -1,4 +1,11 @@
 <style>
+    .campus-actions {
+        display: flex;
+        justify-content: space-between;
+        max-width: 600px;
+        margin: 0 auto 20px auto;
+    }
+
     .visit-card {
         box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
         transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
@@ -9,21 +16,37 @@
         max-width: 600px;
     }
 
-    .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 50px;
-    }
-
     .visit-card i {
         font-size: 32px;
         line-height: 34px;
         color: #7A1315;
     }
 
+    .card-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 75px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .card-header h4, h5 {
+        padding: 0 20px;
+        line-height: 100%;
+    }
+
+    .card-header i {
+        font-size: 40px;
+        line-height: 42px;
+    }
+
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .visit {
-        background-color: #eee;
         color: #000;
         cursor: pointer;
         padding: 18px;
@@ -55,82 +78,284 @@
     .content-hidden {
         display: none;
     }
+
+    .content p {
+        text-align: center;
+    }
+
+    .child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .child-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .child-info p:first-of-type {
+        margin-right; 10px;
+    }
+
+    .no-visits {
+        padding: 40px 0;
+    }
+
+    /* campuses dropdown */
+    #ulCampuses { 
+        height: 38px;
+        list-style: none;
+    }
+    #ulCampuses li:not(.init) { 
+        width: 200px; 
+        display: none; 
+        background-color: #FFFFFF;
+        color: #333;
+        position: relative;
+        top: 8px;
+        left: -14px;
+    }
+    #ulCampuses li:not(.init):hover, #ulCampuses li.selected:not(.init) { 
+        background-color: #7A1315; 
+        color: #FFFFFF;
+    }
+    li.init { 
+        cursor: pointer; 
+    }
 </style>
 
-<div class="visit-card">
-    <div class="card-header">
-        <i class="mdi mdi-chevron-left"></i>
-        Date goes here
-        <i class="mdi mdi-chevron-right"></i>
+<div id="divVisits" class="hidden">
+    <div class="campus-actions">
+        <ul id="ulCampuses" class="btn btn-primary">
+            <li class="init">Select A Campus</li>
+        </ul>
+
+        <button class="btn btn-primary" onclick="toggleAllCampuses(); return false;">Show All Campuses</button>
     </div>
 
-    {% unless Context.Campus.ServiceTimes contains 'Coming Soon' %}
+    <div class="visit-card">
+        <div class="card-header">
+            <i onclick="prevDay()" class="mdi mdi-chevron-left"></i>
+            <div class="header-content">
+                <h4 id="headerDate">Date</h4>
+            </div>
+            <i onclick="nextDay()" class="mdi mdi-chevron-right"></i>
+        </div>
 
-        {% assign hasVisitsToDisplay = false %}
+        <div id="cardContent" class="content">
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // default to todays date
+    var cardDate = moment();
+
+    // temp
+    cardDate = cardDate.add(4, 'days');
+
+    // set campus
+    var campusId = "{{ Context.Campus.Id }}";
+    var showAllCampuses = false;
+
+    // build visit data
+    var visitData = buildVisitDataObject();
+
+    function pageLoad() {
+        // load campuses dropdown
+        buildCampusesDropdown();
+        
+        // initial render of visits
+        renderVisitsCard();
+
+        // begin handle campuses ul click
+        $("#ulCampuses").on("click", ".init", function() {
+            $(this).closest("#ulCampuses").children('li:not(.init)').toggle();
+        });
+
+        var allOptions = $("#ulCampuses").children('li:not(.init)');
+
+        $("#ulCampuses").on("click", "li:not(.init)", function() {
+            allOptions.removeClass('selected');
+            $(this).addClass('selected');
+            $("#ulCampuses").children('.init').html($(this).html());
+            allOptions.toggle();
+
+            campusId = $(this).data('value');
+
+            // re-render
+            renderVisitsCard();
+        });
+        // end handle campuses ul click
+    }
+
+    // increase date by 1 day
+    function nextDay() {
+        cardDate = cardDate.add(1, 'days');
+
+        // re-render
+        renderVisitsCard();
+    }
+
+    // decreate date by 1 day
+    function prevDay() {
+        cardDate = cardDate.add(-1, 'days');
+
+        // re-render
+        renderVisitsCard();
+    }
+
+    // show / hide all campuses
+    function toggleAllCampuses() {
+        showAllCampuses = !showAllCampuses;
+
+        // re-render
+        renderVisitsCard()
+    }
+
+    // render visits card
+    function renderVisitsCard() {
+        var itemsProcessed = 0;
+        var hasVisits = false;
+        var visitItemHTML = "";
+
+        // update date title
+        $('#headerDate').text(cardDate.format("MM/DD/YYYY"));
+
+        // ensure card is blank before proceeding
+        $('#cardContent').html("");
+
+        visitData.forEach( function(visitItem, index, array) {
+            if ( ( showAllCampuses === true || visitItem.CampusId == campusId ) && visitItem.ScheduledDate == cardDate.format("MM/DD/YYYY") ) {
+                console.log( "visit for campus found + date found");
+
+                hasVisits = true;
+
+                var familyName = visitItem.AdultOneFirstName;
+
+                if ( visitItem.AdultTwoFirstName != "") {
+                    familyName = familyName + " & " + visitItem.AdultTwoFirstName;
+                }
+
+                familyName = familyName + " " + visitItem.FamilyName;
+
+                // ensure we starting with empty html
+                visitItemHTML = ""
+
+                // family name 
+                visitItemHTML += '<div id="divVisit_' + visitItem.Id + '" class="visit">';
+                    visitItemHTML += "<h4>" + familyName + " (" + visitItem.ScheduledDate +")</h4>";
+                    visitItemHTML += '<i id="tglIconVisit_' + visitItem.Id + '" class="mdi mdi-chevron-down"></i>';
+                visitItemHTML += "</div>";
+
+                // family content
+                visitItemHTML += '<div id="divVisitContent_' + visitItem.Id + '" class="content content-hidden">'                
+                    visitItemHTML += "<h4>Scheduled Service Time</h4>";
+                    visitItemHTML += "<p>" + visitItem.CampusName + "<br />" + visitItem.ScheduledServiceName + "</p>";
+                        
+                    if ( visitItem.BringingChildren === "true" ) {
+                        visitItemHTML += "<h4>Kids</h4>";
+
+                        visitItem.Children.forEach(function(child) {
+                            visitItemHTML += '<div class="child">';
+                                visitItemHTML += "<h5>" + child.FirstName + "</h5>";
+                                visitItemHTML += '<div class="child-info"><p>Age: ' + child.Age + "</p><p>Birthday: " + child.Birthdate + "</p></div>";
+                            visitItemHTML += "</div>"
+                        });                        
+                    }                    
+                                   
+                visitItemHTML += "</div>"    
+
+                // need to append the html here so the following jquery can attach
+                $('#cardContent').append( visitItemHTML);            
+
+                $('#divVisit_' + visitItem.Id).on('click', function() {
+                    $('#divVisitContent_' + visitItem.Id).toggleClass('content-hidden');
+                    $('#tglIconVisit_' + visitItem.Id).toggleClass('mdi-chevron-down');
+                    $('#tglIconVisit_' + visitItem.Id).toggleClass('mdi-chevron-up');
+                });
+
+
+            }
+
+            // unhide the visits card once all items processed
+            itemsProcessed++;
+
+            if ( itemsProcessed === array.length ) {
+                $('#divVisits').removeClass("hidden");
+            }
+        });
+
+        if (hasVisits == false) {
+            console.log("no visit for campus found + date found")
+
+            visitItemHTML = '<div class="no-visits"><h5>No visits scheduled</h5></div>';0
+
+            $('#cardContent').append( visitItemHTML);
+        }
+    }
+
+    // populate campuses object
+    function buildCampusesDropdown() {
+        {% for campus in Campuses %}
+            {% if campus.IsActive %}
+                var liCampus = '<li data-value="{{ campus.Id }}">{{ campus.Name }}</li>';
+
+                $('#ulCampuses').append(liCampus);
+
+            {% endif %}
+        {% endfor %}
+    }
+
+    // populate visit object
+    function buildVisitDataObject() {
+        var visitsObject = [];
 
         {% for visit in Visits %}
-            {% assign displayVisit = false %}
-
-            {% if visit.CampusId == Context.Campus.Id %}
-                {% assign hasVisitsToDisplay = true %}
-                {% assign displayVisit = true %}
-            {% endif %}
-
-
-            {% if displayVisit == true %}
-                {% assign visitPerson = visit.PersonAliasId | PersonByAliasId %}
-
-                {% if visit.BringingSpouse %}
-                    {% assign visitPartner = visitPerson | Spouse %}
-                {% endif %}
-
-                {% capture familyName %}{{ visitPerson.NickName }}{% if visit.BringingSpouse %} & {{ visitPartner.NickName }}{% endif %} {{ visit.LastName }}{% endcapture %}
-
-                <div id="divVisit_{{ visit.Id }}" class="visit">
-                    <h4>{{ familyName }}</h4>
-                    <i id="tglIconVisit_{{ visit.Id }}" class="mdi mdi-chevron-down"></i>
-                </div>
-                <div id="divVisitContent_{{ visit.Id }}" class="content content-hidden">
-                    {{ visit.Id }}
-                    {{ visit.CampusName }}
-                    <p>
-                        Scheduled Date: {{ visit.ScheduledDate }}<br />
-                        Scheduled Service Time: {{ visit.ScheduledServiceName }}<br />
-                        <br />
-                        First Name: {{ visitingPerson.NickName }}<br />
-
-                        {% if visit.BringingChildren %}
-                            {% assign children = visitingPerson | Children %}
-                            {% for child in children %}
-                                {{ child.NickName }}<br />
-                            {% endfor %}
-                        {% endif %}
-                    </p>
-                </div>
-
-                <script>
-                    $('#divVisit_{{ visit.Id }}').on('click', function() {
-                        $('#divVisitContent_{{ visit.Id }}').toggleClass('content-hidden');
-                        $('#tglIconVisit_{{ visit.Id }}').toggleClass('mdi-chevron-down');
-                        $('#tglIconVisit_{{ visit.Id }}').toggleClass('mdi-chevron-up');
-                        
-                    });        
-                </script>
-            {% endif %}
+            {% assign adultOne = visit.AdultOnePersonAliasId | PersonByAliasId %}
+            {% assign adultTwo = visit.AdultTwoPersonAliasId | PersonByAliasId %}
             
+            var newVisit = {
+                Id: "{{ visit.Id }}",
+                FamilyName: "{{ visit.FamilyLastName }}",
+                AdultOneFirstName: "{{ adultOne.NickName }}",
+                AdultTwoFirstName: "{{ adultTwo.NickName }}",
+                CampusId: "{{ visit.CampusId }}",
+                CampusName: "{{ visit.CampusName }}",
+                BringingChildren: "{{ visit.BringingChildren }}",
+                Children: [],
+                ScheduledDate: "{{ visit.ScheduledDate | Date:'MM/dd/yyyy' }}",
+                ScheduledServiceName: "{{ visit.ScheduledServiceName }}",
+                AttendedDate: "{{ visit.AttendedDate }}",
+                AttendedServiceName: "{{ visit.AttendedServiceName }}"
+            }
+
+            // if bringing chidren add them to visit data
+            {% if visit.BringingChildren %}
+                {% assign children = adultOne | Children %}
+
+                {% for child in children %}
+                    var newChild = {
+                        FirstName: "{{  child.NickName }}",
+                        Age: "{{ child.Age }}",
+                        Birthdate: "{{ child.BirthDate | Date:'M/d/yy' }}"
+                    }
+                    
+                    newVisit.Children.push(newChild);
+                {% endfor %}
+
+            {% endif %}
+
+            visitsObject.push(newVisit);
         {% endfor %}
 
-        {% if hasVisitsToDisplay == false %}
-            <div class="content">
-                No Visits for the selected date
-            </div>
-        {% endif %}
-    {% else %}
-        <div class="content">
-            Campus Coming Soon!
-        </div>
-    {% endunless %}
-</div>
+        return visitsObject;
+    }
+</script>
 
 
 {{ Lava | 'Debug' }}

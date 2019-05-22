@@ -11,6 +11,7 @@ using Rock;
 using Rock.Attribute;
 using Rock.Data;
 using Rock.Model;
+using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 
@@ -100,12 +101,11 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 select new
                 {
                     planAVisit.Id,
-                    planAVisit.AdultOnePersonAliasId,
+                    planAVisit.AdultOnePersonAliasId,                    
                     planAVisit.AdultTwoPersonAliasId,
                     FamilyLastName = person.LastName,
                     planAVisit.CampusId,
                     CampusName = campus.Name,
-                    CampusGuid = campus.Guid,
                     planAVisit.ScheduledDate,
                     planAVisit.ScheduledServiceScheduleId,
                     ScheduledServiceName = scheduledSchedule.Name,
@@ -120,17 +120,22 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             string contents = GetAttributeValue( "Contents" );
 
-            string appRoot = ResolveRockUrl( "~/" );
-            string themeRoot = ResolveRockUrl( "~~/" );
-            contents = contents.Replace( "~~/", themeRoot ).Replace( "~/", appRoot );
-
+            
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+
+            var mergeFieldsKV = mergeFields.ToList();
+
+
             mergeFields.Add( "Visits", filteredQuery.OrderByDescending( a => a.ScheduledDate ).ThenBy( b => b.FamilyLastName ) );
 
+            ///
+            /// Need block settings for configuring how many weeks back and weeks forward to show
+            ///
+
             lContents.Text = contents.ResolveMergeFields( mergeFields );     
-        }
-
-
+        }     
+        
         #endregion
+
     }
 }
