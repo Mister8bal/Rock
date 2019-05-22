@@ -73,7 +73,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 {
                     apBoardItem.LoadAttributes();
 
-                    lTitle.Text = "<h4 class=\"panel-title\">" + "AP Board for " + apBoardItem.Title + "</h4>";
+                    lTitle.Text = "<h4 class=\"panel-title\">" + "AP Board: " + apBoardItem.Title + "</h4>";
                     tbContent.Text = apBoardItem.Content;
                     tbTipOfTheWeek.Text = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
 
