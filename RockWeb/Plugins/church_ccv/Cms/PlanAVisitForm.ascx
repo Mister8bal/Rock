@@ -748,7 +748,7 @@
                 <p>You will be receiving a confirmation email with helpful information, including a map link to make getting to the <asp:Label ID="lblCampusVisit" runat="server" Text="" /> campus a breeze</p>
             </div>
             <div class="form-navigation">
-                <a href="/plan-your-visit#form" class="btn btn-primary start-over">Plan Another Visit</a>
+                <a href="/plan-your-visit" class="btn btn-primary start-over">Plan Another Visit</a>
                 <a href="/" class="btn btn-primary start-over">Back To Home</a>
             </div>
 
