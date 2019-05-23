@@ -6,7 +6,7 @@
         margin: 0 auto 20px auto;
     }
 
-    .visit-card {
+    .visit-card, .attended-form {
         box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
         transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
         border-radius: 5px;
@@ -14,6 +14,10 @@
         margin: 0 auto 20px auto;
         min-height: 200px;
         max-width: 600px;
+    }
+
+    .attended-form {
+        min-height: 400px;
     }
 
     .visit-card i {
@@ -72,6 +76,10 @@
         width: 100%;
     }
 
+    .content-form {
+        overflow: unset;
+    }
+
     .details-content {
         display: none;
     }
@@ -91,7 +99,7 @@
     .child-info {
         display: flex;
         justify-content: space-between;
-        width: 50%;
+        width: 55%;
     }
 
     .child-info p:first-of-type {
@@ -100,21 +108,24 @@
 
     .btn-attended {
         margin-top: 40px;
+        font-weight: normal;
+        font-family: akrobat;
+        color: #FFFFFF;
     }
 
     .no-visits {
         padding: 40px 0;
     }
 
-    /* campuses dropdown */
-    #ulCampuses { 
+    /* dropdowns */
+    #ulCampuses, #ulCampusesForm, #ulServicesForm { 
         height: 38px;
         list-style: none;
         background-color: #7A1315;
         border-color: #7A1315;
     }
 
-    #ulCampuses li:not(.init) { 
+    #ulCampuses li:not(.init), #ulCampusesForm li:not(.init), #ulServicesForm li:not(.init) { 
         width: 100%; 
         display: none; 
         background-color: #FFFFFF;
@@ -126,16 +137,16 @@
         border-right: 1px solid #e7e7e7;
     }
 
-    #ulCampuses li:nth-child(2):not(.init) { 
+    #ulCampuses li:nth-child(2):not(.init), #ulCampusesForm li:nth-child(2):not(.init), #ulServicesForm li:nth-child(2):not(.init) { 
         border-radius: 4px 4px 0 0;
     }
 
-    #ulCampuses li:last-child:not(.init) { 
+    #ulCampuses li:last-child:not(.init), #ulCampusesForm li:last-child:not(.init), #ulServicesForm li:last-child:not(.init) { 
         border-radius: 0 0 4px 4px;
         border-bottom: 1px solid #e7e7e7;
     }
 
-    #ulCampuses li:not(.init):hover, #ulCampuses li.selected:not(.init) { 
+    #ulCampuses li:not(.init):hover, #ulCampuses li.selected:not(.init), #ulCampusesForm li:not(.init):hover, #ulCampusesForm li.selected:not(.init), #ulServicesForm li:not(.init):hover, #ulServicesForm li.selected:not(.init) { 
         background-color: #7A1315; 
         color: #FFFFFF;
     }
@@ -148,18 +159,25 @@
         outline: none;
     }
 
+    /* attended form */
+    .attended-form {
+        display: none;
+    }
+
     @media screen and (max-width: 768px) {
         .content h4 {
             font-size: 20px;
             line-height: 22px;
         }
 
-        #ulCampuses li:not(.init) { 
+        #ulCampuses li:not(.init), #ulCampusesForm li:not(.init), #ulServicesForm li:not(.init) { 
             width: 100%;
             left: 0;
         }
     }
 </style>
+
+<div id="btnAttended" class="btn btn-primary btn-attended" onclick="showAttendedForm()">Attended</div>
 
 <div id="divVisits" class="hidden">
     <div class="campus-actions">
@@ -178,6 +196,27 @@
         </div>
         <div id="cardContent" class="content"></div>
     </div>
+</div>
+<div id="divAttendedForm" class="attended-form">
+    <div class="card-header">
+        <h4>What service is being attended?</h4>
+    </div>
+    <div class="content content-form">
+        <ul id="ulCampusesForm" class="btn btn-primary">
+            <li class="init">Select A Campus</li>
+        </ul>
+
+        <p>Date: <input type="text" id="datepicker"></p>
+
+        <ul id="ulServicesForm" class="btn btn-primary">
+            <li class="init">Select A Service</li>
+            <li>No Services For Selected Date</li>
+        </ul>
+
+        <div id="btnProcessAttended" class="btn btn-primary btn-attended" onclick="processAttended()">Save</div>
+
+    </div>
+
 </div>
 
 <script>
@@ -227,9 +266,56 @@
             // render card
             renderVisitsCard();
         });
+
+        // show/hide campuses form dropdown click event
+        $("#ulCampusesForm").on("click", ".init", function() {
+            $(this).closest("#ulCampusesForm").children("li:not(.init)").toggle();
+        });
+
+        // handle selected item from dropdown
+        var allOptionsForm = $("#ulCampusesForm").children("li:not(.init)");
+
+        $("#ulCampusesForm").on("click", "li:not(.init)", function() {
+            // deselect previous selected item
+            allOptionsForm.removeClass("selected");
+
+            // select new item
+            $(this).addClass("selected");
+
+            // update button text to selected item
+            $("#ulCampusesForm").children(".init").html($(this).html());
+
+            // hide dropdown
+            allOptionsForm.toggle();
+        });
+
+        // show/hide services form dropdown click event
+        $("#ulServicesForm").on("click", ".init", function() {
+            $(this).closest("#ulServicesForm").children("li:not(.init)").toggle();
+        });
+
+        // handle selected item from dropdown
+        var allOptionsForm = $("#ulServicesForm").children("li:not(.init)");
+
+        $("#ulServicesForm").on("click", "li:not(.init)", function() {
+            // deselect previous selected item
+            allOptionsForm.removeClass("selected");
+
+            // select new item
+            $(this).addClass("selected");
+
+            // update button text to selected item
+            $("#ulServicesForm").children(".init").html($(this).html());
+
+            // hide dropdown
+            allOptionsForm.toggle();
+        });
+
+        // initialize datepicker
+        $( "#datepicker" ).datepicker();
     }
 
-    function sortByFamilyName(a, b) {
+    function sortByAdultOneFirstName(a, b) {
         var nameOne = a.AdultOneFirstName.toLowerCase();
         var nameTwo = b.AdultOneFirstName.toLowerCase();
 
@@ -262,7 +348,7 @@
         $('#cardContent').html("");
 
         // sort visit data by family name
-        visitData.sort(sortByFamilyName);
+        visitData.sort(sortByAdultOneFirstName);
 
         // loop through all the visits ( javascript foreach is not guarenteed to execute in order, so using regular for loop )
         for (let i = 0; i < visitData.length; i++) {
@@ -270,7 +356,7 @@
             
             // display the visit if it matches selected campus or if all campuses are selected. 
             // -1 is value of "All Campuses" select item
-            if ( ( campusId == "-1" || visitItem.CampusId == campusId ) && visitItem.ScheduledDate == cardDate.format("MM/DD/YYYY") ) {
+            if ( ( campusId == "-1" || visitItem.ScheduledCampusId == campusId ) && visitItem.ScheduledDate == cardDate.format("MM/DD/YYYY") ) {
                 hasVisits = true;
 
                 // build family name
@@ -295,7 +381,7 @@
                 // family content
                 visitItemHTML += '<div id="divVisitContent_' + visitItem.Id + '" class="content details-content">'                
                     visitItemHTML += "<h4>Scheduled Service Time:</h4>";
-                    visitItemHTML += "<p>" + visitItem.CampusName + "<br />" + visitItem.ScheduledServiceName + "</p>";
+                    visitItemHTML += "<p>" + visitItem.ScheduledCampusName + "<br />" + visitItem.ScheduledServiceName + "</p>";
                         
                     if ( visitItem.BringingChildren === "true" ) {
                         visitItemHTML += "<h4>Children:</h4>";
@@ -308,9 +394,15 @@
                         });                        
                     }
 
-                    visitItemHTML += '<div id="btnAttended" class="btn btn-primary btn-attended" onclick="processAttended()">Attended</div>';                    
+                    if ( visitItem.AttendedDate === "" ) {
+                        visitItemHTML += '<div id="btnAttended_' + visitItem.Id + '" class="btn btn-primary btn-attended" onclick="showAttendedForm( ' + visitItem.Id + ' )">Attended</div>';                    
+                    } else {
+                        visitItemHTML += '<div class="btn btn-secondary btn-attended" disabled>Attended on ' + visitItem.AttendedDate + '</div>';                    
+                    }
+
+
                                    
-                visitItemHTML += "</div>"    
+                visitItemHTML += "</div>"
 
                 // need to append the html here so the following jquery can attach
                 $('#cardContent').append( visitItemHTML);            
@@ -345,6 +437,7 @@
                 var liCampus = '<li data-value="{{ campus.Id }}">{{ campus.Name }}</li>';
 
                 $('#ulCampuses').append(liCampus);
+                $('#ulCampusesForm').append(liCampus);
             {% endif %}
         {% endfor %}
     }
@@ -359,17 +452,21 @@
             
             var newVisit = {
                 Id: "{{ visit.Id }}",
-                FamilyName: "{{ visit.FamilyLastName }}",
+                FamilyName: "{{ visit.FamilyName }}",
                 AdultOneFirstName: "{{ adultOne.NickName }}",
                 AdultTwoFirstName: "{{ adultTwo.NickName }}",
-                CampusId: "{{ visit.CampusId }}",
-                CampusName: "{{ visit.CampusName }}",
+                ScheduledCampusId: "{{ visit.ScheduledCampusId }}",
+                ScheduledCampusName: "{{ visit.ScheduledCampusName }}",
                 BringingChildren: "{{ visit.BringingChildren }}",
                 Children: [],
                 ScheduledDate: "{{ visit.ScheduledDate | Date:'MM/dd/yyyy' }}",
                 ScheduledServiceName: "{{ visit.ScheduledServiceName }}",
-                AttendedDate: "{{ visit.AttendedDate }}",
-                AttendedServiceName: "{{ visit.AttendedServiceName }}"
+                ScheduledServiceId: "{{ visit.ScheduledServiceId }}",
+                AttendedDate: "{{ visit.AttendedDate | Date:'MM/dd/yyyy' }}",
+                AttendedServiceName: "{{ visit.AttendedServiceName }}",
+                AttendedServiceId: "{{ visit.AttendedServiceId }}",
+                AttendedCampusId: "{{ visit.AttendedCampusId }}",
+                AttendedCampusName: "{{ visit.AttendedCampusName }}"
             }
 
             // if bringing chidren add them to visit data
@@ -394,10 +491,16 @@
         return visitsObject;
     }
 
+    function showAttendedForm( senderId ) {
+        $('#divVisits').toggle();
+        $('#divAttendedForm').toggle();
+        $('#btnAttended_' + senderId).toggle();
+
+    }
+
     function processAttended() {
-        console.log('attended');
 
-        $('#btnAttended').toggle();
-
+        $('#divVisits').toggle();
+        $('#divAttendedForm').toggle();
     }
 </script>

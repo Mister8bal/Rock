@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PlanAVisit\Migrations\001_CreateDb.cs" />
+    <Compile Include="PlanAVisit\Migrations\002_AddAttendedCampusIdColumn.cs" />
     <Compile Include="PlanAVisit\Model\PlanAVisit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

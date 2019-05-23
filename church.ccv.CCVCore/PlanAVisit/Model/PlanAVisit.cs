@@ -40,6 +40,9 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         public int? AttendedServiceScheduleId { get; set; }
 
         [DataMember]
+        public int? AttendedCampusId { get; set; }
+
+        [DataMember]
         public DateTime CreatedDateTime { get; set; }
 
         [DataMember]

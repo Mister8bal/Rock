@@ -88,8 +88,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             var pavQuery =
                 from planAVisit in planAVisitTable
-                join campus in campusTable on planAVisit.CampusId equals campus.Id into campuses
-                from campus in campuses.DefaultIfEmpty()
+                join scheduledCampus in campusTable on planAVisit.CampusId equals scheduledCampus.Id into scheduledCampuses
+                from scheduledCampus in scheduledCampuses.DefaultIfEmpty()
                 join personAlias in personAliasTable on planAVisit.AdultOnePersonAliasId equals personAlias.Id into personAliases
                 from personAlias in personAliases.DefaultIfEmpty()
                 join person in personTable on personAlias.PersonId equals person.Id into people
@@ -98,21 +98,25 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 from scheduledSchedule in scheduleSchedules.DefaultIfEmpty()
                 join attendedSchedule in scheduleTable on planAVisit.AttendedServiceScheduleId equals attendedSchedule.Id into attendedSchedules
                 from attendedSchedule in attendedSchedules.DefaultIfEmpty()
+                join attendedCampus in campusTable on planAVisit.AttendedCampusId equals attendedCampus.Id into attendedCampuses
+                from attendedCampus in attendedCampuses.DefaultIfEmpty()
                 select new
                 {
                     planAVisit.Id,
                     planAVisit.AdultOnePersonAliasId,                    
                     planAVisit.AdultTwoPersonAliasId,
-                    FamilyLastName = person.LastName,
-                    planAVisit.CampusId,
-                    CampusName = campus.Name,
+                    FamilyName = person.LastName,
+                    ScheduledCampusId = planAVisit.CampusId,
+                    ScheduledCampusName = scheduledCampus.Name,
                     planAVisit.ScheduledDate,
-                    planAVisit.ScheduledServiceScheduleId,
+                    ScheduledServiceId = planAVisit.ScheduledServiceScheduleId,
                     ScheduledServiceName = scheduledSchedule.Name,
                     planAVisit.BringingChildren,
                     planAVisit.AttendedDate,
-                    planAVisit.AttendedServiceScheduleId,
-                    AttendedServiceName = attendedSchedule.Name
+                    AttendedServiceId = planAVisit.AttendedServiceScheduleId,
+                    AttendedServiceName = attendedSchedule.Name,
+                    planAVisit.AttendedCampusId,
+                    AttendedCampusName = attendedCampus.Name
                 };
 
             // filter query from block settings
@@ -126,7 +130,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             var mergeFieldsKV = mergeFields.ToList();
 
 
-            mergeFields.Add( "Visits", filteredQuery.OrderByDescending( a => a.ScheduledDate ).ThenBy( b => b.FamilyLastName ) );
+            mergeFields.Add( "Visits", filteredQuery.OrderByDescending( a => a.ScheduledDate ).ThenBy( b => b.FamilyName ) );
 
             ///
             /// Need block settings for configuring how many weeks back and weeks forward to show

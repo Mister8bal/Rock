@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using church.ccv.CCVCore.PlanAVisit.Model;
@@ -174,6 +173,24 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                         break;
                     }
+                case "Attended Campus":
+                    {
+                        // show campus names in filter
+                        List<string> values = new List<string>();
+
+                        foreach ( string value in e.Value.Split( ';' ) )
+                        {
+                            ListItem item = cblAttendedCampusFilter.Items.FindByValue( value );
+
+                            if ( item.IsNotNull() )
+                            {
+                                values.Add( item.Text );
+                            }
+                        }
+
+                        e.Value = values.AsDelimited( ", " );
+                        break;
+                    }
                 default:
                     e.Value = null;
                     break;
@@ -196,6 +213,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             rFilter.SaveUserPreference( "Has Attended", ddlHasAttendedFilter.SelectedValue );
             rFilter.SaveUserPreference( "Attended Service", cblAttendedServiceFilter.SelectedValues.AsDelimited( ";" ) );
             rFilter.SaveUserPreference( "Attended Date", drpAttendedDateFilter.DelimitedValues );
+            rFilter.SaveUserPreference( "Attended Campus", cblAttendedCampusFilter.SelectedValues.AsDelimited( ";" ) );
 
             BindFilter();
             BindGrid();
@@ -220,7 +238,17 @@ namespace RockWeb.Plugins.church_ccv.Cms
             Person adultOne = new PersonAliasService( rockContext ).Get( visit.AdultOnePersonAliasId ).Person;
 
             mdManageVisit.Title = string.Format( "When did {0} attend?", adultOne.FullName );
-        
+
+            // update attended campus
+            if ( visit.AttendedCampusId.HasValue )
+            {
+                cpCampusAttended.SelectedValue = visit.AttendedCampusId.ToString();
+            }
+            else
+            {
+                cpCampusAttended.SelectedValue = visit.CampusId.ToString();
+            }
+
             // update date picker
             if ( visit.AttendedDate.HasValue )
             {
@@ -234,7 +262,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             // Bind the proper options for service time dropdown
-            BindServicesTimesDropdown( visit.CampusId, dpDateAttended.SelectedDate );
+            BindServicesTimesDropdown( cpCampusAttended.SelectedValue.AsInteger(), dpDateAttended.SelectedDate );
 
             // if visit has an attended service, select it
             ddlServiceAttended.SelectedIndex = ddlServiceAttended.Items.IndexOf( ddlServiceAttended.Items.FindByValue( visit.AttendedServiceScheduleId.ToString() ) );
@@ -258,6 +286,12 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             if ( visit.IsNotNull() )
             {
+                // update attended campus if it doesnt match existing value
+                if ( cpCampusAttended.SelectedValue.AsInteger() != visit.AttendedCampusId)
+                {
+                    visit.AttendedCampusId = cpCampusAttended.SelectedValue.AsInteger();
+                }
+
                 // update attended date if it doesnt match existing value
                 if ( dpDateAttended.SelectedDate != visit.AttendedDate )
                 {
@@ -317,6 +351,20 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         /// <summary>
+        /// Handles the cpCampusAttended text changed event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void cpCampusAttended_TextChanged( object sender, EventArgs e )
+        {
+            // load the visit being updated
+            PlanAVisit visit = new Service<PlanAVisit>( new RockContext() ).Get( int.Parse( hfModalVisitId.Value ) );
+
+            // update dropdown to include service times for selected date
+            BindServicesTimesDropdown( cpCampusAttended.SelectedValue.AsInteger(), dpDateAttended.SelectedDate );
+        }
+
+        /// <summary>
         /// Handles the dpDateAttneded text changed event
         /// </summary>
         /// <param name="sender"></param>
@@ -327,7 +375,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             PlanAVisit visit = new Service<PlanAVisit>( new RockContext() ).Get( int.Parse( hfModalVisitId.Value ) );
 
             // update dropdown to include service times for selected date
-            BindServicesTimesDropdown( visit.CampusId, dpDateAttended.SelectedDate );
+            BindServicesTimesDropdown( cpCampusAttended.SelectedValue.AsInteger(), dpDateAttended.SelectedDate );
         }
 
         #endregion
@@ -354,6 +402,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
             // bind campuses
             cblCampusFilter.DataSource = CampusCache.All( false );
             cblCampusFilter.DataBind();
+
+            cblAttendedCampusFilter.DataSource = CampusCache.All( false );
+            cblAttendedCampusFilter.DataBind();
 
             // bind service times
             BindServiceTimesCheckBoxList();
@@ -394,6 +445,13 @@ namespace RockWeb.Plugins.church_ccv.Cms
             }
 
             drpAttendedDateFilter.DelimitedValues = rFilter.GetUserPreference( "Attended Date" );
+
+            string attendedCampusValue = rFilter.GetUserPreference( "Attended Campus" );
+
+            if ( attendedCampusValue.IsNotNullOrWhitespace() )
+            {
+                cblAttendedCampusFilter.SetValues( attendedCampusValue.Split( ';' ).ToList() );
+            }
         }
 
         /// <summary>
@@ -481,8 +539,10 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             var pavQuery = 
                 from planAVisit in planAVisitTable
-                join campus in campusTable on planAVisit.CampusId equals campus.Id into campuses
-                from campus in campuses.DefaultIfEmpty()
+                join scheduledCampus in campusTable on planAVisit.CampusId equals scheduledCampus.Id into scheduledCampuses
+                from scheduledCampus in scheduledCampuses.DefaultIfEmpty()
+                join attendedCampus in campusTable on planAVisit.AttendedCampusId equals attendedCampus.Id into attendedCampuses
+                from attendedCampus in attendedCampuses.DefaultIfEmpty()
                 join personAlias in personAliasTable on planAVisit.AdultOnePersonAliasId equals personAlias.Id into personAliases
                 from personAlias in personAliases.DefaultIfEmpty()
                 join person in personTable on personAlias.PersonId equals person.Id into people
@@ -500,8 +560,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     person.NickName,
                     person.LastName,
                     planAVisit.CampusId,
-                    CampusName = campus.Name,
-                    CampusGuid = campus.Guid,
+                    CampusName = scheduledCampus.Name,
+                    CampusGuid = scheduledCampus.Guid,
                     planAVisit.ScheduledDate,
                     planAVisit.ScheduledServiceScheduleId,
                     ScheduledServiceName = scheduledSchedule.Name,
@@ -509,7 +569,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     planAVisit.BringingChildren,
                     planAVisit.AttendedDate,
                     planAVisit.AttendedServiceScheduleId,
-                    AttendedServiceName = attendedSchedule.Name                    
+                    AttendedServiceName = attendedSchedule.Name,
+                    planAVisit.AttendedCampusId,
+                    AttendedCampusName = attendedCampus.Name
                 };
 
             // limit results to campus if specified in block settings
@@ -616,9 +678,15 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 }
             }
 
+            // by attended campus
+            if ( cblAttendedCampusFilter.SelectedValues.Count > 0 )
+            {
+                filteredQuery = filteredQuery.Where( a => cblAttendedCampusFilter.SelectedValues.Contains( a.AttendedCampusId.ToString() ) );
+            }
+
             // end filters
-            
-            // bind list to the grind
+
+            // bind list to the grid
             var filteredList = filteredQuery.AsEnumerable().Select( pav => 
                                     new {
                                         pav.Id,
@@ -631,6 +699,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                         BringingChildren = pav.BringingChildren ? "Yes" : "No",
                                         pav.AttendedDate,
                                         pav.AttendedServiceName,
+                                        AttendedCampus = pav.AttendedCampusName
                                     } ).ToList().AsQueryable();
 
             // sort the results
@@ -740,6 +809,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         #endregion
+
+
 
     }
 }
