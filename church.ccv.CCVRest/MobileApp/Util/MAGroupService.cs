@@ -543,14 +543,19 @@ namespace church.ccv.CCVRest.MobileApp
                 }
             }
 
-            // package it up
-            APBoardModel apBoardModel = new APBoardModel();
-            apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
-            apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
+            // package it up - it's possible for it to be null if the
+            // region's AP Board for this user hasn't been setup yet.
+            APBoardModel apBoardModel = null;
+            if ( apBoardItem != null )
+            {
+                apBoardModel = new APBoardModel();
+                apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
+                apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
 
-            apBoardModel.Summary = apBoardItem.Content;
-            apBoardModel.Date = apBoardItem.StartDateTime.Date;
-            apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+                apBoardModel.Summary = apBoardItem.Content;
+                apBoardModel.Date = apBoardItem.StartDateTime.Date;
+                apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+            }
 
             return apBoardModel;
         }
