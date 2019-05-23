@@ -521,7 +521,7 @@ namespace church.ccv.CCVRest.MobileApp
             // the APBoard is tied to a Group Region of which the Associate Pastor is a member of.
             // so first, get all the APBoard content channel items
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
-            const int ContentChannelId_ToolboxAPBoard = 295; //dev value
+            const int ContentChannelId_ToolboxAPBoard = 298;
             ContentChannel apBoard = contentChannelService.Get( ContentChannelId_ToolboxAPBoard );
 
             // now go through each APBoard Item (there's one per Region per Campus)
