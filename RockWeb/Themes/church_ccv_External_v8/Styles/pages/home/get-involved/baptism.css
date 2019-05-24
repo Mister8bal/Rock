@@ -41,6 +41,8 @@
 
 .event-item-container {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     border: 2px solid #E4E4E4;
     border-radius: 7.5px;
     width: 150px;
@@ -54,10 +56,6 @@
     background-color: #7A1315;
     color: #FFFFFF;
     text-decoration: none;
-}
-
-.event-item {
-    align-self: flex-end;
 }
 
 .btn-event-campus-selection {

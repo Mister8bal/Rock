@@ -34,15 +34,31 @@ list, but marked differently.
             {% assign maxNum = 6 %}
 
 	        {% for occurrence in EventItemOccurrences %}
-	            {% assign linkage = occurrence.Linkages | First %}
+					    {% assign linkage = occurrence.Linkages | First %}
 	            {% if linkage.RegistrationInstance.IsActive %}
+									
+
+
 	                {% assign currentDateTime = 'Now' | Date:'yyyy/MM/dd hh:mm:ss tt' %}
 	                {% if linkage.RegistrationInstance.StartDateTime <= currentDateTime and linkage.RegistrationInstance.EndDateTime >= currentDateTime %}
                         
                         {% assign maxNum = maxNum | Minus:1 %}
 	                    
-                        {% if occurrence.EventItemId == regularEventId %}              
+                        {% if occurrence.EventItemId == regularEventId %} 
+													{% assign ministryLogo = " " %}
+													{% assign eventName = linkage.RegistrationInstance.Name | Downcase %} 
+													{% if eventName contains "kids" %}
+														{% assign ministryLogo = '<img class="img-responsive" src="/Themes/church_ccv_External_v8/Assets/Images/logos/logo-kids.svg" alt="CCV Kids" style="height: 22px;" />' %}
+													{% elseif eventName contains "student" %}
+														{% assign ministryLogo = '<img class="img-responsive" src="/Themes/church_ccv_External_v8/Assets/Images/logos/logo-students-black.svg" alt="CCV Students" />' %}
+
+													{% endif %}
+
+
 					        <a class="event-item-container" href="{{ RegistrationPage }}?RegistrationInstanceId={{ linkage.RegistrationInstanceId }}&EventOccurrenceID={{ occurrence.Id }}">
+															<div>
+																{{ ministryLogo }}
+															</div>
 	                            <div class="event-item">
 	                                {{ occurrence.Schedule.iCalendarContent | DatesFromICal| First | Date: 'ddd, MMM d'  }}<br />
 	                                {{ occurrence.Schedule.iCalendarContent | DatesFromICal| First | Date: 'h:mmtt'  }}
