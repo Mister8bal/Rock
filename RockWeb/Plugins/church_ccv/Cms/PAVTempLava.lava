@@ -6,7 +6,7 @@
         margin: 0 auto 20px auto;
     }
 
-    .visit-card, .attended-form {
+    .visit-card, .arrived-form {
         box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
         transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
         border-radius: 5px;
@@ -14,10 +14,6 @@
         margin: 0 auto 20px auto;
         min-height: 200px;
         max-width: 600px;
-    }
-
-    .attended-form {
-        min-height: 400px;
     }
 
     .visit-card i {
@@ -35,7 +31,7 @@
     }
 
     .card-header h4, h5 {
-        padding: 0 20px;
+        padding: 2px 20px;
         line-height: 100%;
     }
 
@@ -53,7 +49,7 @@
     .visit {
         color: #000;
         cursor: pointer;
-        padding: 18px;
+        padding: 13px 18px;
         width: 100%;
         text-align: left;
         border: none;
@@ -78,6 +74,11 @@
 
     .content-form {
         overflow: unset;
+        padding: 18px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     .details-content {
@@ -98,15 +99,14 @@
 
     .child-info {
         display: flex;
-        justify-content: space-between;
-        width: 55%;
+        justify-content: center;
     }
 
     .child-info p:first-of-type {
-        margin-right; 10px;
+        margin-right: 10px;
     }
 
-    .btn-attended {
+    .btn-arrived {
         margin-top: 40px;
         font-weight: normal;
         font-family: akrobat;
@@ -118,14 +118,19 @@
     }
 
     /* dropdowns */
-    #ulCampuses, #ulCampusesForm, #ulServicesForm { 
-        height: 38px;
+    .custom-dropdown  { 
+        height: 22px;
         list-style: none;
+    }
+
+    #ulCampuses
+    {
+        height: 38px;
         background-color: #7A1315;
         border-color: #7A1315;
     }
 
-    #ulCampuses li:not(.init), #ulCampusesForm li:not(.init), #ulServicesForm li:not(.init) { 
+    .custom-dropdown li:not(.init) { 
         width: 100%; 
         display: none; 
         background-color: #FFFFFF;
@@ -137,16 +142,20 @@
         border-right: 1px solid #e7e7e7;
     }
 
-    #ulCampuses li:nth-child(2):not(.init), #ulCampusesForm li:nth-child(2):not(.init), #ulServicesForm li:nth-child(2):not(.init) { 
+    #ulCampusesForm li:not(.init), #ulServicesForm li:not(.init) {
+        padding-left: 20px;
+    }
+
+    .custom-dropdown li:nth-child(2):not(.init) { 
         border-radius: 4px 4px 0 0;
     }
 
-    #ulCampuses li:last-child:not(.init), #ulCampusesForm li:last-child:not(.init), #ulServicesForm li:last-child:not(.init) { 
+    .custom-dropdown li:last-child:not(.init) { 
         border-radius: 0 0 4px 4px;
         border-bottom: 1px solid #e7e7e7;
     }
 
-    #ulCampuses li:not(.init):hover, #ulCampuses li.selected:not(.init), #ulCampusesForm li:not(.init):hover, #ulCampusesForm li.selected:not(.init), #ulServicesForm li:not(.init):hover, #ulServicesForm li.selected:not(.init) { 
+    .custom-dropdown li:not(.init):hover, .custom-dropdown li.selected:not(.init) { 
         background-color: #7A1315; 
         color: #FFFFFF;
     }
@@ -159,9 +168,24 @@
         outline: none;
     }
 
-    /* attended form */
-    .attended-form {
+    /* Arrived form */
+    .arrived-form {
         display: none;
+    }
+
+    .arrived-form {
+        min-height: 400px;
+    }
+
+    .arrived-form-control {
+        border-bottom: 2px solid lightgrey;
+        width: 100%;
+    }
+
+    #dpAttendedDate {
+        padding-left: 40px;
+        color: #7c7c7c;
+        font-weight: normal;
     }
 
     @media screen and (max-width: 768px) {
@@ -177,11 +201,11 @@
     }
 </style>
 
-<div id="btnAttended" class="btn btn-primary btn-attended" onclick="showAttendedForm()">Attended</div>
+<div id="btnAttended" class="btn btn-primary btn-arrived" onclick="showArrivedForm()">Arrived</div>
 
 <div id="divVisits" class="hidden">
     <div class="campus-actions">
-        <ul id="ulCampuses" class="btn btn-primary">
+        <ul id="ulCampuses" class="btn btn-primary custom-dropdown">
             <li class="init">Select A Campus</li>
             <li data-value="-1">All Campuses</li>
         </ul>
@@ -197,23 +221,28 @@
         <div id="cardContent" class="content"></div>
     </div>
 </div>
-<div id="divAttendedForm" class="attended-form">
+
+<div id="divArrivedForm" class="arrived-form">
     <div class="card-header">
         <h4>What service is being attended?</h4>
     </div>
     <div class="content content-form">
-        <ul id="ulCampusesForm" class="btn btn-primary">
+        <p>Campus</p>
+        <ul id="ulCampusesForm" class="arrived-form-control custom-dropdown">
             <li class="init">Select A Campus</li>
         </ul>
 
-        <p>Date: <input type="text" id="datepicker"></p>
+        <p>Date:</p>
+        <p style="width: 100%;">
+            <input type="text" id="dpAttendedDate" class="arrived-form-control">
+        </p>
 
-        <ul id="ulServicesForm" class="btn btn-primary">
+        <p>Service Time:</p>
+        <ul id="ulServicesForm" class="arrived-form-control custom-dropdown">
             <li class="init">Select A Service</li>
-            <li>No Services For Selected Date</li>
         </ul>
 
-        <div id="btnProcessAttended" class="btn btn-primary btn-attended" onclick="processAttended()">Save</div>
+        <div id="btnProcessArrival" class="btn btn-primary btn-arrived" onclick="processArrival()">Save</div>
 
     </div>
 
@@ -235,24 +264,24 @@
         
         // initial render of visits
         renderVisitsCard();
-
-        // default campuses selected item to campus in context
+        
+        // default selected item to campus in context
         $("#ulCampuses").children(".init").html($('li[data-value="' + campusId + '"]').html());
 
-        // show/hide campuses dropdown click event
+        // show/hide campuses form dropdown click event
         $("#ulCampuses").on("click", ".init", function() {
             $(this).closest("#ulCampuses").children("li:not(.init)").toggle();
         });
 
         // handle selected item from dropdown
-        var allOptions = $("#ulCampuses").children("li:not(.init)");
+        var allOptionsCampuses = $("#ulCampuses").children("li:not(.init)");
 
         $("#ulCampuses").on("click", "li:not(.init)", function() {
             // set campusId from the data-value of the item selected
             campusId = $(this).data("value");
 
             // deselect previous selected item
-            allOptions.removeClass("selected");
+            allOptionsCampuses.removeClass("selected");
 
             // select new item
             $(this).addClass("selected");
@@ -261,9 +290,9 @@
             $("#ulCampuses").children(".init").html($(this).html());
 
             // hide dropdown
-            allOptions.toggle();
+            allOptionsCampuses.toggle();
 
-            // render card
+            // render visits card
             renderVisitsCard();
         });
 
@@ -273,11 +302,11 @@
         });
 
         // handle selected item from dropdown
-        var allOptionsForm = $("#ulCampusesForm").children("li:not(.init)");
+        var allOptionsCampusesForm = $("#ulCampusesForm").children("li:not(.init)");
 
         $("#ulCampusesForm").on("click", "li:not(.init)", function() {
             // deselect previous selected item
-            allOptionsForm.removeClass("selected");
+            allOptionsCampusesForm.removeClass("selected");
 
             // select new item
             $(this).addClass("selected");
@@ -286,7 +315,7 @@
             $("#ulCampusesForm").children(".init").html($(this).html());
 
             // hide dropdown
-            allOptionsForm.toggle();
+            allOptionsCampusesForm.toggle();
         });
 
         // show/hide services form dropdown click event
@@ -295,11 +324,11 @@
         });
 
         // handle selected item from dropdown
-        var allOptionsForm = $("#ulServicesForm").children("li:not(.init)");
+        var allOptionsServicesForm = $("#ulServicesForm").children("li:not(.init)");
 
         $("#ulServicesForm").on("click", "li:not(.init)", function() {
             // deselect previous selected item
-            allOptionsForm.removeClass("selected");
+            allOptionsServicesForm.removeClass("selected");
 
             // select new item
             $(this).addClass("selected");
@@ -308,11 +337,11 @@
             $("#ulServicesForm").children(".init").html($(this).html());
 
             // hide dropdown
-            allOptionsForm.toggle();
+            allOptionsServicesForm.toggle();
         });
 
         // initialize datepicker
-        $( "#datepicker" ).datepicker();
+        $( "#dpAttendedDate" ).datepicker();
     }
 
     function sortByAdultOneFirstName(a, b) {
@@ -382,22 +411,30 @@
                 visitItemHTML += '<div id="divVisitContent_' + visitItem.Id + '" class="content details-content">'                
                     visitItemHTML += "<h4>Scheduled Service Time:</h4>";
                     visitItemHTML += "<p>" + visitItem.ScheduledCampusName + "<br />" + visitItem.ScheduledServiceName + "</p>";
+
+                    visitItemHTML += "<h4>Mobile Number:</h4>";
+                    visitItemHTML += "<p>" + visitItem.AdultOneMobileNumber + "</p>";
                         
                     if ( visitItem.BringingChildren === "true" ) {
                         visitItemHTML += "<h4>Children:</h4>";
 
                         visitItem.Children.forEach(function(child) {
                             visitItemHTML += '<div class="child">';
-                                visitItemHTML += "<h5>" + child.FirstName + "</h5>";
-                                visitItemHTML += '<div class="child-info"><p>Age: ' + child.Age + "</p><p>Birthday: " + child.Birthdate + "</p></div>";
+                                visitItemHTML += "<h5>" + child.FirstName + " <strong>(" + child.Age + ")</strong></h5>";
+                                visitItemHTML += '<div class="child-info">'
+                                    if ( child.Grade !== "" ) {
+                                        visitItemHTML += '<p>Grade: ' + child.Grade + "</p>"
+                                    }
+                                    visitItemHTML += "<p>Birthday: " + child.Birthdate + "</p>"
+                                visitItemHTML += "</div>";
                             visitItemHTML += "</div>"
                         });                        
                     }
 
                     if ( visitItem.AttendedDate === "" ) {
-                        visitItemHTML += '<div id="btnAttended_' + visitItem.Id + '" class="btn btn-primary btn-attended" onclick="showAttendedForm( ' + visitItem.Id + ' )">Attended</div>';                    
+                        visitItemHTML += '<div id="btnArrived_' + visitItem.Id + '" class="btn btn-primary btn-arrived" onclick="showArrivedForm( ' + visitItem.Id + ' )">Arrived</div>';                    
                     } else {
-                        visitItemHTML += '<div class="btn btn-secondary btn-attended" disabled>Attended on ' + visitItem.AttendedDate + '</div>';                    
+                        visitItemHTML += '<div class="btn btn-secondary btn-arrived" disabled>Attended on ' + visitItem.AttendedDate + '</div>';                    
                     }
 
 
@@ -455,6 +492,7 @@
                 FamilyName: "{{ visit.FamilyName }}",
                 AdultOneFirstName: "{{ adultOne.NickName }}",
                 AdultTwoFirstName: "{{ adultTwo.NickName }}",
+                AdultOneMobileNumber: "{{ adultOne | PhoneNumber:'Mobile' }}",
                 ScheduledCampusId: "{{ visit.ScheduledCampusId }}",
                 ScheduledCampusName: "{{ visit.ScheduledCampusName }}",
                 BringingChildren: "{{ visit.BringingChildren }}",
@@ -477,7 +515,8 @@
                     var newChild = {
                         FirstName: "{{  child.NickName }}",
                         Age: "{{ child.Age }}",
-                        Birthdate: "{{ child.BirthDate | Date:'M/d/yy' }}"
+                        Birthdate: "{{ child.BirthDate | Date:'M/d/yy' }}",
+                        Grade: "{{ child.GradeFormatted }}"
                     }
                     
                     newVisit.Children.push(newChild);
@@ -491,16 +530,16 @@
         return visitsObject;
     }
 
-    function showAttendedForm( senderId ) {
+    function showArrivedForm( senderId ) {
         $('#divVisits').toggle();
-        $('#divAttendedForm').toggle();
-        $('#btnAttended_' + senderId).toggle();
+        $('#divArrivedForm').toggle();
+        $('#btnArrived_' + senderId).toggle();
 
     }
 
-    function processAttended() {
+    function processArrival() {
 
         $('#divVisits').toggle();
-        $('#divAttendedForm').toggle();
+        $('#divArrivedForm').toggle();
     }
 </script>
