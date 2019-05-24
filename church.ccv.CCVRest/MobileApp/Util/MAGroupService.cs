@@ -182,26 +182,31 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 return null;
             }
-
-            // we are guaranteed that there will be a location object due to our initial query
-            Location locationObj = group.GroupLocations.First().Location;
+            
+            // build the mobile app model
             MAGroupModel groupResult = new MAGroupModel()
             {
                 Id = group.Id,
 
                 Name = group.Name,
 
-                Longitude = locationObj.Longitude.Value,
-                Latitude = locationObj.Latitude.Value,
-                DistanceFromSource = locationObj.Distance,
-
-                MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : "",
-
-                Street = locationObj.Street1,
-                City = locationObj.City,
-                State = locationObj.State,
-                Zip = locationObj.PostalCode
+                MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : ""
             };
+
+            // try to set the location into
+            var groupLoc = group.GroupLocations.First();
+            if ( groupLoc != null )
+            {
+                groupResult.Longitude = groupLoc.Location.Longitude.Value;
+                groupResult.Latitude = groupLoc.Location.Latitude.Value;
+                groupResult.DistanceFromSource = groupLoc.Location.Distance;
+
+                groupResult.Street = groupLoc.Location.Street1;
+                groupResult.City = groupLoc.Location.City;
+                groupResult.State = groupLoc.Location.State;
+                groupResult.Zip = groupLoc.Location.PostalCode;
+            }
+
 
             // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
             Person associatePastor = null;
