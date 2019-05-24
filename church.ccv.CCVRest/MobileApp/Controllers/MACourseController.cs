@@ -112,6 +112,9 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage JoinCourse( [FromBody] JoinGroupModel joinCourseModel )
         {
+            // Note - It's intentional that we're accepting a JoinGroupModel, 
+            // since the params for group and course joining are the same.
+
             // make sure the model is valid
             if ( joinCourseModel == null ||
                 string.IsNullOrWhiteSpace( joinCourseModel.FirstName ) == true ||
