@@ -78,7 +78,7 @@
                         <div class="actions margin-t-md">
                             <asp:LinkButton ID="btnSave" runat="server" AccessKey="s" ToolTip="Alt+s" Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" Visible="false" />
                             <asp:LinkButton ID="btnDelete" runat="server" Text="Delete Checkin Group" CssClass="btn btn-link" OnClick="btnDelete_Click" Visible="false" />  
-                            <asp:LinkButton ID="btnRemoveAllLocations" runat="server" Text="Remove All Locations" CssClass="btn btn-link" OnClick="btnRemoveAllLocations_Click" Visible="false" />
+                            <asp:LinkButton ID="btnRemoveAllLocations" runat="server" Text="Remove All Locations" CssClass="btn btn-link confirm-remove" OnClick="btnRemoveAllLocations_Click" Visible="false" />
                         
                         </div>
 
@@ -198,6 +198,16 @@
                             }
                         }
                     }
+                });
+
+                // confirm before removing all locations
+                $('.confirm-remove').on('click', function (e) {
+                    e.preventDefault();
+                    Rock.dialogs.confirm('Are you sure you want to remove all locations?', function (result) {
+                        if (result) {
+                                window.location = e.target.href ? e.target.href : e.target.parentElement.href;
+                        }
+                    });
                 });
             });
 
