@@ -54,32 +54,33 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             base.OnLoad( e );
 
-            Campaign campaignForCard = null;
+            // wrap in a try catch in the case that 
+            try
+            {
+                Campaign campaignForCard = null;
 
-            // first see if there's a parameter forcing an override of the campaign to display
-            int? debugCampaignId = PageParameter( "DebugCampaignId" ).AsIntegerOrNull( );
-            if ( debugCampaignId.HasValue )
-            {
-                campaignForCard = PersonalizationEngineUtil.GetCampaign( debugCampaignId.Value );
-            }
-            else
-            {
-                // otherwise try to get a relevant campaign for this person
-                var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( "WebsiteCard", CurrentPerson.Id );
-                if ( campaignList.Count > 0 )
+                // first see if there's a parameter forcing an override of the campaign to display
+                int? debugCampaignId = PageParameter( "DebugCampaignId" ).AsIntegerOrNull( );
+                if ( debugCampaignId.HasValue )
                 {
-                    campaignForCard = campaignList [ 0 ];
+                    campaignForCard = PersonalizationEngineUtil.GetCampaign( debugCampaignId.Value );
                 }
                 else
                 {
-                    // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
-                    var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
-                    campaignForCard = defaultCampaigns [ 0 ];
+                    // otherwise try to get a relevant campaign for this person
+                    var campaignList = PersonalizationEngineUtil.GetRelevantCampaign( "WebsiteCard", CurrentPerson.Id );
+                    if ( campaignList.Count > 0 )
+                    {
+                        campaignForCard = campaignList [ 0 ];
+                    }
+                    else
+                    {
+                        // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
+                        var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
+                        campaignForCard = defaultCampaigns [ 0 ];
+                    }
                 }
-            }
 
-            try
-            {
                 JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );
 
                 JObject campaignBlob = jsonBlob["WebsiteCard"].ToObject<JObject>( );
