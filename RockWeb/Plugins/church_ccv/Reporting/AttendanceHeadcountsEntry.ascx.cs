@@ -226,10 +226,10 @@ namespace RockWeb.Plugins.church_ccv.Reporting
                 var time = serviceTimeArray[1].Replace( " ", "" );
 
                 // build name to match
-                var serviceTimeName = string.Format( "{0} {1}", day, time ).Replace( "*", "" ).Replace( "%", "" ).Trim();
+                var serviceTimeName = string.Format( "{0} {1}", day, time ).Trim();
 
                 // find the schedule that matches the name of a schedule selected in the block settings
-                var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.Name == serviceTimeName );
+                var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.Name.RemoveSpecialCharacters() == serviceTimeName.RemoveSpecialCharacters() );
                 if ( scheduleLookup != null && selectedScheduleIds.Contains( scheduleLookup.Id ) )
                 {
                     // match found, add schedule to serviceTimesForCampus
