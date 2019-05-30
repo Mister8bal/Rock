@@ -65,15 +65,29 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             if( campaignId > 0 )
             {
                 Campaign campaign = PersonalizationEngineUtil.GetCampaign( campaignId.Value );
-                
+
+                hfDefaultCampaign.Value = campaign.IsDefault.ToString();
+
                 tbCampaignName.Text = campaign.Name;
                 tbCampaignDesc.Text = campaign.Description;
-                dtpStartDate.SelectedDate = campaign.StartDate;
-                dtpEndDate.SelectedDate = campaign.EndDate;
                 tbPriorty.Text = campaign.Priority.ToString( );
 
+                // start / end dates aren't supported for default campaigns
+                if ( campaign.IsDefault == false )
+                {
+                    lNoDates.Visible = false;
+                    dtpStartDate.SelectedDate = campaign.StartDate;
+                    dtpEndDate.SelectedDate = campaign.EndDate;
+                }
+                else
+                {
+                    lNoDates.Visible = true;
+                    dtpStartDate.Enabled = false;
+                    dtpEndDate.Enabled = false;
+                }
+
                 // it's possible that if this campaign is a work in progress, it might not have types setup yet.
-                if( string.IsNullOrWhiteSpace( campaign.ContentJson ) == false )
+                if ( string.IsNullOrWhiteSpace( campaign.ContentJson ) == false )
                 {
                     // get the content as a parseable jObject. this has all the values for all the supported types
                     JObject contentJson = JObject.Parse( campaign.ContentJson );
@@ -176,9 +190,19 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 // set the static stuff
                 campaign.Name = tbCampaignName.Text;
                 campaign.Description = tbCampaignDesc.Text;
-                campaign.StartDate = dtpStartDate.SelectedDate.Value;
-                campaign.EndDate = dtpEndDate.SelectedDate;
                 campaign.Priority = int.Parse( tbPriorty.Text );
+
+                // for default campaigns (which don't acknowledge start/end dates) use generic values
+                if ( campaign.IsDefault )
+                {
+                    campaign.StartDate = new DateTime( 1982, 9, 28 );
+                    campaign.EndDate = null;
+                }
+                else
+                {
+                    campaign.StartDate = dtpStartDate.SelectedDate.Value;
+                    campaign.EndDate = dtpEndDate.SelectedDate;
+                }
 
                 // now get the types this campaign is using, along with the actual values for each type
                 string campaignTypes = string.Empty;
