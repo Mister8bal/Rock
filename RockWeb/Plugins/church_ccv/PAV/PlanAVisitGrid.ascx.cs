@@ -15,7 +15,7 @@ using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 
-namespace RockWeb.Plugins.church_ccv.Cms
+namespace RockWeb.Plugins.church_ccv.PAV
 {
     [DisplayName( "Plan A Visit Grid" )]
     [Category( "CCV > Cms" )]

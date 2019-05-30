@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisitGrid" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitGrid" %>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>

@@ -242,7 +242,9 @@
             <li class="init">Select A Service</li>
         </ul>
 
-        <div id="btnProcessArrival" class="btn btn-primary btn-arrived" onclick="processArrival()">Save</div>
+        <input type="hidden" id="hfVisitId" name="hfVisitId" value="">
+
+        <div id="btnProcessArrival" class="btn btn-primary btn-arrived" onclick="recordAttended()">Save</div>
 
     </div>
 
@@ -535,9 +537,20 @@
         $('#divArrivedForm').toggle();
         $('#btnArrived_' + senderId).toggle();
 
+        $('#hfVisitId').val(senderId);
+
     }
 
-    function processArrival() {
+    function recordAttended() {
+        var postUrl = "/api/PlanAVisit/Attended";
+        postUrl += "?visitId=" + $('#hfVisitId').val();
+        //postUrl += "&attendedCampusId=" + attendedCampusId;
+        //postUrl += "&attendedScheduleId=" + attendedScheduleId;
+        //postUrl += "&attendedDate=" + attendedDate;
+
+        console.log('purl: ' + postUrl);
+
+        //$.post( "/api/PlanAVisit/Attended")
 
         $('#divVisits').toggle();
         $('#divArrivedForm').toggle();

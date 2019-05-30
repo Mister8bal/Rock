@@ -14,7 +14,7 @@ using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 using church.ccv.CCVCore.PlanAVisit.Model;
 
-namespace RockWeb.Plugins.church_ccv.Cms
+namespace RockWeb.Plugins.church_ccv.PAV
 {
     [DisplayName( "Plan A Visit Form" )]
     [Category( "CCV > Cms" )]

@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisitForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitForm" %>
 
 <style>
     .plan-a-visit {
