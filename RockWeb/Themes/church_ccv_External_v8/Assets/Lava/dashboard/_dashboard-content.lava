@@ -181,12 +181,7 @@
                 "Buttons": [
                     {
                         "Label": "Become a Coach",
-                        "Link": "/get-involved/next-steps/coach-request?Whattypeofcoaching=Become%20a%20Coach",
-                        "Class": "btn-primary double"
-                    },
-                    {
-                        "Label": "Request a Coach",
-                        "Link": "/get-involved/next-steps/coach-request?Whattypeofcoaching=Request%20a%20Coach",
+                        "Link": "/get-involved/next-steps/coach-request?Whattypeofcoaching=Become%20a%20Coach&promo_name=coach&promo_id=8&promo_creative=next-step-coach&promo_position=dashboard-card",
                         "Class": "btn-primary double"
                     }
                 ],
