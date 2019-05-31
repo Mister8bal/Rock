@@ -121,7 +121,7 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
+        static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
             
@@ -331,8 +331,8 @@ namespace church.ccv.PersonalizationEngine.Data
             // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
             using ( RockContext rockContext = new RockContext( ) )
             {
-                // get all the default campaigns
-                var defaultCampaigns = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, true );
+                // get all the default campaigns (default campaigns shouldn't care about start / end date)
+                var defaultCampaigns = GetCampaigns( campaignTypeList, null, null, true );
 
                 // now take only what they asked for (a little less efficient than doing this at the database level, but results in simpler code)
                 

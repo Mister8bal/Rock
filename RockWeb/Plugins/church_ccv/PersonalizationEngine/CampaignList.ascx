@@ -7,7 +7,9 @@
                 <div class="row col-sm-4">
                     <h4 class="panel-title">Campaigns</h4>
                 </div>
-            </div>        
+                <asp:Literal ID="lMissingDefaultCampaign" Visible="false" runat="server">
+                </asp:Literal>
+            </div>
         </div>
         <Rock:GridFilter ID="rCampaignFilter" runat="server" >
             <Rock:RockTextBox ID="filterTbTitle" runat="server" Label="Name" />
