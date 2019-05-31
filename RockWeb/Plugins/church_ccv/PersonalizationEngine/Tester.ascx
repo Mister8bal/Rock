@@ -2,19 +2,25 @@
 
 <asp:UpdatePanel ID="upnlSettings" runat="server">
     <ContentTemplate>
-        <div class ="panel panel-block">
-            <div class="panel-heading">
-                <div class="row col-sm-4">
-                    <h4 class="panel-title">Tester</h4>
+        <asp:Panel ID="pnlView" runat="server" CssClass="panel panel-block">
+            <div class ="panel panel-block">
+                <div class="panel-heading">
+                    <div class="row col-sm-4">
+                        <h4 class="panel-title">Tester</h4>
+                    </div>
                 </div>
-            </div>
 
-            <div class="panel-body">
-                <div class="persona-editable-item">
-                    <Rock:PersonPicker ID="ppTarget" runat="server" Label="Person" OnSelectPerson="ppPerson_SelectPerson" />
+                <div class="panel-body form-group">
+                    <fieldset>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <Rock:PersonPicker ID="ppTarget" runat="server" Label="Person" OnSelectPerson="ppPerson_SelectPerson" />
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
-        </div>
+        </asp:Panel>
     </ContentTemplate>
 </asp:UpdatePanel>
 
@@ -30,10 +36,10 @@
 
             <div class="panel-body">
                 <asp:Literal ID="lNoPersona" Visible="false" runat="server">This person does not fit any Personas.</asp:Literal>
-                <Rock:Grid ID="gPersonas" Title="Attached Personas" runat="server" DisplayType="Light" AllowSorting="true" RowItemText="Persona" AllowPaging="false">
+                <Rock:Grid ID="gPersonas" Title="Attached Personas" runat="server" DisplayType="Light" RowItemText="Persona" AllowPaging="false">
                     <Columns>
-                        <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
-                        <Rock:RockBoundField DataField="Description" HeaderText="Description" SortExpression="Description" />
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
                     </Columns>
                 </Rock:Grid>
             </div>
@@ -51,14 +57,35 @@
             </div>
 
             <div class="panel-body">
-                <asp:Literal ID="lNoCampaigns" Visible="false" runat="server">This person will not see any campaigns.</asp:Literal>
-                <Rock:Grid ID="gCampaigns" Title="Attached Campaigns" runat="server" DisplayType="Light" AllowSorting="true" RowItemText="Campaign" AllowPaging="false">
+                <Rock:Grid ID="gCampaigns" Title="Attached Campaigns" runat="server" DisplayType="Light" RowItemText="Campaign" AllowPaging="false">
                     <Columns>
-                        <Rock:RockBoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
-                        <Rock:RockBoundField DataField="Description" HeaderText="Description" SortExpression="Description" />
-                        <Rock:RockBoundField DataField="IsDefault" HeaderText="Default" SortExpression="Default" />
-                        <Rock:RockBoundField DataField="Priority" HeaderText="Priority" SortExpression="Priority" />
-                        <Rock:RockBoundField DataField="Type" HeaderText="Locations" SortExpression="Type" />
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
+                        <Rock:RockBoundField DataField="Priority" HeaderText="Priority" />
+                        <Rock:RockBoundField DataField="Type" HeaderText="Locations" />
+                    </Columns>
+                </Rock:Grid>
+            </div>
+        </div>
+    </ContentTemplate>
+</asp:UpdatePanel>
+
+<asp:UpdatePanel ID="upnlDefaultCampaigns" runat="server">
+    <ContentTemplate>
+        <div class ="panel panel-block">
+            <div class="panel-heading">
+                <div class="row col-sm-4">
+                    <h4 class="panel-title">Default Campaigns</h4>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <Rock:Grid ID="gDefaultCampaigns" runat="server" DisplayType="Light" RowItemText="Campaign" AllowPaging="false">
+                    <Columns>
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
+                        <Rock:RockBoundField DataField="Priority" HeaderText="Priority" />
+                        <Rock:RockBoundField DataField="Type" HeaderText="Locations" />
                     </Columns>
                 </Rock:Grid>
             </div>
@@ -97,10 +124,6 @@
     .persona-type-template-item {
         display: flex;
         flex-direction: row;
-    }
-
-    .form-control {
-        width: 500px;
     }
 
     .error {

@@ -27,6 +27,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
     public partial class Tester : RockBlock
     {
+        private readonly string _USER_PREF_PERSON = "PersonalizationEngineTester:Person";
+
         /// <summary>
         /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
         /// </summary>
@@ -37,6 +39,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
             PersonasGrid_Init( );
             CampaignsGrid_Init( );
+            DefaultCampaignsGrid_Init( );
         }
 
         /// <summary>
@@ -46,30 +49,23 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         protected override void OnLoad( EventArgs e )
         {
             base.OnLoad( e );
-
+            
             if ( !Page.IsPostBack )
             {
-                //BindPerson( );
+                RestorePersonToPicker();
             }
-        }
 
-        protected void ppPerson_SelectPerson( object sender, EventArgs e )
-        {
-            BindPerson( );
+            BindPerson();
         }
 
         protected void BindPerson( )
         {
             // populates the page with the campaigns & personas that fit the selected person
-
+            
 
             // get the persona
-            if( ppTarget.PersonId.HasValue )
+            if ( ppTarget.PersonId.HasValue )
             {
-                // set the personas grid
-                gPersonas.Visible = true;
-
-
                 // // first get all the personas this person fits
                 var personas = PersonalizationEngineUtil.GetPersonas( ppTarget.PersonId.Value );
 
@@ -82,6 +78,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 {
                     lNoPersona.Visible = true;
                 }
+                gPersonas.Visible = true;
                 gPersonas.DataSource = personas;
                 gPersonas.DataBind();
 
@@ -99,21 +96,26 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 
                 // now, get all relevant campaigns for this person across all campaign platforms
                 var campaigns = PersonalizationEngineUtil.GetRelevantCampaign( commaDelimitedTypes, ppTarget.PersonId.Value, int.MaxValue );
-
-                // add in the default campaigns (TODO: Probably move this to its own section)
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( commaDelimitedTypes, int.MaxValue );
-                campaigns.AddRange( defaultCampaigns );
                 
                 // set the campaigns grid
                 gCampaigns.Visible = true;
                 gCampaigns.DataSource = campaigns;
                 gCampaigns.DataBind();
+
+
+                // Finally show the default campaigns
+                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( commaDelimitedTypes, int.MaxValue );
+                gDefaultCampaigns.Visible = true;
+                gDefaultCampaigns.DataSource = defaultCampaigns;
+                gDefaultCampaigns.DataBind();
+
             }
             // if a person isn't selected, hide the persona / campaign panels
             else
             {
-                upnlPersonas.Visible = false;
-                upnlCampaigns.Visible = false;
+                gPersonas.Visible = false;
+                gCampaigns.Visible = false;
+                gDefaultCampaigns.Visible = false;
             }
         }
 
@@ -130,6 +132,32 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             gCampaigns.Visible = true;
             gCampaigns.DataKeyNames = new string[] { "Id" };
+        }
+        #endregion
+
+        #region Default Campaigns Grid
+        protected void DefaultCampaignsGrid_Init()
+        {
+            gDefaultCampaigns.Visible = true;
+            gDefaultCampaigns.DataKeyNames = new string[] { "Id" };
+        }
+        #endregion
+
+        #region PersonPicker
+        protected void RestorePersonToPicker()
+        {
+            ppTarget.PersonId = GetUserPreference( _USER_PREF_PERSON ).AsIntegerOrNull();
+            if ( ppTarget.PersonId != null )
+            {
+                var person = new PersonService( new RockContext() ).Get( ppTarget.PersonId ?? -1 );
+                ppTarget.SetValue( person );
+            }
+        }
+
+        protected void ppPerson_SelectPerson( object sender, EventArgs e )
+        {
+            SetUserPreference( _USER_PREF_PERSON, ppTarget.PersonId.ToStringSafe() );
+            BindPerson();
         }
         #endregion
     }
