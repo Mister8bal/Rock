@@ -331,7 +331,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
             phContentJson.Controls.Add( new LiteralControl( "<div class =\"panel panel-block\">" ) );
                 phContentJson.Controls.Add( new LiteralControl( "<div class=\"panel-heading\">" ) );
-                    phContentJson.Controls.Add( new LiteralControl( "<div class=\"row col-sm-4\">" ) );
+                    phContentJson.Controls.Add( new LiteralControl( "<div class=\"row col-sm-12\">" ) );
                         phContentJson.Controls.Add( new LiteralControl( "<h4 class=\"panel-title\">" + campaignTypeName + "</h4><br/>" ) );
 
                         phContentJson.Controls.Add( new LiteralControl( "<h5>" + campaignTypeDesc + "</h5>" ) );
