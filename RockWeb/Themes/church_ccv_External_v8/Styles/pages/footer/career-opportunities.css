@@ -49,6 +49,23 @@
     display: flex;
 }
 
+#bcwi-logos {
+    display:flex;
+    flex-direction:column;
+    padding: 6rem;
+}
+
+#bcwi-logos .bottom {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#bcwi-logos .bottom img{
+    width: 45%;
+    height: 45%;
+}
+
 @media screen and (max-width: 927px) {
 
     .single-container {
@@ -81,8 +98,15 @@
 }
 
 @media screen and (max-width: 427px) {
+
     .infoSections {
         flex-direction: column;
+    }
+
+    #bcwi-logos {
+        display:flex;
+        flex-direction:column;
+        padding: 0 1rem;
     }
 
     /* .infoSection-mobile {
