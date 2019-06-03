@@ -28,6 +28,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
     public partial class Tester : RockBlock
     {
         private readonly string _USER_PREF_PERSON = "PersonalizationEngineTester:Person";
+        private readonly string _USER_PREF_TARGET_DATE = "PersonalizationEngineTester:TargetDate";
 
         /// <summary>
         /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.
@@ -52,7 +53,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             
             if ( !Page.IsPostBack )
             {
-                RestorePersonToPicker();
+                RestoreControls();
             }
 
             BindPerson();
@@ -95,7 +96,7 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 commaDelimitedTypes = commaDelimitedTypes.TrimEnd( ',' );
                 
                 // now, get all relevant campaigns for this person across all campaign platforms
-                var campaigns = PersonalizationEngineUtil.GetRelevantCampaign( commaDelimitedTypes, ppTarget.PersonId.Value, int.MaxValue );
+                var campaigns = PersonalizationEngineUtil.GetRelevantCampaign( commaDelimitedTypes, ppTarget.PersonId.Value, int.MaxValue, dtpTargetDate.SelectedDate );
                 
                 // set the campaigns grid
                 gCampaigns.Visible = true;
@@ -144,14 +145,27 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         #endregion
 
         #region PersonPicker
-        protected void RestorePersonToPicker()
+        protected void RestoreControls()
         {
+            // Person Picker
             ppTarget.PersonId = GetUserPreference( _USER_PREF_PERSON ).AsIntegerOrNull();
             if ( ppTarget.PersonId != null )
             {
                 var person = new PersonService( new RockContext() ).Get( ppTarget.PersonId ?? -1 );
                 ppTarget.SetValue( person );
             }
+
+            // Target DateTime
+            DateTime? value = GetUserPreference( _USER_PREF_TARGET_DATE ).AsDateTime();
+            if ( value.HasValue )
+            {
+                dtpTargetDate.SelectedDate = value;
+            }
+            else
+            {
+                dtpTargetDate.SelectedDate = DateTime.Now;
+            }
+
         }
 
         protected void ppPerson_SelectPerson( object sender, EventArgs e )
@@ -160,5 +174,11 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             BindPerson();
         }
         #endregion
+
+        protected void dpTargetDate_TextChanged( object sender, EventArgs e )
+        {
+            SetUserPreference( _USER_PREF_TARGET_DATE, dtpTargetDate.SelectedDate.ToString() );
+            BindPerson();
+        }
     }
 }

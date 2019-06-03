@@ -10,40 +10,22 @@
                     </div>
                 </div>
 
-                <div class="panel-body form-group">
-                    <fieldset>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <Rock:PersonPicker ID="ppTarget" runat="server" Label="Person" OnSelectPerson="ppPerson_SelectPerson" />
-                            </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <Rock:PersonPicker ID="ppTarget" runat="server" Label="Person" OnSelectPerson="ppPerson_SelectPerson" />
                         </div>
-                    </fieldset>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <asp:Literal runat="server"><strong>Target Date</strong></asp:Literal>
+                            <Rock:DatePicker runat="server" ClientIDMode="Static" ID="dtpTargetDate" AutoPostBack="true" OnTextChanged="dpTargetDate_TextChanged"/>
+                             
+                        </div>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
-    </ContentTemplate>
-</asp:UpdatePanel>
-
-<asp:UpdatePanel ID="upnlPersonas" runat="server">
-    <ContentTemplate>
-        <br/>
-        <div class ="panel panel-block">
-            <div class="panel-heading">
-                <div class="row col-sm-4">
-                    <h4 class="panel-title">Personas</h4>
-                </div>
-            </div>
-
-            <div class="panel-body">
-                <asp:Literal ID="lNoPersona" Visible="false" runat="server">This person does not fit any Personas.</asp:Literal>
-                <Rock:Grid ID="gPersonas" Title="Attached Personas" runat="server" DisplayType="Light" RowItemText="Persona" AllowPaging="false">
-                    <Columns>
-                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
-                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
-                    </Columns>
-                </Rock:Grid>
-            </div>
-        </div>
     </ContentTemplate>
 </asp:UpdatePanel>
 
@@ -63,6 +45,29 @@
                         <Rock:RockBoundField DataField="Description" HeaderText="Description" />
                         <Rock:RockBoundField DataField="Priority" HeaderText="Priority" />
                         <Rock:RockBoundField DataField="Type" HeaderText="Locations" />
+                    </Columns>
+                </Rock:Grid>
+            </div>
+        </div>
+    </ContentTemplate>
+</asp:UpdatePanel>
+
+<asp:UpdatePanel ID="upnlPersonas" runat="server">
+    <ContentTemplate>
+        <br/>
+        <div class ="panel panel-block">
+            <div class="panel-heading">
+                <div class="row col-sm-4">
+                    <h4 class="panel-title">Personas</h4>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <asp:Literal ID="lNoPersona" Visible="false" runat="server">This person does not fit any Personas.</asp:Literal>
+                <Rock:Grid ID="gPersonas" Title="Attached Personas" runat="server" DisplayType="Light" RowItemText="Persona" AllowPaging="false">
+                    <Columns>
+                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
+                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
                     </Columns>
                 </Rock:Grid>
             </div>
@@ -130,6 +135,11 @@
         border-width: 3px;
         border-color: #9d3f3d;
         border-style: solid;
+    }
+
+    /* hide the "Today" piece of the date time picker */
+    .datepicker-days tfoot {
+        display: none;
     }
 </style>
 
