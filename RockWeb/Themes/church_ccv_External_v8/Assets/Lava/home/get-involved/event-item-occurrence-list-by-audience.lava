@@ -49,7 +49,7 @@ list, but marked differently.
 													{% assign eventName = linkage.RegistrationInstance.Name | Downcase %} 
 													{% if eventName contains "kids" %}
 														{% assign ministryLogo = '<img class="img-responsive" src="/Themes/church_ccv_External_v8/Assets/Images/logos/logo-kids.svg" alt="CCV Kids" style="height: 22px;" />' %}
-													{% elseif eventName contains "student" %}
+													{% elseif eventName contains "student" or eventName contains "high school" or eventName contains "junior high" or eventName contains "hs" or eventName contains "jh" %}
 														{% assign ministryLogo = '<img class="img-responsive" src="/Themes/church_ccv_External_v8/Assets/Images/logos/logo-students-black.svg" alt="CCV Students" />' %}
 
 													{% endif %}
