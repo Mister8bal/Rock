@@ -260,6 +260,8 @@
     // build visit data
     var visitData = buildVisitDataObject();
 
+    var campusesData = buildCampusesDataObject();
+
     function pageLoad() {
         // load campuses dropdown
         buildCampusesDropdown();
@@ -307,6 +309,8 @@
         var allOptionsCampusesForm = $("#ulCampusesForm").children("li:not(.init)");
 
         $("#ulCampusesForm").on("click", "li:not(.init)", function() {
+            buildServiceTimeDropdown("1", moment());
+
             // deselect previous selected item
             allOptionsCampusesForm.removeClass("selected");
 
@@ -318,6 +322,8 @@
 
             // hide dropdown
             allOptionsCampusesForm.toggle();
+
+
         });
 
         // show/hide services form dropdown click event
@@ -471,14 +477,23 @@
 
     // populate campuses object
     function buildCampusesDropdown() {
-        {% for campus in Campuses %}
-            {% if campus.IsActive %}
-                var liCampus = '<li data-value="{{ campus.Id }}">{{ campus.Name }}</li>';
+        for (let i = 0; i < campusesData.length; i++) {
+            const element = campusesData[i];
 
+            var liCampus = '<li data-value="' + campusesData[i].Id + '">' + campusesData[i].Name + "</li>";
+            
                 $('#ulCampuses').append(liCampus);
-                $('#ulCampusesForm').append(liCampus);
-            {% endif %}
-        {% endfor %}
+                $('#ulCampusesForm').append(liCampus);            
+        }
+    }
+
+    // populate service time drop down
+    function buildServiceTimeDropdown( campusId, serviceDate ) {
+        console.log(campusId);
+        const campus = campusesData.filter( campus => campus.Id === campusId );
+
+        console.log(campus);
+
     }
 
     // populate visit object
@@ -530,6 +545,45 @@
         {% endfor %}
 
         return visitsObject;
+    }
+
+    // build campuses data object
+    function buildCampusesDataObject() {
+        var campusesObject = [];
+
+        var daysOfWeek = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday";
+
+        // loop through the campuses and only include active campuses
+        {% for campus in Campuses %}
+            {% if campus.IsActive %}
+                var newCampus = {
+                    Id: "{{ campus.Id }}",
+                    Name: "{{ campus.Name }}",
+                    ServiceTimes: []
+                };
+
+                {% for serviceTime in campus.ServiceTimes %}
+                    var time  = "{{ serviceTime.Time }}";
+
+                    var newServiceTime = {
+                        Day: "{{ serviceTime.Day }}",
+                        Time: time.replace(/[^A-Za-z0-9:]/g, "")
+                    }
+
+                    // only include service time if day is valid
+                    if ( daysOfWeek.includes(newServiceTime.Day) ) {
+                        newCampus.ServiceTimes.push(newServiceTime);
+                    }
+                {% endfor %}
+
+                // only include campus if it has service times
+                if ( newCampus.ServiceTimes.length > 0 ) {
+                    campusesObject.push(newCampus);
+                }
+            {% endif %}
+        {% endfor %}
+
+        return campusesObject;
     }
 
     function showArrivedForm( senderId ) {
