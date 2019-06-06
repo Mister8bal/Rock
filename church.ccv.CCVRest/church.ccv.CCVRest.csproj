@@ -125,7 +125,9 @@
     <Compile Include="MobileApp\Util\MAGroupService.cs" />
     <Compile Include="MobileApp\Util\MAPersonService.cs" />
     <Compile Include="MobileApp\Util\MAPodcastService.cs" />
-    <Compile Include="PAV\PAVVisitController.cs" />
+    <Compile Include="PAV\Model\PAVScheduledVisitModel.cs" />
+    <Compile Include="PAV\PAVScheduledVisitController.cs" />
+    <Compile Include="PAV\PAVScheduledVisitService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
