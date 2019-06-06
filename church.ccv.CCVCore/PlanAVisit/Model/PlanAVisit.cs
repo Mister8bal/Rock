@@ -19,7 +19,7 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         public int FamilyId { get; set; }
 
         [DataMember]
-        public int CampusId { get; set; }
+        public int ScheduledCampusId { get; set; }
 
         [DataMember]
         public DateTime? ScheduledDate { get; set; }
@@ -34,13 +34,13 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         public string SurveyResponse { get; set; }
 
         [DataMember]
+        public int? AttendedCampusId { get; set; }
+
+        [DataMember]
         public DateTime? AttendedDate { get; set; }
 
         [DataMember]
         public int? AttendedServiceScheduleId { get; set; }
-
-        [DataMember]
-        public int? AttendedCampusId { get; set; }
 
         [DataMember]
         public DateTime CreatedDateTime { get; set; }
