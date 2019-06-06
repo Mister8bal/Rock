@@ -1100,7 +1100,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 AdultOnePersonAliasId = adultOne.PrimaryAlias.Id,
                 AdultTwoPersonAliasId = adultTwo.IsNotNull() ? adultTwo.PrimaryAlias.Id : (int?)null,
                 FamilyId = _visit.FamilyId,
-                CampusId = _visit.CampusId,
+                ScheduledCampusId = _visit.CampusId,
                 ScheduledDate = _visit.VisitDate,
                 ScheduledServiceScheduleId = _visit.ServiceTimeScheduleId,
                 BringingChildren = _visit.Children.Count > 0 ? true : false,

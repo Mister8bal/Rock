@@ -246,7 +246,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
             else
             {
-                cpCampusAttended.SelectedValue = visit.CampusId.ToString();
+                cpCampusAttended.SelectedValue = visit.ScheduledCampusId.ToString();
             }
 
             // update date picker
@@ -539,7 +539,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             var pavQuery = 
                 from planAVisit in planAVisitTable
-                join scheduledCampus in campusTable on planAVisit.CampusId equals scheduledCampus.Id into scheduledCampuses
+                join scheduledCampus in campusTable on planAVisit.ScheduledCampusId equals scheduledCampus.Id into scheduledCampuses
                 from scheduledCampus in scheduledCampuses.DefaultIfEmpty()
                 join attendedCampus in campusTable on planAVisit.AttendedCampusId equals attendedCampus.Id into attendedCampuses
                 from attendedCampus in attendedCampuses.DefaultIfEmpty()
@@ -559,7 +559,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     person.FirstName,
                     person.NickName,
                     person.LastName,
-                    planAVisit.CampusId,
+                    planAVisit.ScheduledCampusId,
                     CampusName = scheduledCampus.Name,
                     CampusGuid = scheduledCampus.Guid,
                     planAVisit.ScheduledDate,
@@ -592,7 +592,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             // by campus
             if ( cblCampusFilter.SelectedValues.Count > 0 )
             {
-                filteredQuery = filteredQuery.Where( a => cblCampusFilter.SelectedValues.Contains( a.CampusId.ToString() ) );
+                filteredQuery = filteredQuery.Where( a => cblCampusFilter.SelectedValues.Contains( a.ScheduledCampusId.ToString() ) );
             }
 
             // by Scheduled Service
