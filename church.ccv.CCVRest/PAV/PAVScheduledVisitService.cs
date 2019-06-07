@@ -41,10 +41,10 @@ namespace church.ccv.CCVRest.PAV
                 join adultOnePerson in personTable on adultOnePersonAlias.PersonId equals adultOnePerson.Id into adultOnePeople
                 from adultOnePerson in adultOnePeople.DefaultIfEmpty()
                 // adult two
-                join adultTwoPersonAlias in personAliasTable on planAVisit.AdultOnePersonAliasId equals adultTwoPersonAlias.Id into adultTwoPersonAliases
-                from adultTwoPersonAlias in adultOnePersonAliases.DefaultIfEmpty()
-                join adultTwoPerson in personTable on adultOnePersonAlias.PersonId equals adultTwoPerson.Id into adultTwoPeople
-                from adultTwoPerson in adultOnePeople.DefaultIfEmpty()
+                join adultTwoPersonAlias in personAliasTable on planAVisit.AdultTwoPersonAliasId equals adultTwoPersonAlias.Id into adultTwoPersonAliases
+                from adultTwoPersonAlias in adultTwoPersonAliases.DefaultIfEmpty()
+                join adultTwoPerson in personTable on adultTwoPersonAlias.PersonId equals adultTwoPerson.Id into adultTwoPeople
+                from adultTwoPerson in adultTwoPeople.DefaultIfEmpty()
                 // scheduled visit
                 join scheduledCampus in campusTable on planAVisit.ScheduledCampusId equals scheduledCampus.Id into scheduledCampuses
                 from scheduledCampus in scheduledCampuses.DefaultIfEmpty()
@@ -80,22 +80,22 @@ namespace church.ccv.CCVRest.PAV
 
             // add visits from query to return object
             foreach ( var item in pavQuery )
-            {
+            { 
                 PAVScheduledVisitModel scheduledVisit = new PAVScheduledVisitModel
                 {
                     Id = item.Id,
                     AdultOneFirstName = item.AdultOneFirstName,
                     AdultOneLastName = item.AdultOneLastName,
-                    AdultTwoFirstName = item.AdultTwoFirstName,
-                    AdultTwoLastName = item.AdultTwoLastName,
+                    AdultTwoFirstName = item.AdultTwoFirstName.IsNotNull() ? item.AdultTwoFirstName : "",
+                    AdultTwoLastName = item.AdultTwoLastName.IsNotNull() ? item.AdultTwoLastName : "",
                     ScheduledCampusId = item.ScheduledCampusId,
                     ScheduledCampusName = item.ScheduledCampusName,
-                    ScheduledDate = item.ScheduledDate,
+                    ScheduledDate = item.ScheduledDate.HasValue ? item.ScheduledDate.Value.ToString( "MM/dd/yyyy" ) : "",
                     ScheduledServiceId = item.ScheduledServiceId,
                     ScheduledServiceName = item.ScheduledServiceName,
                     AttendedCampusId = item.AttendedCampusId,
                     AttendedCampusName = item.AttendedCampusName,
-                    AttendedDate = item.AttendedDate,
+                    AttendedDate = item.AttendedDate.HasValue ? item.AttendedDate.Value.ToString("MM/dd/yyyy") : "",
                     AttendedServiceId = item.AttendedServiceId,
                     AttendedServiceName = item.AttendedServiceName
                 };
@@ -109,12 +109,16 @@ namespace church.ccv.CCVRest.PAV
                     // mobile number found add to visit
                     scheduledVisit.AdultOneMobileNumber = adultOneMobileNumber.NumberFormatted;
                 }
-                
-                // if bringing children, add adult ones children
+                else
+                {
+                    scheduledVisit.AdultOneMobileNumber = "";
+                }
+
+                scheduledVisit.Children = new List<PAVChildModel>();
+
+                // if bringing children, add adult one's children
                 if ( item.BringingChildren && item.AdultOnePersonAliasId > 0 )
                 {
-                    scheduledVisit.Children = new List<PAVChildModel>();
-
                     var familyMembers = person.GetFamilyMembers( false, null );
 
                     if ( familyMembers.Count() > 0 )
@@ -129,7 +133,7 @@ namespace church.ccv.CCVRest.PAV
                                 {
                                     FirstName = familyMember.Person.FirstName,
                                     Age = familyMember.Person.Age,
-                                    BirthDate = familyMember.Person.BirthDate,
+                                    BirthDate = familyMember.Person.BirthDate.HasValue ? familyMember.Person.BirthDate.Value.ToString( "MM/dd/yyyy" ) : "",
                                     Grade = familyMember.Person.GradeFormatted
                                 };
 
@@ -186,12 +190,19 @@ namespace church.ccv.CCVRest.PAV
 
                         if ( scheduleLookup.IsNotNull() )
                         {
-                            // schedule found, add service time to campus
+                            // schedule found
+                            
+                            // build service time string
+                            string[] scheduleNameArray = scheduleLookup.Name.Split( ' ' );
+
+                            string scheduleTime = scheduleNameArray[1];
+
                             PAVServiceTimeModel pavServiceTime = new PAVServiceTimeModel
                             {
                                 ScheduleId = scheduleLookup.Id,
                                 Day = serviceTime.Day,
-                                Name = scheduleLookup.Name
+                                Name = scheduleLookup.Name,
+                                Time = scheduleTime
                             };
 
                             pavCampus.ServiceTimes.Add( pavServiceTime );

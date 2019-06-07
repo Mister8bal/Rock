@@ -30,7 +30,7 @@ namespace church.ccv.CCVRest.PAV.Model
         public List<PAVChildModel> Children;
 
         // Scheduled Visit Info
-        public DateTime? ScheduledDate;
+        public string ScheduledDate;
 
         public int ScheduledCampusId;
 
@@ -41,7 +41,7 @@ namespace church.ccv.CCVRest.PAV.Model
         public string ScheduledServiceName;
 
         // Attended Visit Info
-        public DateTime? AttendedDate;
+        public string AttendedDate;
 
         public int? AttendedCampusId;
 
@@ -59,7 +59,7 @@ namespace church.ccv.CCVRest.PAV.Model
 
         public int? Age;
 
-        public DateTime? BirthDate;
+        public string BirthDate;
 
         public string Grade;
     }
@@ -82,5 +82,7 @@ namespace church.ccv.CCVRest.PAV.Model
         public string Day;
 
         public string Name;
+
+        public string Time;
     }
 }
