@@ -4,13 +4,6 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-right-now-media.jpg");
 }
 
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-right-now-media.jpg");
-    }
-}
-
 #ternavbar-bg {
     display: flex;
 }
@@ -28,11 +21,20 @@
 }
 
 .title img {
-    max-width: 300px;
     margin-bottom: 25px;
+    max-width: none;
+    width: 48%;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-right-now-media.jpg");
+    }
+    .title img {
+        width: 80%;
+    }
 }
 
 
-@media screen and (min-width: 768px) {
-    
-}
+
