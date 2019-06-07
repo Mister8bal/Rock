@@ -17,10 +17,20 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-sm-6">
                             <asp:Literal runat="server"><strong>Target Date</strong></asp:Literal>
                             <Rock:DatePicker runat="server" ClientIDMode="Static" ID="dtpTargetDate" AutoPostBack="true" OnTextChanged="dpTargetDate_TextChanged"/>
-                             
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <br />
+                            <span>Campaign Start Date is inclusive, and End Date is exclusive.</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <span><strong>Example:</strong> Start: 6-1-19 End: 6-7-19 means it begins showing on 6-1-19, and 6-6-19 is the last day it shows.</span>
                         </div>
                     </div>
                 </div>
@@ -42,9 +52,10 @@
                 <Rock:Grid ID="gCampaigns" Title="Attached Campaigns" runat="server" DisplayType="Light" RowItemText="Campaign" AllowPaging="false">
                     <Columns>
                         <Rock:RockBoundField DataField="Name" HeaderText="Name" />
-                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
                         <Rock:RockBoundField DataField="Priority" HeaderText="Priority" />
                         <Rock:RockBoundField DataField="Type" HeaderText="Locations" />
+                        <Rock:RockBoundField DataField="StartDate" HeaderText="Start Date" SortExpression="StartDate" DataFormatString="{0:M/dd/yy}" />
+                        <Rock:RockBoundField DataField="EndDate" HeaderText="End Date" SortExpression="EndDate" DataFormatString="{0:M/dd/yy}"/>
                     </Columns>
                 </Rock:Grid>
             </div>

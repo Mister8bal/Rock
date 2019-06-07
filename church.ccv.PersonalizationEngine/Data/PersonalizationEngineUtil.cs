@@ -124,6 +124,19 @@ namespace church.ccv.PersonalizationEngine.Data
         static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
+
+            // truncate provided dates to only the date (this system doesn't support time for the expiration date/time)
+            if ( startDate.HasValue )
+            {
+                startDate = startDate.Value.Date;
+            }
+            if ( endDate.HasValue )
+            {
+                endDate = endDate.Value.Date;
+            }
+
+            // NOTE: Start Dates are inclusive; End Dates are EXCLUSIVE.
+            // Example: If a campaign is: 6-1-19 thru 6-7-19, it will BEGIN display on 6-1, and the LAST DAY it will display is 6-6.
             
             // Default campaigns are those that are NOT tied to a persona.
             // if isDefault is FALSE, then we get campaigns that ARE tied to personas
@@ -150,7 +163,8 @@ namespace church.ccv.PersonalizationEngine.Data
                                          .Where( c => startDate.HasValue == false || c.StartDate <= startDate.Value )
 
                                          // A campaign does NOT need to have an end date--so if it doesn't have one just take it
-                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate >= endDate.Value )
+                                         // if it DOES, then it must be _AFTER_ the provided endDate. 
+                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate > endDate.Value )
 
                                          // for each Campaign, see if any element of campaignTypeIds is contained in c.Type (the CSV)
                                          .Where( c => campaignTypes.Any( t => c.Type.Contains( t ) ) )
@@ -283,7 +297,7 @@ namespace church.ccv.PersonalizationEngine.Data
 
             // if no target date is passed in, use Now. (Target date is used generally for debugging a future time)
             if ( targetDate == null )
-                targetDate = DateTime.Now;
+                targetDate = DateTime.Now.Date;
 
             // guard against passing in <= 0 numbers
             numCampaigns = Math.Max( numCampaigns, 1 );

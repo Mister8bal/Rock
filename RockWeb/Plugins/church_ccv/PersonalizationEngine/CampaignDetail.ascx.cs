@@ -200,8 +200,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 }
                 else
                 {
-                    campaign.StartDate = dtpStartDate.SelectedDate.Value;
-                    campaign.EndDate = dtpEndDate.SelectedDate;
+                    campaign.StartDate = dtpStartDate.SelectedDate.Value.Date;
+                    campaign.EndDate = dtpEndDate.SelectedDate.HasValue ? dtpEndDate.SelectedDate.Value.Date : new DateTime?( );
                 }
 
                 // now get the types this campaign is using, along with the actual values for each type
