@@ -26,8 +26,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
     [Description( "Displays the board where an AP can post content." )]
     public partial class MobileAppAPBoard : RockBlock
     {
-        // Dev Id
-        const int ContentChannelId_ToolboxAPBoard = 295;
+        const int ContentChannelId_ToolboxAPBoard = 298;
 
         /// <summary>
         /// Raises the <see cref="E:System.Web.UI.Control.Init" /> event.

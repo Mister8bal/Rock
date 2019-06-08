@@ -101,6 +101,7 @@
     <Compile Include="Common\Util\Util.cs" />
     <Compile Include="MobileApp\Controllers\MAAccountController.cs" />
     <Compile Include="MobileApp\Controllers\MAContentController.cs" />
+    <Compile Include="MobileApp\Controllers\MACourseController.cs" />
     <Compile Include="MobileApp\Controllers\MAGroupController.cs" />
     <Compile Include="MobileApp\Controllers\MAPersonController.cs" />
     <Compile Include="MobileApp\Controllers\MAPodcastController.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="MobileApp\Model\JoinGroupModel.cs" />
     <Compile Include="MobileApp\Model\KidsContentModel.cs" />
     <Compile Include="MobileApp\Model\LifeTrainingTopicModel.cs" />
+    <Compile Include="MobileApp\Model\MACourseModel.cs" />
     <Compile Include="MobileApp\Model\MAGroupModel.cs" />
     <Compile Include="MobileApp\Model\LoginModel.cs" />
     <Compile Include="MobileApp\Model\MAMessageModel .cs" />
@@ -122,6 +124,7 @@
     <Compile Include="MobileApp\Model\ToolboxContentModel.cs" />
     <Compile Include="MobileApp\Util\MAAccountService.cs" />
     <Compile Include="MobileApp\Util\MAContentService.cs" />
+    <Compile Include="MobileApp\Util\MACourseService.cs" />
     <Compile Include="MobileApp\Util\MAGroupService.cs" />
     <Compile Include="MobileApp\Util\MAPersonService.cs" />
     <Compile Include="MobileApp\Util\MAPodcastService.cs" />

@@ -17,21 +17,23 @@ $ErrorActionPreference = "Stop"
 Write-Host "Stopping Web Publishing Service"
 stop-service -servicename w3svc
 
-# delete the content directory in temp
 If (Test-Path "$rootfolder\temp\Content"){
+    Write-Host "Cleaning up temp content folder"
 	Remove-Item "$rootfolder\temp\Content" -Force -Confirm:$False -Recurse
 }
+
+If (Test-Path "$rootfolder\temp\Cache"){
+    Write-Host "Cleaning up temp cache folder"
+	Remove-Item "$rootfolder\temp\Cache" -Force -Confirm:$False -Recurse
+}
+
+Write-Host "Backing up web.config"
+Copy-Item "$webroot\web.config" "$rootfolder\config" -Force -Confirm:$False
+
+Write-Host "Backing up web.ConnectionStrings.config"
+Copy-Item "$webroot\web.ConnectionStrings.config" "$rootFolder\config" -Force -Confirm:$False
  
-# move content folder to temp
 Write-Host "Moving content folder to temp directory"
 Move-Item "$webroot\Content" "$rootfolder\temp"
 
 
-# delete the cache directory in temp
-If (Test-Path "$rootfolder\temp\Cache"){
-	Remove-Item "$rootfolder\temp\Cache" -Force -Confirm:$False -Recurse
-}
-
-# move cache folder to temp (exploring always starting with a fresh cache folder)
-#Write-Host "Moving cache folder to temp directory"
-#Move-Item "$webroot\App_Data\Cache" "$rootfolder\temp"

@@ -98,7 +98,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         protected void btnSave_Click( object sender, EventArgs e )
         {
             // first, see if the sql entered is safe. if not, don't allow saving it.
-            if( ValidateSql( tbPersonaRockSQL.Text ) )
+            SQLError sqlError = ValidateSql( tbPersonaRockSQL.Text );
+            if ( sqlError == SQLError.None )
             {
                 using ( RockContext rockContext = new RockContext( ) )
                 {
@@ -130,12 +131,32 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             else
             {
                 // display an error modal
-                maWarning.Show("The Rock SQL for this persona has invalid content.", ModalAlertType.Information );
+                switch ( sqlError )
+                {
+                    case SQLError.IllegalSyntax:
+                    {
+                        maWarning.Show( "The Rock SQL for this persona has invalid content.", ModalAlertType.Information );
+                        break;
+                    }
+
+                    case SQLError.NoPersonId:
+                    {
+                        maWarning.Show( "The Rock SQL for this persona isn't returning a single row by using @PersonId.", ModalAlertType.Information );
+                        break;
+                    }
+                }
             }
         }
 
         #region Utility
-        protected bool ValidateSql( string sql )
+        protected enum SQLError
+        {
+            None,
+            IllegalSyntax,
+            NoPersonId
+        }
+
+        protected SQLError ValidateSql( string sql )
         {
             // strip out any escape sequence characters
             sql = Regex.Replace( sql, "[\a\b\f\n\r\t\v]", " " );
@@ -148,11 +169,17 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 // see if the sql words contain any of our blacklisted commands
                 if ( sqlWords.Contains( illegalCommand ) )
                 {
-                    return false;
+                    return SQLError.IllegalSyntax;
                 }
             }
 
-            return true;
+            // now check to make sure it's returning a single row, not a list of people
+            if ( sqlWords.Contains( "@PERSONID" ) == false )
+            {
+                return SQLError.NoPersonId;
+            }
+
+            return SQLError.None;
         }
 
         void RefreshCurrentPage( int personaId )

@@ -2,6 +2,8 @@
 
 <asp:UpdatePanel ID="upnlSettings" runat="server">
     <ContentTemplate>
+        <asp:HiddenField runat="server" ID="hfDefaultCampaign" ClientIDMode="Static"/>
+
         <div ID="error-panel" class="alert alert-danger" style="visibility: hidden; position: fixed; z-index:9999; left: 50%; top: 50%; transform: translate( -50%, -50%);">
             <p><i class="fa fa-times"></i> Fill in the fields colored red and try again.</p>
         </div>
@@ -24,6 +26,12 @@
                     <Rock:RockTextBox runat="server" ClientIDMode="Static" ID="tbCampaignDesc"></Rock:RockTextBox>
                 </div>
                 <br/>
+                <asp:Literal ID="lNoDates" runat="server">
+                    <div class="campaign-editable-item">
+                        <span>Start & End Dates are not supported for default campaigns.<br /></span>
+                    </div>
+                    <br/>
+                </asp:Literal>
                 <div class="campaign-editable-item">
                     <asp:Literal runat="server"><p class="title">Start Date</p></asp:Literal>
                     <Rock:DatePicker runat="server" ClientIDMode="Static" ID="dtpStartDate"/>
@@ -163,9 +171,11 @@
             success = false;
         }
 
-        // validate the campaign start date
-        if (validateField("#dtpStartDate") == false) {
-            success = false;
+        // validate the campaign start date (if not a default campaign)
+        if ($("#hfDefaultCampaign").val() != "True") {
+            if (validateField("#dtpStartDate") == false) {
+                success = false;
+            }
         }
 
         // note - the end date CAN be blank, so we don't validate that.

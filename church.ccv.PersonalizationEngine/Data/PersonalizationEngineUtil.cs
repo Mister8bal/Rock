@@ -121,9 +121,22 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
+        static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
+
+            // truncate provided dates to only the date (this system doesn't support time for the expiration date/time)
+            if ( startDate.HasValue )
+            {
+                startDate = startDate.Value.Date;
+            }
+            if ( endDate.HasValue )
+            {
+                endDate = endDate.Value.Date;
+            }
+
+            // NOTE: Start Dates are inclusive; End Dates are EXCLUSIVE.
+            // Example: If a campaign is: 6-1-19 thru 6-7-19, it will BEGIN display on 6-1, and the LAST DAY it will display is 6-6.
             
             // Default campaigns are those that are NOT tied to a persona.
             // if isDefault is FALSE, then we get campaigns that ARE tied to personas
@@ -150,7 +163,8 @@ namespace church.ccv.PersonalizationEngine.Data
                                          .Where( c => startDate.HasValue == false || c.StartDate <= startDate.Value )
 
                                          // A campaign does NOT need to have an end date--so if it doesn't have one just take it
-                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate >= endDate.Value )
+                                         // if it DOES, then it must be _AFTER_ the provided endDate. 
+                                         .Where( c => c.EndDate.HasValue == false || endDate.HasValue == false || c.EndDate > endDate.Value )
 
                                          // for each Campaign, see if any element of campaignTypeIds is contained in c.Type (the CSV)
                                          .Where( c => campaignTypes.Any( t => c.Type.Contains( t ) ) )
@@ -277,15 +291,19 @@ namespace church.ccv.PersonalizationEngine.Data
         #endregion
 
         #region General
-        public static List<Campaign> GetRelevantCampaign( string campaignTypeList, int personId, int numCampaigns = 1 )
+        public static List<Campaign> GetRelevantCampaign( string campaignTypeList, int personId, int numCampaigns = 1, DateTime? targetDate = null )
         {
             //given a person id, get whatever is less - the number of relevant campaigns that exist, or numCampaigns.
+
+            // if no target date is passed in, use Now. (Target date is used generally for debugging a future time)
+            if ( targetDate == null )
+                targetDate = DateTime.Now.Date;
 
             // guard against passing in <= 0 numbers
             numCampaigns = Math.Max( numCampaigns, 1 );
 
-            // get all the campaigns that match the center card
-            var campaignList = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, false );
+            // get all the campaigns that match
+            var campaignList = GetCampaigns( campaignTypeList, targetDate, targetDate, false );
 
             // now go thru their personas, and take the first campaign with a persona that fits
             List<Campaign> relevantCampaigns = new List<Campaign>( );
@@ -331,8 +349,8 @@ namespace church.ccv.PersonalizationEngine.Data
             // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
             using ( RockContext rockContext = new RockContext( ) )
             {
-                // get all the default campaigns
-                var defaultCampaigns = GetCampaigns( campaignTypeList, DateTime.Now, DateTime.Now, true );
+                // get all the default campaigns (default campaigns shouldn't care about start / end date)
+                var defaultCampaigns = GetCampaigns( campaignTypeList, null, null, true );
 
                 // now take only what they asked for (a little less efficient than doing this at the database level, but results in simpler code)
                 

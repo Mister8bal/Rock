@@ -47,4 +47,7 @@
     <div class="icon-desc">
         <p><span class="csi csi-special-needs"></span> Special Needs</p>
     </div>
+	<div class="icon-desc">
+        <p><span class="csi csi-espanol"></span> Espanol</p>
+    </div>
 </div>
