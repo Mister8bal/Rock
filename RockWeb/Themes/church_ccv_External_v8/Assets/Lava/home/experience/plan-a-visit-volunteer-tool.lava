@@ -21,22 +21,22 @@
 
     .card-header {
         display: flex;
-        justify-content: center;
+        justify-content: space-evenly;
         align-items: center;
         border-bottom: 1px solid #ddd;
         padding-bottom: 5px
     }
 
     .card-header h4, .details-content h5 {
-        padding: 2px 20px;
         line-height: 100%;
+        min-width: 150px;
+        text-align: center;
     }
 
     .card-header i, .visit i {
-        font-size: 2.28rem;
+        font-size: 40px;
         color: #7A1315;
         position: relative;
-        top: 2px;
         z-index: 1;
     }
 
@@ -150,6 +150,7 @@
         border-right: 1px solid #e7e7e7;
         font-size: 16px;
         z-index: 2;
+        padding: 5px;
     }
 
     #ulCampusesForm li:not(.init), #ulServicesForm li:not(.init) {
@@ -186,10 +187,15 @@
     }
 
     .panel-close-button {
-        align-self: flex-end;
-        padding: 10px 10px 0 0 ;
-        font-size: 20px;
+        align-self: flex-start;
+        padding: 0 0 0 10px;
+        font-size: 40px;
         color: #7A1315;
+    }
+
+    .arrived-form .card-header h4 {
+        margin-top: -20px;
+        width: 75%;
     }
 
     .arrived-form-control {
@@ -375,7 +381,7 @@
 </div>
 
 <div id="pnlArrivedForm" class="arrived-form hidden">
-    <i class="fa fa-times panel-close-button" aria-hidden="true" onclick="showPanel('#pnlVisits')"></i>
+    <i class="mdi mdi-chevron-left panel-close-button" aria-hidden="true" onclick="showPanel('#pnlVisits')"></i>
     <div class="card-header">
         <h4></h4>
     </div>
