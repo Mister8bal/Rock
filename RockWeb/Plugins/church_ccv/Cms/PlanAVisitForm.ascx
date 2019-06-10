@@ -1,10 +1,10 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisitForm" %>
 
 <style>
     .plan-a-visit {
         max-width: 800px;
         margin: 0 auto;
-        padding: 30px 0 150px;
+        padding: 50px 0 150px;
     }
 
     h2 {
@@ -748,7 +748,7 @@
                 <p>You will be receiving a confirmation email with helpful information, including a map link to make getting to the <asp:Label ID="lblCampusVisit" runat="server" Text="" /> campus a breeze</p>
             </div>
             <div class="form-navigation">
-                <a href="/plan-your-visit" class="btn btn-primary start-over">Plan Another Visit</a>
+                <a href="/plan-your-visit#form" class="btn btn-primary start-over">Plan Another Visit</a>
                 <a href="/" class="btn btn-primary start-over">Back To Home</a>
             </div>
 

@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitGrid" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Cms.PlanAVisitGrid" %>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
@@ -36,7 +36,6 @@
                         </Rock:RockDropDownList>
                         <Rock:RockCheckboxList ID="cblAttendedServiceFilter" runat="server" Label="Attended Service" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                         <Rock:DateRangePicker ID="drpAttendedDateFilter" runat="server" Label="Attended Date" />
-                        <Rock:RockCheckBoxList ID="cblAttendedCampusFilter" runat="server" Label="Attended Campus" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                     </Rock:GridFilter>
 
                     <Rock:Grid ID="gGrid" runat="server" AutoGenerateColumns="False" OnRowSelected="gGrid_RowSelected" AllowSorting="true">
@@ -51,7 +50,6 @@
                             <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" SortExpression="BringingChildren" />
                             <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="AttendedDate" />
                             <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" SortExpression="AttendedServiceName" />
-                            <Rock:RockBoundField DataField="AttendedCampus" HeaderText="Attended Campus" SortExpression="AttendedCampus" />
                             <Rock:DeleteField OnClick="gGrid_Delete" Visible="false" ID="gGridDeleteField" />
                         </Columns>
                     </Rock:Grid>
@@ -60,8 +58,6 @@
 
                         <Rock:ModalDialog ID="mdManageVisit" runat="server" SaveButtonText="Save" CancelLinkVisible="true" OnSaveClick="mdManageVisit_SaveClick">
                             <Content>
-
-                                <Rock:CampusPicker ID="cpCampusAttended" runat="server" Label="Campus Attended?" AutoPostBack="true" OnTextChanged="cpCampusAttended_TextChanged" />
 
                                 <Rock:DatePicker ID="dpDateAttended" runat="server" Label="Date Attended?" AutoPostBack="true" OnTextChanged="dpDateAttended_TextChanged"  />
 

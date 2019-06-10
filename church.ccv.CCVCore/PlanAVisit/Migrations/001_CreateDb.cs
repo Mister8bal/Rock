@@ -13,12 +13,11 @@ namespace church.ccv.CommandCenter.Migrations
         [AdultOnePersonAliasId] [int] NOT NULL,
         [AdultTwoPersonAliasId] [int] NULL,
         [FamilyId] [int] NOT NULL,
-	    [ScheduledCampusId] [int] NOT NULL,
+	    [CampusId] [int] NOT NULL,
 	    [ScheduledDate] [datetime] NOT NULL,
         [ScheduledServiceScheduleId] [int] NOT NULL,
         [BringingChildren] [bit] NOT NULL,
 	    [SurveyResponse] [nvarchar](100) NULL,
-        [AttendedCampusId] [int] NULL,
         [AttendedDate] [datetime] NULL,
         [AttendedServiceScheduleId] [int] NULL,
         [Guid] [uniqueidentifier] NOT NULL,
@@ -50,10 +49,10 @@ namespace church.ccv.CommandCenter.Migrations
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Group_FamilyId]
 
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_ScheduledCampusId] FOREIGN KEY([ScheduledCampusId])
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_CampusId] FOREIGN KEY([CampusId])
     REFERENCES [dbo].[Campus] ([Id])
 
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_ScheduledCampusId]
+    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_CampusId]
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_ScheduledServiceScheduleId] FOREIGN KEY([ScheduledServiceScheduleId])
     REFERENCES [dbo].[Schedule] ([Id])
@@ -62,11 +61,6 @@ namespace church.ccv.CommandCenter.Migrations
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit]  WITH CHECK ADD  CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_AttendedServiceScheduleId] FOREIGN KEY([AttendedServiceScheduleId])
     REFERENCES [dbo].[Schedule] ([Id])
-
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] WITH CHECK ADD CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_AttendedCampusId] FOREIGN KEY([AttendedCampusId])
-    REFERENCES [dbo].[Campus] ([Id])
-
-    ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Campus_AttendedCampusId]
 
     ALTER TABLE [dbo].[_church_ccv_PlanAVisit_Visit] CHECK CONSTRAINT [FK_dbo._church_ccv_PlanAVisit_Visit_dbo.Schedule_AttendedServiceScheduleId]
 
