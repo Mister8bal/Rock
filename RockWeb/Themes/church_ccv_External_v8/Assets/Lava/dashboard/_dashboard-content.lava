@@ -8,7 +8,7 @@
 
     {% comment %} Morning {% endcomment %}
     {% assign morningGreeting = "Good Morning, " %}
-    {% assign morningMessage = "I hope you have a great day!" %}
+    {% assign morningMessage = "We hope you have a great day!" %}
 
     {% comment %} Afternoon {% endcomment %}
     {% assign afternoonGreeting = "Good Afternoon, " %}
