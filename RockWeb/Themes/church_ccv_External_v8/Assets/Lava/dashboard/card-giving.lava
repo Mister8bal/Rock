@@ -14,6 +14,7 @@
                 <a href="/dashboard/recurring-giving">Recurring Giving</a>
                 <a href="/dashboard/payment-accounts">Payment Accounts</a>
                 <a href="/dashboard/giving-history">Giving History</a>
+                <a href="/dashboard/missions-contributions">Missions Contributions</a>
             </div>
             <div class="giving-title-links-mobile">
                 <button class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Navigate<b class="fa fa-caret-down"></b></button>
@@ -30,6 +31,9 @@
                     </li>
                     <li class="navigation-secondary-mobile-item">
                         <a href="/dashboard/giving-history">Giving History</a>
+                    </li>
+                    <li class="navigation-secondary-mobile-item">
+                        <a href="/dashboard/missions-contributions">Missions Contributions</a>
                     </li>
                 </ul>
             </div>
