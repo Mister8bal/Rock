@@ -14,7 +14,7 @@ using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 using church.ccv.CCVCore.PlanAVisit.Model;
 
-namespace RockWeb.Plugins.church_ccv.PAV
+namespace RockWeb.Plugins.church_ccv.Cms
 {
     [DisplayName( "Plan A Visit Form" )]
     [Category( "CCV > Cms" )]
@@ -1100,7 +1100,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 AdultOnePersonAliasId = adultOne.PrimaryAlias.Id,
                 AdultTwoPersonAliasId = adultTwo.IsNotNull() ? adultTwo.PrimaryAlias.Id : (int?)null,
                 FamilyId = _visit.FamilyId,
-                ScheduledCampusId = _visit.CampusId,
+                CampusId = _visit.CampusId,
                 ScheduledDate = _visit.VisitDate,
                 ScheduledServiceScheduleId = _visit.ServiceTimeScheduleId,
                 BringingChildren = _visit.Children.Count > 0 ? true : false,

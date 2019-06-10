@@ -1,6 +1,5 @@
 .page-background {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/hero-plan-your-visit.jpg");
-    background-size: contain;
 }
 
 /* Mobile Background Image */
@@ -15,30 +14,42 @@
     padding-top: 150px;
 }
 
-#section-a-bg, #section-c-bg, #section-e-bg, #section-g-bg {
+#ternavbar-bg {
+    display: flex;
+}
+
+#section-a-bg {
+    background-color: #ffffff;
+}
+
+#section-b-bg {
+    background-color: #ebebeb;
+}
+
+#section-c-bg {
+    background-color: #ffffff;
+}
+
+#section-d-bg {
+    background-color: #ebebeb;
+}
+
+#section-e-bg {
     background-color: #ffffff;
 }
 
 #section-f-bg {
-    display: none;
+    background-color: #ebebeb;
+}
+
+#section-g-bg {
+    background-color: #ffffff;
 }
 
 /* use the expanded main feature only for tablet and larger */
 @media screen and (max-width: 500px) {
-	.page-background {
-		background-size: unset;
-	}
-	
     .main-feature {
         height: 240px;
         padding-top: 90px;
-    }
-
-    .plan-a-visit {
-        padding: 110px 0 150px !important;
-    }
-	
-    .mobile-reverse-flex-direction {
-        flex-direction: column-reverse;
     }
 }

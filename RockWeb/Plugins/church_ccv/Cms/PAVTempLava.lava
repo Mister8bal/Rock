@@ -1,0 +1,139 @@
+<style>
+    .visit-card {
+        box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        border-radius: 5px;
+        background-color: #FFFFFF;
+        margin: 0 auto;
+        min-height: 200px;
+        max-width: 600px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+    }
+
+    .visit-card i {
+        font-size: 32px;
+        line-height: 34px;
+        color: #7A1315;
+    }
+
+    .visit {
+        background-color: #eee;
+        color: #000;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        outline: none;
+        transition: 0.4s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }   
+
+    .active, .visit:hover {
+        background-color: #ccc;
+    }
+
+    .content {
+        padding: 0 18px;
+        background-color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .content-hidden {
+        display: none;
+    }
+</style>
+
+<div class="visit-card">
+    <div class="card-header">
+        <i class="mdi mdi-chevron-left"></i>
+        Date goes here
+        <i class="mdi mdi-chevron-right"></i>
+    </div>
+
+    {% unless Context.Campus.ServiceTimes contains 'Coming Soon' %}
+
+        {% assign hasVisitsToDisplay = false %}
+
+        {% for visit in Visits %}
+            {% assign displayVisit = false %}
+
+            {% if visit.CampusId == Context.Campus.Id %}
+                {% assign hasVisitsToDisplay = true %}
+                {% assign displayVisit = true %}
+            {% endif %}
+
+
+            {% if displayVisit == true %}
+                {% assign visitPerson = visit.PersonAliasId | PersonByAliasId %}
+
+                {% if visit.BringingSpouse %}
+                    {% assign visitPartner = visitPerson | Spouse %}
+                {% endif %}
+
+                {% capture familyName %}{{ visitPerson.NickName }}{% if visit.BringingSpouse %} & {{ visitPartner.NickName }}{% endif %} {{ visit.LastName }}{% endcapture %}
+
+                <div id="divVisit_{{ visit.Id }}" class="visit">
+                    <h4>{{ familyName }}</h4>
+                    <i id="tglIconVisit_{{ visit.Id }}" class="mdi mdi-chevron-down"></i>
+                </div>
+                <div id="divVisitContent_{{ visit.Id }}" class="content content-hidden">
+                    {{ visit.Id }}
+                    {{ visit.CampusName }}
+                    <p>
+                        Scheduled Date: {{ visit.ScheduledDate }}<br />
+                        Scheduled Service Time: {{ visit.ScheduledServiceName }}<br />
+                        <br />
+                        First Name: {{ visitingPerson.NickName }}<br />
+
+                        {% if visit.BringingChildren %}
+                            {% assign children = visitingPerson | Children %}
+                            {% for child in children %}
+                                {{ child.NickName }}<br />
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <script>
+                    $('#divVisit_{{ visit.Id }}').on('click', function() {
+                        $('#divVisitContent_{{ visit.Id }}').toggleClass('content-hidden');
+                        $('#tglIconVisit_{{ visit.Id }}').toggleClass('mdi-chevron-down');
+                        $('#tglIconVisit_{{ visit.Id }}').toggleClass('mdi-chevron-up');
+                        
+                    });        
+                </script>
+            {% endif %}
+            
+        {% endfor %}
+
+        {% if hasVisitsToDisplay == false %}
+            <div class="content">
+                No Visits for the selected date
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="content">
+            Campus Coming Soon!
+        </div>
+    {% endunless %}
+</div>
+
+
+{{ Lava | 'Debug' }}
+
+
+
