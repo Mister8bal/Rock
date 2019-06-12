@@ -44,7 +44,7 @@ namespace RockWeb.Plugins.church_ccv.Security
     [TextField( "Existing Account Caption", "", false, "{0}, you already have an existing account.  Would you like us to email you the username?", "Captions", 2 )]
     [TextField( "Sent Login Caption", "", false, "Your username has been emailed to you.  If you've forgotten your password, the email includes a link to reset your password.", "Captions", 3 )]
     [TextField( "Confirm Caption", "", false, "Because you've selected an existing person, we need to have you confirm the email address you entered belongs to you. We've sent you an email that contains a link for confirming.  Please click the link in your email to continue.", "Captions", 4 )]
-    [TextField( "Success Caption", "", false, "{0}, Your account has been created", "Captions", 5 )]
+    [LavaField( "Success Caption", "<span class='tip tip-lava'></span>", false, "{{ Person.NickName }}, Your account has been created.", "Captions", 5 )]
     [LinkedPage( "Confirmation Page", "Page for user to confirm their account (if blank will use 'ConfirmAccount' page route)", false, "", "Pages", 6 )]
     [LinkedPage( "Login Page", "Page to navigate to when user elects to login (if blank will use 'Login' page route)", false, "", "Pages", 7 )]
     [SystemEmailField( "Forgot Username", "Forgot Username Email Template", false, Rock.SystemGuid.SystemEmail.SECURITY_FORGOT_USERNAME, "Email Templates", 8, "ForgotUsernameTemplate" )]
@@ -595,11 +595,10 @@ namespace RockWeb.Plugins.church_ccv.Security
                     string returnUrl = Request.QueryString["returnurl"];
                     btnContinue.Visible = !string.IsNullOrWhiteSpace( returnUrl );
 
-                    lSuccessCaption.Text = GetAttributeValue( "SuccessCaption" );
-                    if ( lSuccessCaption.Text.Contains( "{0}" ) )
-                    {
-                        lSuccessCaption.Text = string.Format( lSuccessCaption.Text, person.FirstName );
-                    }
+                    var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( this.RockPage, this.CurrentPerson );
+                    mergeFields.Add( "Person", person );
+                    mergeFields.Add( "User", user );
+                    lSuccessCaption.Text = GetAttributeValue( "SuccessCaption" ).ResolveMergeFields( mergeFields ); 
 
                     ShowPanel( 5 );
                 }
