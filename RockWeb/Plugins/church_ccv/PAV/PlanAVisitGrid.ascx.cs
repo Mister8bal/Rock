@@ -517,7 +517,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             // show Delete column if current user has edit access
             if ( IsUserAuthorized( Authorization.EDIT ) )
             {
-                gGrid.Columns[10].Visible = true;
+                gGrid.Columns[gGrid.Columns.Count - 1].Visible = true;
             }
 
             gGrid.GridRebind += gGrid_Rebind;
@@ -536,6 +536,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             var personAliasTable = new PersonAliasService( rockContext ).Queryable().AsNoTracking();
             var personTable = new PersonService( rockContext ).Queryable().AsNoTracking();
             var scheduleTable = new ScheduleService( rockContext ).Queryable().AsNoTracking();
+            var attributeValueTable = new AttributeValueService( rockContext ).Queryable().AsNoTracking();
 
             var pavQuery = 
                 from planAVisit in planAVisitTable
@@ -687,19 +688,20 @@ namespace RockWeb.Plugins.church_ccv.PAV
             // end filters
 
             // bind list to the grid
-            var filteredList = filteredQuery.AsEnumerable().Select( pav => 
+            var filteredList = filteredQuery.AsEnumerable().Select( pav =>
                                     new {
                                         pav.Id,
                                         pav.ScheduledDate,
                                         pav.ScheduledServiceName,
                                         Campus = pav.CampusName,
                                         pav.PersonId,
-                                        Person = GetPersonLink(pav.AdultOnePersonAliasId),
+                                        Person = GetPersonLink( pav.AdultOnePersonAliasId ),
                                         BringingAnotherAdult = pav.BringingAnotherAdult ? "Yes" : "No",
                                         BringingChildren = pav.BringingChildren ? "Yes" : "No",
                                         pav.AttendedDate,
                                         pav.AttendedServiceName,
-                                        AttendedCampus = pav.AttendedCampusName
+                                        AttendedCampus = pav.AttendedCampusName,
+                                        FirstCampusVisit = ConvertStringToDateTime( attributeValueTable.Where( a => a.AttributeId == 717 && a.EntityId == pav.PersonId ).SingleOrDefault().ToStringSafe() )
                                     } ).ToList().AsQueryable();
 
             // sort the results
@@ -806,6 +808,16 @@ namespace RockWeb.Plugins.church_ccv.PAV
             Person person = new PersonAliasService( new RockContext() ).Get( personAliasId ).Person;
 
             return String.Format( "<a href=/person/{0}>{1}</a>", person.Id, person.FullName);
+        }
+
+        /// <summary>
+        /// Try to convert a string into a DateTime. Returns null if unsuccessful
+        /// </summary>
+        /// <param name="dateTimeString"></param>
+        /// <returns></returns>
+        private DateTime? ConvertStringToDateTime( string dateTimeString )
+        {
+            return dateTimeString.AsDateTime();
         }
 
         #endregion

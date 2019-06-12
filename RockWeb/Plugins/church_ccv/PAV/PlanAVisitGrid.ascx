@@ -49,6 +49,7 @@
                             <Rock:RockBoundField DataField="ScheduledServiceName" HeaderText="Scheduled Service" SortExpression="ScheduledServiceName" />
                             <Rock:RockBoundField DataField="BringingAnotherAdult" HeaderText="Bringing Spouse" SortExpression="BringingAnotherAdult" />                    
                             <Rock:RockBoundField DataField="BringingChildren" HeaderText="Bringing Kids" SortExpression="BringingChildren" />
+                            <Rock:RockBoundField DataField="FirstCampusVisit" HeaderText="First Campus Visit" SortExpression="FirstCampusVisit" DataFormatString="{0:MM/d/yyyy}" />
                             <Rock:RockBoundField DataField="AttendedDate" HeaderText="Attended Date" DataFormatString="{0:MM/d/yyyy}" SortExpression="AttendedDate" />
                             <Rock:RockBoundField DataField="AttendedServiceName" HeaderText="Attended Service" SortExpression="AttendedServiceName" />
                             <Rock:RockBoundField DataField="AttendedCampus" HeaderText="Attended Campus" SortExpression="AttendedCampus" />

@@ -242,6 +242,8 @@ namespace church.ccv.CCVRest.PAV
             RockContext rockContext = new RockContext();
 
             Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
+            PersonAliasService personAliasService = new PersonAliasService( rockContext );
+            AttributeValueService avService = new AttributeValueService( rockContext );
 
             PlanAVisit visit = pavService.Get( visitId );
 
@@ -250,12 +252,37 @@ namespace church.ccv.CCVRest.PAV
                 if ( !visit.AttendedDate.HasValue )
                 {
                     // we have a valid visit with no attended date
-                    // try to update attended info for visit
+                    // get adult one as a person
+                    PersonAlias adultOne = personAliasService.Get( visit.AdultOnePersonAliasId );
+
                     try
                     {
+                        // update attended info for visit
                         visit.AttendedDate = attendedDate;
                         visit.AttendedServiceScheduleId = attendedScheduleId;
                         visit.AttendedCampusId = attendedCampusId;
+
+                        // get the first campus visit person attribute for adult one
+                        int firstCampusVisit_AttributeId = 717;
+
+                        AttributeValue avFirstCampusVisit = avService.Queryable().Where( av => av.EntityId == adultOne.PersonId && av.AttributeId == firstCampusVisit_AttributeId ).SingleOrDefault();
+
+                        if ( avFirstCampusVisit == null )
+                        {
+                            // attribute does not yet exist, create before proceeding
+                            avFirstCampusVisit = new AttributeValue
+                            {
+                                EntityId = adultOne.PersonId,
+                                AttributeId = firstCampusVisit_AttributeId
+                            };
+                            avService.Add( avFirstCampusVisit );
+                        }
+
+                        // only update value if current value does not exist so we dont lose previous first visit
+                        if ( avFirstCampusVisit.Value.IsNullOrWhiteSpace() )
+                        {
+                            avFirstCampusVisit.Value = visit.AttendedDate.ToString();
+                        }
 
                         rockContext.SaveChanges();
 
