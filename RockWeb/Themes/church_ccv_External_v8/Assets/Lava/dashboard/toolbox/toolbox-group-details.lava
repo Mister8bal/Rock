@@ -1,5 +1,7 @@
 
 {% assign familyPicture = Group | Attribute: 'FamilyPicture', 'RawValue' %}
+{% assign seatsTaken = ActiveGroupMembers | Size %}
+{% assign seatsRemaining = Group.GroupCapacity | Minus:seatsTaken %}
 {% if familyPicture != empty %}
     <div class="group-picture">
         <img src="/GetImage.ashx?guid={{ familyPicture }}" alt="Family Picture" />
@@ -42,7 +44,16 @@
             {% endif %}
             {% if Group.GroupCapacity != null %}
                 <h5>Group Capacity: </h5> <P>{{ Group.GroupCapacity }}</P>
-            {% endif %}    
+                <h5>Available Spots: </h5>
+                <p>
+                {% if seatsRemaining >= 0 %}
+                    {{ seatsRemaining }}
+                {% else %}
+                    0
+                {% endif %} 
+                </p>
+            {% endif %}  
+
             {% for attribute in Group.AttributeValues %}
                 {% unless attribute.AttributeName == "Meeting Day" or attribute.AttributeName == "Meeting Time" or attribute.ValueFormatted == empty %}
                     {% unless attribute.AttributeName == "Family Picture" %}
