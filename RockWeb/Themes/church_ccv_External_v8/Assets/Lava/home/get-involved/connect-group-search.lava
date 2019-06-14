@@ -5,7 +5,9 @@
     <div class="content">
         <div>               
             {% for group in Groups %}
-                {% assign personIndex = forloop.index %}               
+                {% assign personIndex = forloop.index %} 
+                {% assign seatsTaken = group.Members | Size %}
+                {% assign seatsRemaining = group.GroupCapacity | Minus:seatsTaken %}              
                 <a type="button" data-toggle="collapse" data-target="#personDetails{{ personIndex }}" class="person-details-toggle">
                     <div class="person-row">
                         <div class="profile-picture">
@@ -32,6 +34,16 @@
                                     {% endif %}
                                 {% endif %}
                             {% endfor %} 
+                            {% if group.GroupCapacity != null %}
+                            <p>
+                                Available Spots: 
+                                {% if seatsRemaining >= 0 %}
+                                    {{ seatsRemaining }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </p>
+                            {% endif %}
                         </div>
                 </a> 
                     <div id="personDetails{{ personIndex }}" class="collapse">
