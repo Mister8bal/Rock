@@ -1,0 +1,43 @@
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-camps.jpg");
+}
+
+h4 {
+    font-size: 50px;
+    line-height: 52px;
+}
+
+.left p {
+    width: 60%;
+    font-size: 17px;
+}
+
+.sub-heading {
+    font-weight: 900;
+}
+
+/** Laptop Styling **/
+@media only screen and (max-width: 768px) {
+    .left-and-right-container .left {
+        width: unset;
+        max-width: unset;
+    }
+
+    .left p {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 768px){
+    .left-and-right-container .left {
+        width: unset;
+        max-width: unset;
+    }
+}
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-mobile-camps.jpg");
+    }
+}

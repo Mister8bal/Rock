@@ -1,0 +1,130 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/sports/sport-details.lava' %}
+{% endcomment %}
+
+{% comment %} set feature title {% endcomment %}
+{% assign sport = "" %}
+
+{% assign currentPath = 'Global' | Page:'Path' %}
+
+{% if currentPath contains 'baseball' %}
+    {% assign sport = "Baseball" %}
+{% endif %}
+
+{% if currentPath contains 'basketball' %}
+    {% assign sport = "Basketball" %}
+{% endif %}
+
+{% if currentPath contains 'soccer' %}
+    {% assign sport = "soccer" %}
+{% endif %}
+
+{% if currentPath contains 'football' %}
+    {% assign sport = "Football" %}
+{% endif %}
+
+{% if currentPath contains 'exceptional' %}
+    {% assign sport = "Exceptional STARS" %}
+{% endif %}
+
+<div class="title-left">
+    <h3 id="campusSportTitle">Campus Sport</h3>
+    <p>This is a descriptive summary paragraph for this section with helpful keywords for both search engines and humans.</p>
+</div>
+
+<div class="tabbed-panel-view-cards">
+    <div class="tabbed-panel-view-desktop">
+        <div class="items">
+            <div id="practice-button" class="item" onClick="linkClicked(this, 'practice')">Practice Map & Schedule</div>
+            <div id="game-button" class="item" onClick="linkClicked(this, 'game')">Game Map & Schedule</div>
+            <div id="rules-button" class="item" onClick="linkClicked(this, 'rules')">Rules</div>
+        </div>
+        <div id="register-button" class="item">Register</div>
+    </div>
+
+    <div class="tabbed-panel-view-mobile">
+        <div class="mobile-items">
+            <div id="practice-mobile-button" onClick="linkClicked(this, 'practice')" class="item tab-selected">Practice Map & Schedule</div>
+            <div id="game-mobile-button" onClick="linkClicked(this, 'game')" class="item">Game Map & Schedule</div>
+            <div id="rules-mobile-button" onClick="linkClicked(this, 'rules')" class="item">Rules</div>
+        </div>
+    </div>
+
+    {% assign item = Items | First %}
+
+        {% comment %} {% capture pageTitle %}{{ item.Title }} | CCV{% endcapture %}
+        {{ pageTitle | SetPageTitle }} {% endcomment %}
+
+        {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
+        {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
+        {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
+        {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
+        {% assign seasonCalendar = item | Attribute: 'SeasonCalendar', 'Url' %}
+        {% assign rules = item | Attribute: 'Rules', 'Url' %}
+        {% assign campus = item | Attribute: 'Campus' %}
+
+        {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
+
+        
+</div>
+
+<script>
+    var gCurrentLink;
+    var gCurrentPanel;
+
+    $(document).ready(function() {
+        // set feature and sport title
+        $('#featureTitle').text('{{ campus }} {{ sport }}')
+        $('#campusSportTitle').text('{{ item.Title }}');
+
+        // default to the first panel
+        gCurrentLink = $("#practice-button")[0];
+        gCurrentPanel = $("#practice-panel")[0];
+        //togglePanel( gCurrentLink, gCurrentPanel, true );
+
+        $('.mobile-items').slick({
+            infinite: false,
+            slidesToShow: 2,
+            swipeToSlide: true,    
+            arrows: true,
+            variableWidth: true,
+            prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
+            nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
+        });
+    });
+    
+    $('.nav-prev').click(function(){
+        $('.mobile-items').slick('slickPrev');
+    });
+
+    $('.nav-next').click(function(){
+        $('.mobile-items').slick('slickNext');
+    });
+
+    function togglePanel(panelLink, panelObj, enabled) {
+        if( enabled ) {
+            panelLink.classList.add('tab-selected');
+            panelObj.style.display="block";
+        }
+        else {
+            panelLink.classList.remove('tab-selected');
+            panelObj.style.display="none";
+        }
+    }
+            
+    function linkClicked(linkElement, sectionName, showInfoBanner = true) {
+        // remove styling from default mobile panel - Jered better way?
+        $('#practice-mobile-button').removeClass('tab-selected');
+
+        // turn off existing panel
+        togglePanel( gCurrentLink, gCurrentPanel, false );
+        
+        var targetPanel = $("#" + sectionName + "-panel")[0];
+        gCurrentPanel = targetPanel;
+        gCurrentLink = linkElement;
+        
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    }
+</script>
+
+   

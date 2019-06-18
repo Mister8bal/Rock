@@ -1,0 +1,264 @@
+
+#section-feature-bg {
+    height: 946px;
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/hero-home.jpg");
+}
+
+#zone-sectionb {
+    padding: 0;
+    text-align: center;
+}
+
+/* Top section */
+.page-header {
+    font-family: "akrobat";
+    font-weight: 700;
+}
+
+.margin-v-lg {
+    font-family: "akrobat";
+    font-weight: 700;
+}
+
+.top-and-bottom-container {
+    position: relative;
+    z-index: 1000;
+    margin-top: -500px;
+}
+
+.top {
+    width: 100%;
+}
+
+.homepage-image {
+    border-radius: 6px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.image-top {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-top.jpg");
+    height: 600px;
+    border-radius: 6px;
+}
+
+.image-middle-left {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-left.jpg");
+    width: 100%;
+    height: 370px;
+    border-radius: 6px;
+}
+
+.image-middle-right {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-right.jpg");
+    width: 100%;
+    height: 370px;
+    border-radius: 6px;
+}
+
+.image-bottom {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-bottom.jpg");
+    height: 600px;
+    border-radius: 6px;
+}
+
+.middle {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.middle-left, .middle-right {
+    width: 100%;
+}
+
+.middle-left {
+    padding-right: 1%;
+}
+
+.bottom {
+    width: 100%;
+}
+
+.content-container {
+	height: inherit;
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.btn-info {
+    color: #ffffff;
+    background-color: #5b5b5c;
+    border-color: #5b5b5c;
+    font-family: akrobat;
+    font-weight: 700;
+    text-transform: uppercase;
+ }
+
+.homepage-button {
+    border-radius: 6px;
+	font-size: 22px;
+	line-height: 24px;
+	width: 240px;
+	height: 55px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	margin: 0;	
+}
+
+.btn-info:hover {
+    background-color: #FFFFFF;
+    border: solid 1px #EA3E29;
+    text-decoration: none;
+    color: #EA3E29;
+}
+
+.btn-info:active {
+    color: #EA3E29;
+    background-color: #FFFFFF;
+    border: solid 1px #FFFFFF;
+    text-decoration: none;
+}
+
+.locations-title h2 {
+    color: #E73D30;
+    font-size: 50px;
+    line-height: 40px;
+    letter-spacing: -1px;
+}
+
+.locations-title p {
+    font-size: 21px;
+    color: #4f4f4f;
+}
+
+/* Theme Overrides */
+.main-feature {
+    overflow: unset;
+}
+/* Theme Overrides */
+
+
+/** Laptop Styling **/
+@media screen and (max-width: 1024px) {
+    .image-top {
+        height: 400px;
+    }
+
+    .image-middle-left {
+        background-position: bottom;
+    }
+
+    .image-middle-right {
+        background-position: left;
+    }
+
+    .image-bottom {
+        height: 260px;
+    }
+    
+    .middle-left, .middle-right {
+        width: 100%;
+    }
+
+    .middle {
+        padding-top: 1%;
+    }
+}
+
+/** End Laptop Styling **/
+
+
+
+/** Tablet Styling **/
+@media screen and (max-width: 768px) {   
+    #zone-feature {
+        margin: 0;
+    }
+     
+    .service-times-title {
+        margin-top: unset;
+    }
+    
+    .image-middle-right {
+        background-position: unset;
+    }
+
+    h2 {
+        font-size: 34px;
+        line-height: 36px;
+    }
+
+    .middle {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-top: 15px;
+    }
+
+    .middle-left {
+        padding-right: 0;
+    }
+ 
+    .middle-right {
+        padding-top: 15px;
+    }
+
+    .homepage-button {
+        font-size: 16.5px;
+        line-height: 18.5px;
+    }
+}
+
+/** End Tablet Styling **/
+
+
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    #section-feature-bg {
+        height: unset;
+    }
+
+    #section-feature-bg {
+        height: 700px;
+        z-index: 999;
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/hero-mobile-home.jpg");
+    }
+
+    .image-top {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-top.jpg");
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 300px;
+        background-position: center;
+    }
+
+    .image-middle-left {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-left.jpg");
+        height: 260px;
+    }
+
+    .image-middle-right {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-right.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 260px;
+    }
+
+    .image-top {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-bottom.jpg");
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 300px;
+        background-position: center;
+    }
+} 
+
+/** End Mobile Styling **/

@@ -688,6 +688,12 @@ $(document).ready(function() {
                     var contentChannel = new ContentChannelService( rockContext ).Get( channelGuid.Value );
                     if ( contentChannel != null )
                     {
+                        // Future Person: If you having performance issues with block loading
+                        // it might be here. Everytime the page loads, all contentchanneltype 
+                        // and contentchannelitem properties and attributes are being loaded before
+                        // filtering. As of this writing it was 233 properties, as we add content channels
+                        // (like podcasts) this number will continue to grow
+                        // Hope this saves someone some time
                         var entityFields = HackEntityFields( contentChannel, rockContext );
 
                         items = new List<ContentChannelItem>();

@@ -1,0 +1,11 @@
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-football.jpg");
+}
+
+#section-e-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/background-football.jpg");
+}
+
+#section-b-bg, #section-d-bg {
+    background-color: #ededed;
+}

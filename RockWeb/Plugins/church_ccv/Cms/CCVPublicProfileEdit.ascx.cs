@@ -306,7 +306,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
             if ( person.PhotoId.HasValue )
             {
                 lGroupMemberImage.Text = string.Format( "<a href='{0}'>{1}</a>", person.PhotoUrl, imgTag );
-                
+
             }
             else
             {
@@ -893,7 +893,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
                 // Get next family members details
                 var leaderBaptismPhoto = CurrentPerson.GetAttributeValues( "BaptismPhoto" );
-                var isLeaderBaptizedHere = CurrentPerson.AttributeValues[ "BaptizedHere" ];
+                var isLeaderBaptizedHere = CurrentPerson.AttributeValues["BaptizedHere"];
 
                 // Assign baptism photo
                 if ( leaderBaptismPhoto != null && leaderBaptismPhoto.Count > 0 )

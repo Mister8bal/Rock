@@ -18,79 +18,79 @@
                 <Rock:NotificationBox ID="nbNotAuthorized" runat="server" Text="You must be logged in to view your account." NotificationBoxType="Danger" Visible="false" />
                 <asp:Panel ID="pnlView" runat="server">
                     <div>
-                        <div class="person-row">
-                            <div class="person-photo">
-                                <asp:Literal ID="lImage" runat="server" />
-                                <div class="nextstep-modal-baptism-buttons-person-profile">
+                        <div class="person-head-row">
+                            <div class="person-row">
+                                <div class="person-photo">
+                                    <asp:Literal ID="lImage" runat="server" />
+                                    <div class="nextstep-modal-baptism-buttons-person-profile">
+                                        <div>
+                                            <asp:Literal ID="lLeaderBaptismPhoto" runat="server" />
+                                        </div>
+                                        <div>
+                                            <asp:Literal ID="lLeaderCertificate" runat="server" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="person-profile-info no-flex-zone">
+                                    <h1 class="person-head-name">
+                                        <asp:Literal ID="lName" runat="server" />
+                                        <div>
+                                            <Rock:RockDropDownList ID="ddlGroup" runat="server" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="ddlGroup_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
+                                        </div>
+                                    </h1>
+                                    <div class="person-info-details">
+                                        <div class="details">
+                                            <ul class="person-demographics list-unstyled">
+                                                <li>
+                                                    <asp:Literal ID="lAge" runat="server" /></li>
+                                                <li>
+                                                    <asp:Literal ID="lGender" runat="server" /></li>
+                                                <li>
+                                                    <asp:Literal ID="lMaritalStatus" runat="server" /></li>
+                                                <li>
+                                                    <asp:Literal ID="lGrade" runat="server" /></li>
+                                            </ul>
+                                            <div class="person-head-address"><asp:Literal ID="lAddress" runat="server" /></div>
+                                        </div>
+                                        <div class="person-contact-info">
+                                            <ul class="phone-list list-unstyled">
+                                                <div class="phone-numbers">
+                                                    <asp:Repeater ID="rptPhones" runat="server">
+                                                        <ItemTemplate>
+                                                            <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
+                                                        </ItemTemplate>
+                                                    </asp:Repeater>
+                                                </div>
+                                                <div class="person-head-email"><asp:Literal ID="lEmail" runat="server" /></div>
+                                            </ul>
+                                        </div>
+                                    </div>                             
                                     <div>
-                                        <asp:Literal ID="lLeaderBaptismPhoto" runat="server" />
+                                        <asp:Repeater ID="rptPersonAttributes" runat="server">
+                                            <ItemTemplate>
+                                                <div>
+                                                    <b><%# Eval("Name") %></b></br><small><%# Eval("Value") %></small>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:Repeater>
                                     </div>
                                     <div>
-                                        <asp:Literal ID="lLeaderCertificate" runat="server" />
+                                        <div>
+                                            <asp:Literal ID="lFamilyHeader" runat="server" Text="<h4>Family Information</h4>" Visible="false" />
+                                        </div>
+                                        <asp:Repeater ID="rptGroupAttributes" runat="server">
+                                            <ItemTemplate>
+                                                <div>
+                                                    <b><%# Eval("Name") %></b></br><small><%# Eval("Value") %></small>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:Repeater>
                                     </div>
                                 </div>
                             </div>
-                            <div class="person-profile-info no-flex-zone">
-                                <h1 class="title name">
-                                    <asp:Literal ID="lName" runat="server" />
-                                    <div>
-                                        <Rock:RockDropDownList ID="ddlGroup" runat="server" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="ddlGroup_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
-                                    </div>
-                                </h1>
-                                <div class="person-info-details">
-                                    <div>
-                                        <ul class="person-demographics list-unstyled">
-                                            <li>
-                                                <asp:Literal ID="lAge" runat="server" /></li>
-                                            <li>
-                                                <asp:Literal ID="lGender" runat="server" /></li>
-                                            <li>
-                                                <asp:Literal ID="lMaritalStatus" runat="server" /></li>
-                                            <li>
-                                                <asp:Literal ID="lGrade" runat="server" /></li>
-                                        </ul>
-                                        <asp:Literal ID="lAddress" runat="server" />
-                                        <br />
-                                    </div>
-                                    <div class="person-contact-info">
-                                        <ul class="phone-list list-unstyled">
-                                            <asp:Repeater ID="rptPhones" runat="server">
-                                                <ItemTemplate>
-                                                    <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
-                                                </ItemTemplate>
-                                            </asp:Repeater>
-                                            <asp:Literal ID="lEmail" runat="server" />
-                                        </ul>
-                                        
-                                    </div>
-                                </div>                            
-                                
-                           <div>
-                                <asp:Repeater ID="rptPersonAttributes" runat="server">
-                                    <ItemTemplate>
-                                        <div>
-                                            <b><%# Eval("Name") %></b></br><small><%# Eval("Value") %></small>
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:Repeater>
-                            </div>
-                            <div>
-                                <div>
-                                    <asp:Literal ID="lFamilyHeader" runat="server" Text="<h4>Family Information</h4>" Visible="false" />
-                                </div>
-                                <asp:Repeater ID="rptGroupAttributes" runat="server">
-                                    <ItemTemplate>
-                                        <div>
-                                            <b><%# Eval("Name") %></b></br><small><%# Eval("Value") %></small>
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:Repeater>
-                            </div>
-                            <br />
-                        </div>
+                      <div class="person-head-button"><asp:LinkButton ID="lbEditPerson" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" OnClick="lbEditPerson_Click" CausesValidation="false"> Update</asp:LinkButton></div>
+                   </div>
 
-                        </div>
-                        <asp:LinkButton ID="lbEditPerson" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" OnClick="lbEditPerson_Click" CausesValidation="false"> Update</asp:LinkButton>
                     </div>
                     <hr />
 
@@ -114,8 +114,8 @@
                                     </div>
                                     <div class="person-profile-info">
                                         <div class="person-info-details">
-                                            <div>
-                                                <div class="boldThis">
+                                            <div class="details">
+                                                <div class="person-family-name">
                                                   <asp:Literal ID="lGroupMemberName" runat="server" /></b>
                                                 </div>
                                                 <ul class="person-demographics list-unstyled">
@@ -131,12 +131,14 @@
                                             </div>
                                             <div class="person-contact-info">
                                                 <ul class="phone-list list-unstyled">
-                                                    <asp:Repeater ID="rptGroupMemberPhones" runat="server">
-                                                        <ItemTemplate>
-                                                            <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
-                                                        </ItemTemplate>
-                                                    </asp:Repeater>
-                                                    <asp:Literal ID="lGroupMemberEmail" runat="server" />
+                                                    <div class="phone-numbers">
+                                                        <asp:Repeater ID="rptGroupMemberPhones" runat="server">
+                                                            <ItemTemplate>
+                                                                <li><%# (bool)Eval("IsUnlisted") ? "Unlisted" : FormatPhoneNumber( Eval("CountryCode"), Eval("Number") ) %> <small><%# Eval("NumberTypeValue.Value") %></small></li>
+                                                            </ItemTemplate>
+                                                        </asp:Repeater>
+                                                    </div>
+                                                    <div><asp:Literal ID="lGroupMemberEmail" runat="server" /></div>
                                                 </ul>
                                             </div>
                                          </div>
@@ -144,7 +146,6 @@
                                 </div>
                                
                                 <div>
-                               
                                     <div>
                                         <asp:Repeater ID="rptGroupMemberAttributes" runat="server">
                                             <ItemTemplate>
@@ -155,13 +156,13 @@
                                         </asp:Repeater>
                                     </div>  
                                 </div>
-                                <div class="div-spacing">
+                                <div class="person-edit-buttons">
                                     <asp:LinkButton ID="lbEditGroupMember" runat="server" CssClass="btn btn-primary btn-xs btn-spacing" CommandArgument='<%# Eval("PersonId") %>' CommandName="Update"> Update</asp:LinkButton>
                                 </div>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
-                   <div>
+                   <div class="person-add-buttons">
                        <asp:LinkButton ID="lbAddGroupMember" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbAddGroupMember_Click"> Add New Family Member</asp:LinkButton>
                        <asp:LinkButton ID="lbRequestChanges" runat="server" CssClass="btn btn-primary btn-xs" OnClick="lbRequestChanges_Click"> Request Additional Changes</asp:LinkButton>
                    </div> 

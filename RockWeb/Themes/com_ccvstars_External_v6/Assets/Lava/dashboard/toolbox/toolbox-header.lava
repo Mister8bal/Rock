@@ -1,0 +1,129 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-header.lava' %}
+{% endcomment %}
+
+{% assign playerViewingPermissions = true %}
+{% assign CoachViewingPermissions = false %}
+
+{% comment %} Check for GroupId page parameter, if missing redirect back to dashboard {% endcomment %}
+{% unless PageParameter.GroupId %}
+    {% if CurrentPersonCanEdit %}
+        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because there is no group id query parameter.</p>
+    {% else %}
+        {{ '/dashboard' | PageRedirect }}
+    {% endif %}
+{% endunless %}
+
+{% comment %}Force conversion from string to int {% endcomment %}
+{% assign groupId = PageParameter.GroupId | Plus: 0 %}
+
+{% group where:'Id == {{ groupId }} ' %}
+    {% for groupItem in groupItems %}
+            {% assign group = groupItem %}
+    {% endfor %}
+{% endgroup %}
+
+{% comment %} 
+{% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" %}
+    {% assign CoachViewingPermissions = true %}
+{% assign allowedToViewPlayer = true %} 
+{% endif %} {% endcomment %}
+
+<script>
+
+    // var playerViewingPermissions = '{{ allowedToViewPlayer }}';
+    // var CoachViewingPermissions = '{{ allowedToViewCoach }}';
+
+    // if (CoachViewingPermissions == 'true' || playerViewingPermissions == 'true' ) {
+
+        // adds on "onload" hook to the window.onload function chain
+        var oldonload = window.onload;
+        window.onload = (typeof window.onload != 'function') ?
+            handleOnLoad : function() { 
+                oldonload(); handleOnLoad(); 
+            };
+
+        var gCurrentLink;
+        var gCurrentPanel;
+
+        function handleOnLoad() {
+            // default to the first panel
+            gCurrentLink = $("#dashboard-button")[0];
+            gCurrentPanel = $("#dashboard-panel")[0];
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
+
+        function togglePanel(panelLink, panelObj, enabled) {
+            if( enabled ) {
+                panelLink.classList.add('tab-selected');
+                panelObj.style.display="block";
+            }
+            else {
+                panelLink.classList.remove('tab-selected');
+                panelObj.style.display="none";
+            }
+        }
+            
+        function linkClicked(linkElement, sectionName, showInfoBanner = true) {
+            // remove styling from default mobile panel - Jered better way?
+            $('#dashboard-mobile-button').removeClass('tab-selected');
+
+            // turn off existing panel
+            togglePanel( gCurrentLink, gCurrentPanel, false );
+            
+            var targetPanel = $("#" + sectionName + "-panel")[0];
+            gCurrentPanel = targetPanel;
+            gCurrentLink = linkElement;
+            
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
+
+        function tryToggleInfoBanner( sectionName ) {
+        }
+    // }
+</script>
+
+    <div class="header">
+        <h4>Team Info</h4>
+    </div>
+
+    <div class="tabbed-panel-view-desktop">
+        <div id="dashboard-button" class="item" onClick="linkClicked(this, 'dashboard')">Toolbox</div>
+        <div id="contact-team-button" class="item" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
+        <div id="practice-schedule-button" class="item" onClick="linkClicked(this, 'practice-schedule')">Practice Schedule</div>
+        <div id="game-schedule-button" class="item" onClick="linkClicked(this, 'game-schedule')">Game Schedule</div>
+        <div id="rules-button" class="item" onClick="linkClicked(this, 'rules', false)">Rules</div>
+    </div>
+
+    <div class="tabbed-panel-view-mobile">
+        <div class="mobile-items">
+            <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="item tab-selected">Dashboard</div>
+            <div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team')" class="item">Contact Team</div>
+            <div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule')" class="item">Practice Schedule</div>
+            <div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule')" class="item">Game Schedule</div>
+            <div id="rules-mobile-button" onClick="linkClicked(this, 'rules', false)" class="item">Rules</div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function() {
+        $('.mobile-items').slick({
+            infinite: false,
+            slidesToShow: 2,
+            swipeToSlide: true,    
+            arrows: true,
+            variableWidth: true,
+            prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
+            nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
+        });
+    });
+    
+    $('.nav-prev').click(function(){
+        $('.mobile-items').slick('slickPrev');
+    });
+
+    $('.nav-next').click(function(){
+        $('.mobile-items').slick('slickNext');
+    });
+</script>
+   

@@ -1,0 +1,33 @@
+﻿/* Zones & Sections */
+#section-a-bg {
+    background-color: #efefef;
+}
+
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-register.jpg");
+}
+
+/* End Zones & Sections */
+
+h3 {
+    text-align: left;
+}
+
+legend {
+    color: #EA3E29;
+}
+
+hr {
+   border: 1px solid lightgray;
+   margin-top: 0;
+   margin-bottom: 60px;
+}
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-mobile-register.jpg");
+    } 
+}
+
+/** End Mobile Styling **/

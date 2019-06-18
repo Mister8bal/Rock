@@ -1,0 +1,39 @@
+{% comment %}
+    {% include '~~/Assets/Lava/footer.lava' %}
+{% endcomment %}
+
+<div class="footer">
+    <a href="/" class="stars-logo"><img src="~~/Assets/Images/stars-logo-white.png"></a>
+    
+    <div class="footer-links">
+        <div class="footer-links-section">
+            <h5>Youth Sports</h5>
+            <a href="/soccer">Recreational Soccer (United)</a>
+            <a href="/soccer">Club Soccer (Integra)</a>
+            <a href="/ccv-resources">Football</a>
+            <a href="/basketball">Basketball</a>
+            <a href="/soccer">Exceptional STARS (Special Needs)</a>
+        </div>
+        <div class="footer-links-section">
+            <h5>Adult Sports</h5>
+            <a href="/soccer">Soccer</a>
+            <a href="/basketball">Basketball</a>
+            <a href="/softball">Softball</a>
+        </div>
+        <div class="footer-links-section">
+            <h5>Information & Resources</h5>
+            <a href="/reach-out/contact-us">Pricing Information (Youth & Adult)</a>
+            <a href="/reach-out/career-opportunities">General Information</a>
+            <a href="/reach-out/leadership-institute">Coaches Guides & instructions</a>
+            <a href="/volunteer">Volunteering</a>
+        </div>
+    </div>
+    
+    <div class="footer-logo">
+        <div class="footer-social">   
+            <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/twitter.png"></a>
+            <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/facebook.png"></a>
+        </div>
+        <div class="footer-copyright"><i class="fa fa-copyright"></i>2019 Christ's Church of the Valley</div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/dashboard-header.lava' %}
+{% endcomment %}
+
+{% assign allowedToViewPlayer = true %}
+{% assign allowedToViewCoach = false %}
+
+<!-- Get all Youth Sports teams tied to Current Person -->
+{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
+{% for group in currentPersonGroups %}
+    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" %}
+        {% assign allowedToViewCoach = true %}
+        {% comment %} {% assign allowedToViewPlayer = true %} {% endcomment %}
+    {% endif %}
+{% endfor %}
+
+<script>
+    var allowedToViewPlayer = '{{ allowedToViewPlayer }}';
+    var allowedToViewCoach = '{{ allowedToViewCoach }}';
+
+    if (allowedToViewPlayer == 'true' || allowedToViewCoach == 'true' ) {
+        // adds on "onload" hook to the window.onload function chain
+        var oldonload = window.onload;
+        window.onload = (typeof window.onload != 'function') ?
+            handleOnLoad : function() { 
+                oldonload(); handleOnLoad(); 
+            };
+
+        var gCurrentLink;
+        var gCurrentPanel;
+
+        function handleOnLoad() {
+            // default to the dashboard panel if they are allowed to view it. Else default to the Coach panel
+            if (allowedToViewPlayer == 'true') {
+                gCurrentLink = $("#player-button")[0];
+                gCurrentPanel = $("#player-panel")[0];
+            }
+            else if (allowedToViewCoach == 'true') {
+                gCurrentLink = $("#coach-button")[0];
+                gCurrentPanel = $("#coach-panel")[0];
+            }
+            else {
+                
+            }
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
+
+        function togglePanel(panelLink, panelObj, enabled) {
+            if( enabled ) {
+                panelLink.classList.add('tab-selected');
+                panelObj.style.display="block";
+            }
+            else {
+                panelLink.classList.remove('tab-selected');
+                panelObj.style.display="none";
+            }
+        }
+            
+        function linkClicked(linkElement, sectionName, showInfoBanner = true) {
+            // remove styling from default mobile panel - Jered better way?
+            $('#player-mobile-button').removeClass('tab-selected');
+
+            // turn off existing panel
+            togglePanel( gCurrentLink, gCurrentPanel, false );
+            
+            var targetPanel = $("#" + sectionName + "-panel")[0];
+            gCurrentPanel = targetPanel;
+            gCurrentLink = linkElement;
+            
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
+
+        function tryToggleInfoBanner( sectionName ) {
+        }
+    }    
+</script>
+
+<div class="header">
+    <h4>MY SPORTS</h4>
+</div>
+
+<div class="tabbed-panel-view-desktop">
+    <div id="player-button" class="item" onClick="linkClicked(this, 'player')">Player</div>
+    <div id="coach-button" class="item" onClick="linkClicked(this, 'coach')">Coach</div>
+</div>
+
+<div class="tabbed-panel-view-mobile">
+    <div class="mobile-items"> 
+        <div id="player-mobile-button" onClick="linkClicked(this, 'player')" class="item tab-selected">Player</div>
+        <div id="coach-mobile-button" onClick="linkClicked(this, 'coach')" class="item">Coach</div>  
+    </div>
+</div>
+    
+<script>
+    $(document).ready(function() {
+        $('.mobile-items').slick({
+            infinite: false,
+            slidesToShow: 2,
+            swipeToSlide: true,    
+            arrows: true,
+            variableWidth: true,
+            prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
+            nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
+        });
+    });
+
+    if (allowedToViewPlayer == 'false') {
+        $("#player-panel").hide();
+        $("#player-button").hide();
+    }
+    else if (allowedToViewCoach == 'false') {
+        $("#coach-panel").hide();
+        $("#coach-button").hide();
+    }
+    else {
+        
+    }
+    
+    $('.nav-prev').click(function(){
+        $('.mobile-items').slick('slickPrev');
+    });
+
+    $('.nav-next').click(function(){
+        $('.mobile-items').slick('slickNext');
+    });
+</script>

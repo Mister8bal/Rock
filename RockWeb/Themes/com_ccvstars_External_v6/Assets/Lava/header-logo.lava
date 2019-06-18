@@ -1,5 +1,0 @@
-{% comment %}
-{% include '~~/Assets/Lava/header-logo.lava' %}
-{% endcomment %}
-
-<a href="/stars" class="logo"><span class="sr-only">CCV Stars</span></a>

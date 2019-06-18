@@ -1,0 +1,107 @@
+
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/volunteer/hero-volunteer.jpg");
+}
+
+h2 {
+    color: #000;
+    font-size: 44px;
+    line-height: 42px;
+}
+
+h3 {
+    color: #000;
+    font-family: akrobat;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 36px;
+}
+
+p {
+    font-size: 20px;
+}
+
+#zone-main, #zone-feature {
+    padding: 1% 10%;
+}
+
+#zone-main {
+    padding-bottom: 50px;
+}
+
+hr {
+    margin-top: 50px;
+    border-top: 2px solid #dcdcdc;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,0.125);
+    border-radius: 0.25rem;
+    margin-bottom:0px;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header a {
+    color: #E73D30;
+}
+
+.card-header:first-child {
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+}
+
+.faq-list .card {
+    border-radius: 0;
+    border: none;
+    text-align: left;
+}
+
+.faq-list .card a:focus, .faq-list .card a:visited, .faq-list .card a:hover, .faq-list .card a:active, .card-header a  {
+    text-decoration: none;
+}
+
+.faq-list .card .card-header i {
+    color: #8c8c8c;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.faq-list .card .card-header a {
+    font-weight: bold;
+    max-width: 80%;
+}
+
+.faq-list .card .card-header .fa-border {
+    border-radius: 1.1em;
+    border: 2px solid #8c8c8c;
+    padding: 0.2em 0.25em 0.1em;
+}
+
+.faq-list .card .card-body {
+    padding: 0.75rem 1.25rem;
+}
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/volunteer/hero-mobile-volunteer.jpg");
+    }
+
+    #zone-main {
+        margin-right: auto;
+        margin-left: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    #zone-feature {
+        padding: 1% 0%;
+    }
+}

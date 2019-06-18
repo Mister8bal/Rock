@@ -1,0 +1,5 @@
+{% comment %}
+{% include '~~/Assets/Lava/header-logo.lava' %}
+{% endcomment %}
+
+<a href="/stars-v2" class="stars-logo"><img src="~~/Assets/Images/stars-logo-white.png"></a>

@@ -3,25 +3,52 @@
 {% endcomment %}
 
 <div class="navigation-mobile-title">
-    <div class="navigation-mobile-title-search-wrapper">
-        Menu
-    </div>
-    <button class="mdi mdi-close navigation-mobile-close" type="button" onClick="toggleNavbar(false);">X</button>
+    <h5>Menu</h5>
+    <div class="mdi mdi-close" onClick="toggleNavbar(false);"></div>
 </div>
 
 <ul class="navigation-mobile-items">
+    {% if CurrentPerson %}
+        <li>
+            <div class="dropdown">
+                <button class="dropdown-toggle navigation-mobile-item" type="button" data-toggle="dropdown">Dashboard<b class="fa fa-caret-down"></b></button>
+                <ul class="dropdown-menu">
+                    <li><a class="navigation-mobile-item" href="/stars-dashboard">Dashboard</a></li>
+                    <li><a class="navigation-mobile-item" href="/stars-dashboard/profile">Profile</a></li>
+                </ul>
+            <div>
+        </li>
+    {% endif %}
+
     {% if Page.DisplayChildPages == 'true' and Page.Pages != empty %}
         {% for childPage in Page.Pages %}
+            {% if childPage.Pages != empty %}
+                <li>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle navigation-mobile-item" type="button" data-toggle="dropdown">{{ childPage.Title }}<b class="fa fa-caret-down"></b></button>
+                        <ul class="dropdown-menu">
+                            {% assign childPageTitle = childPage.Title | Downcase %}
+                            {% unless childPageTitle == 'sports' %}
+                                <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
+                            {% endunless %}
+                            {% for grandchildPage in childPage.Pages %}
+                                <li><a class="navigation-mobile-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% else %}
                 <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
+            {% endif %}
         {% endfor %}
+
     {% endif %}
 
     {% if CurrentPerson %}
-        <li><a class="navigation-mobile-item" href="/stars-account">My Account</a></li>
         <li><a class="navigation-mobile-item" onclick="logout();">Logout</a></li>
     {% else %}
-        <li><a class="navigation-mobile-item" href="/page/892">Register</a></li>
-        <li><a class="navigation-mobile-item" href="/page/608">Login</a></li>
+        <li><a class="navigation-mobile-item" href="/register">Create Account</a></li>
+        <li><a class="navigation-mobile-item" href="/login">Login</a></li>
     {% endif %}
 </ul>
 

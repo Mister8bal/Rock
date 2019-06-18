@@ -1,0 +1,248 @@
+/* Zones & Sections */
+#zone-sectiona {
+    padding: 0;
+}
+
+/* End Zones & Sections */
+
+/* Overrides */
+h3 {
+    color: black;
+    margin: 0% 15%;
+    text-align: left;
+    padding: 0;
+    font-size: 30px;
+    line-height: 32px;
+}
+
+/* End Overrides */
+
+/* Person Info */
+.profile {
+    display: flex;
+    position: relative;
+    z-index: 1;
+}
+
+.person-photo img{
+    width: 200px;
+    height: 200px;
+}
+
+.person-info-details {
+    display: flex;
+}
+
+.person-row {
+    display: flex;
+    margin: 0 15%;
+}
+
+.person-profile-info {
+    margin-left: 5%;
+    width: 100%;
+    display: flex;
+}
+
+.person-head-name {
+    font-size: 30px;
+    color: #EA3E29;
+}
+
+.no-flex-zone {
+    display: block;
+}
+
+.person-contact-info {
+    padding-left: 30%;
+}
+
+.person-head-row {
+    background-color: #f2f2f2;
+    padding: 3% 0;
+}
+
+.person-edit-buttons {
+    padding-bottom: 5%;
+    margin: 0 15%;
+}
+
+.person-head-button {
+    margin: 0 400px;
+}
+
+.person-add-buttons {
+    margin: 0 15%;
+}
+
+.profile-card {
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    margin: 0 10%;
+    width: 100%;
+}
+
+.person-contact-info {
+    padding-left: unset;
+}
+
+.person-info-details {
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.person-profile-info {
+    width: 50%;
+}
+
+.person-head-row .btn {
+    float: left;
+}
+
+.btn {
+    float: right;
+}
+
+.person-head-row .person-demographics {
+    height: 100px;
+}
+
+.phone-numbers {
+    padding-bottom: 15px;
+}
+
+.person-head-address {
+    padding-bottom: 15px;
+}
+
+.person-family-name {
+    font-weight: bold;
+}
+
+/* End Person Info */
+
+
+/** Tablet Styling **/
+@media screen and (max-width: 768px) {
+    /* Person Info */
+    .profile {
+        flex-direction: column;
+    }
+
+    .profile-card {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .profile-card .col-md-1 .photo {
+        width: 15%;
+    }
+
+    .profile-card {
+        margin: 0;
+    }
+
+    .person-row {
+        display: flex;
+        margin: 0;
+    }
+
+    .person-edit-buttons {
+        padding-bottom: 15%;
+    }
+
+    .person-head-button {
+        margin: 0;
+    }
+    
+    .person-edit-buttons {
+        margin: 0;
+    }
+
+    .person-add-buttons {
+        margin: 0;
+    }
+
+    .btn {
+        width: unset;
+    }
+
+    /* End Person Info */
+
+    /* Overrides */
+
+    /* End Overrides */
+}
+
+/** End Tablet Styling **/
+
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    /* Person Info */
+    .profile-card {
+        padding: 0;
+    }
+
+    .person-row {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .person-profile-info {
+        width: 100%;
+    }
+
+    .person-info-details {
+        display: block;
+    }
+
+    .person-contact-info {
+        padding-left: 0;
+        padding-top: 5%;
+    }
+
+    .person-photo img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .person-photo {
+        padding-bottom: 5%;
+    }
+
+    .profile-card, .account-actions, .recent-registrations {
+        margin: 0 auto;
+        min-width: unset;
+    }
+
+    .profile-card, .account-actions {
+        margin-bottom: 15px;
+    }
+
+    .profile-card .col-md-1 .photo {
+        width: 100%;
+    }
+
+    .form-control.input-width-sm {
+        width: 60px;
+        padding: 0
+    }
+
+    .form-group.rock-radio-button-list {
+        margin-left: 0;
+    }
+
+    /* End Person Info */
+
+    /* Overrides */    
+    h3 {
+        margin: 0;
+    }
+    
+    /* End Overrides */
+}
+
+/** End Mobile Styling **/

@@ -1,0 +1,37 @@
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero-login.jpg");
+}
+
+.facebook, .facebook:hover, .facebook:focus, .facebook:active {
+    color: #FFFFFF;
+    background-color: #3B5998;
+    border-color: #3B5998;
+}
+
+.background-card {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Overrides */
+.control-label {
+    color: #E73D30;
+    text-transform: none;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.control-wrapper {
+    border: 1px solid lightgray;
+}
+
+/* End Overrides */
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {    
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero-mobile-login.jpg");
+    }
+
+}
+
+/** End Mobile Styling **/

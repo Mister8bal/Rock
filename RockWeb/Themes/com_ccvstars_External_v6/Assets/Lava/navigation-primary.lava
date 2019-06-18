@@ -18,42 +18,39 @@
             {% assign activeClass = '' %}
             {% assign childPageTitle = childPage.Title | Downcase %}
             {% case navSection %}
-                {% when 'about-us' %}
-                    {% if childPageTitle == 'about us' %}
+                {% when 'about-stars' %}
+                    {% if childPageTitle == 'about stars' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
-                {% when 'experience' %}
-                    {% if childPageTitle == 'soccer' %}
+                {% when 'sports' %}
+                    {% if childPageTitle == 'sports' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
-                {% when 'ministries' %}
-                    {% if childPageTitle == 'football' %}
-                        {% assign activeClass = 'active' %}
-                    {% endif %}
-                {% when 'get-involved' %}
-                    {% if childPageTitle == 'basketball' %}
-                        {% assign activeClass = 'active' %}
-                    {% endif %}
-                {% when 'locations' %}
+                {% when 'volunteer' %}
                     {% if childPageTitle == 'volunteer' %}
+                        {% assign activeClass = 'active' %}
+                    {% endif %}
+                {% when 'register' %}
+                    {% if childPageTitle == 'register' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
                 {% else %}
             {% endcase %}
 
             <li class="navigation-primary-item {{ activeClass }}">
-                {% unless childPage.Title == 'Locations' %}
-                    <button class="navigation-primary-item-button">{{ childPage.Title }}</button>
-                    <div class="navigation-primary-dropdown-content-wrapper">
-                        <div class="navigation-primary-dropdown-content">
+                <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
+                <div class="navigation-primary-dropdown-content-wrapper">
+                    <div class="navigation-primary-dropdown-content">
+                        {% assign childPageTitle = childPage.Title | Downcase %}
+                        {% unless childPageTitle == 'sports' %}
                             <a class="navigation-primary-item-a dropdown-content-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a>
-                        </div>
+                        {% endunless %}    
+                        {% for grandchildPage in childPage.Pages  %}
+                            <a class="navigation-primary-item-a dropdown-content-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a>
+                        {% endfor %}
                     </div>
-                {% else %}
-                    {% comment %} <a class="navigation-primary-item-a" href="{{ childPage.Url }}">{{ childPage.Title }}</a> {% endcomment %}
-                {% endunless %}
+                </div>
             </li>
-
             {% assign activeClass = '' %}
         {% endfor %}
     </ul>

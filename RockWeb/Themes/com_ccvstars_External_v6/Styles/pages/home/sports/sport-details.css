@@ -1,0 +1,72 @@
+/* Zones & Sections */
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-soccer.jpg");
+}
+
+.title-left h3 {
+    color: #E73D30;
+    padding: 90px 0 25px 0;
+}
+
+.title-left p {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 24px;
+    color: #6e6e6e;
+    padding-bottom: 65px;
+}
+
+/* End Zones & Sections */
+
+/* Overrides */
+/* .tabbed-panel-view-desktop {
+    justify-content: space-between;
+}
+
+.left-and-right-container {
+    align-items: unset;
+    justify-content: flex-start;
+}
+
+h4 {
+    padding-top: 0;
+}
+
+.infoSection {
+    display: block;
+}
+
+/* End Overrides */
+
+/* #register-button {
+    background-color: #EA3E29;
+    color: #ffffff;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+}
+
+.right h3 {
+    text-align: left;
+}
+
+.right a {
+    color: #1ea0d4;
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 22px;
+    font-weight: 600;
+    padding: 10px 0;
+} */
+
+
+/** Mobile Styling **/
+/* @media screen and (max-width: 500px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/camps/hero-mobile-camps.jpg");
+    }
+} */
+
+/** End Mobile Styling *

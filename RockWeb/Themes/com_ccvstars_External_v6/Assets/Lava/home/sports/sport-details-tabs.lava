@@ -1,0 +1,34 @@
+<div id="practice-panel">
+    <div class="infoSection background-card">
+        <div class="left-and-right-container">
+            <div class="left">
+                <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
+            </div>
+            <div class="right">
+                <h3>Practice Schedule {{ campus }} </h3> 
+                <a href="{{ seasonCalendar }}">Season Calendar</a> 
+                <a href="{{ practiceSchedule }}">Practice Schedule </a> 
+            </div>
+        </div>
+    </div>     
+</div>
+
+<div id="game-panel" class="game-panel" style="display: none;">
+    <div class="infoSection background-card">
+        <div class="left-and-right-container">
+            <div class="left">
+                <img class="rounded-edge-img img-responsive" src="{{ gameMap }}" alt="{{ item.Title }}"> 
+            </div>
+            <div class="right">
+                <h3>Game Schedule</h3> 
+                <a href="{{ seasonCalendar }}">Season Calendar</a> 
+                <a href="{{ gameSchedule }}">Game Schedule </a> 
+            </div>
+        </div>
+    </div>   
+</div>
+
+<div id="rules-panel" class="rules-panel" style="display: none;">
+    <h3>Game Schedule</h3> 
+    <p>{{ item.Content }} </p>     
+</div>

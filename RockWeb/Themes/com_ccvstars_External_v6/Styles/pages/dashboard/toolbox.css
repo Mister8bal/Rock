@@ -1,0 +1,198 @@
+/* Zones & Sections */
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-team-toolbox.jpg");
+}
+
+#zone-sectiona {
+    padding: 2% 5%;
+}
+
+#zone-sectionb {
+    padding: 0% 5% 2% 10%;
+}
+
+/* End Zones & Sections */
+
+/* Overrides */
+hr {
+    margin-top: 70px;
+}
+
+th {
+    font-weight: 700;
+}
+
+td {
+    width: 200px;
+}
+
+h4 {
+    color: #EA3E29;
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 900;
+    color: #000000;
+    text-transform: capitalize;
+    text-align: left;
+}
+
+strong {
+    font-weight: 700;
+}
+
+/* End Overrides */
+
+/* Person Info */
+.person-summary {
+    display: flex;
+    flex-direction: row;
+    background-color: #efefef;
+    padding: 0 5%;
+}
+
+.person-details {
+    width: 100%;
+}
+
+.person-details-item h5 {
+    padding: 5px 0;
+}
+
+.person-details-item p {
+    margin: 0;
+    padding: 5px 0;
+}
+
+.person-details-item {
+    width: 80%;
+}
+
+.person-details-row {
+    display: flex;
+}
+
+.person-details h2{
+    color: #EA3E29;
+    font-size: 40px;
+    text-transform: capitalize;
+}
+
+.toolbox-teams {
+    background-color: #EA3E29;
+    padding: 1% 5%;
+}
+
+.toolbox-teams h2 {
+    font-size: 18px;
+    line-height: 20px;
+    font-family: akrobat;
+    font-weight: 900;
+    color: #FFFFFF;
+    text-transform: capitalize;
+}
+
+.dropdown-menu {
+    top: unset;
+    left: unset;
+}
+
+.person-toolbox-teams {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid #e0e0e0;
+}
+
+/* End Person Info */
+
+/* Panels */
+#dashboard-panel {
+    padding: 0 30px;
+}
+
+.person-image img {
+    width: 100px;
+    height: 100px;
+}
+
+.person-image {
+    padding-right: 10px;
+}
+
+.person-rows {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 25px 0;
+}
+
+.person {
+    width: 45%;
+    display: flex;
+    padding-bottom: 10px;
+}
+
+.person-info h4 {
+    font-weight: 700;
+}
+
+/* End Panels */
+
+
+
+/** Laptop Styling **/
+@media screen and (max-width: 1024px) {
+    /* Zones & Sections */
+    #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
+        padding: 2% 0 0 0;
+    }
+
+    /* End Zones & Sections */
+}
+
+/* End Laptop Styling */
+
+
+
+/** Mobile Styling **/
+@media screen and (max-width: 500px) {
+    /* Zones & Sections */
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-mobile-team-toolbox.jpg");
+    }
+
+    #zone-sectiona, #zone-sectionb {
+        padding: 0;
+    }
+
+    /* End Zones & Sections */
+
+    /* Overrides */
+    h4 {
+        color: #E73D30;
+        font-size: 18px;
+    }
+
+    /* End Overrides */
+
+    /* Panels */
+    .person {
+        width: 100%;
+        padding-bottom: 10px;
+    }
+
+    .person-rows {
+        width: 100%;
+        padding-bottom: 10px;
+    }
+
+    /* End Panels */
+}
+
+/** End Mobile Styling **/
+

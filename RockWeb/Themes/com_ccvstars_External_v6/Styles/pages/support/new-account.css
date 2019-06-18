@@ -1,0 +1,14 @@
+﻿#section-a-bg {
+    background-color: #efefef;
+}
+
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-new-account.jpg");
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-mobile-new-account.jpg");
+    }
+}
