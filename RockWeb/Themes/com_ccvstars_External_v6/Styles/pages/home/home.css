@@ -2,6 +2,7 @@
 #section-feature-bg {
     height: 946px;
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/hero-home.jpg");
+    position: relative;
 }
 
 #zone-sectionb {

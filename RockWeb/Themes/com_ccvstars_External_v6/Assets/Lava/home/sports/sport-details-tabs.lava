@@ -1,3 +1,5 @@
+{% comment %} TODO: Add defaults so something always shows {% endcomment %}
+
 <div id="practice-panel">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
@@ -5,7 +7,7 @@
                 <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
             </div>
             <div class="right">
-                <h3>Practice Schedule {{ campus }} </h3> 
+                <h3>Practice Schedule</h3> 
                 <a href="{{ seasonCalendar }}">Season Calendar</a> 
                 <a href="{{ practiceSchedule }}">Practice Schedule </a> 
             </div>
@@ -29,6 +31,10 @@
 </div>
 
 <div id="rules-panel" class="rules-panel" style="display: none;">
-    <h3>Game Schedule</h3> 
-    <p>{{ item.Content }} </p>     
+    <h3>Rules</h3>
+    <div id="pdfRulesDownload">
+        <a href="{{ rules }}">Download Rules</a>
+    </div>
+
+    <object id="pdfRules" data="{{ rules }}" width="100%" height="100%" type="application/pdf"></object>   
 </div>

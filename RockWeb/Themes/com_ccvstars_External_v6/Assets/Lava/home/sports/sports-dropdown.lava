@@ -1,0 +1,32 @@
+{% comment %}
+    {% assign sport = "Sport goes here" %}
+    {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
+{% endcomment %}
+
+{% comment %} ensure sport is not null and available sports string for the campus is empy {% endcomment %}
+{% unless sport %}
+    {% assign sport = 'undefined' %}
+{% endunless %}
+
+{% comment %} format the campus name for comparing {% endcomment %}
+{% assign campusName = campus | Replace:'-',' ' | Capitalize %}
+
+{% comment %} sports dropdown {% endcomment %}
+<div class="select-dropdown">
+    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A SPORT' }}</h6><b class="fa fa-caret-down"></b></button>
+    <ul class="dropdown-menu">
+        {% for campusItem in Campuses %}        
+            {% comment %} only show sports for current campus {% endcomment %}
+            {% if campusItem.Name == campusName %}
+                {% assign campusSports = campusItem.Sports | Split:',' %}
+
+                {% for sportItem in campusSports %}
+                    {% comment %} dont show in list if its currently selected sport {% endcomment %}
+                    {% unless sportItem == sport %}
+                        <li><a href="https://{{ 'Global' | Page:'Host' }}/sport/{{ sportItem }}/{{ campus }}">{{ sportItem | Replace:'-',' ' | Capitalize }}</a></li>
+                    {% endunless %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

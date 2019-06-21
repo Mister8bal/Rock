@@ -1,0 +1,49 @@
+{% comment %}
+    Optional
+    {% assign route = "Route goes here" %}
+    Required
+    {% assign sport = "Sport goes here" %}
+    {% include '~~/Assets/Lava/home/sports/campus-sports-dropdown.lava' %}
+{% endcomment %}
+
+{% comment %} set default route {% endcomment %}
+{% unless route %}
+    {% assign route = 'sport' %}
+{% endunless %}
+
+{% comment %} ensure sport is not null {% endcomment %}
+{% unless sport %}
+    {% assign sport = 'undefined' %}
+{% endunless %}
+
+{% if route == 'summer-camps' %}
+    {% comment %} summer camps campus dropdown {% endcomment %}
+    <div class="select-dropdown">
+        <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A CAMPUS' }}</h6><b class="fa fa-caret-down"></b></button>
+        <ul class="dropdown-menu">
+            {% for campusItem in Campuses %}                
+                {% if campusItem.SportsSummerCamps contains sport %}
+                    <li><a href="https://{{ 'Global' | Page:'Host' }}/summer-camps/{{ sport | Downcase | Replace: ' ', '-' }}/{{campusItem.Name | Downcase | Replace: ' ', '-'}}">{{ campusItem.Name }}</a></li>
+                {% endif %}
+            {% endfor %} 
+        </ul>
+    </div>
+{% else %}
+    {% comment %} default campus dropdown {% endcomment %}
+    <div class="select-dropdown">
+        <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A CAMPUS' }}</h6><b class="fa fa-caret-down"></b></button>
+        <ul class="dropdown-menu">
+            {% for campusItem in Campuses %}
+                {% assign campusName = campusItem.Name | Downcase %}
+
+                {% comment %} if selectButtonText is the same as the campus name do not add it to the list of selectable items {% endcomment %}
+                {% if campusName != selectButtonText %}
+                    {% comment %} only include campuses for passed sport {% endcomment %}
+                    {% if campusItem.Sports contains sport %}
+                        <li><a href="https://{{ 'Global' | Page:'Host' }}/sport/{{ sport | Downcase | Replace: ' ', '-' }}/{{campusItem.Name | Downcase | Replace: ' ', '-'}}">{{ campusItem.Name }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %} 
+        </ul>
+    </div>
+{% endif %}

@@ -1,30 +1,32 @@
 /* ===================================================================
     Notes:
 
-    1. Desktop View
-    2. Laptop View: max-width: 1024px
-    3. Tablet View: max-width: 768px
-    4. Mobile View: max-width: 500px
-    5. Other
+    Non media queried styling is intended for desktops with high resolutions.
+
+    media queries to use 
+    max-width       device size
+    1439.98px       Desktop Small - devices less then 1440px (reduce by 70%)
+    Probably Todo: add another break point to scale site smoother. probably move 70% here and increase top one to 80%
+    1023.98px       Medium - devices less than 1024px
+    767.98px        Small  - devices less than 768px
+
+    All reductions should be based off the non media queried numbers.
    =================================================================== */
 
-
-
-/* Defaults */
-/* #zone-feature {
-    margin: 0 10%;
-} */
-
+/*** Defaults ***/
 #section-feature-bg {
     height: 325px;
 }
 
-#section-a-bg, #section-b-bg, #section-c-bg, #section-d-bg, #section-e-bg {
+#section-feature-bg, #section-a-bg, #section-b-bg, #section-c-bg, #section-d-bg, #section-e-bg {
     background-color: #FFFFFF;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-#zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
-    padding: 0 10%;
+#zone-feature, #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
+    max-width: 80%;
+    margin: 0 auto;
 }
 
 p {
@@ -81,25 +83,34 @@ h6 {
     font-family: akrobat;
     font-weight: 700;
     text-transform: uppercase;
-    color: white;
+    color: #FFFFFF;
     background-color: #E73D30;
     border: solid 1px #E73D30;
     border: 1px solid transparent;
     text-align: center;
 }
 
-.btn-primary:hover {
+.btn-register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E73D30;
+    color: #FFFFFF;
+    font-family: akrobat;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 22px;
+    text-transform: uppercase;
+    padding: 0 55px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-register:hover, .btn-register:active {
     background-color: #FFFFFF;
     border: solid 1px #E73D30;
     text-decoration: none;
     color: #E73D30;
-}
-
-.btn-primary:active {
-    color: #E73D30;
-    background-color: #FFFFFF;
-    border: solid 1px #FFFFFF;
-    text-decoration: none;
 }
 
 a:focus {
@@ -112,9 +123,9 @@ a:focus {
     color: #EA3E29;
 }
 
-/* End Defaults */
+/**** End Defaults ****/
 
-/* Header Section */
+/**** Header Section ****/
 .masthead {
     font-family: akrobat;
 	font-weight: 700;
@@ -367,7 +378,7 @@ a:focus {
 
 .navigation-mobile-title {
     height: 55px;
-    padding: 0 5px 0 20px;
+    padding: 0 20px;
     background-color: #E73D30;
     display: flex;
     flex-direction: row;
@@ -413,9 +424,9 @@ a:focus {
 
 /* End Hamburger Menu (Full Menu) */
 
-/* End Header */
+/**** End Header ****/
 
-/* Feature Section */
+/**** Feature Section ****/
 .title {
     padding-top: 85px;
     display: flex;
@@ -426,100 +437,32 @@ a:focus {
 .title h1 {
 	padding: 0;
     padding-bottom: 25px;
-    max-width: 1200px;
     margin: 0 auto;
 }
 
 .title p {
     font-size: 29px;
     line-height: 34px;
-    max-width: 850px;
+    width: 850px;
     margin: 0 auto;
 }
 
-/* End Feature Section */
+/**** End Feature Section ****/
 
-/* Sections */
+/**** Sections ****/
 .background-card {
     margin: 0 auto;
     padding: 30px;
 }
 
-/* Tabbed Panel Cards */
-.tabbed-panel-view-cards {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    color: rgba(0, 0, 0, 0.87);
-    background-color: #efefefef;
-    border-radius: 5px;
-}
-
-.tabbed-panel-view-cards .header {
-    background-color: #ffffff;
-}
-
-.tabbed-panel-view-cards .header h4 {
-    font-size: 32px;
-    line-height: 34px;
-    padding-bottom: 3%;
-    color: #E73D30;
-    font-weight: 800;
-}
-
-.tabbed-panel-view-mobile {
-    display: none;
-}
-
-.tabbed-panel-view-desktop {
-    display: flex;
-    padding: 0px;
-    flex-wrap: wrap;
-    background-color: #ffffff;
-}
-
-.items {
-    display: flex;
-}
-
-.item {
-    text-decoration: none;
-    text-transform: capitalize;
-    background-color: #E3E3E3;
-    color: #E73D30;
-    padding: 13px 40px;
-    font-family: Heebo;
-    font-size: 16px;
-    font-weight: 900;
-    line-height: 17px;
-    margin: 1px;
-    border-radius: 5px;
-}
-
-.tabbed-panel-view-desktop > div .tab-selected {
-    background-color: #E73D30;
-}
-
-.tab-selected {
-    color: #ffffff !important;
-    background-color: #E73D30;
-}
-
-.tabbed-panel-view-cards-content {
-    margin: 0 0 20px 0;
-}
-
-/* End Tabbed Panel Cards */
-
 /* Left & Right Container */
 .infoSection {
-    min-height: 520px;
     display: flex;
 }
 
 .graphicSection {
     height: 500px;
-    max-width: 850px;
+    width: 850px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -549,7 +492,6 @@ a:focus {
     text-transform: uppercase;
 }
 
-
 .right p {
     color: #333333;
     font-size: 17px;
@@ -565,22 +507,39 @@ a:focus {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 70px 0;
 }
 
 #zone-sectiona .left-and-right-container {
-    padding-top: 10px;
+    padding-top: 100px;
 }
 
 .left-and-right-container .left {
     width: 45%;
     max-width: 45%;
+    margin-right: 70px;
+}
+
+.left .img-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.left img {
+    width: 580px;
+    height: 360px;
+    max-width: unset;
 }
 
 .left-and-right-container .right {
     width: 50%;
     max-width: 50%;
+}
+
+.right h3, .right p {
+    width: 650px;
 }
 
 .left-and-right-container .rounded-edge-img {
@@ -593,22 +552,106 @@ a:focus {
     justify-content: flex-start;
 }
 
-.left-and-right-container .btn-row a:first-of-type {
-    margin-right: 15px;
-}
-
 .left-and-right-container .btn-row a {
     min-width: unset;
     width: 200px;
     max-width: 200px;
+    margin-right: 15px;
 }
 
-/* End Left & Right Container */
+/* Tabbed Panel Cards */
+.tabbed-panel-view-cards {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    color: rgba(0, 0, 0, 0.87);
+    background-color: #eeeeee;
+    border-radius: 5px;
+}
 
-/* Campus Sports Dropdown */
-.campus-dropdown-button {
-    padding: 15px 20px 15px 25px;
-    width: 260px;
+.tabbed-panel-view-cards .header {
+    background-color: #ffffff;
+}
+
+.tabbed-panel-view-cards .header h4 {
+    font-size: 32px;
+    line-height: 34px;
+    padding-bottom: 3%;
+    color: #E73D30;
+    font-weight: 800;
+}
+
+.tabbed-panel-view-mobile {
+    display: none;
+}
+
+.tabbed-panel-view-desktop {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px;
+    background-color: #ffffff;
+}
+
+.tabs {
+    display: flex;
+}
+
+.tab {
+    text-decoration: none;
+    text-transform: capitalize;
+    background-color: #E3E3E3;
+    color: #E73D30;
+    font-family: Akrobat;
+    font-size: 30px;
+    line-height: 26px;
+    font-weight: 700;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 13px 40px;
+    margin: 0 1px;
+}
+
+.tab:first-child {
+    margin-left: 0;
+}
+
+.tab:hover, .tab:active {
+    background-color: #E73D30;
+    border-bottom: none;
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.tabbed-panel-view-desktop > div .tab-selected {
+    background-color: #E73D30;
+}
+
+.tab-selected {
+    color: #ffffff !important;
+    background-color: #E73D30;
+}
+
+.tabbed-panel-view-cards .background-card {
+    padding: 50px;
+}
+
+.tabbed-panel-view-cards .left {
+    margin-left: 20px;
+}
+
+.tabbed-panel-view-cards-content {
+    margin: 0 0 20px 0;
+}
+
+/* Select Sytle Dropdown */
+.summer-camps-mobile {
+    display: none;
+}
+
+.select-dropdown-button {
+    padding: 8px 20px 8px 25px;
     background-color: #FFFFFF;
     border: 2px solid #dddddd;
     border-radius: 4px;
@@ -617,47 +660,49 @@ a:focus {
     align-items: center;
 }
 
-.campus-dropdown-button h6 {
+.select-dropdown-button h6 {
     color: #E73D30;
     font-weight: 800;
 }
 
-.campus-dropdown-button b {
+.select-dropdown-button b {
     color: #E73D30;
+    margin-left: 50px;
 }
 
-.campus-dropdown-button .fa-caret-down:before {
+.select-dropdown-button .fa-caret-down:before {
     font-size: 30px;
     padding-left: unset;
 }
 
-.campus-dropdown .dropdown-menu {
+.select-dropdown .dropdown-menu {
     top: unset;
     left: unset;
 }
 
-.campus-dropdown .dropdown-menu a {
+.select-dropdown .dropdown-menu a {
     font-family: akrobat;
     font-size: 16px;
     line-height: 18px;
 }
 
-/* End Campus Sports Dropdown */
-
-/* Rectangle Section */
+/* Summer Camps Section */
 .summer-camps-row {
     padding-bottom: 90px;
+    display: flex;
+    justify-content: center;
 }
 
-.rectangle {
+.summer-camps-row .rectangle {
     background-color: #E73D30;
     border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 1375px;
 }
 
-.rectangle button {
+.summer-camps-row .rectangle button {
     color: #E73D30;
     background-color: #FFFFFF;
     text-align: center;
@@ -665,19 +710,15 @@ a:focus {
     font-weight: 800;
     font-size: 22px;
     line-height: 16px;
-    padding: 17px 20px;
+    padding: 8px 20px;
     margin: 38px 0;
     margin-left: 50px;
 }
 
-.summer-camps-row .campus-dropdown .dropdown-menu {
+.summer-camps-row .select-dropdown .dropdown-menu {
     margin-top: -37px;
     margin-left: 50px;
 }
-
-/* End Rectangle Section */
-
-/* Quote Sections */
 
 /* Map Section */
 .our-campuses-map-window {
@@ -709,11 +750,9 @@ a:focus {
     height: 25px;
 }
 
-/* End Map Section */
+/**** End Sections ****/
 
-/* End Sections */
-
-/* Footer */
+/**** Footer ****/
 .mainfooter {
     background-color: #000;
 	padding: 0 10%;
@@ -812,18 +851,248 @@ a:focus {
 	width: 70px;
 }
 
-/* End Footer */
+/**** End Footer ****/
 
+/**** loading spinner ****/
+/* html for spinner
+    <div class="loading">
+        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+*/
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+.lds-spinner {
+    display: inline-block;
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
 
+.lds-spinner div {
+    transform-origin: 32px 32px;
+    animation: lds-spinner 1.2s linear infinite;
+}
 
-/**** Laptop Styling ****/
-@media screen and (max-width: 1024px) {
+.lds-spinner div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 29px;
+    width: 5px;
+    height: 14px;
+    border-radius: 20%;
+    background: #E73D30;
+}
+
+.lds-spinner.spinner-light div::after {
+    background: #FFFFFF;
+}
+
+.lds-spinner div:nth-child(1) {
+    transform: rotate(0deg);
+    animation-delay: -1.1s;
+}
+
+.lds-spinner div:nth-child(2) {
+    transform: rotate(30deg);
+    animation-delay: -1s;
+}
+
+.lds-spinner div:nth-child(3) {
+    transform: rotate(60deg);
+    animation-delay: -0.9s;
+}
+
+.lds-spinner div:nth-child(4) {
+    transform: rotate(90deg);
+    animation-delay: -0.8s;
+}
+
+.lds-spinner div:nth-child(5) {
+    transform: rotate(120deg);
+    animation-delay: -0.7s;
+}
+
+.lds-spinner div:nth-child(6) {
+    transform: rotate(150deg);
+    animation-delay: -0.6s;
+}
+
+.lds-spinner div:nth-child(7) {
+    transform: rotate(180deg);
+    animation-delay: -0.5s;
+}
+
+.lds-spinner div:nth-child(8) {
+    transform: rotate(210deg);
+    animation-delay: -0.4s;
+}
+
+.lds-spinner div:nth-child(9) {
+    transform: rotate(240deg);
+    animation-delay: -0.3s;
+}
+
+.lds-spinner div:nth-child(10) {
+    transform: rotate(270deg);
+    animation-delay: -0.2s;
+}
+
+.lds-spinner div:nth-child(11) {
+    transform: rotate(300deg);
+    animation-delay: -0.1s;
+}
+
+.lds-spinner div:nth-child(12) {
+    transform: rotate(330deg);
+    animation-delay: 0s;
+}
+
+@keyframes lds-spinner {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+/**** end loading spinner ****/
+
+/**** Responsive Styling ****/
+@media screen and (max-width: 1439.98px) {
+    /* Reducing values by 30% rounded has a decent look for these device sizes  */
+    #zone-feature, #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
+        max-width: 90%;
+    }
+
+    /* 
+        Original font values
+        h1: 88px lh: 78
+        h2: 56px lh: 58
+        h3: 50px lh: 52
+        h4: 40px lh: 42
+        h5: 30px lh: 32
+        h6: 22px lh: 24 
+    */
+    h1 {
+        font-size: 62px;
+        line-height: 55px;
+        letter-spacing: -3px;
+    }
+      
+    h2 {
+        font-size: 39px;
+        line-height: 41px;
+    }
+    
+    h3 {
+        font-size: 35px;
+        line-height: 37px;
+    }
+    
+    h4 {
+        font-size: 28px;
+        line-height: 30px;
+    }
+    
+    h5 {
+        font-size: 21px;
+        line-height: 23px;
+    }
+    
+    h6 {
+        font-size: 15px;
+        line-height: 17px;
+    }
+
+    /* Navigation */
+    .masthead-upper {
+        padding: 0 30px 0 60px;
+    }
+
+    .stars-logo img {
+        margin-right: unset;
+    }
+
+    .navigation-primary-item-button, .loginstatus li a {
+        font-size: 16px;
+        line-height: 18px;
+    }
+
+    .loginstatus {
+        margin-left: 0;
+    }
+
+    /* Feature & Sections */
+    .title p {
+        font-size: 20px;
+        line-height: 24px;
+        width: 595px;
+    }
+
+    .infoSection {
+        min-height: 364px;
+    }
+
+    .left-and-right-container {
+        padding: 49px 0;
+    }
+
+    .left img {
+        width: 406px;
+        height: 252px;
+    }
+
+    #zone-sectiona .left-and-right-container {
+        padding-top: 70px;
+    }
+
+    .right h3, .right p {
+        width: 455px;
+    }
+
+    .right p {
+        font-size: 12px;
+        line-height: 17px;
+    }
+
+    .summer-camps-row {
+        padding-bottom: 63px;
+    }
+
+    .summer-camps-row .rectangle button {
+        margin: 27px 0;
+        margin-left: 50px;
+    }
+
+    .summer-camps-row .select-dropdown .dropdown-menu {
+        margin-top: -26px;
+    }
+
+    .graphicSection {
+        width: 595px;
+        height: 350px;
+    }
+
+    .graphicSection p {
+        font-size: 21px;
+        line-height: 24px;
+    }
+}
+/**** End Small Desktop ****/
+
+/**** Tablet Sytling  ****/
+/* Reduce by 40% */
+@media screen and (max-width: 1023.98px) {
     /* Zones & Sections */
-    /* #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
-        padding: 2% 0 0 0;
-    } */
-
-    /* End Zones & Sections */
+    #section-feature-bg {
+        height: 208px;
+    }
 
     /* Navigation */
     .masthead-upper {
@@ -846,18 +1115,87 @@ a:focus {
         left: 10px;
     }
 
-    /* End Navigation */
-
-
-    /* Tabbed Panel Cards */
-    .tabbed-panel-view-cards {
-        margin-right: 0;
-        margin-bottom: 20px;
+    /* Feature & Sections */
+    .title {
+        padding-top: 40px;
     }
 
-    /* End Tabbed Panel Cards */
+    .left-and-right-container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-    
+    #zone-sectiona .left-and-right-container {
+        padding-top: 30px;
+    }
+
+    .left-and-right-container .left {
+        margin-right: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .left .img-row {
+        display: block;
+
+    }
+
+    .left img {
+        width: 100%;
+        height: auto;
+    }
+
+    .left-and-right-container .right {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .right p {
+        width: 100%;
+    }
+
+    .right > div:first-child {
+        margin-right: 20px;
+    }
+
+    .right > div:first-child h3, .right > div:first-child p {
+        width: 390px;
+    }
+
+    /* Summer camp */
+    .summer-camps-row .rectangle {
+        justify-content: space-evenly;
+    }
+
+    .summer-camps-desktop {
+        display: none;
+    }
+    .summer-camps-mobile {
+        display: inline-block;
+    }
+
+    .summer-camps-mobile h3 {
+        text-align: center;
+    }
+
+    .summer-camps-row .rectangle button {
+        margin: 18px 20px;
+    }
+
+    .summer-camps-row .select-dropdown .dropdown-menu {
+        margin: 0;
+        width: 28%;
+        margin-top: -16px;
+        margin-left: 21px;
+    }
+
+    .graphicSection h5 {
+        font-weight: 600;
+    }
+
     /* Footer */
     .mainfooter {
         padding-top: 15px;
@@ -909,20 +1247,36 @@ a:focus {
     
     /* End Footer */
 }
+/**** End Tablet Styling ****/
 
-/**** End Laptop Styling ****/
-
-
-
-/**** Tablet Styling ****/
-@media screen and (max-width: 768px) {
-    /* Zones & Sections */
-    #section-feature-bg {
-        height: unset;
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {
+    /* Phone styling based on mobile design mookups */
+    h1 {
+        font-size: 25px;
+        line-height: 27.5px;
+        letter-spacing: 0px;
+    }
+          
+    h3 {
+        font-size: 25px;
+        line-height: 20px;
+    } 
+    
+    h6 {
+        font-size: 16.5px;
+        line-height: 18.5px;
     }
 
-    /* End Zones & Sections */
+    /* Zones & Sections */
+    #section-feature-bg {
+        height: 55px;
+    }
 
+    #zone-feature, #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
+        max-width: 100%;
+        margin: 0 15px;
+    }
 
     /* Navigation Section */
     .header-navigation {
@@ -933,6 +1287,10 @@ a:focus {
         display: block;
     }
 
+    .masthead-upper {
+        padding: 0 15px 0 25px;
+    }
+
     .masthead-brand .navbar-toggle {
         height: 120px;
         margin: 0;
@@ -940,113 +1298,7 @@ a:focus {
     }
 
     .masthead-fullmenu {
-        width: 40%;
-    }
-
-    
-    /* .main-feature {
-        padding: 0;
-    } */
-
-    /* .collapse {
-        display: block;
-    } */
-
-    /* End Navigation Section */
-
-
-    /* Titles & Headings */
-    /* .title h1 {
-        font-size: 34px;
-        line-height: 36px;
-        padding-bottom: 10px;
-    }
-
-    h2 {
-        font-size: 18px;
-        line-height: 20px;
-    }
-
-    .title p {
-        font-size: 15px;
-        line-height: 17px;
-        margin: 0 5% 2% 5%;
-    } */
-
-    /* End Titles & Headings */
-
-
-    /* Section Video */ 
-    /* .section-video {
-        padding-top: 50px;
-        padding-bottom: 50px;
-        width: 100%;
-    } */
-
-    /* End Section Video */
-
-
-    /* Left & Right Container */
-    /* .left-and-right-container {
-        padding: 20px 0;
-    }
-
-    .infoSection h2 {
-        font-size: 30px;
-     }
-
-     .graphicSection h2 {
-        font-size: 24px;
-        line-height: 26px;
-        text-transform: none;
-        margin: 0;
-    }
-
-    .graphicSection p {
-        font-size: 22px;
-        line-height: 24px;
-        padding-top: 20px;
-    } */
-
-    /* End Left & Right Container */
-
-
-    /* Tabbed Panel Cards */
-    /* .item {
-        text-decoration: none;
-        text-transform: capitalize;
-        background-color: #E3E3E3;
-        color: #E73D30;
-        padding: 13px 29px;
-    }
-
-    .tab-selected {
-        color: #ffffff !important;
-        background-color: #E73D30;
-    } */
-    
-    /* End Tabbed Panel Cards */
-}
-
-/**** End Tablet Styling ****/
-
-
-
-/**** Mobile Styling ****/
-@media screen and (max-width: 500px) {
-    /* Navigation Section */
-    .announcement-bar {
-        font-size: 12px;
-    }
-
-    .masthead-upper {
-        padding: 0 15px 0 25px;
-    }
-
-    .masthead-brand {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: space-between;
+        width: 70%;
     }
 
     .header, .masthead-brand .navbar-toggle {
@@ -1063,140 +1315,140 @@ a:focus {
         width: 80px;
         height: 50px;
     }
-    /* End Navigation Section */
 
-
-    /* Zones & Sections */
-    #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
-        /* padding: 1% 0; */
+    /* Titles & Headings */
+    .title {
+        padding-top: 17.5px;
     }
 
-    #section-feature-bg {
-        background-size: cover;
+    .title h1 {
         padding: 0;
+        margin: 0;
     }
 
-    /* End Zones & Sections */
-
+    .title p {
+        display: none;
+    }
 
     /* Left & Right Container */
-    /* .infoSection {
-        min-height: unset;
-    } */
-
-    /* End Left & Right Container */
-
-
-    /* Tabbed Panel Cards */
-    /* .tabbed-panel-view-desktop {
-        display: none;
+    #zone-sectiona .left-and-right-container, .left-and-right-container {
+        padding-top: 15px;
+        padding-bottom: 10px;
     }
 
-    .tabbed-panel-view-mobile {
+    .left-and-right-container .right {
+        padding: 17.5px 8.5px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .right h3 {
+        padding-top: 0;
+        padding-bottom: 10px;
+    }
+
+    .right p {
+        font-size: 13px;
+        line-height: 16px;
+        margin: 0;
+    }
+
+    .right > div:first-child {
+        margin-right: 0;
+    }
+
+    .right > div:first-child h3, .right > div:first-child p {
+        width: 100%;
+    }
+
+    .right > div:last-child {
+        width: 100%;
+    }
+
+    .select-dropdown, .select-dropdown-button {
+        width: 100%;
         display: flex;
-        align-items: center;
-    }
-    
-    .mobile-items {
-        max-width: 100%;
-        margin: 0 auto 10px 0;
-        font-size: 16px;
-        font-family: akrobat;
-        font-weight: bold;
-        line-height: 18px;
-        text-transform: uppercase;
-        text-decoration: none;
-        color: #707270;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
     }
 
-    .mobile-items .item {
-        display: inline-flex;
-        align-items: center;
+    .select-dropdown-button {
+        justify-content: center;
     }
 
-    .mobile-items .item {
-        visibility: hidden;
+    .right .btn-row {
+        padding-top: 10px;
     }
 
-    .mobile-items.slick-initialized .item {
-        visibility: unset;
-        padding: 5px 10px;
+    .select-dropdown-button b {
+        margin-left: 10px;
     }
 
-    .item {
-        padding: 0 10px;
-        white-space: nowrap;
+    .select-dropdown-button .fa-caret-down:before {
+        font-size: 20px;
     }
 
-    .item:focus {
-        outline: none;
-        border: none;
+    .select-dropdown .dropdown-menu {
+        width: 80%;
+        margin-top: 48px;
+        margin-left: 20px;
     }
 
-    .nav-arrow {
-        font-size: 24px;
-        color: #707270;
-    }
-
-    .nav-next {
-        padding-left: 10px;
-    }
-
-    .group-heading {
-        margin: 0 10px;
-    } */
-
-    /* End Tabbed Panel Cards */
-
-
-    /* Footer */
-
-    /* End Footer */
-}
-
-/**** End Mobile Styling ****/
-
-
-
-
-
-/* ===================================================================
-      If you HAVE to use media queries other than the standard sizes (max-width: 1024px,
-       max-width: 768px, max-width: 500px), put them here.
-   =================================================================== */
-
-
-
- @media screen and (max-width: 1290px) {
-     /* Navigation Section */
-    /* .navigation-primary-items {
-        padding-left: 20px;
-    }
-
-    .nav > li > a {
+    .select-dropdown .dropdown-menu a {
         font-size: 18px;
         line-height: 20px;
-    } */
+        padding: 8px 0;
+        margin: 0 auto;
+    } 
 
-    /* End Navigation Section */
+    .select-dropdown .dropdown-menu li {
+        text-align: center;
+    }
+
+    /* summer camps dropdown */
+    .summer-camps-row {
+        padding: 0 8.5px;
+    }
+
+    .summer-camps-row .rectangle {
+        flex-direction: column;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+    .summer-camps-row .rectangle button {
+        margin: 0 20px;
+    }
+
+    .summer-camps-row .select-dropdown .dropdown-menu {
+        width: 75%;
+        margin-top: 44px;
+        margin-left: 30px;
+    }
+
+    .graphicSection {
+        width: 100%;
+        height: 216px;
+    }
+
+    .graphicSection i {
+        font-size: 25px;
+    }    
+
+    .graphicSection   h5 {
+        font-size: 14px;
+        line-height: 16px;
+    }
+
+    .graphicSection p {
+        font-size: 14px;
+        line-height: 16px;
+    }
 }
 
-/* Overriding Bootstrap media query */
-@media (max-width: 1150px) {
-    /* .collapse {
-        display: none;
-    }
- 
-    .navbar-collapse.collapse {
-        display: none !important;
-    } */
+/**** End Phone Styling ****/
 
-    /* End Navigation Section */
- }
-
+/* ===================================================================
+      Non standard media queries
+   =================================================================== */
  @media screen and (max-width: 860px) {
     .loginstatus .dropdown .profile-photo {
         display: none;
