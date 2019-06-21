@@ -133,8 +133,8 @@ h5 {
 /* End Overrides */
 
 
-/** Mobile Styling **/
-@media screen and (max-width: 500px) {    
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {      
     /* Zones & Sections */
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-mobile-dashboard.jpg");
@@ -164,4 +164,4 @@ h5 {
 }
 
 
-/** End Mobile Styling **/
+/**** End Phone Styling ****/

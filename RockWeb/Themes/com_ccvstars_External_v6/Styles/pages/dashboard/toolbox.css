@@ -145,8 +145,8 @@ strong {
 
 
 
-/** Laptop Styling **/
-@media screen and (max-width: 1024px) {
+/**** Small Desktop Styling  ****/
+@media screen and (max-width: 1439.98px) {
     /* Zones & Sections */
     #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
         padding: 2% 0 0 0;
@@ -155,12 +155,12 @@ strong {
     /* End Zones & Sections */
 }
 
-/* End Laptop Styling */
+/**** End Small Desktop ****/
 
 
 
-/** Mobile Styling **/
-@media screen and (max-width: 500px) {
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {    
     /* Zones & Sections */
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-mobile-team-toolbox.jpg");
@@ -194,5 +194,5 @@ strong {
     /* End Panels */
 }
 
-/** End Mobile Styling **/
+/**** End Phone Styling ****/
 

@@ -98,15 +98,18 @@
 
 /* End conflict fixes */
 
-/* Tablet Styling */
-@media screen and (max-width: 768px) {
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
     .disclaimer {
         width: 100%;
     }
 }
 
-/* Mobile Styling */
-@media screen and (max-width: 500px) {
+/**** End Tablet Styling ****/
+
+
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {  
     /* temporarily disable 3rd nav in mobile until we decide on design. */
     #ternavbar-bg {
         display: none !important;
@@ -118,4 +121,5 @@
     }
 }    
 
+/**** End Phone Styling ****/
 

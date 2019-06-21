@@ -123,8 +123,8 @@ h3 {
 /* End Person Info */
 
 
-/** Tablet Styling **/
-@media screen and (max-width: 768px) {
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
     /* Person Info */
     .profile {
         flex-direction: column;
@@ -175,11 +175,11 @@ h3 {
     /* End Overrides */
 }
 
-/** End Tablet Styling **/
+/**** End Tablet Styling ****/
 
 
-/** Mobile Styling **/
-@media screen and (max-width: 500px) {
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {   
     /* Person Info */
     .profile-card {
         padding: 0;
@@ -245,4 +245,4 @@ h3 {
     /* End Overrides */
 }
 
-/** End Mobile Styling **/
+/**** End Phone Styling ****/

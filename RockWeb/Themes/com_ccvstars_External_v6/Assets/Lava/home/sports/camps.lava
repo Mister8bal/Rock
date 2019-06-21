@@ -1,0 +1,14 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/sports/camps.lava' %}
+{% endcomment %}
+
+{% for item in Items %}
+    <div class="camps-row">
+        <h3>{{ item.Title }} </h3> 
+        <p class="camp-heading">Please join us for our Summer 2019 Soccer Camps!</p>
+        <p>{{ item.CampDescription }} </p> 
+        <div class="btn-row">
+            <a class="btn btn-primary" href="/get-involved/next-steps">Register</a>
+        </div>
+    </div>
+{% endfor %}

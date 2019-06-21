@@ -23,11 +23,11 @@ hr {
    margin-bottom: 60px;
 }
 
-/** Mobile Styling **/
-@media screen and (max-width: 500px) {
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {   
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-mobile-register.jpg");
     } 
 }
 
-/** End Mobile Styling **/
+/**** End Phone Styling ****/

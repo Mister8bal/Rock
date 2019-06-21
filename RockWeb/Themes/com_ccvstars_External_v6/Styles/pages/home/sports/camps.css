@@ -2,42 +2,89 @@
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-camps.jpg");
 }
 
+#zone-sectiona {
+    padding: unset;
+}
+
 h4 {
     font-size: 50px;
     line-height: 52px;
 }
 
-.left p {
-    width: 60%;
+.camps-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 10%;
+    background-color: #ffffff;
+    height: 500px;
+}
+
+.camps-row:nth-child(even) {
+    background-color: #ededed;
+}
+
+.camps-row h3 {
+    color: #E73D30;
+}
+
+.camps-row .btn {
+    padding: 10px 20px;
+}
+
+.camps-row .btn-primary {
+    font-size: 22px;
+    line-height: 24px;
+}
+
+.camps-row .btn-row {
+    padding-top: 1%;
+}
+
+.camps-row p {
+    color: #333333;
     font-size: 17px;
+    line-height: 24px;
+    width: 50%;
 }
 
-.sub-heading {
+.camps-row .camp-heading {
     font-weight: 900;
+    margin: 0;
 }
 
-/** Laptop Styling **/
-@media only screen and (max-width: 768px) {
-    .left-and-right-container .left {
-        width: unset;
-        max-width: unset;
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
+    .camps-row {
+        padding: 0 5%;
+        height: 400px;
     }
 
-    .left p {
+    .camps-row h3 {
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .camps-row p {
+        color: #333333;
+        font-size: unset;
+        line-height: unset;
         width: 100%;
     }
-}
 
-@media only screen and (min-width: 768px){
-    .left-and-right-container .left {
-        width: unset;
-        max-width: unset;
+    .camps-row .btn {
+        padding: 6px 12px;
     }
 }
 
-/** Mobile Styling **/
-@media screen and (max-width: 500px) {
+/**** End Tablet Styling ****/
+
+
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) { 
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-mobile-camps.jpg");
     }
 }
+
+/**** End Phone Styling ****/
