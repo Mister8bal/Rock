@@ -111,8 +111,6 @@ const CCV_countdown = (function() {
             this.startDate = new Date(dateStr + ' ' + startTime + ' UTC-0700') || new Date();
             this.endDate = new Date(dateStr + ' ' + endTime + ' UTC-0700') || new Date();
 
-            console.log("Start Date:", this.startDate);
-
             /**
              * If the start date is in the future,
              * return the start date. 
