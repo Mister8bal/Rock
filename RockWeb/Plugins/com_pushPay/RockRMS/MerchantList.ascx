@@ -8,6 +8,8 @@
 
 <asp:UpdatePanel ID="upnlList" runat="server">
     <ContentTemplate>
+        
+        <Rock:NotificationBox ID="nbDownloadNotSupported" runat="server" NotificationBoxType="Danger" Heading="Warning:" Visible="false" />
 
         <asp:Panel ID="pnlMerchants" runat="server" CssClass="panel panel-block" >
             <div class="panel-heading">

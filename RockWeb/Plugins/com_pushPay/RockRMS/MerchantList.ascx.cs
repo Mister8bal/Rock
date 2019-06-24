@@ -18,6 +18,8 @@ using Rock.Attribute;
 using Rock.Data;
 using Rock.Model;
 using Rock.Security;
+using Rock.Utility;
+using Rock.VersionInfo;
 using Rock.Web.Cache;
 using Rock.Web.UI.Controls;
 
@@ -77,7 +79,37 @@ namespace RockWeb.Plugins.com_pushPay.RockRMS
                 ShowDialog();
             }
 
+            //Verify that the version of Rock in use can support manual payment downloads.
+            CheckVersionCompatibility();
+
             base.OnLoad( e );
+        }
+
+        /// <summary>
+        /// Verifies that the version of Rock in use can support manual payment downloads.
+        /// This should be removed when the minimum supported version of this plugin is >= 1.8.5.
+        /// 
+        /// When this code is removed, the nbDownloadNotSupported NotificationBox should also be
+        /// removed from the markup file.
+        /// </summary>
+        [Obsolete( "This code is only necessary to support Rock versions prior to 1.8.5.", false )]
+        private void CheckVersionCompatibility()
+        {
+            bool isDownloadSupported = VersionSupportsManualDownload();
+
+            if ( !isDownloadSupported )
+            {
+                var downloadColumn = gMerchants.ColumnsOfType<EditField>()
+                    .First( c => c.ToolTip.ToLower() == "Download Payments".ToLower() );
+                downloadColumn.Visible = false;
+                nbDownloadNotSupported.Visible = true;
+                var installedVersion = VersionInfo.GetRockSemanticVersionNumber();
+                nbDownloadNotSupported.Text = string.Format(
+                    "The version of Rock you're using ({0}) does not support manual payment downloads. Please upgrade to Version 8.5 or later to enable this functionality.",
+                    installedVersion.Replace( "1.8", "8" )
+                );
+            }
+
         }
 
         #endregion
@@ -122,7 +154,10 @@ namespace RockWeb.Plugins.com_pushPay.RockRMS
                     }
 
                     hfMerchantId.Value = merchant.Id.ToString();
-                    ddlMemoReferenceField.SetValue( merchant.MemoReferenceFieldId );
+                    if ( merchant.MemoReferenceFieldId != null )
+                    {
+                        ddlMemoReferenceField.SetValue( merchant.MemoReferenceFieldId.Value.ToString() );
+                    }
                     apDefaultAccount.SetValue( merchant.DefaultFinancialAccount );
                     cbActive.Checked = merchant.IsActive;
                     ceBatchSuffix.Text = merchant.BatchNameSuffix;
@@ -316,6 +351,25 @@ namespace RockWeb.Plugins.com_pushPay.RockRMS
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Checks the version of Rock to notify users that they need to upgrade if they are running
+        /// a version that doesn't support manually downloading payments.
+        /// 
+        /// Reason:  A bug which prevents the download from functioning was introduced in 1.8.0 and
+        /// resolved in 1.8.5.
+        /// </summary>
+        [Obsolete("This code is only necessary to support Rock versions prior to 1.8.5.", false)]
+        private bool VersionSupportsManualDownload()
+        {
+            RockSemanticVersion rockVersion = RockSemanticVersion.Parse( VersionInfo.GetRockSemanticVersionNumber() );
+            if ( rockVersion >= RockSemanticVersion.Parse("1.8.0") && rockVersion < RockSemanticVersion.Parse("1.8.5") )
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Binds the grid.
