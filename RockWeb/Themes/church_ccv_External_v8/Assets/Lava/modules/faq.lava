@@ -1,5 +1,5 @@
 {% comment %}
-    Paste this wherever you want the Share Feature: (Don't include the BEGIN / END copy lines. Duh.)
+    Paste this wherever you want the FAQ Feature: (Don't include the BEGIN / END copy lines. Duh.)
 
     <!--BEGIN COPY-->
     
@@ -149,7 +149,6 @@
         }
 
         let showEl = function($el, $t) {
-            console.log($t);
             $t.find('i').removeClass('fa-plus').addClass('fa-minus');
             $el.addClass('in').slideDown(function(){
                 $el.trigger('ccv.collapse.shown');
