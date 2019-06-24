@@ -47,6 +47,11 @@
     padding-bottom: 65px;
 }
 
+.left img {
+    width: 450px;
+    height: auto;
+}
+
 .right {
     display: flex;
     flex-direction: column;
@@ -79,6 +84,10 @@
     display: none;
 }
 
+.mobile-register {
+    display: none;
+}
+
 /* End Zones & Sections */
 
 /* Overrides */
@@ -97,18 +106,18 @@
 /* End Overrides */
 
 /**** Responsive Styling ****/
-
-/* NEEDS MATCHED TO NEW QUERY FORMAT */
-
-/**** Small Monitor ****/
-@media screen and (max-width: 1310px) {
+@media screen and (max-width: 1439.98px) {
     .responsive-hide {
         display: none;
+    }
+
+    .left img {
+        width: 400px;
     }
 }
 
 /**** Tablet Styling ****/
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1023.98px) {
     .sport-title h3 {
         padding: 25px 0 15px 0;
     }
@@ -119,10 +128,68 @@
         font-weight: 400;
         padding-bottom: 45px;
     }
+
+    .left-and-right-container .left {
+        margin-left: 0;
+    }
+
+    .left img {
+        width: 100%;
+    }
+
+    .left-and-right-container .right {
+        align-items: flex-start;
+    }
 }
 
 /* End Tablet Styling */
 
-/** Mobile Styling **/
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {
+    #pnlSportDetails {
+        margin-bottom: 0;
+    }
+    .navigation-and-title {
+        display: flex;
+        flex-direction: column-reverse;
+    }
 
-/** End Mobile Styling *
+    #pnlSportDetails .dropdown-row {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+    }
+
+    .select-dropdown {
+        padding: 10px 0;
+    }
+
+    #pnlSportDetails .dropdown-row .select-dropdown .select-dropdown-button {
+        border: 2px solid #dddddd;        
+    }
+
+    .sport-title {
+        padding-left: 0;
+    }
+
+    .sport-title p {
+        font-size: 12.5px;
+        line-height: 16px;
+        padding-bottom: 0;
+    }
+
+    .tabbed-panel-view-cards {
+        margin: 0 -15px;
+        border-radius: 0;
+    }
+
+    .tabbed-panel-view-cards .background-card {
+        margin: 20px 15px;
+        padding: 0;
+    }
+
+    .mobile-register {
+        display: flex;
+        margin: -30px 20px 20px 20px;
+        padding: 15px 0;
+    }
+}

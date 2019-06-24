@@ -1442,6 +1442,36 @@ a:focus {
         font-size: 14px;
         line-height: 16px;
     }
+
+    /* tabbed panels */
+    .tabbed-panel-view-cards .background-card {
+        padding: 20px;
+    }
+    
+    .tabbed-panel-view-desktop {
+        display: none;
+    }
+
+    .tabbed-panel-view-mobile {
+        display: flex;
+    }
+
+    .mobile-items {
+        width: 100%;
+    }
+
+    .mobile-items .item {
+        font-family: akrobat;
+        font-size: 18px;
+        line-height: 20px;
+        padding: 8px 0;
+        margin: 0 auto;
+    }
+
+    .mobile-items .tab-selected {
+        color: #333 !important;
+        background-color: transparent;
+    }
 }
 
 /**** End Phone Styling ****/

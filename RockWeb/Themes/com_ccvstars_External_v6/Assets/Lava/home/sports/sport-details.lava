@@ -14,16 +14,33 @@
 <div id="pnlSportDetails" class="hidden">
     {% if item %}
         {% comment %} render sport details {% endcomment %}
-        <div class="dropdown-row">
-            {% assign selectButtonText = sport | Replace:'-',' ' | Capitalize %}
-            {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
+        <div class="navigation-and-title">
+            <div class="dropdown-row">
+                {% comment %} mobile nav for tabs {% endcomment %}
+                <div class="tabbed-panel-view-mobile">
+                    <div class="mobile-items">
+                        <div class="select-dropdown">
+                            <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Practice Map & Schedule</h6><b class="fa fa-caret-down"></b></button>
+                            <ul class="dropdown-menu">
+                                <li><div id="practice-mobile-button" onClick="linkClicked(this, 'practice', true)" class="item">Practice Map & Schedule</div></li>
+                                <li><div id="game-mobile-button" onClick="linkClicked(this, 'game', true)" class="item">Game Map & Schedule</div></li>
+                                <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>                           
+                            </ul>
+                        </div>                    
+                    </div>
+                </div>
 
-            {% assign selectButtonText = campus | Replace:'-',' '  %}
-            {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
-        </div>
-        <div class="sport-title">
-            <h3 id="campusSportTitle"></h3>
-            <p id="campusSportSummary"></p>
+                {% assign selectButtonText = sport | Replace:'-',' ' | Capitalize %}
+                {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
+
+                {% assign selectButtonText = campus | Replace:'-',' '  %}
+                {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+            </div>
+
+            <div class="sport-title">
+                <h3 id="campusSportTitle"></h3>
+                <p id="campusSportSummary"></p>
+            </div>
         </div>
 
         <div class="tabbed-panel-view-cards">
@@ -36,15 +53,6 @@
                 <a href="/register-v2" id="" class="btn btn-register">Register</a>
             </div>
 
-            <div class="tabbed-panel-view-mobile">
-                <div class="mobile-items">
-                    {% comment %} todo - turn into dropdown instead of slick slider {% endcomment %}
-                    <div id="practice-mobile-button" onClick="linkClicked(this, 'practice')" class="item tab-selected">Practice Map & Schedule</div>
-                    <div id="game-mobile-button" onClick="linkClicked(this, 'game')" class="item">Game Map & Schedule</div>
-                    <div id="rules-mobile-button" onClick="linkClicked(this, 'rules')" class="item">Rules</div>
-                </div>
-            </div>
-
             {% comment %} variables needed for sport-details-tabs.lava {% endcomment %}
             {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
             {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
@@ -54,6 +62,8 @@
             {% assign rules = item | Attribute: 'Rules', 'Url' %}
 
             {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
+
+            <a href="/register-v2" id="" class="btn btn-register mobile-register">Register</a>
         </div>
         <script>
             var gCurrentLink;
@@ -82,16 +92,18 @@
                 }
             }
                     
-            function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-                // remove styling from default mobile panel - Jered better way?
-                $('#practice-mobile-button').removeClass('tab-selected');
-
+            function linkClicked(linkElement, sectionName, mobileView = false) {
                 // turn off existing panel
                 togglePanel( gCurrentLink, gCurrentPanel, false );
                 
                 var targetPanel = $("#" + sectionName + "-panel")[0];
                 gCurrentPanel = targetPanel;
                 gCurrentLink = linkElement;
+
+                // update button text with selection
+                if ( mobileView === true ) {
+                    $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
+                }
                 
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             }
