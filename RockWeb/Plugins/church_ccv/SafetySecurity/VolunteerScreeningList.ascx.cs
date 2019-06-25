@@ -26,7 +26,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     public partial class VolunteerScreeningList : RockBlock
     {
         protected Person TargetPerson { get; set; }
-                
+        const int sCharacterReference_WorkflowId = 203;
+
         #region Control Methods
 
         /// <summary>
@@ -136,12 +137,34 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
                     rockContext.WrapTransaction( () =>
                     {
-                        // remove workflow attached to screening 
+                        // remove attached workflows
                         if ( screening != null && screening.Application_WorkflowId.HasValue )
                         {
                             var workflowService = new WorkflowService( rockContext );
                             Workflow wf = workflowService.Get( screening.Application_WorkflowId.Value );
 
+                            // get character references
+                            List<int?> attribIds = new AttributeValueService( rockContext ).Queryable()
+                                .AsNoTracking()
+                                .Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == screening.Id )
+                                .Select( av => av.EntityId )
+                                .ToList();
+
+                            List<Workflow> charRefWorkflows = new List<Workflow>();
+                            if ( attribIds.Count > 0 )
+                            {
+                                charRefWorkflows = workflowService.Queryable()
+                                    .Where( w => w.WorkflowTypeId == sCharacterReference_WorkflowId && attribIds.Contains( w.Id ) )
+                                    .ToList();
+
+                                // remove character workflows
+                                if ( charRefWorkflows.Any() )
+                                {
+                                    workflowService.DeleteRange( charRefWorkflows );
+                                }
+                            }
+
+                            // remove attached workflow
                             workflowService.Delete( wf );
                         }
 
