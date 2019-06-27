@@ -79,16 +79,21 @@
     <h4>MY SPORTS</h4>
 </div>
 
-<div class="tabbed-panel-view-desktop">
-    <div id="player-button" class="item" onClick="linkClicked(this, 'player')">Player</div>
-    <div id="coach-button" class="item" onClick="linkClicked(this, 'coach')">Coach</div>
+<div class="tabbed-panel-view-cards">
+    <div class="tabbed-panel-view-desktop">
+        <div class="tabs">
+            <div id="player-button" class="tab" onClick="linkClicked(this, 'player')">Player</div>
+            <div id="coach-button" class="tab" onClick="linkClicked(this, 'coach')">Coach</div>
+        </div>
+    </div>    
 </div>
 
-<div class="tabbed-panel-view-mobile">
-    <div class="mobile-items"> 
-        <div id="player-mobile-button" onClick="linkClicked(this, 'player')" class="item tab-selected">Player</div>
-        <div id="coach-mobile-button" onClick="linkClicked(this, 'coach')" class="item">Coach</div>  
-    </div>
+    <div class="tabbed-panel-view-mobile">
+        <div class="mobile-items">
+            <div id="player-mobile-button" onClick="linkClicked(this, 'player')" class="tab tab-selected">Player</div>
+            <div id="coach-mobile-button" onClick="linkClicked(this, 'coach')" class="tab">Coach</div>  
+        </div>
+    </div>    
 </div>
     
 <script>

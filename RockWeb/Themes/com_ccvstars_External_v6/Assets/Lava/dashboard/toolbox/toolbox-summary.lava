@@ -8,8 +8,6 @@
     {% for gm in groupmemberItems %}
         {% if gm.GroupRole.Name == 'Coach' %}
             {% assign coach = gm %}
-        {% else if gm.GroupRole.Name == 'AssistantCoach' %}
-            {% assign assistantCoach = gm %}    
         {% endif %}
     {% endfor %}
 {% endgroupmember %}
@@ -26,7 +24,6 @@
 {% assign children = coach.Person | Children %}
 {% for child in children %}
     {% assign childGroups = child | Groups:'73','Active' %}
-    {{ child.FullName }}
 {% endfor %}    
 
 <div class="person-summary">
@@ -39,9 +36,9 @@
             </div>
             <div class="person-details-item">
                 <h5>Assistant Coach</h5>
-                {% for gm in group.Members %}
-                    {% if gm.GroupRole.Name == 'Assistant Coach' %}
-                        {{ gm.Person.FullName }}  
+                {% for assistantCoach in group.Members %}
+                    {% if assistantCoach.GroupRole.Name == 'Assistant Coach' %}
+                        {{ assistantCoach.Person.FullName }}  
                     {% endif %}     
                 {% endfor %}
             </div>

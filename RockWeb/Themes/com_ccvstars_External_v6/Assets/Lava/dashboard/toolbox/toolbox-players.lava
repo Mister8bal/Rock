@@ -1,0 +1,35 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-players.lava' %}
+{% endcomment %}
+
+<div class="players">
+    {% assign groupid = PageParameter['GroupId'] %}
+    {% groupmember where:'GroupId == {{groupid}}' %}
+        {% for gm in groupmemberItems %}
+            {% assign parents = gm.Person | Parents %}
+            {% if gm.GroupRole.Name != 'Coach' and gm.GroupRole.Name != 'Assistant Coach' and gm.GroupRole.Name != 'Team Manager' %}
+                <div class="player">    
+                    <div class="player-image">
+                        {% if gm.Person.PhotoId != 0 %}
+                            <img src="/GetImage.ashx?Id={{ gm.Person.PhotoId }}&width=100&height=100" />
+                        {% elseif gm.Person.Gender == 1 %}
+                            <img src="/Assets/Images/person-no-photo-child-male.svg?&width=100&height=100" />
+                        {% elseif gm.Person.Gender == 2 %}
+                            <img src="/Assets/Images/person-no-photo-child-female.svg?&width=100&height=100" />
+                        {% endif %}
+                    </div>
+                    <div class="player-info">
+                        <h4>{{ gm.Person.FullName }}</h4>
+                        <strong>Parents:</strong>
+                        {% for person in parents %}
+                            {{ person.FirstName }}
+                            {% if forloop.first %}
+                                {{ ',' }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div> 
+            {% endif %}   
+        {% endfor %}
+    {% endgroupmember %}
+</div>

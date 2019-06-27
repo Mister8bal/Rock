@@ -8,7 +8,11 @@
 }
 
 #zone-sectionb {
-    padding: 0% 5% 2% 10%;
+    padding: 0% 10% 2% 10%;
+}
+
+#zone-sectiona, #zone-sectionb {
+    max-width: 100%;
 }
 
 /* End Zones & Sections */
@@ -44,6 +48,57 @@ strong {
     font-weight: 700;
 }
 
+.header {
+    height: unset;
+}
+
+.sport-title {
+    padding-left: 45px;
+}
+
+.sport-title h3 {
+    padding: 30px 0 25px 0;
+}
+
+.sport-title p {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 24px;
+    padding-bottom: 65px;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+}
+
+.right h3 {
+    padding-bottom: 15px;
+}
+
+.right a {
+    color: #1ea0d4;
+    text-decoration: none;
+    font-family: heebo;
+    font-size: 26px;
+    line-height: 29px;
+    font-weight: 400;
+    padding-bottom: 30px; 
+}
+
+.rules-panel object {
+    min-height: 600px;
+}
+
+.rules-panel h3 {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#pdfRulesDownload {
+    display: none;
+}
+
 /* End Overrides */
 
 /* Person Info */
@@ -65,6 +120,7 @@ strong {
 .person-details-item p {
     margin: 0;
     padding: 5px 0;
+    color: #000000;
 }
 
 .person-details-item {
@@ -111,33 +167,33 @@ strong {
 /* End Person Info */
 
 /* Panels */
-#dashboard-panel {
+#players-panel {
     padding: 0 30px;
 }
 
-.person-image img {
+.player-image img {
     width: 100px;
     height: 100px;
 }
 
-.person-image {
+.player-image {
     padding-right: 10px;
 }
 
-.person-rows {
+.players {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 25px 0;
 }
 
-.person {
+.player {
     width: 45%;
     display: flex;
     padding-bottom: 10px;
 }
 
-.person-info h4 {
+.player-info h4 {
     font-weight: 700;
 }
 
@@ -181,12 +237,12 @@ strong {
     /* End Overrides */
 
     /* Panels */
-    .person {
+    .player {
         width: 100%;
         padding-bottom: 10px;
     }
 
-    .person-rows {
+    .players {
         width: 100%;
         padding-bottom: 10px;
     }

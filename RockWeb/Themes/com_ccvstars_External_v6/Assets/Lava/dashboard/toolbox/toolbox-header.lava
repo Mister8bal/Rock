@@ -2,9 +2,6 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-header.lava' %}
 {% endcomment %}
 
-{% assign playerViewingPermissions = true %}
-{% assign CoachViewingPermissions = false %}
-
 {% comment %} Check for GroupId page parameter, if missing redirect back to dashboard {% endcomment %}
 {% unless PageParameter.GroupId %}
     {% if CurrentPersonCanEdit %}
@@ -23,87 +20,78 @@
     {% endfor %}
 {% endgroup %}
 
-{% comment %} 
-{% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" %}
-    {% assign CoachViewingPermissions = true %}
-{% assign allowedToViewPlayer = true %} 
-{% endif %} {% endcomment %}
-
 <script>
 
-    // var playerViewingPermissions = '{{ allowedToViewPlayer }}';
-    // var CoachViewingPermissions = '{{ allowedToViewCoach }}';
+    // adds on "onload" hook to the window.onload function chain
+    var oldonload = window.onload;
+    window.onload = (typeof window.onload != 'function') ?
+        handleOnLoad : function() { 
+            oldonload(); handleOnLoad(); 
+        };
 
-    // if (CoachViewingPermissions == 'true' || playerViewingPermissions == 'true' ) {
+    var gCurrentLink;
+    var gCurrentPanel;
 
-        // adds on "onload" hook to the window.onload function chain
-        var oldonload = window.onload;
-        window.onload = (typeof window.onload != 'function') ?
-            handleOnLoad : function() { 
-                oldonload(); handleOnLoad(); 
-            };
+    function handleOnLoad() {
+        // default to the first panel
+        gCurrentLink = $("#players-button")[0];
+        gCurrentPanel = $("#players-panel")[0];
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    }
 
-        var gCurrentLink;
-        var gCurrentPanel;
-
-        function handleOnLoad() {
-            // default to the first panel
-            gCurrentLink = $("#dashboard-button")[0];
-            gCurrentPanel = $("#dashboard-panel")[0];
-            togglePanel( gCurrentLink, gCurrentPanel, true );
+    function togglePanel(panelLink, panelObj, enabled) {
+        if( enabled ) {
+            panelLink.classList.add('tab-selected');
+            panelObj.style.display="block";
         }
-
-        function togglePanel(panelLink, panelObj, enabled) {
-            if( enabled ) {
-                panelLink.classList.add('tab-selected');
-                panelObj.style.display="block";
-            }
-            else {
-                panelLink.classList.remove('tab-selected');
-                panelObj.style.display="none";
-            }
+        else {
+            panelLink.classList.remove('tab-selected');
+            panelObj.style.display="none";
         }
-            
-        function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-            // remove styling from default mobile panel - Jered better way?
-            $('#dashboard-mobile-button').removeClass('tab-selected');
+    }
+        
+    function linkClicked(linkElement, sectionName, showInfoBanner = true) {
+        $('#players-mobile-button').removeClass('tab-selected');
 
-            // turn off existing panel
-            togglePanel( gCurrentLink, gCurrentPanel, false );
-            
-            var targetPanel = $("#" + sectionName + "-panel")[0];
-            gCurrentPanel = targetPanel;
-            gCurrentLink = linkElement;
-            
-            togglePanel( gCurrentLink, gCurrentPanel, true );
-        }
+        // turn off existing panel
+        togglePanel( gCurrentLink, gCurrentPanel, false );
+        
+        var targetPanel = $("#" + sectionName + "-panel")[0];
+        gCurrentPanel = targetPanel;
+        gCurrentLink = linkElement;
+        
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    }
 
-        function tryToggleInfoBanner( sectionName ) {
-        }
-    // }
+    function tryToggleInfoBanner( sectionName ) {
+    }
 </script>
 
-    <div class="header">
-        <h4>Team Info</h4>
-    </div>
+<div class="header">
+    <h4>Team Info</h4>
+</div>
 
+<div class="tabbed-panel-view-cards">
     <div class="tabbed-panel-view-desktop">
-        <div id="dashboard-button" class="item" onClick="linkClicked(this, 'dashboard')">Toolbox</div>
-        <div id="contact-team-button" class="item" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
-        <div id="practice-schedule-button" class="item" onClick="linkClicked(this, 'practice-schedule')">Practice Schedule</div>
-        <div id="game-schedule-button" class="item" onClick="linkClicked(this, 'game-schedule')">Game Schedule</div>
-        <div id="rules-button" class="item" onClick="linkClicked(this, 'rules', false)">Rules</div>
-    </div>
-
-    <div class="tabbed-panel-view-mobile">
-        <div class="mobile-items">
-            <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="item tab-selected">Dashboard</div>
-            <div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team')" class="item">Contact Team</div>
-            <div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule')" class="item">Practice Schedule</div>
-            <div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule')" class="item">Game Schedule</div>
-            <div id="rules-mobile-button" onClick="linkClicked(this, 'rules', false)" class="item">Rules</div>
+        <div class="tabs">
+            <div id="players-button" class="tab" onClick="linkClicked(this, 'players')">Toolbox</div>
+            <div id="contact-team-button" class="tab" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
+            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice Schedule</div>
+            <div id="game-schedule-button" class="tab" onClick="linkClicked(this, 'game-schedule')">Game Schedule</div>
+            <div id="rules-button" class="tab" onClick="linkClicked(this, 'rules', false)">Rules</div>
         </div>
     </div>
+</div>    
+
+<div class="tabbed-panel-view-mobile">
+    <div class="mobile-items">
+        <div id="players-mobile-button" onClick="linkClicked(this, 'players')" class="tab tab-selected">Dashboard</div>
+        <div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team')" class="tab">Contact Team</div>
+        <div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule')" class="tab">Practice Schedule</div>
+        <div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule')" class="tab">Game Schedule</div>
+        <div id="rules-mobile-button" onClick="linkClicked(this, 'rules')" class="tab">Rules</div>
+    </div>
+</div>
 
 <script>
     $(document).ready(function() {
