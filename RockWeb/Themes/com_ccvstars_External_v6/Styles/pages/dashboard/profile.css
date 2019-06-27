@@ -15,6 +15,20 @@ h3 {
     line-height: 32px;
 }
 
+.title {
+    display: block;
+    text-align: left;
+}
+
+.title h1 {
+    color: #EA3E29;
+}
+
+.title p {
+    color: #000000;
+    margin: 0;
+}
+
 /* End Overrides */
 
 /* Person Info */
@@ -78,7 +92,6 @@ h3 {
 .profile-card {
     border-radius: 5px;
     background-color: #FFFFFF;
-    margin: 0 10%;
     width: 100%;
 }
 
@@ -211,6 +224,10 @@ h3 {
 
     .person-photo {
         padding-bottom: 5%;
+    }
+
+    .person-head-row {
+        padding: 10% 16px;
     }
 
     .profile-card, .account-actions, .recent-registrations {
