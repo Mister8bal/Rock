@@ -54,11 +54,13 @@
                                         <p>Distance: {{ groupdistancelist.Distance }} miles away</p>                                      
                                     {% endif %} 
                                 {% endfor %}
-                                {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
-                                    {% if LinkedPages.RegisterPage contains '?' %}
-                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
-                                    {% else %}
-                                        <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
+                                {% if seatsRemaning > 0 or group.GroupCapacity == null %}
+                                    {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
+                                        {% if LinkedPages.RegisterPage contains '?' %}
+                                            <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
+                                        {% else %}
+                                            <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}?GroupId={{ group.Id }}'>Register</a>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
                             </div>
