@@ -1,6 +1,10 @@
 {% comment %}
-    Paste this wherever you want the FAQ Feature: (Don't include the BEGIN / END copy lines. Duh.)
-
+    Paste this wherever you want the Share Feature: (Don't include the BEGIN / END copy lines. Duh.)
+    ** IMPORTANT ***
+    Please note that any comma or colon within the content of either the question or the answer
+    will break the faq.  Instead, replace these characters with the following:
+    comma: &#44; 
+    colon: 	&#58;
     <!--BEGIN COPY-->
     
     {% capture faqContent %}
@@ -100,7 +104,7 @@
     {% for question in qa %}
 
     {% assign q = question | Split: ':' %}
-    <div id="accordion" class="faq-list" role="tablist"> 
+    <div class="faq-list" role="tablist"> 
         <div class="card">
 
             <div class="card-header question">
@@ -141,52 +145,92 @@
      */
     $(function(){
 
-        let hideEl = function($el, $t){
+        /**
+         * We need to create a global namespace
+         * to encapsulate all of our faq functionality.
+         * This is done to ensure that we can include
+         * this script multiple times on the page
+         * without any collisions.
+         */
+        window.ccvfaq = faq = window.ccvfaq || {};
+        faq.registeredFaqs = [];
+
+        faq.hideEl = function($el, $t){
             $t.find('i').removeClass('fa-minus').addClass('fa-plus');
             $el.removeClass('in').slideUp(function(){
                 $el.trigger('ccv.collapse.hidden');
             });
         }
 
-        let showEl = function($el, $t) {
+        faq.showEl = function($el, $t) {
             $t.find('i').removeClass('fa-plus').addClass('fa-minus');
             $el.addClass('in').slideDown(function(){
                 $el.trigger('ccv.collapse.shown');
             });
         }
 
-        let toggleQA = function(e){
+        faq.toggleQA = function(e){
             e.preventDefault();
+            e.stopPropagation();
             let $btn = $(e.currentTarget);
             let $el = $('#'+$btn.attr('href'));
             if($el.hasClass("in")){
-                hideEl($el,$btn);
+                faq.hideEl($el,$btn);
             }else{
-                showEl($el,$btn);
+                faq.showEl($el,$btn);
             }
         }
-
-        $(".faq-list").each(function(){
-            /**
-            * Create a unique pseudo random id to
-            * ensure that questions and answers are 
-            * mapped correctly.
-            */
-            let uId = Math
+        /**
+         * Generate a unique pseudo unique id.  
+         * These are technically not 100% unique, but
+         * for our purposes they should work just fine. 
+         */
+        faq.getUid = function(){
+            return Math
             .random()
             .toString(36)
             .substring(2, 15) + 
             Math.random()
             .toString(36)
             .substring(2, 15);
+        }
 
-            $(this).find(".q-toggle").attr('href',uId);
-            $(this).find('.ans').attr('id',uId)
-            
-            let $thisEl = $(this).find('#'+uId);
-            $(this).find(".q-toggle").click(toggleQA);
+        faq.initQA = function($parentEl){
+            $parentEl.find(".faq-list").each(function(){
+                /**
+                * Create a unique pseudo random id to
+                * ensure that questions and answers are 
+                * mapped correctly.
+                */
+                let uId = faq.getUid();
 
+                $(this).find(".q-toggle").attr('href',uId);
+                $(this).find('.ans').attr('id',uId)
+                
+                let $thisEl = $(this).find('#'+uId);
+
+                if(!faq.registeredFaqs.includes(uId)){
+                    $(this).find(".q-toggle").click(faq.toggleQA);
+                    faq.registeredFaqs.push(uId);
+                }
+
+            });
+        }
+
+        /**
+         * Loop through each faq section and register it.  
+         * This is to prevent doubling on the click handler
+         * for each faq.
+         */
+        $('.faq-section').each(function(){
+            if(!$(this).hasClass("registered")){
+                $(this).addClass("registered");
+                $(this).attr("id",faq.getUid());
+                faq.initQA($(this))
+            }
         });
+
+        
 
     });
 
