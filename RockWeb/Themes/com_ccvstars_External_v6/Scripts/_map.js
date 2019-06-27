@@ -56,7 +56,7 @@
     CCV.mapType = new google.maps.StyledMapType(CCV.mapStyles);
 
     // Marker Styles
-    CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Assets/Images/star-red.svg' : '/Assets/Images/star-red.svg';
+    CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Themes/com_ccvstars_External_v6/Assets/Icons/star-red.svg' : '/Themes/com_ccvstars_External_v6/Assets/Icons/star-red.svg';
     CCV.marker = new google.maps.MarkerImage(CCV.markerFile, null, null, null, new google.maps.Size(200,78));
 
 
@@ -211,16 +211,16 @@
       result += '   <div class="name">SPORTS AT THIS LOCATION</div>'
       result += '       <div class="campus-info-window">'
       if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
-        result += '<img src="Assets/Images/football-black.svg">'
+        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/football-black.svg">'
       }
       if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
-        result += '<img src="Assets/Images/soccer-black.svg">'
+        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/soccer-black.svg">'
       }
       if (campusSports.includes("basketball")) {
-        result += '<img src="Assets/Images/basketball-black.svg">'
+        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/basketball-black.svg">'
       }
       if (campusSports.includes("baseball")) {
-        result += '<img src="Assets/Images/baseball-black.svg">'
+        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/baseball-black.svg">'
       }
 
       result += '  </div>'
