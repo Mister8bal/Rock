@@ -1,0 +1,68 @@
+/**
+ * Camps Inner FAQ Styles
+ * This file contains all general styles for camps child pages.  Changes here
+ * will modify all camps child pages.  
+ *
+ * To edit specific camps child page styles, look for a for the file name of camps-inner-SPECIFIC-CAMP.css
+ */
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-camps.png");
+}
+
+/* Mobile Background Image */
+@media screen and (max-width: 768px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/camps/hero-mobile-camps.png");
+    }
+}
+
+#section-a-bg {
+	background-color:#f9f9f9;
+	padding-bottom:48px;
+}
+
+#section-a-bg h1, #section-a-bg h2 {
+    text-align: left;
+}
+#section-a-bg h2 {
+    margin-top: 4rem;
+}
+#section-a-bg h2.no-top-margin {
+    margin-top:0;
+}
+
+#section-b-bg {
+    background-color:#f9f9f9;
+    padding: 2.8rem 0 4rem 0;
+}
+
+#section-c-bg {
+    background-color:#f9f9f9;
+}
+
+#section-d-bg {
+    background-color: #f9f9f9;
+    padding: 48px 0;
+} 
+
+#section-e-bg {
+    background-color:#f9f9f9;
+}
+
+#section-e-bg h2 {
+    padding: 3rem 0 2.8rem 0;
+}
+
+.title h1 {
+    font-size: 60px;
+    font-family: akrobat;
+    color: #FFFFFF;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-primary {
+    max-width:none;
+}
+
