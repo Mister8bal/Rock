@@ -40,7 +40,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     public partial class VolunteerScreeningList : RockBlock
     {
         protected Person TargetPerson { get; set; }
-                
+        const string sApplicationType_Standard = "Standard";
+        const string sApplicationType_KidsStudents = "Kids & Students";
+        const string sApplicationType_SafetySecurity = "Safety & Security";
+        const string sApplicationType_STARS = "STARS";
+        const string sApplicationType_Renewal = "Renewal";
+
         #region Control Methods
 
         /// <summary>
@@ -150,14 +155,14 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
             var attribQuery = new AttributeService( rockContext ).Queryable( ).AsNoTracking( );
             var avQuery = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( );
-             var attribWithValue = attribQuery.Join( avQuery, a => a.Id, av => av.AttributeId, ( a, av ) => new { Attribute = a, AttribValue = av } )
+            var attribWithValue = attribQuery.Join( avQuery, a => a.Id, av => av.AttributeId, ( a, av ) => new { Attribute = a, AttribValue = av } );
             
             var vsForPersonQuery = vsQuery.Join( paQuery, vs => vs.PersonAliasId, pa => pa.Id, ( vs, pa ) => new { VolunteerScreening = vs, PersonAlias = pa } )
-                                       .Where( a => a.PersonAlias.PersonId == TargetPerson.Id )
+                                       .Where( c => c.PersonAlias.PersonId == TargetPerson.Id )
                                        .Select( a => a.VolunteerScreening )
                                        .AsQueryable( );
 
-            var instanceQuery = vsForPersonQuery.Join( wfQuery, vs => vs.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreening = vs, WorkflowStatus = wf.Status, InitiatedBy = wf.InitiatorPersonAliasId  } ).AsQueryable( );
+            var instanceQuery = vsForPersonQuery.Join( wfQuery, vs => vs.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreening = vs, Workflow = wf, WorkflowStatus = wf.Status, InitiatedBy = wf.InitiatorPersonAliasId  } ).AsQueryable( );
 
             // JHM 7-10-17
                 // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
@@ -173,7 +178,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                                                   SentDate = vs.VolunteerScreening.CreatedDateTime.Value,
                                                                   InitiatedBy = vs.InitiatedBy,
                                                                   CompletedDate = vs.VolunteerScreening.ModifiedDateTime.Value,
-                                                                  vs.WorkflowStatus } ).ToList( );
+                                                                  vs.WorkflowStatus,
+                                                                  vs.Workflow } ).ToList( );
 
                 gGrid.DataSource = instances.OrderByDescending( vs => vs.SentDate ).OrderByDescending( vs => vs.CompletedDate ).Select( vs => 
                     new {
