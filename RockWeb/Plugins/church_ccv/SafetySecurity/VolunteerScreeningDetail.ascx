@@ -53,7 +53,9 @@
                         <asp:Literal ID="lInitiatedBy" runat="server"></asp:Literal>
                     </div>
                 </div>
+            </div>
 
+            <div class="panel-body"
                 <h4 class="panel-title"><strong>Application Type</strong></h4>
                 
                 <div class="row">

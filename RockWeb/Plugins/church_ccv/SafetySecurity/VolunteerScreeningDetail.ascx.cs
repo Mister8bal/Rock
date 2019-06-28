@@ -256,7 +256,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 // first, get the application workflow
                 Workflow applicationWorkflow = workflowService.Queryable( ).AsNoTracking( ).Where( wf => wf.Id == vsInstance.Application_WorkflowId ).SingleOrDefault( );
 
-                lApplicationType = ParseApplicationType( applicationWorkflow, starsQueryResult )
+                lApplicationType.Text = ParseApplicationType( applicationWorkflow, starsQueryResult );
 
                 if( applicationWorkflow.Status == "Completed" )
                 {
