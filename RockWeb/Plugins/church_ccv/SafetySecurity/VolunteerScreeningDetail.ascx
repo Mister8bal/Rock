@@ -53,6 +53,14 @@
                         <asp:Literal ID="lInitiatedBy" runat="server"></asp:Literal>
                     </div>
                 </div>
+
+                <h4 class="panel-title"><strong>Application Type</strong></h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <asp:Literal ID="lApplicationType" runat="server"></asp:Literal>
+                    </div>
+                </div>
             </div>
 
             <%-- Background Check info --%>
