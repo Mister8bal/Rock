@@ -5,7 +5,7 @@
 {% comment %} Render Header {% endcomment %}
 <div class="campuses-cards">
     <div class="campuses-cards-header">
-        <h3>Our Campuses</h3>
+        <h3>9 Valley Locations</h3>
         <div class="nav-buttons">
             <button type="button" class="nav-button nav-prev"><i class="mdi mdi-chevron-left event-card-navigation-icon"></i></button>
             <button type="button" class="nav-button nav-next"><i class="mdi mdi-chevron-right event-card-navigation-icon"></i></button>

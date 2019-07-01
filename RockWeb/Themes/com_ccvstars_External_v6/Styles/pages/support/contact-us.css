@@ -2,11 +2,19 @@
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-contact-us.jpg");
 }
 
-h2 {
+.contact-us h2 {
     font-size: 40px;
     line-height: 42px;
     font-weight: 700;
     color: #000000;
+}
+
+.contact-us .info {
+    display: none;
+}
+
+textarea.form-control {
+    background-color: #ececec;
 }
 
 /**** Phone Styling ****/
