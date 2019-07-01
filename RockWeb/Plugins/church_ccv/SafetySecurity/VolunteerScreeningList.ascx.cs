@@ -40,6 +40,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
     public partial class VolunteerScreeningList : RockBlock
     {
         protected Person TargetPerson { get; set; }
+        const int sCharacterReference_WorkflowId = 203;
         const string sApplicationType_Standard = "Standard";
         const string sApplicationType_KidsStudents = "Kids & Students";
         const string sApplicationType_SafetySecurity = "Safety & Security";
@@ -139,6 +140,64 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             qryParams.Add( "VolunteerScreeningInstanceId", e.RowKeyId.ToString() );
 
             NavigateToLinkedPage( "DetailPage", qryParams );
+        }
+
+        /// <summary>
+        /// Handles the Delete event of the gGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
+        protected void gGrid_Delete( object sender, RowEventArgs e )
+        {
+            if ( e.RowKeyId.ToString().AsInteger() > 0 )
+            {
+                using ( RockContext rockContext = new RockContext() )
+                {
+                    var vsService = new Service<VolunteerScreening>( rockContext );
+                    VolunteerScreening screening = vsService.Get( e.RowKeyId.ToString().AsInteger() );
+
+                    rockContext.WrapTransaction( () =>
+                    {
+                        // remove attached workflows
+                        if ( screening != null && screening.Application_WorkflowId.HasValue )
+                        {
+                            var workflowService = new WorkflowService( rockContext );
+                            Workflow wf = workflowService.Get( screening.Application_WorkflowId.Value );
+
+                            // get character references
+                            List<int?> attribIds = new AttributeValueService( rockContext ).Queryable()
+                                .AsNoTracking()
+                                .Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == screening.Id )
+                                .Select( av => av.EntityId )
+                                .ToList();
+
+                            List<Workflow> charRefWorkflows = new List<Workflow>();
+                            if ( attribIds.Count > 0 )
+                            {
+                                charRefWorkflows = workflowService.Queryable()
+                                    .Where( w => w.WorkflowTypeId == sCharacterReference_WorkflowId && attribIds.Contains( w.Id ) )
+                                    .ToList();
+
+                                // remove character workflows
+                                if ( charRefWorkflows.Any() )
+                                {
+                                    workflowService.DeleteRange( charRefWorkflows );
+                                }
+                            }
+
+                            // remove attached workflow
+                            workflowService.Delete( wf );
+                        }
+
+                        // remove volunteer screening
+                        vsService.Delete( screening );
+
+                        rockContext.SaveChanges();
+                    } );
+
+                    BindGrid( rockContext );
+                }
+            }
         }
 
         #endregion
