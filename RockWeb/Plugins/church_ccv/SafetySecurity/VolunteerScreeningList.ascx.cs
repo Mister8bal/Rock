@@ -94,6 +94,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 {
                     BindGrid( rockContext );
                 }
+                string url = string.Format("~/WorkflowEntry/230?PersonId={0}",TargetPerson.Id);
+                hlSendApplication.NavigateUrl = ResolveRockUrl(url);
             }
         }
         
