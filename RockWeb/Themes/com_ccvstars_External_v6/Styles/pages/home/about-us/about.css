@@ -10,9 +10,8 @@
     margin: 0 15%;
 }
 
-#zone-sectione, #section-e-bg {
-    padding: 0;
-    text-align: center;
+#zone-sectione {
+    max-width: 100%;
 }
 
 /* End Zones & Sections */
@@ -22,97 +21,79 @@
     overflow: unset;
 }
 
-h2 {
-    color: #000;
-    font-size: 44px;
-    line-height: 42px;
+.title {
+    align-items: center;
 }
 
-h3 {
-    text-align: left;
-}
-
-h4 {
-    font-weight: 600;
-    font-size: 34px;
-    line-height: 36px;
-    text-align: left;
+.title h4 {
+    color: #EA3E29;
 }
 
 p {
     color: #333333;
 }
 
-/* End Overrides */
+strong {
+    font-weight: 700;
+}
 
 .section-video {
     padding-top: 0px;
     padding-bottom: 0px;
 }
 
-.history-container {
-    padding-top: 200px;
-}
-
-.mtag-line li {
-    border-left: 2px solid red;
-    list-style: none;
-    padding-left: 20px;
-}
+/* End Overrides */
 
 hr {
     color: gray;
 }
 
-h6 {
-    color: #000;
-    font-size: 18px;
+.history h3, .mtag h3, .weekly-mtag h3 {
+    color: #EA3E29;
+    text-align: left;
+}
+
+.mtag h4 {
+    color: #000000;
     font-weight: 900;
+    font-size: 20px;
+    line-height: 22px;
+    text-align: left;
     text-transform: capitalize;
-
 }
 
-.mtag {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 50px 0;
-}
-
-.mtag-list ul {
+.history > ul {
     border-left: 2px solid red;
     list-style-type: none;
     padding: 10px 20px;
 }
 
-.mtag-list-top li {
-    padding: 0px;
-    color: #EA3E29;
-}
-
-.mtag-list li {
-    padding: 5px;
-    font-weight: 700;
-}
-
-span {
-    color: #000000;
-}
-
-strong {
-    font-weight: 700;
-}
-
-.left-text {
+.weekly-mtag {
     background-color: #EA3E29;
     color: #ffffff;
-    padding-left: 20px;
+    padding: 30px 40px;
     width: 400px;
     margin-right: 50px;
+    border-radius: 5px;
 }
 
-.left-text h2 {
+.weekly-mtag h3, .weekly-mtag p {
     color: #ffffff;
     padding-left: 20px; 
+}
+
+.mtag > ul {
+    list-style: none;
+    padding: 0 0 0 15px;
+}
+  
+.mtag > ul li::before {
+    content: "\2022";
+    color: #EA3E29;
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
 }
 
 /**** Phone Styling ****/
@@ -121,6 +102,19 @@ strong {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/about-us/hero-mobile-about-us.jpg");
         height: unset;
     }
+
+    #zone-sectione {
+        margin: 0;
+    }
+
+    .weekly-mtag {
+        width: 100%;
+    }
+
+    .mtag > ul {
+        padding: 0 0 0 5%;
+    }
+
 }
 
 /**** End Phone Styling ****/

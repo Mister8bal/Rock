@@ -3,12 +3,7 @@
 }
 
 #zone-sectiona {
-    padding: unset;
-}
-
-h4 {
-    font-size: 50px;
-    line-height: 52px;
+    max-width: 100%;
 }
 
 .camps-row {
@@ -55,14 +50,18 @@ h4 {
 
 /**** Tablet Styling  ****/
 @media screen and (max-width: 1023.98px) {
+    #zone-sectiona {
+        margin: 0;
+    }
+
     .camps-row {
         padding: 0 5%;
         height: 400px;
     }
 
     .camps-row h3 {
-        font-size: 18px;
-        line-height: 20px;
+        font-size: 25px;
+        line-height: 27px;
     }
 
     .camps-row p {
