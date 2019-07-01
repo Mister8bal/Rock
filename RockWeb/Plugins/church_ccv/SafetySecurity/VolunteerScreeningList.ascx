@@ -10,19 +10,21 @@
                 </div>
             </div>
             <div class="panel-body">
-            
 
-                <div class="grid grid-panel">
-
+                <div class="grid grid-panel vs-list">
                     <Rock:Grid ID="gGrid" runat="server" OnRowSelected="gGrid_Edit">
                         <Columns>
                             <Rock:RockBoundField DataField="State" HeaderText="Status" SortExpression="State" />
-                            <Rock:RockBoundField DataField="InitiatedBy" HeaderText="Initiated By" SortExpression="InitiatedBy" />
+                             <Rock:RockBoundField DataField="InitiatedBy" HeaderText="Initiated By" SortExpression="InitiatedBy" />
+                             <Rock:RockBoundField DataField="ApplicationType" HeaderText="Application Type" SortExpression="ApplicationType" />
                             <Rock:RockBoundField DataField="SentDate" HeaderText="Application Sent" SortExpression="SentDate" />
                             <Rock:RockBoundField DataField="CompletedDate" HeaderText="Application Completed" SortExpression="CompletedDate" />
                             <Rock:DeleteField OnClick="gGrid_Delete" />
                         </Columns>
                     </Rock:Grid>
+
+                    <asp:HyperLink ID="hlSendApplication" runat="server" Text="Send Application" CssClass="btn btn-default app-btn" />
+                    
                 </div>
             </div>
         </asp:Panel>

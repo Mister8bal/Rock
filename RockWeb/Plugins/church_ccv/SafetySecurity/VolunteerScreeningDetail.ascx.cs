@@ -46,6 +46,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         const int sCharacterReference_WorkflowId = 203;
         const int sSendNewCharacterReference_WorkflowId = 213;
         const int sResendApplication_WorkflowId = 231;
+        
+        // the actual types of Volunteer Screening Applications aren't
+        // defined anywhere. However, in order to filter on them, we need thm listed.
+        // we put them here since this is the only area in all of Volunteer Screening that cares about them.
+        const string sApplicationType_Standard = "Standard";
+        const string sApplicationType_KidsStudents = "Kids & Students";
+        const string sApplicationType_SafetySecurity = "Safety & Security";
+        const string sApplicationType_STARS = "STARS";
+        const string sApplicationType_Renewal = "Renewal";
 
         private int VSInstanceId { get; set; }
 
@@ -225,12 +234,29 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
         protected void ShowApplicationInfo( RockContext rockContext, VolunteerScreening vsInstance, Person person )
         {
+
+            // Now, since the Campus Attribute Value depends on the Attribute table, we need to join those two tables, and then join that to the query we built above.
+            var attribQuery = new AttributeService( rockContext ).Queryable( ).AsNoTracking( );
+            var avQuery = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( );
+            var attribWithValue = attribQuery.Join( avQuery, a => a.Id, av => av.AttributeId, ( a, av ) => new { Attribute = a, AttribValue = av } )
+                                                 .Where( a => a.Attribute.EntityTypeQualifierColumn.Equals( "WorkflowTypeId", StringComparison.OrdinalIgnoreCase ) );
+            
+            // JHM 7-10-17
+            // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
+            // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
+            // We can get rid of this when all workflows of type 202 are marked as 'completed'
+            var starsQueryResult = attribWithValue.Where( a => a.Attribute.Key == "ApplyingForStars" )
+                .Select( a => new ApplyingForStars{  EntityId = a.AttribValue.EntityId, Applying = a.AttribValue.Value } )
+                .ToList( );
+
             if( vsInstance.Application_WorkflowId.HasValue )
             {
                 WorkflowService workflowService = new WorkflowService( rockContext );
 
                 // first, get the application workflow
                 Workflow applicationWorkflow = workflowService.Queryable( ).AsNoTracking( ).Where( wf => wf.Id == vsInstance.Application_WorkflowId ).SingleOrDefault( );
+
+                lApplicationType.Text = ParseApplicationType( applicationWorkflow, starsQueryResult );
 
                 if( applicationWorkflow.Status == "Completed" )
                 {
@@ -339,6 +365,47 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 rockContext.SaveChanges();
 
                 ShowDetail( VSInstanceId );
+            }
+        }
+
+        // JHM 7-10-17
+        // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
+        // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
+        // We can get rid of this when all workflows of type 202 are marked as 'completed'
+        public class ApplyingForStars
+        {
+            public int? EntityId { get; set; }
+            public string Applying { get; set; }
+        }
+
+        string ParseApplicationType( Workflow workflow, List<ApplyingForStars> starsQueryResult )
+        {
+            // JHM 7-10-17
+            // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
+            // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
+            // We can get rid of this when all workflows of type 202 are marked as 'completed'
+            ApplyingForStars applyingForStars = starsQueryResult.Where( av => av.EntityId == workflow.Id ).SingleOrDefault( );
+            if ( applyingForStars != null )
+            {
+                return applyingForStars.Applying == "True" ? sApplicationType_STARS : sApplicationType_Standard;
+            }
+            else
+            {
+                // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
+                // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
+                int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
+                if ( appTypeStartIndex > -1 )
+                {
+                    // there was an ending "()", so take just that part of the workflow name
+                    string applicationType = workflow.Name.Substring( appTypeStartIndex );
+
+                    // take the character after the first, up to just before the closing ')', which removes the ()s
+                    return applicationType.Substring( 1, applicationType.Length - 2 );
+                }
+                else
+                {
+                    return sApplicationType_Standard;
+                }
             }
         }
                 
