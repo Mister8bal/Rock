@@ -150,6 +150,13 @@
 @border-radius-base: .5em;
 @input-border-radius: @border-radius-large;
 
+body {
+  display: none;
+  -ms-touch-action: none !important;
+  touch-action: none; /* Disable any special actions on tap/touch */
+  -ms-content-zooming: none; /* Disables zooming */
+}
+
 h1, h2, h3 {
   letter-spacing: 0;
 }

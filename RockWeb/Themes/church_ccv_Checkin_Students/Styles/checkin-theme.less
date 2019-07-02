@@ -140,6 +140,13 @@
 // Custom Overrides
 // --------------------------------------------------
 
+body {
+  display: none;
+  -ms-touch-action: none !important;
+  touch-action: none; /* Disable any special actions on tap/touch */
+  -ms-content-zooming: none; /* Disables zooming */
+}
+
 .checkin-count h3,
 .checkin-count li {
   color: #4c4c4b;
