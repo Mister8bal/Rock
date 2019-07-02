@@ -17,13 +17,14 @@
         <p class="summary">{{item.Summary}}</p>
     </div>
     {% endfor %}
+	
+	<div style="margin: 0 auto;">
+		{% if Pagination.PreviousPage != -1 %}
+		<a class="btn btn-primary" href="/watch/storiesv2?Page={{ Pagination.PreviousPage }}">Previous</a>
+		{% endif %}
+		{% if Pagination.NextPage != -1 %}
+		<a class="btn btn-primary" href="/watch/storiesv2?Page={{ Pagination.NextPage }}">More</a>
+		{% endif %}
+	</div>
 </div>
 
-<div class="container">
-	{% if Pagination.PreviousPage != -1 %}
-	<a class="btn btn-primary" href="/watch/storiesv2?Page={{ Pagination.PreviousPage }}">Previous</a>
-	{% endif %}
-	{% if Pagination.NextPage != -1 %}
-	<a class="btn btn-primary pull-right" href="/watch/storiesv2?Page={{ Pagination.NextPage }}">More</a>
-	{% endif %}
-</div>
