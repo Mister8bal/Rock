@@ -1,24 +1,235 @@
 ﻿/* Zones & Sections */
-#section-a-bg {
-    background-color: #efefef;
-}
-
 #section-feature-bg {
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-register.jpg");
 }
 
+#section-a-bg {
+    background-color: #efefef;
+}
+
+.zone-sectiona {
+    margin: 0 125px;
+    max-width: 100%;
+}
 /* End Zones & Sections */
 
-h3 {
-    text-align: left;
+/* Register Content */
+.about-stars p {
+    font-size: 24px;
+    line-height: 33px;
+    font-weight: 400;
+    color: #505050;
+    text-align: center;
+    padding: 90px 0;
 }
-
 
 hr {
-   border: 1px solid lightgray;
-   margin-top: 0;
-   margin-bottom: 60px;
+    border: 1px solid lightgray;
+    margin: 0 50px 110px 50px;
 }
+
+/* Register Grid */
+.register-header {
+    padding: 0 85px 50px 0;
+    max-width: 1100px;
+}
+
+.register-header h3 {
+    text-align: left;
+    padding: 0;
+    color: #e73d30;
+}
+
+.register-header p {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 300;
+    color: #333333;
+}
+
+.register-card {
+    background-color: #e73d30;
+    border-radius: 4px;
+    padding: 90px 85px;
+}
+
+/* Grid Filter */
+.register-filter-row {
+    display: flex;
+    justify-content: space-between;
+    color: #FFFFFF;
+    font-family: akrobat;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 17.5px;
+    padding-bottom: 20px;
+}
+
+.filter-row-left {
+    display: flex;
+}
+
+.register-filter-row input {
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+    padding: 0 4px;    
+}
+
+.register-filter-row .mdi-plus-circle-outline,.register-filter-row .fa-undo {
+    color: #FFFFFF;
+    margin: 0 10px;
+}
+
+.register-filter-row .mdi-plus-circle-outline {
+    font-size: 20px;
+    line-height: 21px;
+}
+
+.register-filter-row .fa-undo {
+    font-size: 16px;
+    line-height: 17px;
+}
+
+.filter-options {
+    display: flex;
+    align-items: center;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+}
+
+.option .select-dropdown-button {
+    padding: 5px 10px 5px 20px;
+    border-radius: 10px;
+    margin: 0 10px;
+    border: none;
+}
+
+.option .select-dropdown-button h6 {
+    font-size: 14px;
+    line-height: 17px;
+    font-weight: 700;
+}
+
+.option .select-dropdown-button b {
+    margin-left: 10px;
+}
+
+.option .select-dropdown-button .fa-caret-down:before {
+    font-size: 18px;
+}
+
+.limit-results {
+    margin-left: 10px;
+}
+
+.limit-results input {
+    width: 50px;
+    margin: 0 10px;
+    text-align: center;
+}
+
+
+/* Add Filter Modal */
+.modal-header {
+    padding: 15px 15px 0 15px;
+}
+.modal-header-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+}
+
+.modal h4 {
+    color: #e73d30;
+}
+
+.modal p {
+    color: #505050;
+}
+
+.modal .select-dropdown-button {
+    border: none;
+}
+
+.modal .select-dropdown-button b {
+    margin-left: 10px;
+}
+
+.filter-panel {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+
+
+
+/* Grid */
+.register-grid {
+    background-color: #FFFFFF;
+    border-radius: 4px;
+}
+
+.register-grid table {
+    width: 100%;
+}
+
+.register-grid th, .register-grid td {
+    border: 1px solid #e2e2e2;
+    padding: 20px 35px;
+}
+
+.register-grid th {
+    background-color: #e73d30;
+    color: #FFFFFF;
+}
+
+.register-grid th:nth-child(even) {
+    background-color: #000000;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Loading */
+.register-grid .loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading h5 {
+    color: #e73d30;
+    text-align: center;
+}
+
+
+
+
+/* overrides */
+button:focus {
+    outline: none;
+}
+
+
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {   

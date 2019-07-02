@@ -1,0 +1,218 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/register/register-grid.lava' %}
+{% endcomment %}
+
+<div class="register-card">
+    <div class="register-filter-row">
+        <div class="filter-row-left">
+            <div class="option">
+                <span>Filter:</span>
+            </div>
+            <div id="divFilterOptions" class="filter-options">
+            </div>
+            <div class="option">
+                <button type="button" data-toggle="modal" data-target="#modalAddFilter"><span class="mdi mdi-plus-circle-outline"></span></button>
+            </div>
+            <div class="option">
+                <i class="fa fa-undo" aria-hidden="true" onclick="resetFilter()"></i><span>Reset</span>
+            </div>
+            <div class="option limit-results">
+                <span>Show</span>
+                <input type="number" value="25">
+                <span>sports</span>
+            </div>
+        </div>
+        <div class="filter-row-right">
+            <div class="search">
+                <span>Search:</span>
+                <input id="tbSearch" type="text">
+            </div>
+        </div>
+    </div>
+    <div class="register-grid">
+        <table id="tblGrid" class="hidden">
+            <tr>
+                <th></th>
+                <th>Campus</th>
+                <th>Sport</th>
+                <th>Gender</th>
+                <th>Division</th>
+                <th>Season</th>
+                <th></th>
+            </tr>          
+        </table>
+        <div id="gridLoading" class="loading">
+            <h5>
+                Loading<br />
+                Registrations
+            </h5>
+            <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Filter Modal -->
+<div id="modalAddFilter" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-header-content">
+                    <h4>Add Filter</h4>
+                    <div class="select-dropdown">
+                        <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnModalFilterPanelSelect">Sport</h6><b class="fa fa-caret-down"></b></button>
+                        <ul class="dropdown-menu">
+                            <li><div id="sport-modal-button" onClick="showModalFilterPanel(this, 'sport', true)" class="item">Sport</div></li>
+                            <li><div id="campus-modal-button" onClick="showModalFilterPanel(this, 'campus', true)" class="item">Campus</div></li>
+                            <li><div id="gender-modal-button" onClick="showModalFilterPanel(this, 'gender', true)" class="item">Gender</div></li>
+                            <li><div id="division-modal-button" onClick="showModalFilterPanel(this, 'division', true)" class="item">Division</div></li>   
+                            <li><div id="season-modal-button" onClick="showModalFilterPanel(this, 'season', true)" class="item">Season</div></li>                           
+                        </ul>
+                    </div> 
+                </div>
+            </div>
+            <div class="modal-body">
+
+                {% comment %} Sport Filter Panel {% endcomment %}
+                <div id="pnlModalSport" class="filter-panel">
+                    <div>
+                        <input type="checkbox" name="sport" value="Baseball">Baseball
+                    </div>
+                    <div>
+                        <input type="checkbox" name="sport" value="Baseball">Basketball
+                    </div>
+                    <div>
+                        <input type="checkbox" name="sport" value="Baseball">Football
+                    </div>
+                    <div>
+                        <input type="checkbox" name="sport" value="Baseball">Soccer
+                    </div>
+                </div>
+
+                {% comment %} Campus Filter Panel {% endcomment %}
+                <div id="pnlModalCampus" class="filter-panel hidden">
+                    campus checkboxes
+                </div>
+
+                {% comment %} Gender Filter Panel {% endcomment %}
+                <div id="pnlModalGender" class="filter-panel hidden">
+                    gender checkboxes
+                </div>
+
+                {% comment %} Division Filter Panel {% endcomment %}
+                <div id="pnlModalDivision" class="filter-panel hidden">
+                    havent decided how to handle
+                </div>
+
+                {% comment %} Season Filter Panel {% endcomment %}
+                <div id="pnlModalSeason" class=" filter-panel hidden">
+                    season checkboxes
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="addFilter()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var activeRegistrations = [];
+
+    var getUrl = "/api/STARS/ActiveRegistrations";
+    
+    $.get(getUrl, function(data, status){
+        activeRegistrations = data.Data;
+
+        $(window).ready(function(){
+            initializeGrid();
+        });
+    });
+
+    function initializeGrid() {
+
+        buildModalCampusesPanel();
+
+        renderGrid(activeRegistrations);
+
+
+        $('#filter-panel').addClass('testytest');
+    
+
+    }
+
+    function renderGrid(gridItems) {
+        var itemsProcessed = 0;
+
+        // ensure table is empty
+        $('#tblGrid tr>td').remove();
+
+        var table = document.getElementById('tblGrid');
+
+
+        for (let i = 0; i < gridItems.length; i++) {
+            // create new row
+            var row = document.createElement('tr');
+
+            // add column data to row
+            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Icons/' + gridItems[i].Sport.toLowerCase() + '-black.svg">');
+            addCellToRow(row, gridItems[i].Campus);
+            addCellToRow(row, gridItems[i].Sport);
+            addCellToRow(row, gridItems[i].Gender);
+            addCellToRow(row, gridItems[i].Division);
+            addCellToRow(row, gridItems[i].Season);
+            addCellToRow(row, '<a href="{{ DetailsPage }}?EventOccurrenceId=' + gridItems[i].EventOccurenceId + '" class="btn btn-primary">More Info</a>' );
+
+            // add row to table
+            table.appendChild(row);
+
+            itemsProcessed++;
+        }
+
+        if ( itemsProcessed === gridItems.length ) {
+            // everything has processed, hide spinner and show grid
+            toggleGridLoading();
+        }
+    }
+
+    function addCellToRow(row, value) {
+        var cell = document.createElement('td');
+
+        cell.innerHTML = value;
+
+        row.appendChild(cell);
+    }
+
+
+
+    function addFilter() {
+        // hide grid and show spinner
+        toggleGridLoading();
+
+        // get the form values from the modal
+
+        // filter activeRegistrations
+        var filteredRegistrations = activeRegistrations.filter( a => a.Sport === "Football" );
+
+        // rerender the grid
+        renderGrid(filteredRegistrations);
+
+    }
+
+    function resetFilter() {
+        // hide grid and show spinner
+        toggleGridLoading();
+
+        // rendergrid with initial array
+        renderGrid(activeRegistrations);
+    }
+
+    function toggleGridLoading() {
+        $('#gridLoading').toggleClass('hidden');
+        $('#tblGrid').toggleClass('hidden');
+    }
+
+
+
+
+</script>
