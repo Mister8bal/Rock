@@ -16,17 +16,17 @@ using church.ccv.CCVCore.PlanAVisit.Model;
 
 namespace RockWeb.Plugins.church_ccv.PAV
 {
-    [DisplayName( "Plan A Visit Form" )]
+    [DisplayName( "Schedule A Visit Form" )]
     [Category( "CCV > Cms" )]
     [Description( "Form used to preregister families for a weekend service" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
-    [CampusesField( "Campuses", "Campuses that offer plan a visit scheduling", false, "", "", 3 )]
+    [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
     [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 5 )]
-    [WorkflowTypeField( "Plan A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 6 )]
+    [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 6 )]
 
-    public partial class PlanAVisitForm : RockBlock
+    public partial class ScheduleAVisitForm : RockBlock
     {
         const int AttributeId_Allergies = 676;
         const int AttributeId_HowDidYouHearAboutCCV = 719;
@@ -934,7 +934,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
 
             // add person note
-            visitNoteText = String.Format( "Visit planned for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName );
+            visitNoteText = String.Format( "Visit scheduled for {0} on {1} at the {2} campus", _visit.ServiceTime, _visit.VisitDate, _visit.CampusName );
 
             SavePersonNote( adultOne.Id, visitNoteText );
 
@@ -1157,7 +1157,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
 
             // Activate Plan A Visit workflow
-            Guid? workflowTypeGuid = GetAttributeValue( "PlanAVisitWorkflow" ).AsGuidOrNull();
+            Guid? workflowTypeGuid = GetAttributeValue( "ScheduleAVisitWorkflow" ).AsGuidOrNull();
 
             if ( workflowTypeGuid.HasValue )
             {
@@ -1165,7 +1165,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
                 if ( workflowType != null )
                 {
-                    string workflowName = String.Format( "{0} {1}'s Planned Visit", _visit.AdultOneFirstName, _visit.AdultOneLastName );
+                    string workflowName = String.Format( "{0} {1}'s Scheduled Visit", _visit.AdultOneFirstName, _visit.AdultOneLastName );
 
                     Workflow workflow = Workflow.Activate( workflowType, workflowName );
 

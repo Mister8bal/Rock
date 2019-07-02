@@ -1,7 +1,7 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="ScheduleAVisitForm.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.ScheduleAVisitForm" %>
 
 <style>
-    .plan-a-visit {
+    .schedule-a-visit {
         max-width: 800px;
         margin: 0 auto;
         padding: 30px 0 150px;
@@ -292,7 +292,7 @@
         border-color: #ccc; 
     }
 
-    .plan-a-visit select {
+    .schedule-a-visit select {
         -webkit-appearance: none;
         -moz-appearance: none;
     }
@@ -326,7 +326,7 @@
         }
 
         /* overrides */
-        .plan-a-visit .btn {
+        .schedule-a-visit .btn {
             min-width: 150px;
             margin: 0 10px;
         }
@@ -354,7 +354,7 @@
 
         <asp:Panel ID="pnlForm" runat="server">
 
-            <div class="plan-a-visit">
+            <div class="schedule-a-visit">
 
                 <%-- Progress Tracker --%>
                 <asp:Panel ID="pnlProgressTracker" runat="server">
@@ -741,7 +741,7 @@
 
         </asp:Panel>
 
-        <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="plan-a-visit">
+        <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="schedule-a-visit">
             
             <div class="form-header">
                 <h2>Thank you!</h2>

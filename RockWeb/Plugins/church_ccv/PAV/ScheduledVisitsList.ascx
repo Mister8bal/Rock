@@ -1,13 +1,13 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="PlanAVisitGrid.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.PlanAVisitGrid" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="ScheduledVisitsList.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.PAV.ScheduledVisitsList" %>
 
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
 
-        <asp:Panel ID="pnlPlanAVisitGrid" runat="server" class="panel panel-block">
+        <asp:Panel ID="pnlScheduledVisits" runat="server" class="panel panel-block">
 
             <div class="panel-heading">
                 <div class="row col-sm-4">
-                    <h4 class="panel-title">Plan A Visit</h4>
+                    <h4 class="panel-title">Scheduled Visits</h4>
                     <br />
                 </div>
             </div>

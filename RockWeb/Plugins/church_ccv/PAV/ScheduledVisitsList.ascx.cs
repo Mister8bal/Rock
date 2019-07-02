@@ -17,12 +17,12 @@ using Rock.Web.UI.Controls;
 
 namespace RockWeb.Plugins.church_ccv.PAV
 {
-    [DisplayName( "Plan A Visit Grid" )]
+    [DisplayName( "Scheduled Visits List" )]
     [Category( "CCV > Cms" )]
-    [Description( "Grid used to display / manage Plan A Visit" )]
+    [Description( "Grid used to display / manage scheduled visits submitted through the schedule a visit form" )]
     [CampusField( "Campus", "Limit results to campus specified", false, "", "", 0)]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 1 )]
-    public partial class PlanAVisitGrid : RockBlock
+    public partial class ScheduledVisitsList : RockBlock
     {
         #region Control Methods
 
