@@ -198,6 +198,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
         #region Private Variables
         private Guid _targetPersonGuid = Guid.Empty;
         Dictionary<string, string> _urlParms = new Dictionary<string, string>();
+        const int AttributeId_GroupDescription = 13055;
         #endregion
 
         #region Properties
@@ -1002,6 +1003,29 @@ namespace RockWeb.Plugins.church_ccv.Groups
                         }
                     }
                 }
+            }
+
+            // Filter by group name
+            string groupName = tbGroupName.Text;
+            if ( groupName.IsNotNullOrWhiteSpace() )
+            {
+                groupQry = groupQry.Where( w => w.Name.ToLower().Contains( groupName.ToLower() ) );
+            }
+
+            // Filter by group keyword
+            string descriptionKeyword = tbGroupKeyword.Text;
+            if ( descriptionKeyword.IsNotNullOrWhiteSpace() )
+            {
+                // get a list of group ids from the "Group Description" attribute that contain the keyword.
+                List<int> groupIds = new AttributeValueService( rockContext ).Queryable()
+                    .AsNoTracking()
+                    .Where( av => av.AttributeId == AttributeId_GroupDescription &&
+                                  av.Value.ToLower().Contains( descriptionKeyword.ToLower() ) )
+                    .Select( av => av.EntityId.Value )
+                    .ToList();
+
+                // filter by group ids
+                groupQry = groupQry.Where( w => groupIds.Contains( w.Id ) );
             }
 
             List<GroupLocation> fences = null;
