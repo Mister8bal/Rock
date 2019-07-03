@@ -1,5 +1,16 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="VolunteerScreeningList.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.SafetySecurity.VolunteerScreeningList" %>
 
+<style>
+.vs-list {
+    position:relative;
+}
+.vs-list .app-btn {
+    position:absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+</style>
+
 <asp:UpdatePanel ID="upnlContent" runat="server">
     <ContentTemplate>
         <asp:Panel ID="pVolunteerScreeningList" runat="server" class="panel panel-block">
@@ -31,3 +42,11 @@
 
     </ContentTemplate>
 </asp:UpdatePanel>
+
+<script>
+$(function(){
+    if(!$('.grid-paging').length){
+        $('.grid-actions').css("padding-bottom","46px");
+    }
+});
+</script>
