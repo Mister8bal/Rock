@@ -1,0 +1,7 @@
+{% comment %}
+    {% include '~~/Assets/Lava/header/create-account.lava' %}
+{% endcomment %}
+
+{% unless CurrentPerson %}
+    <a id="masthead-navitem-register" class="masthead-navitem" href="/create-account">CREATE ACCOUNT</a>
+{% endunless %}

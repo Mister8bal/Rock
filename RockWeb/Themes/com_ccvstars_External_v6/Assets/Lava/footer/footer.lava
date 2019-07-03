@@ -1,39 +1,41 @@
 {% comment %}
-    {% include '~~/Assets/Lava/footer.lava' %}
+    {% include '~~/Assets/Lava/footer/footer.lava' %}
 {% endcomment %}
 
 <div class="footer">
-    <a href="/" class="stars-logo"><img src="~~/Assets/Images/stars-logo-white.png"></a>
-    
-    <div class="footer-links">
+    <div class="footer-right">
+        <a href="/" class="stars-logo"><img src="~~/Assets/Images/stars-logo-white.png"></a>
+        <a href="https://ccv.church" class="ccv-logo"><img src="~~/Assets/Images/ccv-logo-black.png"></a>
+    </div>
+    <div class="footer-center">
         <div class="footer-links-section">
             <h5>Youth Sports</h5>
-            <a href="/soccer">Recreational Soccer (United)</a>
-            <a href="/soccer">Club Soccer (Integra)</a>
-            <a href="/ccv-resources">Football</a>
-            <a href="/basketball">Basketball</a>
-            <a href="/soccer">Exceptional STARS (Special Needs)</a>
+            <a href="/baseball-v2">Baseball</a>
+            <a href="/basketball-v2">Basketball</a>
+            <a href="/football-v2">Football</a>
+            <a href="/soccer-v2">Soccer</a>
+            <a href="/exceptional-stars-v2">Exceptional STARS</a>
         </div>
         <div class="footer-links-section">
-            <h5>Adult Sports</h5>
-            <a href="/soccer">Soccer</a>
-            <a href="/basketball">Basketball</a>
-            <a href="/softball">Softball</a>
+            <h5>Reach Out</h5>
+            <a href="/contact-us-v2">Contact Us</a>
+            <a href="/volunteer-v2">Volunteer</a>
+            <a href="/register-v2">Register</a>
         </div>
         <div class="footer-links-section">
-            <h5>Information & Resources</h5>
-            <a href="/reach-out/contact-us">Pricing Information (Youth & Adult)</a>
-            <a href="/reach-out/career-opportunities">General Information</a>
-            <a href="/reach-out/leadership-institute">Coaches Guides & instructions</a>
-            <a href="/volunteer">Volunteering</a>
+            <h5>Resources</h5>
+            <a href="/field-status">Field Status</a>
+            <a href="privacy-policy">Privacy Policy</a>
         </div>
-    </div>
-    
-    <div class="footer-logo">
+    </div>    
+    <div class="footer-left">
         <div class="footer-social">   
             <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/twitter.png"></a>
             <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/facebook.png"></a>
         </div>
         <div class="footer-copyright"><i class="fa fa-copyright"></i>2019 Christ's Church of the Valley</div>
+        <div class="server-name">
+            {[ servername ]}
+        </div>
     </div>
 </div>

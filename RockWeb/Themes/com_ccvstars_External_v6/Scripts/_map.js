@@ -1,55 +1,55 @@
 (function(){
 
-  window.CCV = window.CCV || {}
+    window.CCV = window.CCV || {}
 
-  function loadMap() {
+    function loadMap() {
 
     // Styles
     CCV.mapStyles = [{
-      "stylers": [{
-        "visibility": "simplified"
-      }, {
-        "saturation": -100
-        }]
-      }, {
-        "featureType": "road.arterial",
-          "elementType": "labels",
-          "stylers": [{
-          "visibility": "on"
+            "stylers": [{
+                "visibility": "simplified"
+            }, {
+                "saturation": -100
+            }]
         }, {
-          "gamma": 3.05
-        }]
-      }, {
-        "featureType": "poi",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "transit",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "administrative.country",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "administrative.locality",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "administrative.neighborhood",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "water",
-          "stylers": [{
-          "visibility": "off"
-        }]
-      },
+            "featureType": "road.arterial",
+            "elementType": "labels",
+            "stylers": [{
+                "visibility": "on"
+            }, {
+                "gamma": 3.05
+            }]
+        }, {
+            "featureType": "poi",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        }, {
+            "featureType": "transit",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        }, {
+            "featureType": "administrative.country",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        }, {
+            "featureType": "administrative.locality",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        }, {
+            "featureType": "administrative.neighborhood",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        }, {
+            "featureType": "water",
+            "stylers": [{
+                "visibility": "off"
+            }]
+        },
     {}];
 
     // MapType used during map init
@@ -64,87 +64,87 @@
     // Begin map object
 
     CCV.baseMap = function (holder, points) {
-      this.holder = holder
-      this.points = points
-      this.markers = []
-      this.bounds = new google.maps.LatLngBounds()
-      this.zoom = this.zoom || 12
-      this.useZoom = this.useZoom || false
-      this.useScrollZoom = this.useScrollZoom || true
-      this.usePanControl = this.usePanControl || true
+        this.holder = holder
+        this.points = points
+        this.markers = []
+        this.bounds = new google.maps.LatLngBounds()
+        this.zoom = this.zoom || 12
+        this.useZoom = this.useZoom || false
+        this.useScrollZoom = this.useScrollZoom || true
+        this.usePanControl = this.usePanControl || true
     }
     CCV.baseMap.prototype = {
-      draw: function () {
-        var options = {}
-        if (this.useScrollZoom) {
-          options = {
-            mapTypeId: 'CCV',
-            disableDefaultUI: true
-          }
-        }
-        else {
-          options = {
-            mapTypeId: 'CCV',
-            scrollwheel: false,
-            panControl: this.usePanControl,
-            zoomControl: true,
-            zoomControlOptions: {
-              style: google.maps.ZoomControlStyle.SMALL,
-              position: google.maps.ControlPosition.TOP_RIGHT
-            },
-            streetViewControl: false,
-            mapTypeControl: false
-          }
-        }
-        this.mapOptions = this.mapOptions || options
+        draw: function () {
+            var options = {}
 
-        if (this.holder)
-          this.map = new google.maps.Map(this.holder, this.mapOptions)
-        else
-          throw "Can't find map holder"
-        this.map.mapTypes.set('CCV', CCV.mapType)
-        this.dropMarkers()
-        this.fitMarkers()
-        this.bindUi()
-      },
-      dropMarkers: function () {
-        for (var i = 0; i < this.points.length; i++) {
-          var point = this.points[i]
-          this.dropMarker(point)
-        }
-      },
-      dropMarker: function (point) {
-        var marker = new google.maps.Marker({
-          position: new google.maps.LatLng(point.lat,point.lng),
-          icon: CCV.marker,
-          map: this.map,
-          title: point.title,
-          animation: google.maps.Animation.DROP
-        })
-        this.markers.push(marker)
-        this.bounds.extend(marker.position)
-        this.afterDropMarker.call(this, point, marker)
-      },
-      afterDropMarker: function (point, marker) {
-      },
-      fitMarkers: function () {
-        this.map.setCenter(this.bounds.getCenter())
-        if (this.useZoom || this.markers.length == 1)
-          this.map.setZoom(this.zoom)
-        else
-          this.map.fitBounds(this.bounds)
-      },
-      bindUi: function () {
-        var _this = this
-        $(window).resize(function() {
-          _this.fitMarkers()
-        })
-      },
-      getInstanceName: function () {
-        for (var name in window)
-          if (window[name] == this)
-            return name
-      },
+            if (this.useScrollZoom) {
+                options = {
+                    mapTypeId: 'CCV',
+                    disableDefaultUI: true
+                }
+            } else {
+                options = {
+                    mapTypeId: 'CCV',
+                    scrollwheel: false,
+                    panControl: this.usePanControl,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                    style: google.maps.ZoomControlStyle.SMALL,
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                    },
+                    streetViewControl: false,
+                    mapTypeControl: false
+                }
+            }
+            this.mapOptions = this.mapOptions || options
+
+            if (this.holder)
+                this.map = new google.maps.Map(this.holder, this.mapOptions)
+            else
+                throw "Can't find map holder"
+            this.map.mapTypes.set('CCV', CCV.mapType)
+            this.dropMarkers()
+            this.fitMarkers()
+            this.bindUi()
+        },
+        dropMarkers: function () {
+            for (var i = 0; i < this.points.length; i++) {
+                var point = this.points[i]
+                this.dropMarker(point)
+            }
+        },
+        dropMarker: function (point) {
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(point.lat,point.lng),
+                icon: CCV.marker,
+                map: this.map,
+                title: point.title,
+                animation: google.maps.Animation.DROP
+            })
+            this.markers.push(marker)
+            this.bounds.extend(marker.position)
+            this.afterDropMarker.call(this, point, marker)
+        },
+        afterDropMarker: function (point, marker) {
+        },
+        fitMarkers: function () {
+            this.map.setCenter(this.bounds.getCenter())
+            if (this.useZoom || this.markers.length == 1)
+                this.map.setZoom(this.zoom)
+            else
+                this.map.fitBounds(this.bounds)
+        },
+        bindUi: function () {
+            var _this = this
+            $(window).resize(function() {
+                _this.fitMarkers()
+            })
+        },
+        getInstanceName: function () {
+            for (var name in window)
+            if (window[name] == this)
+                return name
+        },
     }
 
 
@@ -152,37 +152,37 @@
 
     // Inherit baseMap and add campus details
     CCV.campusMap = function (holder, campusToDraw) {
-      CCV.baseMap.call(this, holder, campusToDraw)
-      this.campusToDraw = campusToDraw || 'all'
+        CCV.baseMap.call(this, holder, campusToDraw)
+        this.campusToDraw = campusToDraw || 'all'
     }
     CCV.campusMap.prototype = new CCV.baseMap()
     CCV.campusMap.prototype.constructor = CCV.campusMap
 
     CCV.campusMap.prototype.dropMarkers = function () {
-      if (this.campusToDraw == 'all') {
-        for (var i = 0; i < CCV.locations.length; i++) {
-          var campus = CCV.locations[i]
-          this.dropMarker(campus)
+        if (this.campusToDraw == 'all') {
+            for (var i = 0; i < CCV.locations.length; i++) {
+                var campus = CCV.locations[i]
+                this.dropMarker(campus)
+            }
         }
-      }
-      else {
-        var campus = CCV.findCampusById(this.campusToDraw)
-        this.dropMarker(campus)
-        this.useZoom = true
-      }
+        else {
+            var campus = CCV.findCampusById(this.campusToDraw)
+            this.dropMarker(campus)
+            this.useZoom = true
+        }
     }
     CCV.campusMap.prototype.dropMarker = function (campus) {
-      var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(campus.geo.lat,campus.geo.lng),
-        icon: CCV.marker,
-        map: this.map,
-        title: campus.name,
-        campusid: campus.id,
-        animation: google.maps.Animation.DROP
-      })
-      this.markers.push(marker)
-      this.bounds.extend(marker.position)
-      this.afterDropMarker.call(this, campus, marker)
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(campus.geo.lat,campus.geo.lng),
+            icon: CCV.marker,
+            map: this.map,
+            title: campus.name,
+            campusid: campus.id,
+            animation: google.maps.Animation.DROP
+        })
+        this.markers.push(marker)
+        this.bounds.extend(marker.position)
+        this.afterDropMarker.call(this, campus, marker)
     }
 
 
@@ -190,44 +190,53 @@
 
     // Inherit campusMap and add initial infowindow
     CCV.campusInfoWindowMap = function (holder, campusToDraw) {
-      CCV.campusMap.call(this, holder, campusToDraw)
-      this.infowindow = new google.maps.InfoWindow({ content: 'Loading...' })
+        CCV.campusMap.call(this, holder, campusToDraw)
+        this.infowindow = new google.maps.InfoWindow({ content: 'Loading...' })
     }
     CCV.campusInfoWindowMap.prototype = new CCV.campusMap()
     CCV.campusInfoWindowMap.prototype.constructor = CCV.campusInfoWindowMap
 
     // Custom & override methods
     CCV.campusInfoWindowMap.prototype.afterDropMarker = function (campus, marker) {
-      var _this = this
-      google.maps.event.addListener(marker, 'click', function () {
-        _this.infowindow.setContent(_this.buildInfoWindow(campus))
-        _this.infowindow.open(_this.map, this)
-      })
+        var _this = this
+        google.maps.event.addListener(marker, 'click', function () {
+            _this.infowindow.setContent(_this.buildInfoWindow(campus))
+            _this.infowindow.open(_this.map, this)
+        })
     }
     CCV.campusInfoWindowMap.prototype.buildInfoWindow = function(campus) {
-      var result
-      var campusSports = campus.sports;
-      result  = '<div class="infowindow">'
-      result += '   <div class="name">SPORTS AT THIS LOCATION</div>'
-      result += '       <div class="campus-info-window">'
-      if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
-        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/football-black.svg">'
-      }
-      if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
-        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/soccer-black.svg">'
-      }
-      if (campusSports.includes("basketball")) {
-        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/basketball-black.svg">'
-      }
-      if (campusSports.includes("baseball")) {
-        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/baseball-black.svg">'
-      }
+        var result
+        var campusSports = campus.sports;
+        result  = '<div class="campus-info-window">'
+            result += '<h6>SPORTS AT THIS LOCATION</h6>'
+            result += '<div class="sports-offered">'
+                if ( campusSports.length > 0 ) {
+                    if (campusSports.includes("baseball")) {
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/baseball-red.png">'
+                    }
+                    if (campusSports.includes("basketball")) {
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/basketball-red.png">'
+                    }
+                    if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/football-red.png">'
+                    }
+                    if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/soccer-red.png">'
+                    }
+                    if (campusSports.includes("golf")) {
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/golf-red.png">'
+                    }
+                } else {
+                    result += '<p>No sports currently offered</p>'
+                }
+            result += '  </div>'
+            result += '  <p>CCV CAMPUS</p>'
+            
+            var campusRoute = campus.name.replace(' ','-').toLowerCase()
 
-      result += '  </div>'
-      result += '  <p>CCV CAMPUS</p>'
-      result += '  <a>CCV.CHURCH/'+campus.name+'</a>'
-      result += '</div>'
-      return result
+            result += '  <a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
+        result += '</div>'
+        return result
     }
 
 
@@ -235,63 +244,63 @@
 
     // Inherit campusInfoWindowMap and add initial infowindow
     CCV.campusInfoWindowMapGeo = function (holder, campusToDraw) {
-      CCV.campusInfoWindowMap.call(this, holder, campusToDraw)
-      this.infowindow = new google.maps.InfoWindow({ content: 'Loading...' })
+        CCV.campusInfoWindowMap.call(this, holder, campusToDraw)
+        this.infowindow = new google.maps.InfoWindow({ content: 'Loading...' })
     }
     CCV.campusInfoWindowMapGeo.prototype = new CCV.campusInfoWindowMap()
     CCV.campusInfoWindowMapGeo.prototype.constructor = CCV.campusInfoWindowMapGeo
 
     // Custom & override methods
     CCV.campusInfoWindowMapGeo.prototype.findNearestCampus = function (callback, trigger) {
-      var _this = this,
-          $trigger = $(trigger),
-          userLocation,
-          service = new google.maps.DistanceMatrixService(),
-          result
+        var _this = this,
+            $trigger = $(trigger),
+            userLocation,
+            service = new google.maps.DistanceMatrixService(),
+            result
 
-      if(navigator.geolocation) {
-        $trigger.addClass('is-loading')
-        navigator.geolocation.getCurrentPosition(function(p) {
-          userLocation = new google.maps.LatLng(p.coords.latitude, p.coords.longitude)
-          service.getDistanceMatrix(
-            {
-              origins: [userLocation],
-              destinations: _this.allLocationsGeoArray(),
-              travelMode: google.maps.TravelMode.DRIVING,
-            }, parseResults);
-        })
-      }
-
-      function parseResults(response, status) {
-        if (status == google.maps.DistanceMatrixStatus.OK) {
-
-          var lowest = Number.POSITIVE_INFINITY,
-            lowestArrayIndex,
-            tmp,
-            responseArray = response.rows[0].elements
-
-          for (var i = 0; i < responseArray.length; i++) {
-            tmp = responseArray[i].duration.value
-            if (tmp < lowest) {
-              lowest = tmp
-              lowestArrayIndex = i
-            }
-          }
-
-          $trigger.removeClass('is-loading')
-          _this.nearestCampus = CCV.locations[lowestArrayIndex]
-          typeof callback === 'function' && callback.call(_this, _this.nearestCampus)
+        if(navigator.geolocation) {
+            $trigger.addClass('is-loading')
+            navigator.geolocation.getCurrentPosition(function(p) {
+                userLocation = new google.maps.LatLng(p.coords.latitude, p.coords.longitude)
+                service.getDistanceMatrix(
+                    {
+                    origins: [userLocation],
+                    destinations: _this.allLocationsGeoArray(),
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    }, parseResults);
+            })
         }
-      }
+
+        function parseResults(response, status) {
+            if (status == google.maps.DistanceMatrixStatus.OK) {
+
+            var lowest = Number.POSITIVE_INFINITY,
+                lowestArrayIndex,
+                tmp,
+                responseArray = response.rows[0].elements
+
+            for (var i = 0; i < responseArray.length; i++) {
+                tmp = responseArray[i].duration.value
+                if (tmp < lowest) {
+                    lowest = tmp
+                    lowestArrayIndex = i
+                }
+            }
+
+            $trigger.removeClass('is-loading')
+            _this.nearestCampus = CCV.locations[lowestArrayIndex]
+            typeof callback === 'function' && callback.call(_this, _this.nearestCampus)
+            }
+        }
     }
     CCV.campusInfoWindowMapGeo.prototype.allLocationsGeoArray = function() {
-      var r = []
-      for (var i = 0; i < CCV.locations.length; i++) {
-        var location = CCV.locations[i].geo
-        var geo = new google.maps.LatLng(location.lat,location.lng)
-        r.push(geo)
-      }
-      return r
+        var r = []
+        for (var i = 0; i < CCV.locations.length; i++) {
+            var location = CCV.locations[i].geo
+            var geo = new google.maps.LatLng(location.lat,location.lng)
+            r.push(geo)
+        }
+        return r
     }
     CCV.campusInfoWindowMapGeo.prototype.openInfoWindow = function (campus) {
       var marker = this.markers.filter(function (marker) {
@@ -301,17 +310,14 @@
       this.infowindow.open(this.map, marker)
     }
 
-  }
+}
+    // Load google maps api dynamically to avoid double loading
 
-
-  // Load google maps api dynamically to avoid double loading
-
-  if (typeof google == 'object' && typeof google.maps == 'object')
-    loadMap()
-  else {
-    $(window).on('googleMapsIsLoaded', function(){
-      loadMap()
-    })
-  }
-
+    if (typeof google == 'object' && typeof google.maps == 'object')
+       loadMap()
+    else {
+        $(window).on('googleMapsIsLoaded', function(){
+            loadMap()
+        })
+    }
 })();

@@ -41,6 +41,8 @@
                 <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
             {% endif %}
         {% endfor %}
+        
+        <li><a class="navigation-mobile-item" href="https://ccv.church">CCV Website</a></li>
 
     {% endif %}
 

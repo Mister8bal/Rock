@@ -53,5 +53,11 @@
             </li>
             {% assign activeClass = '' %}
         {% endfor %}
+
+        <li class="navigation-primary-item">
+            <div class="navigation-primary-item-button" >
+                <a href="https://ccv.church">CCV Website</a>
+            </div>
+        </li>
     </ul>
 {% endif %}

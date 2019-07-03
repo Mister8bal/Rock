@@ -21,30 +21,28 @@ Rock.controls.util.loadGoogleMapsApi('https://maps.googleapis.com/maps/api/js?se
 window.CCV = window.CCV || {}
 
 CCV.showMapCampusModal = function() {
-  if (!CCV.campusModalMapHasBeenDrawn) {
-    window.campusModalMap = new CCV.campusInfoWindowMap(document.getElementById('our-campuses-map'))
+    if (!CCV.campusModalMapHasBeenDrawn) {
+        window.campusModalMap = new CCV.campusInfoWindowMap(document.getElementById('our-campuses-map'))
 
+        options = {
+            mapTypeId: 'CCV',
+            
+            panControl: this.usePanControl,
+            zoomControl: true,
+            zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL,
+                position: google.maps.ControlPosition.TOP_RIGHT
+            },
+            streetViewControl: false,
+            mapTypeControl: false
+        }
+        window.campusModalMap.mapOptions = options;
 
-
-    options = {
-      mapTypeId: 'CCV',
-      
-      panControl: this.usePanControl,
-      zoomControl: true,
-      zoomControlOptions: {
-        style: google.maps.ZoomControlStyle.SMALL,
-        position: google.maps.ControlPosition.TOP_RIGHT
-      },
-      streetViewControl: false,
-      mapTypeControl: false
+        campusModalMap.draw()
+        CCV.campusModalMapHasBeenDrawn = true
     }
-    window.campusModalMap.mapOptions = options;
-
-    campusModalMap.draw()
-    CCV.campusModalMapHasBeenDrawn = true
-  }
 }
 
 $(window).on('googleMapsIsLoaded', function(){
-   CCV.showMapCampusModal();
+    CCV.showMapCampusModal();
 });
