@@ -20,10 +20,10 @@
 	
 	<div style="margin: 0 auto;">
 		{% if Pagination.PreviousPage != -1 %}
-		<a class="btn btn-primary" href="/watch/storiesv2?Page={{ Pagination.PreviousPage }}">Previous</a>
+		<a class="btn btn-primary" href="/watch/stories?Page={{ Pagination.PreviousPage }}">Previous</a>
 		{% endif %}
 		{% if Pagination.NextPage != -1 %}
-		<a class="btn btn-primary" href="/watch/storiesv2?Page={{ Pagination.NextPage }}">More</a>
+		<a class="btn btn-primary" href="/watch/stories?Page={{ Pagination.NextPage }}">More</a>
 		{% endif %}
 	</div>
 </div>
