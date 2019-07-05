@@ -23,6 +23,15 @@
                     <Rock:AddressControl ID="acAddress" runat="server" Required="true" RequiredErrorMessage="Your Address is Required" />
                     <Rock:RockCheckBoxList ID="cblCampus" runat="server" Label="Campuses" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                     <asp:PlaceHolder ID="phFilterControls" runat="server" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <Rock:RockTextBox ID="tbGroupName" runat="server" Label="Group Name" />
+                        </div>
+                        <div class="col-md-6">
+                            <Rock:RockTextBox ID="tbGroupKeyword" runat="server" Label="Group Keyword" />
+                        </div>
+                    </div>
 
                     <div class="actions">
                         <asp:LinkButton ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearch_Click" />
