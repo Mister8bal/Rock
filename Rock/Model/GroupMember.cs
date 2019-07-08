@@ -382,6 +382,16 @@ namespace Rock.Model
                 }
             }
 
+
+            // update role cache post save. 
+            // note: This will be replaced when we upgrade to v8+.
+            var group = new GroupService( new RockContext() ).Get( this.GroupId );
+            if ( group.IsSecurityRole || group.GroupType.Guid.Equals( Rock.SystemGuid.GroupType.GROUPTYPE_SECURITY_ROLE.AsGuid() ) )
+            {
+                Rock.Security.Role.Flush( group.Id );
+                Rock.Security.Authorization.Flush();
+            }
+
             base.PostSaveChanges( dbContext );
         }
 
