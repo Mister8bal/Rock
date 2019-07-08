@@ -792,6 +792,101 @@ a:focus {
 
 /**** End Sections ****/
 
+/**** Start Card Styling ****/
+.cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px 0px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px;
+    width: 31%;
+    min-height: 500px;
+    min-height: 545px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+    border: unset;
+    border-width: unset;
+    background-color: unset;
+    z-index: 1;
+    overflow: hidden;
+}
+ 
+.card .image img {
+    object-fit: cover;
+    width: 100%;
+    min-height: 200px;
+    max-height: 200px;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 10px 16px;
+    min-height: 130px;
+}
+
+.card-content p {
+    color: #4f4f4f;
+}
+
+.card-head {
+    padding: 10px 16px 0 16px;
+}
+
+.card-head h4 {
+    color: #333333;
+    font-size: 21px;
+    line-height: 23px;
+}
+
+.card-footer {
+    padding: 0px 16px 10px 16px;
+}
+
+.card-footer .link a {
+    color: #E73D30;
+    text-transform: uppercase;
+}
+
+.link {
+    text-align: right;
+}
+
+/* Nav buttons */
+.cards-header .nav-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cards-header {
+    text-align: center;
+}
+
+.cards-header h3 {
+    font-size: 50px;
+    color: #E73D30;
+}
+
+.cards-header .nav-button {
+    color: #E73D30;
+    font-size: 24px; 
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; 
+    background-color: unset;
+    border-width: unset;
+    border-style: unset;
+    border-color: unset;
+    border-image: unset;
+}
+
+/**** End Card Styling ****/
+
 /**** Footer ****/
 .mainfooter {
     background-color: #000;
@@ -1133,6 +1228,14 @@ a:focus {
         line-height: 24px;
     }
 
+    /* Start Card Styling */
+    .card {
+        width: 45%;
+        padding-bottom: 15px;
+    }
+
+    /* End Card Styling */
+
     /* footer */
     .mainfooter {
         padding: 50px 5%;
@@ -1261,6 +1364,14 @@ a:focus {
     .graphicSection h5 {
         font-weight: 600;
     }
+
+    /* Start Card Styling */
+    .card {
+        width: 45%;
+        padding-bottom: 15px;
+    }
+
+    /* End Card Styling */
 
     /* Footer */
     .footer {
@@ -1525,6 +1636,26 @@ a:focus {
         color: #333 !important;
         background-color: transparent;
     }
+
+    /* Start Card Styling */
+    .card {
+        width: 90%;
+        padding-bottom: 15px;
+    }
+
+    .cards-row-mobile {
+        display: block;
+    }
+
+    .cards-row {
+        display: none; 
+    }
+
+    .cards-header h3 {
+        margin: 5%;
+    }
+
+    /* End Card Styling */
 
     /* footer */
     .footer-right .stars-logo {
