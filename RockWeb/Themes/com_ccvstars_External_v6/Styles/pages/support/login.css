@@ -1,5 +1,60 @@
+#section-a-bg {
+    background-color: #eeeeee;
+}
+
 #section-feature-bg {
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero-login.jpg");
+}
+
+legend {
+    display: none;
+}
+
+.login-items {
+    width: 400px;
+}
+
+.login-button {
+    width: 100%;
+
+}
+
+.login-item {
+    display: flex;
+}
+
+.facebook {
+    width: 200px;
+    margin: 20px 0;
+}
+
+.star {
+    height: 300px;
+}
+
+.star-logo {
+    text-align: center;
+}
+
+.stars-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 5% 0;
+}
+
+.row-wrapper .row {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.row-wrapper .row .col-sm-6{
+    width: 100%;
+}
+
+.vl {
+  border-left: 2px solid lightgray;
+  height: 350px;
 }
 
 .facebook, .facebook:hover, .facebook:focus, .facebook:active {
@@ -23,10 +78,14 @@
 
 .control-wrapper {
     border: 1px solid lightgray;
+    background-color: #f7f7f7;
+}
+
+.row-wrapper p {
+    display: none;
 }
 
 /* End Overrides */
-
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {   
@@ -34,6 +93,27 @@
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero-mobile-login.jpg");
     }
 
+    .login-item {
+        display: block;
+    }
+    
+    .facebook {
+        width: 100%;
+        padding: 0 -15px;
+    }
+    
+    .star {
+        height: 150px;
+    }
+    
+    .stars-wrapper {
+        display: block;
+        padding: 0;
+    }
+    
+    .vl {
+        display: none;
+    }
 }
 
 /**** End Phone Styling ****/

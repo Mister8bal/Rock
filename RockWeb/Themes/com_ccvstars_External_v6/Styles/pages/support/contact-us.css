@@ -9,18 +9,42 @@
     color: #000000;
 }
 
-.contact-us .info {
+.name-fields, .info-fields {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.first-name, .last-name, .email-address, .phone-number {
+    width: 45%;
+}
+
+.info {
     display: none;
 }
 
-textarea.form-control {
-    background-color: #ececec;
+.contact-us .form-group {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.contact-us-card {
+    padding: 3% 5%;
+}
+
+.alert {
+    margin-top: 20px;
 }
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {  
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-mobile-contact-us.jpg");
+    }
+
+    .first-name, .last-name, .email-address, .phone-number {
+        width: 100%;
     }
 }
 
