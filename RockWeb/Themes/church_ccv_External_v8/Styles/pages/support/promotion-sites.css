@@ -14,7 +14,6 @@
 }
 
 .main-feature {
-    padding-top: 100px;
     margin-bottom: 35px;
 }
 
@@ -23,8 +22,25 @@
 }
 
 .main-feature {
-    height: 475px;
-    padding-top: 175px;
+    height: 0;
+    padding-top:35px;
+}
+
+.main-img-container {
+    height:100%;
+}
+
+.promo-feature-img {
+    height:100%;
+}
+
+.left-and-right-container {
+    align-items: initial;
+}
+
+.left-and-right-container .right {
+    max-width:none;
+    width: 50%;
 }
 
 /* Mobile Styling */
@@ -41,8 +57,8 @@
     }
 
     .main-feature {
-        padding-top: 60px;
-        height: 240px;
+        padding-top: 20px;
+        height: 0px;
     }
     
     .series-header-image {
@@ -65,5 +81,16 @@
         display: block; 
         margin-left: -15px;
         margin-right: -15px;   
+    }
+
+    .promo-feature-img {
+        height:auto;
+        width:100%;
+        padding-top:100%;
+    }
+
+    .left-and-right-container .right {
+        max-width:none;
+        width: 100%;
     }
 }

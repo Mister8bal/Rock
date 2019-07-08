@@ -26,8 +26,52 @@
 
     {{ pageTitle | SetPageTitle }}
 	
-    <h1>{{ item.Title }}</h1>
-    {{ item.Content }}
+    <!-- <h1>{{ item.Title }}</h1>
+    {{ item.Content }} -->
+
+    <div class="infoSection">
+
+        <div class="left-and-right-container">
+            <div class="left main-img-container">
+                <div class="promo-feature-img" style="background-image: url('/GetImage.ashx?guid={{ item.DetailImage_unformatted  }}'); background-size: cover; background-position:center; background-repeat:no-repeat; "></div>
+            </div>
+            <div class="right">
+                <h4>{{ item.Title }}</h4>
+                <p>{{ item.Content }}</p>
+            </div>
+        </div>  
+
+        <!--
+        <div class="content">
+            <div class="content-item">
+                <div class="item-share">
+                    <p>Share this Series:</p>
+                    <span id="shareButton" class="mdi mdi-launch"></span>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <!-- The Modal -->
+        
+        <!--
+        <div id="shareModal" class="share-modal">
+            <div class="share-modal-content">
+                <div class="share-modal-header">
+                    <h4>Share via:</h4>
+                </div>
+                <div class="share-modal-body">
+                    <a href="sms:&body=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you%20will%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-comment share-sms"></i></a>
+                    <a href="mailto:?subject={{Series.Name}}&body=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it.%20https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}"><i class="fa fa-envelope share-email"></i></a>
+                    <a target="blank" href="https://www.facebook.com/dialog/share?app_id=495461873811179&display=page&href=https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}&quote=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it."><i class="fa fa-facebook-square share-facebook"></i></a>
+                    <a target="blank" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fccv.church%2Fwatch%2Fseries%3FSeriesId%3D{{Series.Id}}&text=Check%20out%20this%20series%20from%20CCV!%20I%20think%20you'll%20like%20it."><i class="fa fa-twitter-square share-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        -->
+
+    </div>
+</div>
 
   {% else %}
     <div class="alert alert-warning">Item currently unavailable.</div>
