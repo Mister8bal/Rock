@@ -11,6 +11,11 @@
     max-width: 100%;
 }
 
+#zone-sectionc {
+    max-width: 100%;
+    margin: 0 20%;
+}
+
 /* Top section */
 .page-header {
     font-family: "akrobat";
@@ -180,6 +185,10 @@
 
 /** Tablet Styling **/
 @media screen and (max-width: 768px) {   
+    #zone-sectionc {
+        margin: 0 15px;
+    }
+
     #zone-feature {
         margin: 0;
     }

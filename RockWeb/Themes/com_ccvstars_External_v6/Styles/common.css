@@ -867,6 +867,7 @@ a:focus {
 
 .event-cards-header {
     text-align: center;
+    padding: 20px 0;
 }
 
 .event-cards-header h3 {
