@@ -792,14 +792,14 @@ a:focus {
 
 /**** End Sections ****/
 
-/**** Start Card Styling ****/
-.cards-row {
+/**** Start Event Card Styling ****/
+.event-cards-row {
     display: flex;
     flex-wrap: wrap;
     padding: 20px 0px;
 }
 
-.card {
+.event-card {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -816,14 +816,14 @@ a:focus {
     overflow: hidden;
 }
  
-.card .image img {
+.event-card .image img {
     object-fit: cover;
     width: 100%;
     min-height: 200px;
     max-height: 200px;
 }
 
-.card-content {
+.event-card-content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -832,25 +832,25 @@ a:focus {
     min-height: 130px;
 }
 
-.card-content p {
+.event-card-content p {
     color: #4f4f4f;
 }
 
-.card-head {
+.event-card-title {
     padding: 10px 16px 0 16px;
 }
 
-.card-head h4 {
+.event-card-title h4 {
     color: #333333;
     font-size: 21px;
     line-height: 23px;
 }
 
-.card-footer {
+.event-card-footer {
     padding: 0px 16px 10px 16px;
 }
 
-.card-footer .link a {
+.event-card-footer .link a {
     color: #E73D30;
     text-transform: uppercase;
 }
@@ -860,21 +860,21 @@ a:focus {
 }
 
 /* Nav buttons */
-.cards-header .nav-buttons {
+.event-cards-header .nav-buttons {
     display: flex;
     justify-content: flex-end;
 }
 
-.cards-header {
+.event-cards-header {
     text-align: center;
 }
 
-.cards-header h3 {
+.event-cards-header h3 {
     font-size: 50px;
     color: #E73D30;
 }
 
-.cards-header .nav-button {
+.event-cards-header .nav-button {
     color: #E73D30;
     font-size: 24px; 
     transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; 
@@ -885,7 +885,7 @@ a:focus {
     border-image: unset;
 }
 
-/**** End Card Styling ****/
+/**** End Event Card Styling ****/
 
 /**** Footer ****/
 .mainfooter {
@@ -1228,13 +1228,13 @@ a:focus {
         line-height: 24px;
     }
 
-    /* Start Card Styling */
-    .card {
+    /* Start Event Card Styling */
+    .event-card {
         width: 45%;
         padding-bottom: 15px;
     }
 
-    /* End Card Styling */
+    /* End Event Card Styling */
 
     /* footer */
     .mainfooter {
@@ -1365,13 +1365,13 @@ a:focus {
         font-weight: 600;
     }
 
-    /* Start Card Styling */
-    .card {
+    /* Start Event Card Styling */
+    .event-card {
         width: 45%;
         padding-bottom: 15px;
     }
 
-    /* End Card Styling */
+    /* End Event Card Styling */
 
     /* Footer */
     .footer {
@@ -1637,25 +1637,25 @@ a:focus {
         background-color: transparent;
     }
 
-    /* Start Card Styling */
-    .card {
+    /* Start Event Card Styling */
+    .event-card {
         width: 90%;
         padding-bottom: 15px;
     }
 
-    .cards-row-mobile {
+    .event-cards-row-mobile {
         display: block;
     }
 
-    .cards-row {
+    .event-cards-row {
         display: none; 
     }
 
-    .cards-header h3 {
+    .event-cards-header h3 {
         margin: 5%;
     }
 
-    /* End Card Styling */
+    /* End Event Card Styling */
 
     /* footer */
     .footer-right .stars-logo {

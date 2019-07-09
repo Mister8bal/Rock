@@ -11,7 +11,7 @@
 
 {% comment %} Render Header {% endcomment %}
 
-<div class="cards-header">
+<div class="event-cards-header">
     <h3>{{ eventHeaderText | Default: 'Events' }}</h3>
     <div class="nav-buttons">
         <button type="button" class="nav-button nav-prev"><i class="mdi mdi-chevron-left event-card-navigation-icon"></i></button>
@@ -20,7 +20,7 @@
 </div>
 
 {% comment %} Render Content {% endcomment %}
-<div class="cards-row">
+<div class="event-cards-row">
     {% for item in Items %}
 
         {% assign showItem = false %}
@@ -41,19 +41,19 @@
             {% comment %} Create default link in case custom link wasnt specified {% endcomment %}
             {% capture defaultLink %}{{ LinkedPages.DetailPage }}?Item={{ item.Id }}{% endcapture %}
 
-            <div class="card">
+            <div class="event-card">
                 <div class="image">
                     {% assign imageGuid = item | Attribute:'Image', 'RawValue' %}
                     <img src="/GetImage.ashx?Guid={{imageGuid}}&width=350&mode=crop"/>
                 </div>
-                <div class="card-head">
+                <div class="event-card-title">
                     <h4>{{ item.Title | Truncate: 26 }}</h4>
                 </div>
-                <div class="card-content">
+                <div class="event-card-content">
                     <p>{{ item | Attribute:'SummaryText' | Truncate: 250 }}</p>
                 </div>
 
-                <div class="card-footer">
+                <div class="event-card-footer">
                     <div class="link">
                         <a href="{{ item | Attribute: 'ExternalLink' | Default: defaultLink }}">
                             <div>
@@ -70,7 +70,7 @@
 
 <script>
     $(document).ready(function(){
-        $('.cards-row').slick({
+        $('.event-cards-row').slick({
             slidesToShow: 3,
             slidesToScroll: 3,
             arrows: false,
@@ -93,10 +93,10 @@
         });
     });
     $('.nav-prev').click(function(){
-        $('.cards-row').slick('slickPrev');
+        $('.event-cards-row').slick('slickPrev');
     })
 
     $('.nav-next').click(function(){
-        $('.cards-row').slick('slickNext');
+        $('.event-cards-row').slick('slickNext');
     })
 </script>
