@@ -1,6 +1,6 @@
 ﻿/* Zones & Sections */
 #section-feature-bg {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-register.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-register.jpg");
 }
 
 #section-a-bg {
@@ -234,7 +234,7 @@ button:focus {
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {   
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/register/hero-mobile-register.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-register.jpg");
     } 
 }
 

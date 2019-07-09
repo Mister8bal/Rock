@@ -1,6 +1,6 @@
 /* Zones & Sections */
 #section-feature-bg {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/about-us/hero-about-us.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-about-us.jpg");
     height: 700px;
     z-index: 997;
     background-size: cover;
@@ -108,7 +108,7 @@ hr {
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {  
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/about-us/hero-mobile-about-us.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-about-us.jpg");
         height: unset;
     }
 

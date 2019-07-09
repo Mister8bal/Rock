@@ -1,7 +1,7 @@
 
 #section-feature-bg {
     height: 946px;
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/hero-home.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-home.jpg");
     position: relative;
 }
 
@@ -40,27 +40,27 @@
 }
 
 .image-top {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-top.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-home-top.jpg");
     height: 600px;
     border-radius: 6px;
 }
 
 .image-middle-left {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-left.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-home-left.jpg");
     width: 100%;
     height: 370px;
     border-radius: 6px;
 }
 
 .image-middle-right {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-right.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-home-right.jpg");
     width: 100%;
     height: 370px;
     border-radius: 6px;
 }
 
 .image-bottom {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-home-bottom.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-home-bottom.jpg");
     height: 600px;
     border-radius: 6px;
 }
@@ -231,11 +231,11 @@
     #section-feature-bg {
         height: 700px;
         z-index: 999;
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/hero-mobile-home.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-home.jpg");
     }
 
     .image-top {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-top.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-mobile-home-top.jpg");
         background-repeat: no-repeat;
         width: 100%;
         height: 300px;
@@ -243,19 +243,19 @@
     }
 
     .image-middle-left {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-left.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-mobile-home-left.jpg");
         height: 260px;
     }
 
     .image-middle-right {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-right.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-mobile-home-right.jpg");
         background-repeat: no-repeat;
         background-position: center;
         height: 260px;
     }
 
     .image-top {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/feature-mobile-home-bottom.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/feature/feature-mobile-home-bottom.jpg");
         background-repeat: no-repeat;
         width: 100%;
         height: 300px;

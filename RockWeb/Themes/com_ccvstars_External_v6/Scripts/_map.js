@@ -56,7 +56,7 @@
     CCV.mapType = new google.maps.StyledMapType(CCV.mapStyles);
 
     // Marker Styles
-    CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Themes/com_ccvstars_External_v6/Assets/Icons/star-red.svg' : '/Themes/com_ccvstars_External_v6/Assets/Icons/star-red.svg';
+    CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg' : '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg';
     CCV.marker = new google.maps.MarkerImage(CCV.markerFile, null, null, null, new google.maps.Size(200,78));
 
 
@@ -212,19 +212,19 @@
             result += '<div class="sports-offered">'
                 if ( campusSports.length > 0 ) {
                     if (campusSports.includes("baseball")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/baseball-red.png">'
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/baseball-red.png">'
                     }
                     if (campusSports.includes("basketball")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/basketball-red.png">'
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png">'
                     }
                     if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/football-red.png">'
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
                     }
                     if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/soccer-red.png">'
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
                     }
                     if (campusSports.includes("golf")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Icons/golf-red.png">'
+                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/golf-red.png">'
                     }
                 } else {
                     result += '<p>No sports currently offered</p>'

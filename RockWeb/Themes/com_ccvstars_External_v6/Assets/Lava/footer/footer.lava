@@ -4,8 +4,8 @@
 
 <div class="footer">
     <div class="footer-right">
-        <a href="/" class="stars-logo"><img src="~~/Assets/Images/stars-logo-white.png"></a>
-        <a href="https://ccv.church" class="ccv-logo"><img src="~~/Assets/Images/ccv-logo-black.png"></a>
+        <a href="/" class="stars-logo"><img src="~~/Assets/Images/logo/stars-logo-white.png"></a>
+        <a href="https://ccv.church" class="ccv-logo"><img src="~~/Assets/Images/logo/ccv-logo-black.png"></a>
     </div>
     <div class="footer-center">
         <div class="footer-links-section">
@@ -30,8 +30,8 @@
     </div>    
     <div class="footer-left">
         <div class="footer-social">   
-            <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/twitter.png"></a>
-            <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/facebook.png"></a>
+            <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/icon/twitter.png"></a>
+            <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/icon/facebook.png"></a>
         </div>
         <div class="footer-copyright"><i class="fa fa-copyright"></i>2019 Christ's Church of the Valley</div>
         <div class="server-name">

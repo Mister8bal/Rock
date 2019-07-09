@@ -1,6 +1,6 @@
 /* Zones & Sections */
 #section-feature-bg {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-team-toolbox.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-team-toolbox.jpg");
 }
 
 #zone-sectiona {
@@ -219,7 +219,7 @@ strong {
 @media screen and (max-width: 767.98px) {    
     /* Zones & Sections */
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/dashboard/hero-mobile-team-toolbox.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-team-toolbox.jpg");
     }
 
     #zone-sectiona, #zone-sectionb {

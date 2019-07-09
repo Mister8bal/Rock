@@ -1,5 +1,5 @@
 #section-feature-bg {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-camps.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-camps.jpg");
 }
 
 #zone-sectiona {
@@ -82,7 +82,7 @@
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) { 
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/home/sports/hero-mobile-camps.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-camps.jpg");
     }
 }
 

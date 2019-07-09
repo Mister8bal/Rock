@@ -1,5 +1,5 @@
 #section-feature-bg {
-    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-contact-us.jpg");
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-contact-us.jpg");
 }
 
 .contact-us h2 {
@@ -40,7 +40,7 @@
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {  
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/support/hero-mobile-contact-us.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-contact-us.jpg");
     }
 
     .first-name, .last-name, .email-address, .phone-number {

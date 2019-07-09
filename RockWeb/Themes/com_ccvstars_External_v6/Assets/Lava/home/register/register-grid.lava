@@ -155,7 +155,7 @@
             var row = document.createElement('tr');
 
             // add column data to row
-            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Icons/' + gridItems[i].Sport.toLowerCase() + '-black.svg">');
+            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + gridItems[i].Sport.toLowerCase() + '-red.svg">');
             addCellToRow(row, gridItems[i].Campus);
             addCellToRow(row, gridItems[i].Sport);
             addCellToRow(row, gridItems[i].Gender);
