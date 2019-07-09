@@ -23,14 +23,15 @@
 
 .title {
     align-items: center;
+    padding: 42px 0;
 }
 
 .title h4 {
     color: #EA3E29;
 }
 
-p {
-    color: #333333;
+.title p {
+    color: #ffffff;
 }
 
 strong {
@@ -38,19 +39,46 @@ strong {
 }
 
 .section-video {
-    padding-top: 0px;
+    padding-top: 50px;
     padding-bottom: 0px;
+}
+
+span{
+    font-weight: normal;
 }
 
 /* End Overrides */
 
 hr {
-    color: gray;
+    border-top: 2px solid #ccc;
+}
+
+.history {
+    padding-top: 100px;
+}
+
+.history p {
+    color: #333333;
 }
 
 .history h3, .mtag h3, .weekly-mtag h3 {
     color: #EA3E29;
     text-align: left;
+}
+
+.history > ul {
+    border-left: 2px solid red;
+    list-style-type: none;
+    padding: 10px 20px;
+}
+
+.weekly-mtag h3 {
+    font-size: 40px;
+    line-height: 42px;
+}
+
+.mtag p {
+    color: #333333;
 }
 
 .mtag h4 {
@@ -60,12 +88,6 @@ hr {
     line-height: 22px;
     text-align: left;
     text-transform: capitalize;
-}
-
-.history > ul {
-    border-left: 2px solid red;
-    list-style-type: none;
-    padding: 10px 20px;
 }
 
 .weekly-mtag {
@@ -80,6 +102,7 @@ hr {
 .weekly-mtag-wrapper {
     display: flex;
     width: 80%;
+    margin: 5% 5%;
 }
 
 .weekly-mtag-wrapper img {
