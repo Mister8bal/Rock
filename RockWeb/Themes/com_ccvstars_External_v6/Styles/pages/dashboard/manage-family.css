@@ -22,11 +22,13 @@ h3 {
 
 .title h1 {
     color: #EA3E29;
+    padding-bottom: 0;
 }
 
 .title p {
     color: #000000;
     margin: 0;
+    padding: 0px 0 30px 0;
 }
 
 /* End Overrides */
@@ -59,8 +61,9 @@ h3 {
 }
 
 .person-head-name {
-    font-size: 30px;
+    font-size: 50px;
     color: #EA3E29;
+    line-height: 40px;
 }
 
 .no-flex-zone {
@@ -192,7 +195,18 @@ h3 {
 
 
 /**** Phone Styling ****/
-@media screen and (max-width: 767.98px) {   
+@media screen and (max-width: 767.98px) { 
+    .title h1 {
+        font-size: 40px;
+        line-height: 42px;
+    } 
+
+    .title p {
+        display: block;
+        width: 100%;
+        padding: 20px 0;
+    }
+
     /* Person Info */
     .profile-card {
         padding: 0;
@@ -228,6 +242,11 @@ h3 {
 
     .person-head-row {
         padding: 10% 16px;
+    }
+
+    .person-head-name {
+        font-size: 30px;
+        line-height: 32px;
     }
 
     .profile-card, .account-actions, .recent-registrations {
