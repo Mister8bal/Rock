@@ -435,7 +435,7 @@
                                 <div class="form-field">
                                     <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
 
-                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="Desired Date" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
+                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="What date are you coming?" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
 
                                     </div>
                                 </div>
@@ -603,7 +603,8 @@
                             <div class="form-row">
                                 <div class="form-field">
 
-                                    <Rock:RockDropDownList ID="ddlChildBdayYear" runat="server" Label="Year" ClientIDMode="Static" OnSelectedIndexChanged="ddlChildBdayYear_SelectedIndexChanged" AutoPostBack="true" />
+                                    <Rock:RockDropDownList ID="ddlChildBdayYear" runat="server" Label="Birth 
+                                        Year" ClientIDMode="Static" OnSelectedIndexChanged="ddlChildBdayYear_SelectedIndexChanged" AutoPostBack="true" />
 
                                 </div>
                                 <div class="form-field">
