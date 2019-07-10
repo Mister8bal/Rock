@@ -1013,7 +1013,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
             }
 
             // Filter by group keyword
-            string descriptionKeyword = tbGroupKeyword.Text;
+            string descriptionKeyword = tbGroupDescription.Text;
             if ( descriptionKeyword.IsNotNullOrWhiteSpace() )
             {
                 // get a list of group ids from the "Group Description" attribute that contain the keyword.
