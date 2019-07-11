@@ -23,6 +23,13 @@
     line-height: 1.5;
 }
 
+.toolbox-card .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 40px;
+}
+
 .toolbox-card .header h4 {
     font-size: 26px;
     line-height: 31px;
@@ -122,8 +129,24 @@
     margin-left: 10px;
 }
 
+/* override */
+@media screen and (max-width: 768px) {
+    .btn {
+        width: unset;
+    }
+}
+
 /* Phone */
-@media screen and (max-width: 500px) {   
+@media screen and (max-width: 500px) {  
+    .btn {
+        width: 100%;
+    }
+
+    .toolbox-card .header {
+        flex-direction: column;
+        padding: 0 10px 20px 10px;
+    }
+
     .guide-header {
         flex-direction: column;
     }
@@ -159,7 +182,6 @@
         max-width: 100%;
         margin-left: unset;
     }
-
 }
 
 /* End Coach Guide */
@@ -185,7 +207,6 @@
     .item-row-video {
         width: 90%;
     }
-
 }
 /* End Training Center */
 

@@ -88,6 +88,7 @@
 
 <div class="header">
     <h4>{{ group.Name }}</h4>
+    <a href="/student-toolbox/roster?GroupId={{ PageParameter.GroupId }}" class="btn btn-primary">Group Roster</a>
 </div>
 
 <div class="toolbox-subnav-desktop">
