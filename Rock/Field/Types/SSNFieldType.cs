@@ -46,19 +46,10 @@ namespace Rock.Field.Types
         {
             string formattedValue = string.Empty;
 
-            if ( value.IsNotNullOrWhitespace() )
+            string ssn = UnencryptAndClean( value );
+            if ( ssn.Length == 9 )
             {
-                string ssn = Rock.Security.Encryption.DecryptString( value );
-                if ( !string.IsNullOrEmpty( ssn ) )
-                {
-                    Regex digitsOnly = new Regex( @"[^\d]" );
-                    ssn = digitsOnly.Replace( ssn, string.Empty );
-                }
-
-                if ( ssn.Length == 9 )
-                {
-                    formattedValue = string.Format( "xxx-xx-{0}", ssn.Substring( 5, 4 ) );
-                }
+                formattedValue = string.Format( "xxx-xx-{0}", ssn.Substring( 5, 4 ) );
             }
 
             return base.FormatValue( parentControl, formattedValue, configurationValues, condensed );
@@ -160,14 +151,12 @@ namespace Rock.Field.Types
         /// <returns></returns>
         public static string UnencryptAndClean( string encryptedValue )
         {
-            if ( encryptedValue.IsNotNullOrWhitespace() )
+            if ( !string.IsNullOrWhiteSpace( encryptedValue ) )
             {
                 string ssn = Rock.Security.Encryption.DecryptString( encryptedValue );
-                if ( !string.IsNullOrEmpty( ssn ) )
+                if ( !string.IsNullOrWhiteSpace( ssn ) )
                 {
-                    Regex digitsOnly = new Regex( @"[^\d]" );
-                    ssn = digitsOnly.Replace( ssn, string.Empty );
-                    return ssn;
+                    return ssn.AsNumeric();
                 }
             }
 

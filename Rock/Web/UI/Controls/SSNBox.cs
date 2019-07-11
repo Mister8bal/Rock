@@ -301,18 +301,16 @@ namespace Rock.Web.UI.Controls
             set
             {
                 EnsureChildControls();
-                hfSSN.Value = value;
 
-                string ssn = string.Empty;
-                if ( !string.IsNullOrEmpty( value ) )
+                if ( !string.IsNullOrWhiteSpace( value ) )
                 {
-                    Regex digitsOnly = new Regex( @"[^\d]" );
-                    ssn = digitsOnly.Replace( value, string.Empty );
-                }
+                    hfSSN.Value = value;
 
-                ssnArea.Attributes["value"] = ssn.Left( 3 );
-                ssnGroup.Attributes["value"] = ssn.Length > 3 ? ssn.Substring( 3, 2 ) : string.Empty;
-                ssnSerial.Text = ssn.Length > 5 ? ssn.Substring( 5, 4 ) : string.Empty;
+                    string ssn = value.AsNumeric();
+                    ssnArea.Attributes["value"] = ssn.SafeSubstring( 0, 3 );
+                    ssnGroup.Attributes["value"] = ssn.SafeSubstring( 3, 2 );
+                    ssnSerial.Text = ssn.SafeSubstring( 5, 4 );
+                }
             }
         }
 
