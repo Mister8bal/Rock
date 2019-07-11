@@ -1,5 +1,5 @@
 .page-background {
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-connect.jpg");
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-group-finder.jpg");
 }
 
 .neighborhood-groups-card { /* .dashboard-card */
@@ -166,7 +166,7 @@
 /* Phone */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-connect.jpg");
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-mobile-group-finder.jpg");
     }
     .person-row-summary {
         padding: 0 10px;
