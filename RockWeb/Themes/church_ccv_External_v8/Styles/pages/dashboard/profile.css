@@ -27,6 +27,14 @@
     width: 50%;
 }
 
+.person-row {
+    padding: 20px 0;
+}
+
+.person-edit-buttons {
+    padding-bottom: 5%;
+}
+
 .profile-card hr {
     display: none;
 }
