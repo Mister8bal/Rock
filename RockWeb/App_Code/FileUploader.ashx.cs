@@ -298,6 +298,20 @@ namespace RockWeb
                 binaryFile.MimeType = _mimeTypeRemap[binaryFile.MimeType];
             }
 
+            // Grab the index of the . in the file name.  We'll use this to 
+            // determine if the file name includes an extension.  This is not fullproof as 
+            // files can include dots elswhere in the file. 
+            var fileExtensionIndex = uploadedFile.FileName.LastIndexOf( '.' );
+
+            // In order to handle files whose names include a '.' but still 
+            // no file extnesion, we also check the content type.  
+            if ( fileExtensionIndex == -1 || uploadedFile.ContentType == "application/octet-stream" )
+            {
+
+                throw new Rock.Web.FileUploadException( "Invalid Filename.  Filename must include file type extension.", System.Net.HttpStatusCode.UnsupportedMediaType );
+
+            }
+
             binaryFile.ContentStream = GetFileContentStream( context, uploadedFile );
             rockContext.SaveChanges();
 
