@@ -1154,6 +1154,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                     .Queryable( "Registrants.PersonAlias.Person,Registrants.GroupMember,RegistrationInstance.Account,RegistrationInstance.RegistrationTemplate.Fees,RegistrationInstance.RegistrationTemplate.Discounts,RegistrationInstance.RegistrationTemplate.Forms.Fields.Attribute,RegistrationInstance.RegistrationTemplate.FinancialGateway" )
                     .Where( r => r.Id == registrationId.Value )
                     .FirstOrDefault();
+                
 
                 if ( registration == null )
                 {
@@ -1538,8 +1539,8 @@ namespace RockWeb.Plugins.church_ccv.Event
 
             if ( RegistrationState != null && RegistrationState.Registrants.Any() && RegistrationTemplate != null )
             {
-                var rockContext = new RockContext();
 
+                var rockContext = new RockContext();
                 var registrationService = new RegistrationService( rockContext );
 
                 bool isNewRegistration = true;
@@ -1556,7 +1557,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                             .ToList();
                     }
                 }
-
+                
                 try
                 {
                     bool hasPayment = ( RegistrationState.PaymentAmount ?? 0.0m ) > 0.0m;
@@ -1763,7 +1764,8 @@ namespace RockWeb.Plugins.church_ccv.Event
                 .Where( r => r.Guid.Equals( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD.AsGuid() ) )
                 .Select( r => r.Id )
                 .FirstOrDefault();
-
+           
+            
             bool newRegistration = false;
             Registration registration = null;
             Person registrar = null;
@@ -1788,6 +1790,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                     registrar = registration.PersonAlias.Person;
                 }
             }
+            
 
             registration.RegistrationInstanceId = RegistrationInstanceState.Id;
 
@@ -1890,6 +1893,7 @@ namespace RockWeb.Plugins.church_ccv.Event
             if ( registrar != null )
             {
                 var family = registrar.GetFamilies( rockContext ).FirstOrDefault();
+
                 if ( family != null )
                 {
                     multipleFamilyGroupIds.AddOrIgnore( RegistrationState.FamilyGuid, family.Id );
@@ -1897,7 +1901,9 @@ namespace RockWeb.Plugins.church_ccv.Event
                     {
                         singleFamilyId = family.Id;
                     }
+
                 }
+
             }
             
             // Make sure there's an actual person associated to registration
@@ -1939,6 +1945,25 @@ namespace RockWeb.Plugins.church_ccv.Event
             if ( registration.IsTemporary )
             {
                 registration.IsTemporary = false;
+            }
+
+            // Check to make sure a campus is set on the family.
+            // There should always be a registrar by this point.
+            if ( registrar != null )
+            {
+                var family = registrar.GetFamilies( rockContext ).FirstOrDefault();
+
+                if ( family != null )
+                {
+                
+                    // If a campus is not set, set the campus 
+                    // based on the registration.
+                    if ( family.CampusId == null )
+                    {
+                        family.CampusId = CampusId;
+                    }
+                }
+
             }
 
             // Save the registration ( so we can get an id )
