@@ -76,9 +76,9 @@
                                             {% endif %}
                                             {% if attribute.AttributeName == "Group Filters" %}
                                                 {% if attribute.ValueFormatted == "Childcare Provided" %}
-                                                   <p></p>
+                                                   <!--<p></p>
                                                    <h5>Childcare Description</h5>
-                                                   <p>{{ tempChildCareDescription }}</p>
+                                                   <p>{{ tempChildCareDescription }}</p>-->
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
