@@ -1,12 +1,15 @@
 
 .page-background {   
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/hero-stories.jpg");
+    background-color: black;
 }
 
 /* Mobile Background Image */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/hero-mobile-stories.jpg");
+        background-color: black;
+        background-image: unset;
+        background-attachment: unset;
+        background-size: cover;
     }
 }
 
@@ -18,8 +21,8 @@
 /* use the expanded main feature only for tablet and larger */
 @media screen and (min-width: 501px) {
     .main-feature {
-        height: 350px;
-        padding-top: 125px;
+        height: 0px;
+        padding-top: 70px;
     }
 }
 
@@ -30,6 +33,11 @@
 @media screen and (max-width: 500px) {
     .story-content {
         padding: 25px 10px 25px 10px;
+    }
+
+    .main-feature {
+        padding-top: 60px;
+        height: 70px;
     }
 }
 
