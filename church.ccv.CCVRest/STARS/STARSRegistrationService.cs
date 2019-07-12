@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Rock;
 using Rock.Data;
 using Rock.Model;
@@ -12,14 +10,14 @@ namespace church.ccv.CCVRest.STARS
 {
     class STARSRegistrationService
     {
-        public static List<STARSRegistrationModel> GetActiveRegistrations()
+        public static List<STARSRegistrationModel> GetActiveRegistrations( int calendarId )
         {
             // return object
             List<STARSRegistrationModel> activeRegistrations = new List<STARSRegistrationModel>();
 
             // get the stars calendar and active calendar items that have occurences
             EventCalendarService calendarService = new EventCalendarService( new RockContext() );
-            EventCalendar starsCalendar = calendarService.Get( 4 );
+            EventCalendar starsCalendar = calendarService.Get( calendarId );
 
             var activeCalendarItems = starsCalendar.EventCalendarItems.Where( a => a.EventItem.IsActive == true )
                                                                       .Where( a => a.EventItem.EventItemOccurrences.Count > 0 );

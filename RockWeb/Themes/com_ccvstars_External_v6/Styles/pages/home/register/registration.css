@@ -1,0 +1,50 @@
+/* Zones & Sections */
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-register.jpg");
+}
+
+.registration-header h3, .registration-header h4 {
+    color: #333;
+}
+
+.registration-header h3 {
+    padding-bottom: 0;
+}
+
+.registration-header h4 {
+    padding-top: 0;
+}
+
+.ccv-registration-entry h1, .ccv-registration-entry h2, .ccv-registration-entry h3, .ccv-registration-entry h4, .ccv-registration-entry h5, .ccv-registration-entry h6 {
+    color: #333;
+}
+
+.ccv-registration-entry p {
+    color: #333;
+}
+
+.ccv-registration-entry a {
+    color: #e73d30;
+}
+
+.actions {
+    padding-bottom: 50px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actions .btn {
+    float: none !important;
+}
+
+.actions .btn:first-of-type {
+    margin-right: 20px;
+}
+
+.actions .btn-primary {
+    color: #FFFFFF;
+}
+
+.actions .btn:hover, .actions .btn:active {
+    color: #e73d30;
+}

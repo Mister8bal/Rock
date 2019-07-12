@@ -119,7 +119,7 @@
 <script>
     var activeRegistrations = [];
 
-    var getUrl = "/api/STARS/ActiveRegistrations";
+    var getUrl = "/api/STARS/ActiveRegistrations?CalendarId=6";
     
     $.get(getUrl, function(data, status){
         activeRegistrations = data.Data;
@@ -131,7 +131,7 @@
 
     function initializeGrid() {
 
-        buildModalCampusesPanel();
+        //buildModalCampusesPanel();
 
         renderGrid(activeRegistrations);
 
@@ -154,14 +154,16 @@
             // create new row
             var row = document.createElement('tr');
 
+            var sport = getSport(gridItems[i].Sport);
+
             // add column data to row
-            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + gridItems[i].Sport.toLowerCase() + '-red.svg">');
+            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport.toLowerCase() + '-red.png">');
             addCellToRow(row, gridItems[i].Campus);
-            addCellToRow(row, gridItems[i].Sport);
+            addCellToRow(row, sport);
             addCellToRow(row, gridItems[i].Gender);
             addCellToRow(row, gridItems[i].Division);
             addCellToRow(row, gridItems[i].Season);
-            addCellToRow(row, '<a href="{{ DetailsPage }}?EventOccurrenceId=' + gridItems[i].EventOccurenceId + '" class="btn btn-primary">More Info</a>' );
+            addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + gridItems[i].EventOccurenceId + '" class="btn btn-primary">More Info</a>' );
 
             // add row to table
             table.appendChild(row);
@@ -181,6 +183,32 @@
         cell.innerHTML = value;
 
         row.appendChild(cell);
+    }
+
+    function getSport(program) {
+        var sport = "";
+
+        if (program.includes("baseball")) {
+            sport = "Baseball";
+        }
+
+        if (program.includes("basketball")) {
+            sport = "Basketball";
+        }
+
+        if (program.includes("football")) {
+            sport = "Football";
+        }
+
+        if (program.includes("soccer")) {
+            sport = "Soccer";
+        }
+
+        if (program.includes("exceptional")) {
+            sport = "Exceptional Stars";
+        }
+
+        return sport;
     }
 
 

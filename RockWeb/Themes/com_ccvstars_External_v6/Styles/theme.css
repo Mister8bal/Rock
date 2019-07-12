@@ -1985,6 +1985,7 @@ tr.row-highlight td {
 .lava-debug {
     margin-top: 24px;
     clear: both;
+    position: relative;
 }
 
     .lava-debug code {

@@ -20,7 +20,17 @@
     font-weight: 400;
     color: #505050;
     text-align: center;
-    padding: 90px 0;
+    padding: 70px 0 75px 0;
+    margin: 0;
+}
+
+.about-stars a {
+    color: #e73d30;
+    font-weight: 700;
+}
+
+.about-stars a:hover {
+    text-decoration: none;
 }
 
 hr {
@@ -169,7 +179,6 @@ hr {
 
 
 
-
 /* Grid */
 .register-grid {
     background-color: #FFFFFF;
@@ -206,7 +215,81 @@ hr {
 
 
 
+/* register details */
+.name-mobile {
+    display: none;
+}
 
+.name {
+    color: #e73d30;
+}
+
+.campus-sport {
+    padding: 100px 0 0 60px;
+}
+
+.division-gender {
+    padding: 0 0 20px 60px;
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 100px;
+}
+
+.details-card {
+    background-color: #eeeeee;
+    border-radius: 5px;
+    padding: 45px 60px;
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    min-height: 400px;
+    margin-right: 20px;
+}
+
+.content {
+    flex-grow: 1;
+}
+
+.content p {
+    color: #505050;
+}
+
+/* override list item bullet color */
+.content ul {
+    list-style: none;
+}
+
+.content ul li::before {
+    content: "\2022";
+    color: #e73d30;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -2em;
+}
+
+.cost h6 {
+    font-size: 24px;
+    color: #e73d30;
+    padding-bottom: 20px;
+}
+
+.action .btn {
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 29px;
+    letter-spacing: -1.5px;
+    padding: 18px 40px;
+    border-radius: 6px;
+}
+
+.details-image img {
+    width: 100%;
+    border-radius: 5px;
+}
 
 /* Loading */
 .register-grid .loading {
@@ -221,21 +304,73 @@ hr {
     text-align: center;
 }
 
-
-
-
 /* overrides */
 button:focus {
     outline: none;
 }
 
+/**** Tablet Sytling  ****/
+/* Reduce by 40% */
+@media screen and (max-width: 1023.98px) {
+    #section-b-bg {
+        background-color: #eeeeee;
+    }
 
+    .about-stars p {
+        font-size: 16px;
+        line-height: 23px;
+        padding: 35px 0 40px 0;
+    }
+
+    .name-desktop {
+        display: none;
+    }
+
+    .name-mobile {
+        display: inline-block;
+        padding-bottom: 15px;
+    }
+
+    .details h3 {
+        padding: 0;
+    }
+
+    .details-row {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+        padding: 0;
+    }
+
+    .details-card {
+        width: 100%;
+        margin-right: 0;
+        padding: 45px 50px;
+    }
+
+    .details-card .action {
+        padding-top: 15px;
+    }
+
+    .action .btn {
+        width: 100%;
+    }
+}
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {   
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-register.jpg");
     } 
+
+    .about-stars p {
+        font-size: 12.5px;
+        line-height: 18.5px;
+        padding: 15px 0 20px 0;
+    }
+
+    .details-card {
+        padding: 20px 15px;
+    }
 }
 
 /**** End Phone Styling ****/

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Rock.Rest.Filters;
 
 namespace church.ccv.CCVRest.STARS
@@ -14,22 +10,21 @@ namespace church.ccv.CCVRest.STARS
         {
             Success,
             NoActiveRegistrations,
-            Failed
+            MissingCalendarId
         }
 
         [Authenticate, Secured]
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/STARS/ActiveRegistrations" )]
-        public HttpResponseMessage ActiveRegistrations()
+        public HttpResponseMessage ActiveRegistrations( int calendarId )
         {
-            List<STARSRegistrationModel> response = STARSRegistrationService.GetActiveRegistrations();
+            List<STARSRegistrationModel> response = STARSRegistrationService.GetActiveRegistrations( calendarId );
 
             if ( response.Count > 0 )
             {
                 // success
                 return Common.Util.GenerateResponse( true, RegistrationsResponse.Success.ToString(), response );
             }
-
 
             // default response
             return Common.Util.GenerateResponse( true, RegistrationsResponse.NoActiveRegistrations.ToString(), null );

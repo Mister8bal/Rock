@@ -1,0 +1,26 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/register/register-details.lava' %}
+{% endcomment %}
+
+<div class="loading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<div class="details hidden">
+    <h3 class="name name-desktop campus-sport"></h3>
+    <h4 class="name name-desktop division-gender"></h4>
+    <div class="details-row">
+        <div class="details-card">
+            <h3 class="name name-mobile campus-sport"></h3>
+            <h4 class="name name-mobile division-gender"></h4>
+            <div class="content">
+            </div>
+            <div class="cost">
+            </div>
+            <div class="action">
+            </div>
+        </div> 
+        <div class="details-image">
+        </div>
+    </div>
+</div>

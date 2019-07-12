@@ -1,0 +1,51 @@
+{% comment %}
+    {% include '~~/Assets/Lava/home/register/register-details-title.lava' %}
+{% endcomment %}
+
+{% comment %} Set hero image {% endcomment %}
+{% assign sport = Event | Attribute:'Sport' %}
+
+{% if sport contains 'baseball' %}
+    {% assign sportType = "Baseball" %}
+{% endif %}
+
+{% if sport contains 'basketball' %}
+    {% assign sportType = "Basketball" %}
+{% endif %}
+
+{% if sport contains 'soccer' %}
+    {% assign sportType = "Soccer" %}
+{% endif %}
+
+{% if sport contains 'football' %}
+    {% assign sportType = "Football" %}
+{% endif %}
+
+{% if sport contains 'exceptional' %}
+    {% assign sportType = "Exceptional STARS" %}
+{% endif %}
+
+<style>
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-{{ sportType | Downcase | Replace:' ','-' }}.jpg");
+    }
+
+    @media screen and (max-width: 500px) {
+        #section-feature-bg {
+            background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-{{ sportType | Downcase | Replace:' ','-' }}.jpg");
+        }
+    }
+</style>
+
+{% comment %} Render title {% endcomment %}
+{% capture title %}{{ Event | Attribute:'Season' }} Season{% endcapture %}
+
+{% include '~~/Assets/Lava/feature.lava' %}
+
+{% comment %} Populate registration header {% endcomment %}
+<script>
+    $(document).ready(function() {
+        $('#campusSport').text('{{ EventItemOccurrence.Campus.Name }} {{ Event | Attribute:'Sport' | Replace:'-',' ' }}');
+        $('#divisionGender').text('{{ Event | Attribute:'Division' }} {{ Event | Attribute:'Gender' }}');
+    });
+</script>

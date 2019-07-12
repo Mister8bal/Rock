@@ -1,3 +1,9 @@
+{% comment %} 
+    {% assign title = "" %}
+    {% assign paragraph = "" %}
+    {% include '~~/Assets/Lava/feature.lava' %} 
+{% endcomment %}
+
 <div class="title">
     <h1>{{title}}</h1>
     <p>{{paragraph}}</p>
