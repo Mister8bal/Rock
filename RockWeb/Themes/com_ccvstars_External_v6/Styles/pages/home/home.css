@@ -13,7 +13,7 @@
 
 #zone-sectionc {
     max-width: 100%;
-    margin: 0 20%;
+    margin: 0 12%;
 }
 
 /* Top section */
@@ -154,6 +154,14 @@
 
 /** Laptop Styling **/
 @media screen and (max-width: 1024px) {
+    /* Event Cards Styling */
+    #zone-sectionc {
+        max-width: 100%;
+        margin: 0 10%;
+    }
+
+    /* End Event Cards Styling */
+
     .image-top {
         height: 400px;
     }

@@ -828,7 +828,7 @@ a:focus {
     justify-content: space-between;
     flex-grow: 1;
     padding: 10px 16px;
-    min-height: 130px;
+    min-height: 155px;
 }
 
 .event-card-content p {
@@ -1653,6 +1653,8 @@ a:focus {
 
     .event-cards-header h3 {
         margin: 5%;
+        font-size: 40px;
+        line-height: 42px;
     }
 
     /* End Event Card Styling */
