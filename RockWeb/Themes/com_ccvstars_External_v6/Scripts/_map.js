@@ -206,25 +206,24 @@
     }
     CCV.campusInfoWindowMap.prototype.buildInfoWindow = function(campus) {
         var result
-        var campusSports = campus.sports;
+        var campusSports = campus.sports
+        var campusRoute = campus.name.replace(' ','-').toLowerCase()
+
         result  = '<div class="campus-info-window">'
             result += '<h6>SPORTS AT THIS LOCATION</h6>'
             result += '<div class="sports-offered">'
                 if ( campusSports.length > 0 ) {
                     if (campusSports.includes("baseball")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/baseball-red.png">'
+                        result += '<a href="/baseball-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/baseball-red.png"></a>'
                     }
                     if (campusSports.includes("basketball")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png">'
+                        result += '<a href="/basketball-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png"></a>'
                     }
                     if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
+                        result += '<a href="/football-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
                     }
                     if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
-                    }
-                    if (campusSports.includes("golf")) {
-                        result += '<img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/golf-red.png">'
+                        result += '<a href="/soccer-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
                     }
                 } else {
                     result += '<p>No sports currently offered</p>'
@@ -232,7 +231,6 @@
             result += '  </div>'
             result += '  <p>CCV CAMPUS</p>'
             
-            var campusRoute = campus.name.replace(' ','-').toLowerCase()
 
             result += '  <a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
         result += '</div>'

@@ -1,18 +1,46 @@
 {% comment %} 
     {% assign title = "Sport Title goes here" %}
     {% assign content = "Content goes here" %}
-    {% assign sport = "Sport here" %}
+    {% assign sport = "Sport goes here" %}
 
     {% include '~~/Assets/Lava/home/sports/sports-infosection.lava' %}
 {% endcomment %}
+
+{% comment %} 
+    If a campus is passed as a parameter, we need to see if sport is
+    available for campus passed. If it is, create direct button link
+    to sports detail page. If it is not available, show campus selector
+    with verbiage that sport not available at location and to select
+    another location.
+{% endcomment %}
+
+{% assign campusParameter = PageParameter.Campus %}
+
+{% assign campusName = campusParameter | Replace:'-',' ' | Capitalize %}
+
+{% assign campusSports = Campuses | Where:'Name',campusName | Select:'Sports' | Join:',' %}
+
+{% comment %} render the info section {% endcomment %}
 <div>
     <h3>{{ title }}</h3>
     <p>{{ content }}</p>
 </div>
 <br />
 <div>
-    <p><strong>Programs vary by Location</strong></p>
-    <div class="btn-row">    
-        {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
-    </div>
+    {% if campusSports contains sport %}
+        {% comment %} sport available at specified campus {% endcomment %}
+        <div class="btn-row">
+            <a href="/sport/{{ sport }}/{{ campusParameter }}" class="btn btn-primary">More Info</a>
+        </div>
+    {% else %}
+        {% comment %} sport not available at specified campus {% endcomment %}
+        {% if campusParameter %}
+            <p><strong>Not available at this campus, select a different campus.</strong></p>
+        {% else %}
+            <p><strong>Programs vary by Location</strong></p>
+        {% endif %}
+        <div class="btn-row">    
+            {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+        </div>
+    {% endif %}
 </div>

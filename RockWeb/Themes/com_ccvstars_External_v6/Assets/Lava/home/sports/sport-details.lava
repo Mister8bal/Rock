@@ -120,7 +120,7 @@
         </div>
         <div class="sport-title">
             <h3>{{ campus | Replace:'-',' ' | Capitalize }} {{ sport | Replace:'-',' ' | Capitalize }}</h3>
-            <p>Sport program information is currently unavailabe, please try another campus or sport.</p>            
+            <p>Sport program information is currently unavailable, please try another campus or sport.</p>            
         </div>
     {% endif %}        
 </div>
