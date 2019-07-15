@@ -120,7 +120,7 @@ namespace RockWeb.Plugins.church_ccv.Event
             registrationsList = registrationsList.Where( r => r.RegistrationInstance.Linkages.Any( x => x.EventItemOccurrenceId.HasValue)).ToList();
 
             // Take list of all events and order by date
-            registrationsList = registrationsList.OrderBy( r => r.RegistrationInstance.Linkages.FirstOrDefault().EventItemOccurrence.NextStartDateTime ).ToList();
+            registrationsList = registrationsList.OrderBy( r => r.CreatedDateTime ).ToList();
 
             // filter by date range (start date)
             var requestDateRange = SlidingDateRangePicker.CalculateDateRangeFromDelimitedValues(GetAttributeValue("DateRange") ?? "-1||");
@@ -128,8 +128,9 @@ namespace RockWeb.Plugins.church_ccv.Event
             // If Start & End dates are known, make sure that event is in between those two dates. Other wise skip this and return all events
             if (requestDateRange.Start.HasValue && requestDateRange.End.HasValue)
             {
-                registrationsList = registrationsList.Where(a => a.RegistrationInstance.Linkages.Any(x => x.EventItemOccurrenceId.HasValue &&
-                x.EventItemOccurrence.GetFirstStartDateTime() > requestDateRange.Start && x.EventItemOccurrence.GetFirstStartDateTime() < requestDateRange.End)).ToList();
+                
+                registrationsList = registrationsList.Where( a => a.CreatedDateTime > requestDateRange.Start && a.CreatedDateTime < requestDateRange.End ).ToList();
+
             }
 
             if (this.GetAttributeValue("LimitToOwed").AsBooleanOrNull() ?? true)
@@ -140,7 +141,7 @@ namespace RockWeb.Plugins.church_ccv.Event
             int? maxResults = GetAttributeValue("MaxResults").AsIntegerOrNull();
             if (maxResults.HasValue && maxResults > 0)
             {
-                registrationsList = registrationsList.Take(maxResults.Value).ToList();
+                registrationsList = registrationsList.TakeLast(maxResults.Value).ToList();   
             }
 
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields(this.RockPage, this.CurrentPerson);
