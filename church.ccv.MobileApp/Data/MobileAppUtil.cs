@@ -93,10 +93,12 @@ namespace church.ccv.MobileApp
                 // grab the nth set
                 groupList = groupList.Skip( skip );
                 groupList = groupList.Take( top ).ToList();
+               
 
                 // now take only what we need from each group (drops our return package to about 2kb, from 40kb)
                 foreach( Group group in groupList )
                 {
+
                     Location locationObj = group.GroupLocations.First( ).Location;
 
                     GroupResult groupResult = new GroupResult( )
@@ -116,7 +118,11 @@ namespace church.ccv.MobileApp
                         groupResult.Filters = group.AttributeValues[ GroupFilters_Key ].Value;
                     }
 
-                    resultGroups.Add( groupResult );
+                    if ( !GroupOverCapacity( group ) )
+                    {
+                        resultGroups.Add( groupResult );
+                    }
+                    
                 }
             }
             while( false );
@@ -169,6 +175,26 @@ namespace church.ccv.MobileApp
             }
 
             return success;
+        }
+
+        // Check to see if given group is at or 
+        // over capacity.
+        public static bool GroupOverCapacity(Group group )
+        {
+
+            //create a new GM rock context to avoid speed issues.
+            RockContext gmRockContext = new RockContext();
+            GroupMemberService gmService = new GroupMemberService( gmRockContext );
+
+            IEnumerable<GroupMember> gmList = gmService.Queryable().AsNoTracking()
+                                                           .Where( a => a.GroupMemberStatus != GroupMemberStatus.Inactive && a.GroupId == group.Id ).ToList();
+
+            if(group.GroupCapacity != null && ( gmList.Count() >= group.GroupCapacity ) )
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static bool RegisterPersonInGroup(GroupRegModel regModel)
