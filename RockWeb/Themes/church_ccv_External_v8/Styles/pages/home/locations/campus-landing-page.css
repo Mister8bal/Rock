@@ -16,6 +16,10 @@
     #zone-feature, #zone-sectiona, #zone-sectionb {
         margin: 0 10px;
     }
+
+    .main-feature {
+        padding-top: 90px;
+    }
 }
 
 /* Campus Leader Section */
@@ -50,7 +54,7 @@
     color: #7A1315;
 }
 
-@media screen and (max-width: 500px){
+@media screen and (max-width: 500px) {
     .campus-leader {
         flex-direction: column;
         text-align: center;
@@ -58,6 +62,10 @@
 
     .campus-leader-details {
         margin-left: 0;
+    }
+
+    .campus-header {
+        font-size: 38px;
     }
 }
 

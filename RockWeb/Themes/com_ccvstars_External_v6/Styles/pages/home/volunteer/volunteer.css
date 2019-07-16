@@ -8,14 +8,12 @@ hr {
     border-top: 2px solid #dcdcdc;
 }
 
-.card-body p {
+/** Start Overrides **/
+p {
     color: #7c7c7c;
 }
 
-.faq-section h3 {
-    color: #E73D30;
-    padding-top: 100px;
-}
+/** End Overrides **/
 
 .faq-card {
     position: relative;
