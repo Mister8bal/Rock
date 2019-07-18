@@ -2,13 +2,25 @@
     {% include '~~/Assets/Lava/home/sports/camps.lava' %}
 {% endcomment %}
 
-{% for item in Items %}
-    <div class="camps-row">
-        <h3>{{ item.Title }} </h3> 
-        <p class="camp-heading">Please join us for our Summer 2019 Soccer Camps!</p>
-        <p>{{ item.CampDescription }} </p> 
-        <div class="btn-row">
-            <a class="btn btn-primary" href="/get-involved/next-steps">Register</a>
+{% comment %} Check if any camps to display, if not show "check back later" message. {% endcomment %}
+{% assign numberOfCamps = Items | Size %}
+
+{% if numberOfCamps > 0 %}
+    {% for item in Items %}
+        {% assign registerLink = item | Attribute: 'RegisterUrl' %}
+        <div class="camps-row">
+            <h3>{{ item.Title }} </h3> 
+            <p class="camp-heading">{{ item.Headline | Default:'Please join us for this seasons camps.' }}</p>
+            <p>{{ item.Content }} </p> 
+            {% if registerLink != '' %}
+                <div class="btn-row">
+                    <a class="btn btn-primary" href="{{ registerLink }}">Register</a>
+                </div>    
+            {% endif %}
         </div>
+    {% endfor %}
+{% else %}
+    <div class="camps-missing">
+        <p>No camps at this time. Please check back later.</p>
     </div>
-{% endfor %}
+{% endif %}
