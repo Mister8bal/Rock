@@ -14,6 +14,8 @@
             <h3 class="name name-mobile campus-sport"></h3>
             <h4 class="name name-mobile division-gender"></h4>
             <div class="content">
+                <div class="wait-list"></div>
+                <div class="content-details"></div>
             </div>
             <div class="cost">
             </div>
@@ -24,3 +26,5 @@
         </div>
     </div>
 </div>
+
+

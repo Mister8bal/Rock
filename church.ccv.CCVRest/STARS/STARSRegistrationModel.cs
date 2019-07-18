@@ -5,7 +5,7 @@ namespace church.ccv.CCVRest.STARS
     [Serializable]
     public class STARSRegistrationModel
     {
-        public int EventOccurenceId;
+        public int EventOccurrenceId;
 
         public int? RegistrationInstanceId;
 
@@ -18,5 +18,9 @@ namespace church.ccv.CCVRest.STARS
         public string Division;
 
         public string Season;
+
+        public int SlotsAvailable;
+
+        public bool WaitListEnabled;
     }
 }

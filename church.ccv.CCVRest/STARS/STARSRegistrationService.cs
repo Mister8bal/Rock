@@ -15,7 +15,7 @@ namespace church.ccv.CCVRest.STARS
             // return object
             List<STARSRegistrationModel> activeRegistrations = new List<STARSRegistrationModel>();
 
-            // get the stars calendar and active calendar items that have occurences
+            // get the stars calendar and active calendar items that have occurrences
             EventCalendarService calendarService = new EventCalendarService( new RockContext() );
             EventCalendar starsCalendar = calendarService.Get( calendarId );
 
@@ -35,23 +35,32 @@ namespace church.ccv.CCVRest.STARS
                     foreach ( var linkage in linkages )
                     {
                         // skip linkage if we already have its occurence in the return object
-                        if ( activeRegistrations.Any( a => a.EventOccurenceId == occurence.Id ) ) {
+                        if ( activeRegistrations.Any( a => a.EventOccurrenceId == occurence.Id ) ) {
                             continue;
                         }
 
                         calendarItem.LoadAttributes();
 
+                        // skip if private
+                        string privateLink = calendarItem.AttributeValues["PrivateLink"].Value;
+
+                        if ( privateLink == "True" )
+                        {
+                            continue;
+                        }
+
+                        // skip if any of these attributes are empty
                         string sport = calendarItem.AttributeValues["Sport"].Value;
                         string gender = calendarItem.AttributeValues["Gender"].Value;
                         string division = calendarItem.AttributeValues["Division"].Value;
                         string season = calendarItem.AttributeValues["Season"].Value;
-                        string privateLink = calendarItem.AttributeValues["PrivateLink"].Value;
 
-                        // skip if private or any of these attributes are empty
-                        if ( privateLink == "True" || sport.IsNullOrWhiteSpace() || gender.IsNullOrWhiteSpace() || division.IsNullOrWhiteSpace() || season.IsNullOrWhiteSpace() )
+                        if (sport.IsNullOrWhiteSpace() || gender.IsNullOrWhiteSpace() || division.IsNullOrWhiteSpace() || season.IsNullOrWhiteSpace() )
                         {
                             continue;
                         }
+
+                        int slotsAvailable = linkage.RegistrationInstance.MaxAttendees - linkage.RegistrationInstance.Registrations.Count;
 
                         if ( occurence.Campus == null)
                         {
@@ -68,13 +77,15 @@ namespace church.ccv.CCVRest.STARS
                                     // campus found that offers sport of calendar item
                                     STARSRegistrationModel registration = new STARSRegistrationModel()
                                     {
-                                        EventOccurenceId = occurence.Id,
+                                        EventOccurrenceId = occurence.Id,
                                         RegistrationInstanceId = linkage.RegistrationInstanceId,
                                         Campus = campus.Name,
                                         Sport = sport,
                                         Gender = gender,
                                         Division = division,
-                                        Season = season
+                                        Season = season,
+                                        SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                        WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                                     };
 
                                     activeRegistrations.Add( registration );
@@ -86,13 +97,15 @@ namespace church.ccv.CCVRest.STARS
                             // single campus specified in occurence
                             STARSRegistrationModel registration = new STARSRegistrationModel()
                             {
-                                EventOccurenceId = occurence.Id,
+                                EventOccurrenceId = occurence.Id,
                                 RegistrationInstanceId = linkage.RegistrationInstanceId,
                                 Campus = occurence.Campus.Name,
                                 Sport = sport,
                                 Gender = gender,
                                 Division = division,
-                                Season = season
+                                Season = season,
+                                SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                             };
 
                             activeRegistrations.Add( registration );

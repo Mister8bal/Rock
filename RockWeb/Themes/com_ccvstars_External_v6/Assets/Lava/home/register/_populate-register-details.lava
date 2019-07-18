@@ -4,16 +4,36 @@
     Note: The page must include register-details.lava for this to work.
 {% endcomment %}
 
+{% assign onWaitList = "false" %}
+
+{% case RegistrationStatusLabel %}
+{% when 'Full' %}
+    {% assign actionButtonText = 'Registration Full' %}
+    {% assign actionButtonClass = 'btn-primary' %}
+    {% assign actionButtonDisabled = 'disabled' %}
+{% when 'Join Wait List' %}
+    {% assign onWaitList = "true" %}
+    {% assign actionButtonText = 'Join Wait List' %}
+    {% assign actionButtonClass = 'btn-secondary' %}
+{% else %}
+    {% assign actionButtonText = 'Register Now' %}
+    {% assign actionButtonClass = 'btn-primary' %}
+{% endcase %}
+
 <script>
     $(window).ready(function(){
         $('.campus-sport').text('{{ EventItemOccurrence.Campus.Name }} {{ Event | Attribute:'Sport' | Replace:'-',' ' }}');
         $('.division-gender').text('{{ Event | Attribute:'Division' }} {{ Event | Attribute:'Gender' }}');
 
-        $('.content').html(`{{ Event.Description }}`);
+        {% if onWaitList == "true" %}
+            $('.wait-list').html('<h4>Now on wait list</h4>');
+        {% endif %}
+
+        $('.content-details').html(`{{ Event.Description }}`);
 
         $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost }}</h6>');
 
-        $('.action').html('<a href="/stars-registration-v2?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn btn-primary">Register Now</a>')
+        $('.action').html('<a href="/stars-registration-v2?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>')
 
         $('.details-image').html(`<img src="/Themes/com_ccvstars_External_V6/Assets/Images/feature/feature-{{ Event | Attribute:'Sport' }}.jpg" />`);
 

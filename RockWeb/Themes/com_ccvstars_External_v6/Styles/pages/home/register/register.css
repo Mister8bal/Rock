@@ -3,58 +3,58 @@
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-register.jpg");
 }
 
+/*  
+    careful changing these zone-sections as register and register details share this css file (for consistency)
+    register page uses sectiona, register details uses sectionb. 
+    same style except different color backgrounds 
+*/
 #section-a-bg {
     background-color: #efefef;
 }
 
-.zone-sectiona {
+#zone-sectiona, #zone-sectionb {
     margin: 0 125px;
     max-width: 100%;
+    padding: 70px 0 50px 0;
 }
 /* End Zones & Sections */
 
+.title {
+    justify-content: center;
+    height: 325px;
+    padding-top: 0;
+}
+
+
+
 /* Register Content */
-.about-stars p {
-    font-size: 24px;
+.login-required h5 {
+    text-align: center;
+    color: #e73d30;
+}
+
+.login-required p {
+    font-size: 22px;
     line-height: 33px;
     font-weight: 400;
     color: #505050;
     text-align: center;
-    padding: 70px 0 75px 0;
+    padding: 0 0 75px 0;
     margin: 0;
 }
 
-.about-stars a {
+.login-required a {
     color: #e73d30;
     font-weight: 700;
 }
 
-.about-stars a:hover {
+.login-required a:hover {
     text-decoration: none;
 }
 
-hr {
-    border: 1px solid lightgray;
-    margin: 0 50px 110px 50px;
-}
-
 /* Register Grid */
-.register-header {
-    padding: 0 85px 50px 0;
-    max-width: 1100px;
-}
-
-.register-header h3 {
-    text-align: left;
-    padding: 0;
-    color: #e73d30;
-}
-
-.register-header p {
-    font-size: 18px;
-    line-height: 24px;
-    font-weight: 300;
-    color: #333333;
+.register-mobile {
+    display: none;
 }
 
 .register-card {
@@ -225,7 +225,7 @@ hr {
 }
 
 .campus-sport {
-    padding: 100px 0 0 60px;
+    padding: 0 0 0 60px;
 }
 
 .division-gender {
@@ -251,6 +251,10 @@ hr {
 
 .content {
     flex-grow: 1;
+}
+
+.wait-list h4 {
+    color: #e73d30;
 }
 
 .content p {
@@ -309,6 +313,27 @@ button:focus {
     outline: none;
 }
 
+/**** Responsive Styling ****/
+@media screen and (max-width: 1439.98px) {
+    #zone-sectiona, #zone-sectionb {
+        margin: 0 50px;
+    }
+
+    /* Register Grid */
+    .register-card {
+        padding: 50px 40px;
+    }
+
+    .register-grid th, .register-grid td {
+        padding: 20px 10px;
+        text-align: center;
+    }
+
+    .grid-division {
+        width: 200px;
+    }
+}
+
 /**** Tablet Sytling  ****/
 /* Reduce by 40% */
 @media screen and (max-width: 1023.98px) {
@@ -316,11 +341,33 @@ button:focus {
         background-color: #eeeeee;
     }
 
-    .about-stars p {
+    #zone-sectiona, #zone-sectionb {
+        margin: 0 20px;
+        padding: 50px 0;
+    }
+
+    .login-required p {
         font-size: 16px;
         line-height: 23px;
-        padding: 35px 0 40px 0;
+        padding: 0 0 40px 0;
     }
+
+    /* Register Grid */
+    .register-card {
+        padding: 50px 10px;
+    }
+
+    .register-grid th, .register-grid td {
+        padding: 20px 0;
+    }
+
+    .grid-division {
+        width: 150px;
+    }
+
+
+
+    /* Event Details */
 
     .name-desktop {
         display: none;
@@ -331,7 +378,7 @@ button:focus {
         padding-bottom: 15px;
     }
 
-    .details h3 {
+    .name {
         padding: 0;
     }
 
@@ -347,6 +394,10 @@ button:focus {
         padding: 45px 50px;
     }
 
+    .details-card .content {
+        padding-top: 10px;
+    }
+
     .details-card .action {
         padding-top: 15px;
     }
@@ -354,6 +405,7 @@ button:focus {
     .action .btn {
         width: 100%;
     }
+
 }
 
 /**** Phone Styling ****/
@@ -362,15 +414,114 @@ button:focus {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-register.jpg");
     } 
 
-    .about-stars p {
-        font-size: 12.5px;
-        line-height: 18.5px;
-        padding: 15px 0 20px 0;
+    #zone-sectiona, #zone-sectionb {
+        padding: 25px 0;
+        min-height: 350px;
     }
 
+    .title {
+        padding-top: 17.5px;
+        height: auto;
+    }
+
+    .login-required p {
+        font-size: 12.5px;
+        line-height: 18.5px;
+        margin: 0 40px;
+    }
+
+    /* Register Grid */
+    .register-card {
+        display: none;
+    }
+
+    .register-mobile {
+        display: flex;
+        flex-direction: column;
+        min-height: 425px;
+    }
+
+    .register-card-mobile {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #FFFFFF;
+        border-radius: 4px;
+    }
+
+    .mobile-header {
+        width: 100%;
+        min-height: 42px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #e73d30;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .current-section {
+        text-align: center;
+        color: #e73d30;
+    }
+
+    .back {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        align-self: flex-start;
+    }
+
+    .back i {
+        color: #FFFFFF;
+        font-size: 29px;
+    }
+
+    .back h5 {
+        margin-left: -3px;
+    }
+
+    .mobile-body {
+        width: 100%;
+    }
+
+    .selection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        color: #505050;
+        border: 1px solid #e2e2e2;
+        padding: 5px 40px;
+    }
+
+    .selection-item h5 {
+        color: #505050;
+    }
+
+    .selection-item i {
+        font-size: 30px;
+    }
+
+    .link-item {
+        border: 1px solid #e2e2e2;
+        padding: 20px 40px;
+    }
+
+    .link-item .btn-primary {
+        width: 100%;
+        background-color: #FFFFFF;
+        color: #e73d30;
+    }
+    /* End Register Grid */
+
+    /* Event Details */
     .details-card {
         padding: 20px 15px;
     }
 }
 
 /**** End Phone Styling ****/
+
