@@ -293,4 +293,18 @@
     }
 }
 
+/* Footer Plan A Visit */
+#section-d-bg {
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/locations/footer-pav-locations.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+}
+
+#section-e-bg { 
+    display:none;
+}
+
+
+
 

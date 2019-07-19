@@ -30,11 +30,15 @@
 }
 
 #section-d-bg {
-    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/about-us/background-about-us-leadership.jpg") no-repeat;
-    background-size: contain;
-    background-color: #000000;
+    background-color: #FFFFFF;
 }
 
+
+/* Footer Plan A Visit */
 #section-e-bg {
-    display: none;
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/about-us/footer-pav-about-us.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
 }
+

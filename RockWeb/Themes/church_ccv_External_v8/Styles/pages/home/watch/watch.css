@@ -49,3 +49,15 @@
         font-size: 12px;
     }
  }
+
+ /* Footer Plan A Visit */
+#section-d-bg {
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/watch/footer-pav-watch.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+}
+
+#section-e-bg { 
+    display:none;
+}

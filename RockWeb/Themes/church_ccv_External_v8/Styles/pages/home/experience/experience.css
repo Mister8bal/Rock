@@ -26,14 +26,22 @@
 }
 
 #section-e-bg {
-   display: none;
+    /* display: none; */
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/experience/footer-pav-experience.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+ }
+
+.graphicSection.bottom {
+    align-items: center;
 }
 
 .graphicSection.bottom {
     align-items: center;
 }
 
-.graphicSection.bottom p {
+.graphicSection.bottom p{
     text-align: center;
     color: #FFFFFF;
     font-size: 36px;
@@ -42,7 +50,11 @@
     -webkit-font-smoothing: antialiased;
     margin: 0 auto;
     line-height: 1.21;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 100px 0;
+    align-items:center;
 }
 
 @media screen and (max-width: 500px) {

@@ -123,3 +123,11 @@
       margin-top: 0px;
    }
 }
+
+/* Footer Plan A Visit */
+#section-f-bg {
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/footer-pav-ministries-kids.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+}

@@ -21,3 +21,15 @@
 #section-b-bg {
     background: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/background-get-involved-giving.jpg") no-repeat;
 }
+
+/* Footer Plan A Visit */
+#section-d-bg {
+    background: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/footer-pav-get-involved.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+}
+
+#section-e-bg { 
+    display:none;
+}
