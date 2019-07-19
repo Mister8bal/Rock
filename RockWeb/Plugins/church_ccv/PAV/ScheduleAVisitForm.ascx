@@ -520,7 +520,6 @@
                                 The following children are<br /> 
                                 currently associated with you
                             </h2>
-                            <p>Need different content text</p>
                         </div>
                         <div class="existing-children-vertical">
 
