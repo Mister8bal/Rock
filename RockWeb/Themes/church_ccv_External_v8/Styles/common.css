@@ -1344,7 +1344,8 @@
 }
 
 .graphicSection.footerPav h2 {
-    padding-bottom: 1rem;
+    line-height:100%;
+     padding-bottom:0;
 }
 
 .graphicSection.footerPav div {
