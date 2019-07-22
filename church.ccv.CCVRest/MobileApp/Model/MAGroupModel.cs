@@ -28,6 +28,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string ChildcareDesc;
 
         public List<MAGroupMemberModel> Members;
+
+        public bool HasCapacity;
     }
 
     public enum MAGroupRole
