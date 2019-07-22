@@ -1,0 +1,280 @@
+{% comment %}
+    Paste this wherever you want the Share Feature: (Don't include the BEGIN / END copy lines. Duh.)
+    ** IMPORTANT ***
+    Please note that any comma or colon within the content of either the question or the answer
+    will break the faq.  Instead, replace these characters with the following:
+    comma: &#44; 
+    colon: 	&#58;
+    <!--BEGIN COPY-->
+    
+    {% capture faqContent %}
+    [ 
+        { "q": "Question 1", "a":"Answer 1" }, 
+        { "q": "Question 2", "a":"Answer 2" },
+        { "q": "Question 3", "a":"Answer 3" },
+        { "q": "Question 3", "a":[
+            { "q":"Nested Q 1","a":"Nested A 1" },
+            { "q":"Nested Q 2","a":"Nested A 2" }
+        ] },
+    ]
+    {% endcapture %}
+
+    {% assign faqTitle = 'Section Title' %}
+
+    {% include '~~/Assets/Lava/modules/faq.lava' %}
+
+    <!--END COPY-->
+
+{% endcomment %}
+
+{% assign qa = faqContent | FromJSON %}
+
+<style>
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+        border: 1px solid rgba(0,0,0,0.125);
+        border-radius: 0.25rem;
+        margin-bottom:0px;
+    }
+    .card-header {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: #f7f7f9;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    .card-header:first-child {
+        border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+    }
+    .faq-section {
+        margin-top: 4rem;
+    }
+    .faq-section h2 {
+        font-weight: bold;
+        font-size: 3em;
+        margin-bottom: 2rem;
+    }
+    .faq-list .card {
+        border-radius: 0;
+        border: none;
+        text-align: left;
+        background: #f9f9f9;
+    }
+    .faq-list .card a:focus, 
+    .faq-list .card a:visited, 
+    .faq-list .card a:hover, 
+    .faq-list .card a:active {
+        text-decoration: none;
+    }
+
+    .faq-list .card .card-header {
+        background-color: #f9f9f9;
+        vertical-align: middle;
+    }
+    .faq-list .card .card-header h5 {
+        margin:.3rem 0;
+        line-height:2.5rem;
+    }
+    .faq-list .card .card-header i {
+        color: #8c8c8c;
+        margin-right: .5rem;
+        cursor:pointer;
+        font-size:.8em;
+    }
+    .faq-list .card .card-header a {
+        font-size: 1.2em;
+        line-height:1em;
+        font-weight: bold;
+        max-width: 80%;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+    }
+    .faq-list .card .card-header .fa-border {
+        border-radius: 1.1em;
+        border: 2px solid #8c8c8c;
+    }
+    .faq-list .card .card-body {
+        padding: 0.75rem 1.25rem;
+    }
+    .faq-section .ans {
+        display:none;
+    }
+</style>
+
+{% capture faqListItem %}<div class="faq-list" role="tablist"><div class="card"><div class="card-header question"><h5 class="mb-0"></h5></div></div></div>{% endcapture %}
+
+<section class="faq-section">
+    <h2>{{ faqTitle }}</h2>
+
+    {% for item in qa %}
+
+    <div class="faq-list" role="tablist"> 
+        <div class="card">
+
+            <div class="card-header question">
+                <h5 class="mb-0">
+                    
+                    <a class="q-toggle" href="#k1" role="button" aria-expanded="false">
+                    <i class="fa fa-plus fa-border fa-pull-left" href="#k1"></i>
+                    {{ item.q }}
+                  </a>
+                </h5>
+            </div>
+
+            <div id="k1" class="ans" role="tabpanel" >
+                <div class="card-body">
+                {% assign nestedItems = item.a | Select:'a' | Size %} 
+
+                  {% if nestedItems > 0 %}
+
+                    {% for nItem in item.a %}
+
+                        <div class="faq-list" role="tablist"> 
+                            <div class="card">
+
+                                <div class="card-header question">
+                                    <h5 class="mb-0">
+                                        
+                                        <a class="q-toggle" href="#k1" role="button" aria-expanded="false">
+                                        <i class="fa fa-plus fa-border fa-pull-left" href="#k1"></i>
+                                        {{ nItem.q }}
+                                    </a>
+                                    </h5>
+                                </div>
+
+                                <div id="k1" class="ans" role="tabpanel" >
+                                    <div class="card-body">
+                                    
+                                    <p>{{ nItem.a }}</p>
+                                    
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                  {% else %}
+                  <p>{{ item.a }}</p>
+                  {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
+</section>
+<script>
+    /**
+     *  Handles Accordion functionality.  Simply pass the toggleQA function
+     *  as a click handler on the trigger element.  The trigger element should contain
+     *  as it's href value, the id of the element to be hidden.  Basic structure example below
+     *
+     *  <a class="trigger-el" href="answer-el-id">Question</a>
+     *  <div id="answer-el-id">Answer</div>
+     * 
+     *  The following events will be triggered and can be utilized elsewhere on the page.
+     *  ccv.collapse.hide: Triggered as soon as a trigger element is clicked.
+     *  ccv.collapse.hidden: Triggered once the target element has been fully hidden.
+     *  ccv.collapse.show: Triggered as soon as the trigger element is clicked.
+     *  ccv.collapse.shown: Triggered once the target element is fully visible.
+     */
+    $(function(){
+
+        /**
+         * We need to create a global namespace
+         * to encapsulate all of our faq functionality.
+         * This is done to ensure that we can include
+         * this script multiple times on the page
+         * without any collisions.
+         */
+        window.ccvfaq = faq = window.ccvfaq || {};
+        faq.registeredFaqs = [];
+
+        faq.hideEl = function($el, $t){
+            $t.find('i').removeClass('fa-minus').addClass('fa-plus');
+            $el.removeClass('in').slideUp(function(){
+                $el.trigger('ccv.collapse.hidden');
+            });
+        }
+
+        faq.showEl = function($el, $t) {
+            $t.find('i').removeClass('fa-plus').addClass('fa-minus');
+            $el.addClass('in').slideDown(function(){
+                $el.trigger('ccv.collapse.shown');
+            });
+        }
+
+        faq.toggleQA = function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            let $btn = $(e.currentTarget);
+            let $el = $('#'+$btn.attr('href'));
+            if($el.hasClass("in")){
+                faq.hideEl($el,$btn);
+            }else{
+                faq.showEl($el,$btn);
+            }
+        }
+        /**
+         * Generate a unique pseudo unique id.  
+         * These are technically not 100% unique, but
+         * for our purposes they should work just fine. 
+         */
+        faq.getUid = function(){
+            return Math
+            .random()
+            .toString(36)
+            .substring(2, 15) + 
+            Math.random()
+            .toString(36)
+            .substring(2, 15);
+        }
+
+        faq.initQA = function($parentEl){
+            $parentEl.find(".faq-list").each(function(){
+                /**
+                * Create a unique pseudo random id to
+                * ensure that questions and answers are 
+                * mapped correctly.
+                */
+                let uId = faq.getUid();
+
+                $(this).find(".q-toggle").attr('href',uId);
+                $(this).find('.ans').attr('id',uId)
+                
+                let $thisEl = $(this).find('#'+uId);
+
+                if(!faq.registeredFaqs.includes(uId)){
+                    $(this).find(".q-toggle").each(function(){
+                        if(!faq.registeredFaqs.includes($(this).attr('href'))){
+                            $(this).click(faq.toggleQA);
+                            faq.registeredFaqs.push(uId);
+                        }
+                    });
+                }
+            });
+
+        }
+
+        /**
+         * Loop through each faq section and register it.  
+         * This is to prevent doubling on the click handler
+         * for each faq.
+         */
+        $('.faq-section').each(function(){
+            if(!$(this).hasClass("registered")){
+                $(this).addClass("registered");
+                $(this).attr("id",faq.getUid());
+                faq.initQA($(this))
+            }
+        });
+
+    });
+
+</script>
