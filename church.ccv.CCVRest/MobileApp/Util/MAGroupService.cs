@@ -71,6 +71,12 @@ namespace church.ccv.CCVRest.MobileApp
 
             // get all groups of this group type that are public, and have a long/lat we can use
             GroupService groupService = new GroupService( rockContext );
+
+            // Instantiate query as IQueryable to keep out of memory initially.
+            IQueryable < Group > gQuery = groupService.Queryable( "Schedule,GroupLocations.Location" ).AsNoTracking();
+
+            gQuery = FilterOverCapacity( gQuery );
+
             IEnumerable<Group> groupList = groupService.Queryable( "Schedule,GroupLocations.Location" ).AsNoTracking()
                                                        .Where( a => a.GroupTypeId == GroupTypeId_NeighborhoodGroup && a.IsPublic == true )
                                                        .Include( a => a.GroupLocations ).Where( a => a.GroupLocations.Any( x => x.Location.GeoPoint != null ) );
@@ -154,6 +160,13 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return groupResultList;
+        }
+
+        // Modify and return a Group Query to filter 
+        // out any group that is at capacity.
+        public static IQueryable <Group> FilterOverCapacity( IQueryable<Group> gQuery )
+        {
+            return gQuery.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
         }
 
         public enum MAGroupMemberView
