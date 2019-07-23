@@ -19,5 +19,10 @@
         /// </summary>
         public const string PERSON_PAYROLL_WAGE_TYPE = "06C27262-36A5-4FD3-A7CE-E11982D48FD8";
 
+        /// <summary>
+        /// The family associate pastor override
+        /// </summary>
+        public const string FAMILY_ASSOCIATE_PASTOR_OVERRIDE = "DC293AFD-2DC9-4567-BA54-4409A1DBDA52";
+
     }
 }

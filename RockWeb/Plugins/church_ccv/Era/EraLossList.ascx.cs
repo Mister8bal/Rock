@@ -287,8 +287,8 @@ namespace RockWeb.Plugins.church_ccv.Era
             // do outer join in case they aren't in a neighboorhood
             var joinFamilyNeighboorHood =
                 from f in datamartFamilyQry
-                join n in datamartNeighborhoodQry on f.NeighborhoodId equals n.NeighborhoodId into fn
-                from n in fn
+                join p in datamartPersonQry on f.FamilyId equals p.PersonId into fp
+                from p in fp
                 select new
                 {
                     f.FamilyId,
@@ -296,8 +296,8 @@ namespace RockWeb.Plugins.church_ccv.Era
                     f.HHFullName,
                     f.AdultNames,
                     f.ChildNames,
-                    n.NeighborhoodPastorId,
-                    n.NeighborhoodPastorName,
+                    p.NeighborhoodPastorId,
+                    p.NeighborhoodPastor,
                 };
 
             joinFamilyNeighboorHood = joinFamilyNeighboorHood.Where( a => a.NeighborhoodPastorId.HasValue );
@@ -337,8 +337,8 @@ namespace RockWeb.Plugins.church_ccv.Era
                     p.BaptismDate,
                     NeighborhoodPastor = new
                     {
-                        Id = ef.Family.NeighborhoodPastorId,
-                        FullName = ef.Family.NeighborhoodPastorName
+                        Id = p.NeighborhoodPastorId,
+                        FullName = p.NeighborhoodPastor
                     },
                     p.CampusId,
                     p.CampusName,

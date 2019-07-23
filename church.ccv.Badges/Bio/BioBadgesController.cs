@@ -3,6 +3,7 @@ using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
+using Rock.Web.Cache;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -143,6 +144,7 @@ namespace church.ccv.Badges.Bio
             var rockContext = new RockContext();
             var groupMemberService = new GroupMemberService( rockContext );
             int? campusId = null;
+            int? associatePastorOverrideId = null;
             var person = new PersonService( rockContext ).Get( personId );
             if ( person != null )
             {
@@ -151,6 +153,44 @@ namespace church.ccv.Badges.Bio
                 {
                     campusId = campus.Id;
                 }
+
+                var family = person.GetFamily();
+                if ( family != null )
+                {
+                    // Let's check the family for an AP override
+                    //
+                    // Note: Would love to have the SQL function "_church_ccv_ufnGetAssociatePastorId_NoDatamart" handle this but
+                    //       there is some complex requirements for this that the function can't provide.
+                    var attributeValueService = new AttributeValueService( rockContext );
+                    int groupEntityTypeId = GroupTypeCache.Read( Rock.SystemGuid.EntityType.GROUP.AsGuid() ).Id;
+                    int attributeId = AttributeCache.Read( church.ccv.Utility.SystemGuids.Attribute.FAMILY_ASSOCIATE_PASTOR_OVERRIDE.AsGuid() ).Id;
+
+                    associatePastorOverrideId = attributeValueService.Queryable().AsNoTracking()
+                        .Where( av => av.EntityId == family.Id &&
+                                      av.Attribute.EntityTypeId == groupEntityTypeId &&
+                                      av.AttributeId == attributeId )
+                        .Select( av => av.ValueAsPersonId )
+                        .FirstOrDefault();
+
+                    // If an override exists, override the results
+                    if ( associatePastorOverrideId.HasValue )
+                    {
+                        var overrideResult = new List<GroupAndLeaderInfo>();
+                        var overrideInfo = new GroupAndLeaderInfo();
+                        var associatePastor = new PersonService( rockContext ).Get( associatePastorOverrideId.Value );
+
+                        var overrideGroups = new GroupService( rockContext ).GetGeofencingGroups( personId, groupTypeGuid ).AsNoTracking();
+                        var overrideCampusGroups = overrideGroups.Where( a => a.CampusId == campusId ).OrderBy( g => g.Name );
+                        var regionName = overrideCampusGroups.Select( g => g.Name ).FirstOrDefault();
+
+                        overrideInfo.LeaderNames = associatePastor.NickName + " " + associatePastor.LastName;
+                        overrideInfo.GroupName = regionName;
+
+                        overrideResult.Add( overrideInfo );
+
+                        return overrideResult;
+                    }
+                } 
             }
 
             var groups = new GroupService( rockContext ).GetGeofencingGroups( personId, groupTypeGuid ).AsNoTracking();

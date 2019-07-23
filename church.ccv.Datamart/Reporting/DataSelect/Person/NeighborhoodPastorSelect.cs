@@ -126,11 +126,9 @@ namespace church.ccv.Datamart.Reporting.DataSelect.Person
         public override System.Linq.Expressions.Expression GetExpression( Rock.Data.RockContext context, System.Linq.Expressions.MemberExpression entityIdProperty, string selection )
         {
             bool showAsLink = this.GetAttributeValueFromSelection( "ShowAsLink", selection ).AsBooleanOrNull() ?? false;
-            var datamartNeighborhoodsService = new Service<DatamartNeighborhood>( context );
             var datamartPersonService = new Service<DatamartPerson>( context );
             var personService = new PersonService( context );
 
-            var qryDatamartNeighborhoods = datamartNeighborhoodsService.Queryable();
             var qryDatamartPerson = datamartPersonService.Queryable();
             var qryPerson = personService.Queryable();
 
@@ -140,20 +138,16 @@ namespace church.ccv.Datamart.Reporting.DataSelect.Person
 
             if ( showAsLink )
             {
-                // include NeighborhoodPastorName as a comment so that sorting works
+                // include NeighborhoodPastor as a comment so that sorting works
                 qryResult = qryPerson
                     .Select( p => qryDatamartPerson.Where( d => d.PersonId == p.Id )
-                        .Select( s => qryDatamartNeighborhoods.Where( n => n.NeighborhoodId == s.NeighborhoodId )
-                            .Select( a => "<!-- " + a.NeighborhoodPastorName + "--><a href='" + basePersonUrl + a.NeighborhoodPastorId.ToString() + "'>" + a.NeighborhoodPastorName + "</a>" )
-                            .FirstOrDefault() ).FirstOrDefault() );
+                        .Select( a => "<!-- " + a.NeighborhoodPastor + "--><a href='" + basePersonUrl + a.NeighborhoodPastorId.ToString() + "'>" + a.NeighborhoodPastor + "</a>" ).FirstOrDefault() );
             }
             else
             {
                 qryResult = qryPerson
                     .Select( p => qryDatamartPerson.Where( d => d.PersonId == p.Id )
-                        .Select( s => qryDatamartNeighborhoods.Where( n => n.NeighborhoodId == s.NeighborhoodId )
-                            .Select( a => a.NeighborhoodPastorName )
-                            .FirstOrDefault() ).FirstOrDefault() );
+                        .Select( a => a.NeighborhoodPastor ).FirstOrDefault() );
             }
 
             var resultExpression = SelectExpressionExtractor.Extract( qryResult, entityIdProperty, "p" );
