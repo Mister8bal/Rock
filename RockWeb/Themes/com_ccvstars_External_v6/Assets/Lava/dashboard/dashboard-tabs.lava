@@ -1,0 +1,113 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/dashboard-tabs.lava' %}
+{% endcomment %}
+
+<div id="pnlDashboardLoading" class="loading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+
+{% assign isCoach = false %}
+
+<!-- Get all Youth Sports teams tied to Current Person -->
+{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
+{% for currentPersonGroup in currentPersonGroups %}
+    {% if currentPersonGroup.GroupRole.Name == "Coach" or currentPersonGroup.GroupRole.Name == "Assistant Coach" %}
+        {% assign isCoach = true %}
+    {% endif %}
+{% endfor %}
+
+<div id="pnlDashboardDetails" class="hidden">
+    <div class="dashboard-title">
+        <h2>MY SPORTS</h2>
+    </div>
+
+    <!-- mobile View buttons -->
+    <div class="tabbed-panel-view-mobile">
+        <div class="mobile-items">
+            <div id="player-mobile-button" onClick="linkClicked(this, 'player', true)" class="btn tab tab-selected">Player</div>
+            {% if isCoach == "true" %}
+                <div id="coach-mobile-button" onClick="linkClicked(this, 'coach', true)" class="btn tab">Coach</div>
+            {% endif %}    
+        </div>
+    </div>
+
+    <!-- desktop View buttons -->
+    <div class="tabbed-panel-view-cards">
+        <div class="tabbed-panel-view-desktop">
+            <div class="tabs">
+                <div id="player-button" class="btn tab" onClick="linkClicked(this, 'player')">Player</div>
+                {% if isCoach == "true" %}
+                    <div id="coach-button" class="btn tab" onClick="linkClicked(this, 'coach')">Coach</div>
+                {% endif %} 
+            </div>
+        </div>
+
+        <!-- player panel -->
+        <div id="player-panel">
+             {% include '~~/Assets/Lava/dashboard/dashboard-tabs-panel-player.lava' %}
+        </div>
+
+        <!-- coach panel -->
+        {% if isCoach == "true" %}
+            <div id="coach-panel" class="coach-panel" style="display: none;">
+                {% include '~~/Assets/Lava/dashboard/dashboard-tabs-panel-coach.lava' %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+
+            var gCurrentLink;
+            var gCurrentPanel;
+
+            $(document).ready(function() {
+                // default to the first panel
+                gCurrentLink = $("#player-button")[0];
+                gCurrentPanel = $("#player-panel")[0];
+
+                togglePanel( gCurrentLink, gCurrentPanel, true );
+            });
+        
+            function togglePanel(panelLink, panelObj, enabled) {
+                if( enabled ) {
+                    panelLink.classList.add('tab-selected');
+                    panelObj.style.display="block";
+                }
+                else {
+                    panelLink.classList.remove('tab-selected');
+                    panelObj.style.display="none";
+                }
+            }
+                    
+            function linkClicked(linkElement, sectionName, mobileView = false) {
+                // remove styling from default mobile panel - Christopher better way?
+                $('#player-mobile-button').removeClass('tab-selected');
+
+                // turn off existing panel
+                togglePanel( gCurrentLink, gCurrentPanel, false );
+                
+                var targetPanel = $("#" + sectionName + "-panel")[0];
+                gCurrentPanel = targetPanel;
+                gCurrentLink = linkElement;
+
+                // // update button text with selection
+                if ( mobileView === true ) {
+                    $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
+                }
+                
+                togglePanel( gCurrentLink, gCurrentPanel, true );
+            }
+    </script>  
+</div>
+
+<script>
+    $(document).ready(function() {
+        // hide loading spinner and unhide content
+        $('.loading').toggle();
+        $('#pnlDashboardDetails').removeClass('hidden');  
+    });
+</script>
+
+
+   

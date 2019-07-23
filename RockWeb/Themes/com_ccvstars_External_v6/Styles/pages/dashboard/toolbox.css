@@ -8,7 +8,7 @@
 }
 
 #zone-sectionb {
-    padding: 0% 10% 2% 10%;
+    padding: 0% 5% 2% 5%;
 }
 
 #zone-sectiona, #zone-sectionb {
@@ -30,41 +30,13 @@ td {
     width: 200px;
 }
 
-h4 {
-    color: #EA3E29;
-    font-size: 18px;
-}
-
-h5 {
-    font-size: 16px;
-    line-height: 18px;
-    font-weight: 900;
-    color: #000000;
-    text-transform: capitalize;
-    text-align: left;
+.tabbed-panel-view-cards .header h4 {
+    font-size: 42px;
+    line-height: 44px;
 }
 
 strong {
     font-weight: 700;
-}
-
-.header {
-    height: unset;
-}
-
-.sport-title {
-    padding-left: 45px;
-}
-
-.sport-title h3 {
-    padding: 30px 0 25px 0;
-}
-
-.sport-title p {
-    font-weight: 300;
-    font-size: 18px;
-    line-height: 24px;
-    padding-bottom: 65px;
 }
 
 .right {
@@ -99,6 +71,16 @@ strong {
     display: none;
 }
 
+.header {
+    height: 80px;
+}
+
+.tab {
+    font-size: 24px;
+    line-height: 26px;
+    padding: 10px 20px;
+}
+
 /* End Overrides */
 
 /* Person Info */
@@ -113,7 +95,7 @@ strong {
     width: 100%;
 }
 
-.person-details-item h5 {
+.person-details-item h6 {
     padding: 5px 0;
 }
 
@@ -131,10 +113,19 @@ strong {
     display: flex;
 }
 
-.person-details h2{
+.person-details h2 {
     color: #EA3E29;
     font-size: 40px;
     text-transform: capitalize;
+}
+
+.person-details-item h6 {
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 900;
+    color: #000000;
+    text-transform: capitalize;
+    text-align: left;
 }
 
 .toolbox-teams {
@@ -193,27 +184,30 @@ strong {
     padding-bottom: 10px;
 }
 
-.player-info h4 {
+.player-info h6 {
     font-weight: 700;
+    color: #E73D30;
+    text-transform: capitalize;
+}
+
+.player-info .age {
+    color: #7c7c7c;
+}
+
+.player-info .address {
+    color: #7c7c7c;
 }
 
 /* End Panels */
 
 
 
-/**** Small Desktop Styling  ****/
-@media screen and (max-width: 1439.98px) {
-    /* Zones & Sections */
-    #zone-sectiona, #zone-sectionb, #zone-sectionc, #zone-sectiond, #zone-sectione {
-        padding: 2% 0 0 0;
-    }
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
 
-    /* End Zones & Sections */
 }
 
-/**** End Small Desktop ****/
-
-
+/**** Tablet Styling  ****/
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {    
@@ -222,16 +216,31 @@ strong {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-team-toolbox.jpg");
     }
 
-    #zone-sectiona, #zone-sectionb {
+    #zone-sectiona {
         padding: 0;
+    }
+
+    #zone-sectionb {
+        padding: 0;
+        margin: 0;
     }
 
     /* End Zones & Sections */
 
     /* Overrides */
-    h4 {
-        color: #E73D30;
-        font-size: 18px;
+    .navigation-and-title {
+        padding: 0 15px;
+        background-color: white;
+    }
+
+    .mobile-items {
+        background-color: white;
+        padding-bottom: 20px;
+    }
+
+    .tabbed-panel-view-cards .header h4 {
+        font-size: 32px;
+        line-height: 34px;
     }
 
     /* End Overrides */

@@ -1,3 +1,6 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/dashboard-overview.lava' %}
+{% endcomment %}
 
 <div class="person-row">
     <div class="person-photo">
@@ -13,7 +16,7 @@
                 </div>
                 <hr>
                 <div class="person-details">
-                    <div class="person-details-item">
+                    <div class="person-details-item item-headers">
                         <h5>Age</h5>
                         <h5>Address</h5>
                         <h5>Phone</h5>

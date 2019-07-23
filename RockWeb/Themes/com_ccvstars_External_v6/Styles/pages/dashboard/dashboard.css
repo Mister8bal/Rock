@@ -65,8 +65,6 @@
 .person-details-item {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: baseline;
 }
 
 hr {
@@ -77,7 +75,7 @@ hr {
 }
 
 #pnlGroupView {
-    margin: 40px -15px;
+    margin: 0px -15px 40px -15px;
 }
 
 table {
@@ -131,7 +129,7 @@ a:hover, a:focus {
 
 /* Start Table */
 .desktop-view-table {
-    display: block;
+    width: 100%;
 }
 
 .player-mobile-view-table {
@@ -142,12 +140,28 @@ a:hover, a:focus {
     display: none;
 }
 
+.dashboard-title {
+    margin: 0 15px;
+}
+
+.dashboard-title h2 {
+    color: #000000;
+}
+
 .desktop-view {
     display: block;
 }
 
 .mobile-view {
     display: none;
+}
+
+td > img {
+    margin: 0 10px;
+}
+
+td > a > img {
+    margin: 0 10px;
 }
 
 /* End Table */
@@ -208,10 +222,18 @@ h5 {
         width: 100%;
     }
 
+    .item-headers {
+        width: 20%;
+    }
+
+    .person-details div:nth-child(1) {
+        padding-right: 0px;
+    }
+
     .person-details-item a {
         width: 100%;
     }
-
+    
     #player-panel, #coach-panel {
         padding: 0;
     }

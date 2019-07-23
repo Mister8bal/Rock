@@ -1,5 +1,5 @@
 {% comment %} 
-    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-sport-details-tabs.lava' %}
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-tabs-panels.lava' %}
 {% endcomment %}
 
 <div id="practice-schedule-panel" class="practice-panel" style="display: none;">

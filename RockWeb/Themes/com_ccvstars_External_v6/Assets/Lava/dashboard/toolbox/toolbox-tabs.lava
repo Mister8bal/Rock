@@ -1,0 +1,106 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-tabs.lava' %}
+{% endcomment %}
+
+{% comment %} Check for GroupId page parameter, if missing redirect back to dashboard {% endcomment %}
+{% unless PageParameter.GroupId %}
+    {% if CurrentPersonCanEdit %}
+        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because there is no group id query parameter.</p>
+    {% else %}
+        {{ '/stars-dashboard' | PageRedirect }}
+    {% endif %}
+{% endunless %}
+
+
+{% assign isCoach = false %}
+
+<!-- Get all Youth Sports teams tied to Current Person -->
+{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
+{% for group in currentPersonGroups %}
+    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" %}
+        {% assign isCoach = true %}
+    {% endif %}
+{% endfor %}
+
+<div class="navigation-and-title">
+    <div class="header">
+        <h4>Team Info</h4>
+    </div>
+
+    <div class="dropdown-row">
+        {% comment %} mobile nav for tabs {% endcomment %}
+        <div class="tabbed-panel-view-mobile">
+            <div class="mobile-items">
+                <div class="select-dropdown">
+                    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Toolbox</h6><b class="fa fa-caret-down"></b></button>
+                    <ul class="dropdown-menu">
+                        <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Toolbox</div></li>
+                        {% if isCoach == "true" %}
+                            <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
+                        {% endif %}
+                        <li><div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule', true)" class="item">Practice Schedule</div></li>   
+                        <li><div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule', true)" class="item">Game Schedule</div></li> 
+                        <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>                          
+                    </ul>
+                </div>                    
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div class="tabbed-panel-view-cards">
+    <div class="tabbed-panel-view-desktop">
+        <div class="tabs">
+            <div id="players-button" class="tab" onClick="linkClicked(this, 'players')">Toolbox</div>
+            {% if isCoach == "true" %}
+                <div id="contact-team-button" class="tab" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
+            {% endif %}
+            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice Schedule</div>
+            <div id="game-schedule-button" class="tab" onClick="linkClicked(this, 'game-schedule')">Game Schedule</div>
+            <div id="rules-button" class="tab" onClick="linkClicked(this, 'rules', false)">Rules</div>
+        </div>
+    </div>
+</div>    
+
+<script>
+
+    var gCurrentLink;
+    var gCurrentPanel;
+
+    $(document).ready(function() {
+
+        // default to the first panel
+        gCurrentLink = $("#players-button")[0];
+        gCurrentPanel = $("#players-panel")[0];
+
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    });
+
+    function togglePanel(panelLink, panelObj, enabled) {
+        if( enabled ) {
+            panelLink.classList.add('tab-selected');
+            panelObj.style.display="block";
+        }
+        else {
+            panelLink.classList.remove('tab-selected');
+            panelObj.style.display="none";
+        }
+    }
+        
+    function linkClicked(linkElement, sectionName, mobileView = false) {
+        // turn off existing panel
+        togglePanel( gCurrentLink, gCurrentPanel, false );
+        
+        var targetPanel = $("#" + sectionName + "-panel")[0];
+        gCurrentPanel = targetPanel;
+        gCurrentLink = linkElement;
+        
+        // update button text with selection
+        if ( mobileView === true ) {
+            $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
+        }
+
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    }
+
+</script>

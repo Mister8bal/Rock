@@ -1,0 +1,61 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-tabs-players.lava' %}
+{% endcomment %}
+
+{% assign isCoach = false %}
+
+<!-- Get all Youth Sports teams tied to Current Person -->
+{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
+{% for group in currentPersonGroups %}
+    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" or group.GroupRole.Name == "Team Manager" %}
+        {% assign isCoach = true %}
+    {% endif %}
+{% endfor %}
+
+<div class="players">
+    {% groupmember where:'GroupId == {{PageParameter.GroupId}}' %}
+        {% for groupmemberItem in groupmemberItems %}
+            
+            {% assign parents = groupmemberItem.Person | Parents %}
+            {% assign spouse = groupmemberItem.Person | Spouse %}
+
+            <div class="player">    
+                <div class="player-image">
+                    {% if groupmemberItem.Person.PhotoId != null %}
+                        <img src="/GetImage.ashx?Id={{ groupmemberItem.Person.PhotoId }}&width=100&height=100" />
+                    {% else if groupmemberItem.Person.Gender == 1 %}
+                        <img src="~~/Assets/Images/icon/person-no-photo-child-male.svg?&width=100&height=100" />
+                    {% else if groupmemberItem.Person.Gender == 2 %}
+                        <img src="~~/Assets/Images/icon/person-no-photo-child-female.svg" />
+                    {% endif %}
+                </div>
+                <!-- if currentperson is the coach, assistant coach or team manager -->
+                <div class="player-info">
+                    <h6>{{ groupmemberItem.Person.FullName }}</h6>
+
+                    <!-- if group member is a coach, put "spouse" instead of "parents" -->
+                    {% if groupmemberItem.GroupRole.Name == "Coach" or groupmemberItem.GroupRole.Name == "Assistant Coach" %}
+                            <strong>Spouse: </strong>{{ spouse.FullName }}
+                    {% else %} 
+                        <strong>Parents:</strong>
+                        {% for person in parents %}
+                            {{ person.FirstName }}
+                            <!-- put a comma after first parent name, only if player has both parents in rock -->
+                            {% if forloop.first and forloop.rindex != 1 %}
+                                {{ ',' }}
+                            {% endif %}
+                        {% endfor %}
+
+                        <!-- if currentperson is the coach, add extra player details -->
+                        {% if isCoach == true %}
+                            <div>
+                                <strong>Age: </strong>{{ groupmemberItem.Person.Age }}<br>
+                                <strong>Address: </strong>{{ groupmemberItem.Person | Address:'Home' }}<br>
+                            </div>
+                        {% endif %}        
+                    {% endif %}   
+                </div> 
+            </div>    
+        {% endfor %}
+    {% endgroupmember %}
+</div>
