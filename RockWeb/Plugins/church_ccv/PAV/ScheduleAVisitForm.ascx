@@ -292,11 +292,45 @@
         border-color: #ccc; 
     }
 
+    /*
     .schedule-a-visit select {
         -webkit-appearance: none;
         -moz-appearance: none;
     }
+    */
 
+    .schedule-a-visit .select-wrapper {
+        position:relative;
+    }
+
+    .schedule-a-visit .select-wrapper:after {
+        content: '\f078';
+        font: normal normal normal 17px/1 FontAwesome;
+        font-size: 1.2rem;
+        right: 11px;
+        top: 21px;
+        height: 34px;
+        padding: 15px 0px 0px 8px;
+        position: absolute;
+        pointer-events: none;
+        color:lightgray;
+    }
+
+    .schedule-a-visit .select-wrapper.no-label:after {
+        padding-top:4px;
+        top: 6px;
+    }
+
+    /* IE11 hide native button*/
+    select::-ms-expand {
+        display: none;
+    }
+
+    .select-wrapper select {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+    }
     /* Desktop Styling */
     @media screen and (min-width: 500px) {
         .form-row {
@@ -426,24 +460,30 @@
 
                                 </div>
                                 <div class="form-field">
+                                    <div class="select-wrapper">
 
-                                     <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" />
-
+                                        <Rock:RockDropDownList ID="ddlCampus" runat="server" Label="Choose a Campus" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" />
+                                    
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
                                     <div id="divVisitDate" runat="server" ClientIDMode="Static" class="hidden">
+                                        <div class="select-wrapper">
 
-                                        <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="What date are you coming?" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
-
+                                            <Rock:RockDropDownList ID="ddlVisitDate" runat="server" Label="What date are you coming?" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" />
+                                        
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <div id="divServiceTime" runat="server" ClientIDMode="Static" class="hidden">
+                                        <div class="select-wrapper">
 
-                                        <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Service Time" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" />
-
+                                            <Rock:RockDropDownList ID="ddlServiceTime" runat="server" Label="Choose a Service Time" Required="true" ClientIDMode="Static" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" />
+                                        
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -498,7 +538,7 @@
                             <Rock:NotificationBox ID="nbAlertExisting" runat="server" />
 
                         </div>
-                        <div class="form-navigation">
+                        <div class="form-navigation disabled-btns">
 
                             <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />
 
@@ -601,20 +641,26 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
+                                    <div class="select-wrapper">
 
-                                    <Rock:RockDropDownList ID="ddlChildBdayYear" runat="server" Label="Birth 
+                                        <Rock:RockDropDownList ID="ddlChildBdayYear" runat="server" Label="Birth 
                                         Year" ClientIDMode="Static" OnSelectedIndexChanged="ddlChildBdayYear_SelectedIndexChanged" AutoPostBack="true" />
 
+                                    </div>
                                 </div>
                                 <div class="form-field">
+                                    <div class="select-wrapper">
 
-                                    <Rock:RockDropDownList ID="ddlChildBdayMonth" runat="server" Label="Month" OnSelectedIndexChanged="ddlChildBdayMonth_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
-
+                                        <Rock:RockDropDownList ID="ddlChildBdayMonth" runat="server" Label="Month" OnSelectedIndexChanged="ddlChildBdayMonth_SelectedIndexChanged" AutoPostBack="true" Visible="false" />
+                                    
+                                    </div>
                                 </div>
                                 <div class="form-field">
+                                    <div class="select-wrapper">
 
-                                    <Rock:RockDropDownList ID="ddlChildBdayDay" runat="server" Label="Day" ClientIDMode="Static" Visible="false" />
+                                        <Rock:RockDropDownList ID="ddlChildBdayDay" runat="server" Label="Day" ClientIDMode="Static" Visible="false" />
 
+                                    </div>
                                  </div>
                             </div>
                             <h4 class="row-centered">Optional:</h4>
@@ -687,23 +733,29 @@
                             <div class="confirm-detail">
 
                                 <asp:Label ID="lblSubmitCampus" runat="server" Text="Campus" />
+                                <asp:Panel ID="pnlEditCampus" CssClass="select-wrapper no-label" Visible="false" runat="server">
 
-                                <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
+                                    <Rock:RockDropDownList ID="ddlEditCampus" runat="server" Visible="false" OnSelectedIndexChanged="CampusDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
 
+                                </asp:Panel>
                             </div>
                             <div class="confirm-detail">
-
+                                
                                 <asp:Label ID="lblSubmitVisitDate" runat="server" Text="Visit Date" />
+                                <asp:Panel ID="pnlEditVisitDate" CssClass="select-wrapper no-label" Visible="false" runat="server">
 
-                                <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
+                                    <Rock:RockDropDownList ID="ddlEditVisitDate" runat="server" Visible="false" OnSelectedIndexChanged="VisitDateDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
 
+                                </asp:Panel>
                             </div>
                              <div class="confirm-detail">
-
+                                 
                                 <asp:Label ID="lblSubmitServiceTime" runat="server" Text="Service Time" />
+                                <asp:Panel ID="pnlEditServiceTime" CssClass="select-wrapper no-label" Visible="false" runat="server">
 
-                                <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
-
+                                    <Rock:RockDropDownList ID="ddlEditServiceTime" runat="server" Visible="false" OnSelectedIndexChanged="ServiceTimeDropDown_SelectedIndexChanged" AutoPostBack="true" Required="true" />
+                                
+                                </asp:Panel>
                             </div>
 
                             <asp:Button ID="btnEditVisitDetails" runat="server" Text="Edit details" OnClick="lbEditVisitDetails_Click" />
@@ -894,7 +946,56 @@
             } else {
                 $('#tbChildrenFormMobile').parents('div.form-group').removeClass('has-error');
             }
-        });        
+        });       
+
+        let selectorControl = existingSelectorControl();
+
+    }
+
+    // Handles display of buttons on existing person selector
+    function existingSelectorControl() {
+
+        let that = {};
+
+        let $buttonsEl = $('.disabled-btns');
+
+        let $existingPeople = $('.existing-people').find('input');
+
+        let validated = false;
+
+        let handleOptionChange = function (e) {
+            let $selected = $(e.currentTarget);
+            if (that.hasSelectedOption($selected)) {
+                that.toggleButtons();
+            }
+        }
+
+        that.hasSelectedOption = function ($el) {
+            if ($el && $el.is(':checked')) {
+                validated = true;
+                return true;
+            }
+            if($('.existing-people input:checked').length) {
+                validated = true;
+                return true;
+            }
+        }
+
+        that.toggleButtons = function () {
+            if (validated) {
+                $buttonsEl.find('input').attr('disabled', false);
+            } else {
+                $buttonsEl.find('input').attr('disabled', true);
+            }
+        }
+
+        that.hasSelectedOption();
+        that.toggleButtons();
+
+        $existingPeople.on('change', handleOptionChange);
+
+        return that;
+
     }
 
     // scrolls window position to top of form
