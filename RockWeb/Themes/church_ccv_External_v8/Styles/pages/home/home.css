@@ -385,17 +385,6 @@
     max-width: unset;
 }
 
-@media screen and (max-width: 500px) {
-    #zone-sectiond {
-        margin: 0;
-    }
-}
-
-.kids-students {
-    display: flex;
-    width: 100%;
-}
-
 .kids {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-kids.jpg");
     width: 50%;
@@ -406,10 +395,6 @@
     align-items: center;
 }
 
-.kids img {
-    max-width: 250px;
-}
-
 .students {
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/background-small-home-students.jpg");
     width: 50%;
@@ -418,6 +403,31 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (max-width: 500px) {
+    #zone-sectiond {
+        margin: 0;
+    }
+
+    .kids {
+        height: 300px;
+        background-size: cover;
+    }
+
+    .students {
+        height: 300px;
+        background-size: cover;
+    }
+}
+
+.kids-students {
+    display: flex;
+    width: 100%;
+}
+
+.kids img {
+    max-width: 250px;
 }
 
 .students img {
