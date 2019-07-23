@@ -846,6 +846,10 @@ namespace RockWeb.Plugins.church_ccv.PAV
             lblSubmitServiceTime.Visible = !lblSubmitServiceTime.Visible;
             ddlEditServiceTime.Visible = !ddlEditServiceTime.Visible;
 
+            pnlEditCampus.Visible = !pnlEditCampus.Visible;
+            pnlEditVisitDate.Visible = !pnlEditVisitDate.Visible;
+            pnlEditServiceTime.Visible = !pnlEditServiceTime.Visible;
+
             btnEditVisitDetails.Text = ( btnEditVisitDetails.Text == "Edit details" ? "Save Details" : "Edit details" );
 
             // enable / disable submit button
