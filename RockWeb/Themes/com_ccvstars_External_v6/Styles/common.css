@@ -843,7 +843,7 @@ a:focus {
     justify-content: space-between;
     flex-grow: 1;
     padding: 10px 16px;
-    min-height: 130px;
+    min-height: 150px;
 }
 
 .event-card-content p {
@@ -879,7 +879,7 @@ a:focus {
 
 .event-cards-header {
     text-align: center;
-    padding: 20px 0;
+    padding: 20px 0 0 0;
 }
 
 .event-cards-header h3 {

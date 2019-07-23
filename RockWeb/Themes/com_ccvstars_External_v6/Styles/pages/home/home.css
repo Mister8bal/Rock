@@ -13,7 +13,7 @@
 
 #zone-sectionc {
     max-width: 100%;
-    margin: 0 12%;
+    margin: 0 15%;
 }
 
 /* Top section */
@@ -151,13 +151,12 @@
 }
 /* Theme Overrides */
 
-
 /** Laptop Styling **/
 @media screen and (max-width: 1024px) {
     /* Event Cards Styling */
     #zone-sectionc {
         max-width: 100%;
-        margin: 0 10%;
+        margin: 0 5%;
     }
 
     /* End Event Cards Styling */
@@ -194,7 +193,7 @@
 /** Tablet Styling **/
 @media screen and (max-width: 768px) {   
     #zone-sectionc {
-        margin: 0 15px;
+        margin: 0 5%;
     }
 
     #zone-feature {
