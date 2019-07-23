@@ -25,9 +25,6 @@
     padding-top: 0;
 }
 
-
-
-/* Register Content */
 .login-required h5 {
     text-align: center;
     color: #e73d30;
@@ -87,74 +84,51 @@
     padding: 0 4px;    
 }
 
-.register-filter-row .mdi-plus-circle-outline,.register-filter-row .fa-undo {
-    color: #FFFFFF;
+.register-filter-row .fa-undo {
     margin: 0 10px;
 }
 
-.register-filter-row .mdi-plus-circle-outline {
-    font-size: 20px;
-    line-height: 21px;
-}
-
-.register-filter-row .fa-undo {
+.register-filter-row i {
+    margin: 0 5px;
     font-size: 16px;
     line-height: 17px;
 }
 
-.filter-options {
+.register-filter-row .fa-plus {
+    margin-left: 10px;
+}
+
+.filter-item {
     display: flex;
     align-items: center;
 }
 
-.option {
-    display: flex;
-    align-items: center;
+.filter-badges {
+    padding-left: 5px;
 }
 
-.option .select-dropdown-button {
-    padding: 5px 10px 5px 20px;
-    border-radius: 10px;
-    margin: 0 10px;
-    border: none;
-}
-
-.option .select-dropdown-button h6 {
-    font-size: 14px;
-    line-height: 17px;
-    font-weight: 700;
-}
-
-.option .select-dropdown-button b {
-    margin-left: 10px;
-}
-
-.option .select-dropdown-button .fa-caret-down:before {
-    font-size: 18px;
-}
-
-.limit-results {
-    margin-left: 10px;
-}
-
-.limit-results input {
-    width: 50px;
-    margin: 0 10px;
-    text-align: center;
+.filter-badge {
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    color: #505050;
+    padding: 2px 0 2px 5px;
+    margin: 0 1px;
+    text-transform: capitalize;
 }
 
 
-/* Add Filter Modal */
+
+/* configure Filter Modal */
+#modalConfigureFilter {
+    width: 600px;
+    margin-left: -300px;
+}
+
 .modal-header {
     padding: 15px 15px 0 15px;
 }
-.modal-header-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-}
 
-.modal h4 {
+.modal h4, .modal h5, .modal h6 {
     color: #e73d30;
 }
 
@@ -162,19 +136,28 @@
     color: #505050;
 }
 
-.modal .select-dropdown-button {
-    border: none;
-}
-
-.modal .select-dropdown-button b {
-    margin-left: 10px;
-}
-
-.filter-panel {
+.modal-body .filter-row {
     display: flex;
-    justify-content: space-evenly;
-    align-items: center;
+    padding-bottom: 20px;
 }
+
+.modal-body .filter-row label {
+    margin: 0 20px;
+    text-transform: capitalize;
+}
+
+.modal-body .filter-row label:first-of-type {
+    margin-left: 0;
+}
+
+.modal-body .filter-row label {
+    margin-right: 5px;
+}
+
+
+
+
+
 
 
 
@@ -192,6 +175,7 @@
 .register-grid th, .register-grid td {
     border: 1px solid #e2e2e2;
     padding: 20px 35px;
+    text-transform: capitalize;
 }
 
 .register-grid th {
@@ -201,6 +185,12 @@
 
 .register-grid th:nth-child(even) {
     background-color: #000000;
+}
+
+.grid-no-items {
+    color: #e73d30;
+    text-align: center;
+    padding: 0 40px;
 }
 
 

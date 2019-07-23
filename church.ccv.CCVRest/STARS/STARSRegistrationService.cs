@@ -62,6 +62,10 @@ namespace church.ccv.CCVRest.STARS
 
                         int slotsAvailable = linkage.RegistrationInstance.MaxAttendees - linkage.RegistrationInstance.Registrations.Count;
 
+                        // "Boys & Girls" gender needs to be returned as 2 event items to display and filter properly
+                        // I know, not best idea having to depend on a string attribute
+                        bool splitGender = gender == "Boys & Girls";
+
                         if ( occurence.Campus == null)
                         {
                             // null campus in occurence means all campuses
@@ -81,7 +85,7 @@ namespace church.ccv.CCVRest.STARS
                                         RegistrationInstanceId = linkage.RegistrationInstanceId,
                                         Campus = campus.Name,
                                         Sport = sport,
-                                        Gender = gender,
+                                        Gender = splitGender ? "Boys" : gender,
                                         Division = division,
                                         Season = season,
                                         SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
@@ -89,6 +93,25 @@ namespace church.ccv.CCVRest.STARS
                                     };
 
                                     activeRegistrations.Add( registration );
+
+                                    // if splitGender, add same registration, but a 2nd time for girls
+                                    if (splitGender)
+                                    {
+                                        STARSRegistrationModel girlsRegistration = new STARSRegistrationModel()
+                                        {
+                                            EventOccurrenceId = occurence.Id,
+                                            RegistrationInstanceId = linkage.RegistrationInstanceId,
+                                            Campus = campus.Name,
+                                            Sport = sport,
+                                            Gender = "Girls",
+                                            Division = division,
+                                            Season = season,
+                                            SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                            WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
+                                        };
+
+                                        activeRegistrations.Add( girlsRegistration );
+                                    }
                                 }
                             }
                         }
@@ -101,7 +124,7 @@ namespace church.ccv.CCVRest.STARS
                                 RegistrationInstanceId = linkage.RegistrationInstanceId,
                                 Campus = occurence.Campus.Name,
                                 Sport = sport,
-                                Gender = gender,
+                                Gender = splitGender ? "Boys" : gender,
                                 Division = division,
                                 Season = season,
                                 SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
@@ -109,6 +132,25 @@ namespace church.ccv.CCVRest.STARS
                             };
 
                             activeRegistrations.Add( registration );
+
+                            // if splitGender, add same registration, but a 2nd time for girls
+                            if ( splitGender )
+                            {
+                                STARSRegistrationModel girlsRegistration = new STARSRegistrationModel()
+                                {
+                                    EventOccurrenceId = occurence.Id,
+                                    RegistrationInstanceId = linkage.RegistrationInstanceId,
+                                    Campus = occurence.Campus.Name,
+                                    Sport = sport,
+                                    Gender = "Girls",
+                                    Division = division,
+                                    Season = season,
+                                    SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                    WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
+                                };
+
+                                activeRegistrations.Add( girlsRegistration );
+                            }
                         }
                     }                          
                 }                

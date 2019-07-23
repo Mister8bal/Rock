@@ -6,22 +6,22 @@
 <div class="register-card">
     <div class="register-filter-row">
         <div class="filter-row-left">
-            <div class="option">
+            <div class="filter-item">
                 <span>Filter:</span>
             </div>
-            <div id="divFilterOptions" class="filter-options">
+            <div id="divFilterBadges" class="filter-item filter-badges">
             </div>
-            <div class="option">
-                <button type="button" data-toggle="modal" data-target="#modalAddFilter"><span class="mdi mdi-plus-circle-outline"></span></button>
+            <div class="filter-item">
+                <i  data-toggle="modal" data-target="#modalConfigureFilter" class="fa fa-plus" aria-hidden="true"></i>
             </div>
-            <div class="option">
-                <i class="fa fa-undo" aria-hidden="true" onclick="resetFilter()"></i><span>Reset</span>
+            <div class="filter-item" data-toggle="modal" data-target="#modalConfirmReset" >
+                <i class="fa fa-undo" aria-hidden="true"></i><span>Reset</span>
             </div>
-            <div class="option limit-results">
+            <!-- <div class="option limit-results">   not sure if gonna allow limiting results
                 <span>Show</span>
                 <input type="number" value="25">
                 <span>sports</span>
-            </div>
+            </div> -->
         </div>
         <div class="filter-row-right">
             <div class="search">
@@ -52,66 +52,65 @@
     </div>
 </div>
 
-<!-- Add Filter Modal -->
-<div id="modalAddFilter" class="modal fade" role="dialog">
+<!-- Confirm Modal -->
+<div id="modalConfirmReset" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-header-content">
+                    <h4>Reset Filters?</h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="resetFilter()">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Configure Filter Modal -->
+<div id="modalConfigureFilter" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <div class="modal-header-content">
                     <h4>Add Filter</h4>
-                    <div class="select-dropdown">
-                        <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnModalFilterPanelSelect">Sport</h6><b class="fa fa-caret-down"></b></button>
-                        <ul class="dropdown-menu">
-                            <li><div id="sport-modal-button" onClick="showModalFilterPanel(this, 'sport', true)" class="item">Sport</div></li>
-                            <li><div id="campus-modal-button" onClick="showModalFilterPanel(this, 'campus', true)" class="item">Campus</div></li>
-                            <li><div id="gender-modal-button" onClick="showModalFilterPanel(this, 'gender', true)" class="item">Gender</div></li>
-                            <li><div id="division-modal-button" onClick="showModalFilterPanel(this, 'division', true)" class="item">Division</div></li>   
-                            <li><div id="season-modal-button" onClick="showModalFilterPanel(this, 'season', true)" class="item">Season</div></li>                           
-                        </ul>
-                    </div> 
                 </div>
             </div>
             <div class="modal-body">
-
-                {% comment %} Sport Filter Panel {% endcomment %}
-                <div id="pnlModalSport" class="filter-panel">
-                    <div>
-                        <input type="checkbox" name="sport" value="Baseball">Baseball
-                    </div>
-                    <div>
-                        <input type="checkbox" name="sport" value="Baseball">Basketball
-                    </div>
-                    <div>
-                        <input type="checkbox" name="sport" value="Baseball">Football
-                    </div>
-                    <div>
-                        <input type="checkbox" name="sport" value="Baseball">Soccer
-                    </div>
+                <!-- Season filter -->
+                <h6>Season</h6>
+                <div id="filterSeason" class="filter-row seasons">
                 </div>
 
-                {% comment %} Campus Filter Panel {% endcomment %}
-                <div id="pnlModalCampus" class="filter-panel hidden">
-                    campus checkboxes
+                <!-- Campus filter -->
+                <h6>Campus</h6>
+                <div id="filterCampus" class="filter-row campuses">
                 </div>
 
-                {% comment %} Gender Filter Panel {% endcomment %}
-                <div id="pnlModalGender" class="filter-panel hidden">
-                    gender checkboxes
+                <!-- Season filter -->
+                <h6>Sport</h6>
+                <div id="filterSport" class="filter-row sports">
                 </div>
 
-                {% comment %} Division Filter Panel {% endcomment %}
-                <div id="pnlModalDivision" class="filter-panel hidden">
-                    havent decided how to handle
+                <!-- Gender filter -->
+                <h6>Gender</h6>
+                <div id="filterGender" class="filter-row gender">
+                    <label><input type="checkbox" name="gender" value="Boys"> Boys</label>
+                    <label><input type="checkbox" name="gender" value="Girls"> Girls</label>
+                    <label><input type="checkbox" name="gender" value="Co-ed"> Co-Ed</label>
                 </div>
 
-                {% comment %} Season Filter Panel {% endcomment %}
-                <div id="pnlModalSeason" class=" filter-panel hidden">
-                    season checkboxes
+                <!-- Division filter -->
+                <h6>Division</h6>
+                <div id="filterDivision" class="filter-row divisions">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="addFilter()">Apply</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="applyFilter()">Apply</button>
             </div>
         </div>
     </div>
@@ -140,14 +139,13 @@
 
     // global variables
     var activeRegistrations = [];
-    var filteredActiveRegistrations = [];
 
     // global variables for mobile
     var filteredMobileRegistrations = [];
-    var availableSeasons = [];
-    var availableSports = [];
-    var availableCampuses = [];
-    var availableDivisions = [];
+    var availableMobileSeasons = [];
+    var availableMobileSports = [];
+    var availableMobileCampuses = [];
+    var availableMobileDivisions = [];
     var selectedMobileSeason = "";
     var selectedMobileCampus = "";
     var selectedMobileSport = "";
@@ -162,8 +160,8 @@
 
         // hydrate available seasons for initial mobile view
         for ( let i = 0; i < activeRegistrations.length; i++ ) {
-            if ( !availableSeasons.includes( activeRegistrations[i].Season ) ) {
-                availableSeasons.push(activeRegistrations[i].Season);
+            if ( !availableMobileSeasons.includes( activeRegistrations[i].Season ) ) {
+                availableMobileSeasons.push(activeRegistrations[i].Season);
             }
         }
 
@@ -180,10 +178,66 @@
 
     // initialize desktop view
     function initializeGrid() {
-
-        //buildModalCampusesPanel();
+        initializeModalFilterOptions();
 
         renderGrid(activeRegistrations);
+    }
+
+    function initializeModalFilterOptions() {
+        var availableSeasons = [];
+        var availableCampuses = [];
+        var availableSports = [];
+        var availableDivisions = [];
+
+        // hydrate available arrays
+        for (let i = 0; i < activeRegistrations.length; i++) {
+            if (!availableSeasons.includes(activeRegistrations[i].Season)) {
+                availableSeasons.push(activeRegistrations[i].Season)
+            }
+
+            if (!availableCampuses.includes(activeRegistrations[i].Campus)) {
+                availableCampuses.push(activeRegistrations[i].Campus);
+            }
+
+            if (!availableSports.includes(activeRegistrations[i].Sport)) {
+                availableSports.push(activeRegistrations[i].Sport);
+            }
+
+            if (!availableDivisions.includes(activeRegistrations[i].Division)) {
+                availableDivisions.push(activeRegistrations[i].Division);
+            }            
+        }
+
+        // add checkbox options for each filter
+        for (let i = 0; i < availableSeasons.length; i++) {
+            var newCheckbox = createCheckboxItem('season', availableSeasons[i].replace(/\s|\-/g,''), availableSeasons[i]);
+        
+            $('#filterSeason').append(newCheckbox);
+        }
+
+        for (let i = 0; i < availableCampuses.length; i++) {
+            var newCheckbox = createCheckboxItem('campus', availableCampuses[i].replace(/\s|\-/g,''), availableCampuses[i]);
+
+            $('#filterCampus').append(newCheckbox);            
+        }
+
+        for (let i = 0; i < availableSports.length; i++) {
+            var newCheckbox = createCheckboxItem('sport', availableSports[i].replace(/\s|\-/g,''), availableSports[i].replace('-',' '));
+
+            $('#filterSport').append(newCheckbox);
+        }
+
+        for (let i = 0; i < availableDivisions.length; i++) {
+            var newCheckbox = createCheckboxItem('division', availableDivisions[i].replace(/\s|\-/g,''), availableDivisions[i]);
+
+            $('#filterDivision').append(newCheckbox);
+        }
+
+        // attach search event to text input
+        $('#tbSearch').on('change keyup paste', function() {
+
+            applyFilter();
+        });
     }
 
     // initialize mobile view
@@ -210,30 +264,22 @@
 
         var table = document.getElementById('tblGrid');
 
+        if (items.length !== 0) {
+            // items to display
+            for (let i = 0; i < items.length; i++) {
+                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season, items[i].EventOccurrenceId);
 
-        for (let i = 0; i < items.length; i++) {
-            // desktop grid
-            // create new row
+                table.appendChild(newRow);
+
+                itemsProcessed++;
+            }
+        } else {
+            // no items to display
             var row = document.createElement('tr');
 
-            var sport = getSport(items[i].Sport);
+            row.innerHTML = `<td colspan="7"><h4 class="grid-no-items">Nothing to display</h4></td>`;
 
-            // add column data to row
-            addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport.toLowerCase() + '-red.png">');
-            addCellToRow(row, items[i].Campus);
-            addCellToRow(row, sport);
-            addCellToRow(row, items[i].Gender);
-            addCellToRow(row, items[i].Division, "grid-division");
-            addCellToRow(row, items[i].Season);
-            addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + items[i].EventOccurrenceId + '" class="btn btn-primary">More Info</a>' );
-
-            // add row to table
             table.appendChild(row);
-
-            // mobile grid
-
-
-            itemsProcessed++;
         }
 
         if ( itemsProcessed === items.length ) {
@@ -272,10 +318,10 @@
         resetMobileCardUI('Select Season','');
     
         // add season options
-        for (let i = 0; i < availableSeasons.length; i++) {
-            var onclickString = `handleNextClick('CAMPUS','` + availableSeasons[i] + `')`;   
+        for (let i = 0; i < availableMobileSeasons.length; i++) {
+            var onclickString = `handleNextClick('CAMPUS','` + availableMobileSeasons[i] + `')`;   
 
-            var itemNew = createNavigationItem(availableSeasons[i], onclickString, true);
+            var itemNew = createNavigationItem(availableMobileSeasons[i], onclickString, true);
 
             if ( itemNew ) {
                 $('.mobile-body').append(itemNew);
@@ -295,10 +341,10 @@
         }
 
         // add campus options
-        for (let i = 0; i < availableCampuses.length; i++) {
-            var onclickString = `handleNextClick('SPORT','` + availableCampuses[i] + `')`;   
+        for (let i = 0; i < availableMobileCampuses.length; i++) {
+            var onclickString = `handleNextClick('SPORT','` + availableMobileCampuses[i] + `')`;   
 
-            var itemNew = createNavigationItem(availableCampuses[i], onclickString, true);
+            var itemNew = createNavigationItem(availableMobileCampuses[i], onclickString, true);
 
             if ( itemNew ) {
                 $('.mobile-body').append(itemNew);
@@ -325,10 +371,10 @@
         }
 
         // add sport options
-        for (let i = 0; i < availableSports.length; i++) {
-            var onclickString = `handleNextClick('DIVISION','` + availableSports[i] + `')`;   
+        for (let i = 0; i < availableMobileSports.length; i++) {
+            var onclickString = `handleNextClick('DIVISION','` + availableMobileSports[i] + `')`;   
 
-            var itemNew = createNavigationItem(availableSports[i].replace('-',' '), onclickString, true);
+            var itemNew = createNavigationItem(availableMobileSports[i].replace('-',' '), onclickString, true);
 
             if ( itemNew ) {
                 $('.mobile-body').append(itemNew);
@@ -362,10 +408,10 @@
         }
 
         // add division options
-        for (let i = 0; i < availableDivisions.length; i++) {
-            var onclickString = `handleNextClick('GRID','` + availableDivisions[i] + `')`;            
+        for (let i = 0; i < availableMobileDivisions.length; i++) {
+            var onclickString = `handleNextClick('GRID','` + availableMobileDivisions[i] + `')`;            
 
-            var itemNew = createNavigationItem(availableDivisions[i], onclickString, true);
+            var itemNew = createNavigationItem(availableMobileDivisions[i], onclickString, true);
 
             if ( itemNew ) {
                 $('.mobile-body').append(itemNew);
@@ -422,6 +468,143 @@
     //
     // event functions
     //
+
+    //
+    // desktop functions
+    // 
+
+    function applyFilter() {
+        // hide grid and show spinner
+        toggleGridLoading();
+
+        // get badges div and clear it
+        $('#divFilterBadges').html('');
+
+        // when applying filters, always start with unfiltered list
+        var filteredRegistrations = activeRegistrations;
+
+        // get the checked values from the filters
+        var seasonFilter = $('input:checked[name="season"]').map(function() { return $(this).val(); }).get();
+        var campusFilter = $('input:checked[name="campus"]').map(function() { return $(this).val(); }).get();
+        var sportFilter = $('input:checked[name="sport"]').map(function() { return $(this).val(); }).get();
+        var genderFilter = $('input:checked[name="gender"]').map(function() { return $(this).val(); }).get();
+        var divisionFilter = $('input:checked[name="division"]').map(function() { return $(this).val(); }).get();
+
+        // apply filters
+
+        if (seasonFilter.length > 0) {
+            filteredRegistrations = filteredRegistrations.filter(value => seasonFilter.includes(value.Season.replace(/\s|\-/g,'')));
+
+            // add filter badges for seasons
+            for (let i = 0; i < seasonFilter.length; i++) {
+                var filterBadge = createFilterBadge(seasonFilter[i]);
+
+                $('#divFilterBadges').append(filterBadge);                
+            }
+        }
+
+        if (campusFilter.length > 0) {
+            filteredRegistrations = filteredRegistrations.filter(value => campusFilter.includes(value.Campus.replace(/\s|\-/g,'')));
+
+            // add filter badges for campus
+            for (let i = 0; i < campusFilter.length; i++) {
+                var filterBadge = createFilterBadge(campusFilter[i]);
+
+                $('#divFilterBadges').append(filterBadge);                
+            }
+        }
+
+        if (sportFilter.length > 0) {
+            filteredRegistrations = filteredRegistrations.filter(value => sportFilter.includes(value.Sport.replace(/\s|\-/g,'')));
+
+            // add filter badges for sport
+            for (let i = 0; i < sportFilter.length; i++) {
+                var filterBadge = createFilterBadge(sportFilter[i]);
+
+                $('#divFilterBadges').append(filterBadge);                
+            }
+
+        }
+
+        if (genderFilter.length > 0) {
+            // Always show coed
+            // IE there are boys and girls in coed so if filter set to boys, boys are in coed, so show coed
+            filteredRegistrations = filteredRegistrations.filter(value => genderFilter.includes(value.Gender) || value.Gender === 'Co-ed');
+
+            // add filter badges for gender
+            for (let i = 0; i < genderFilter.length; i++) {
+                var filterBadge = createFilterBadge(genderFilter[i]);
+
+                $('#divFilterBadges').append(filterBadge);                
+            }
+        }
+        
+        if (divisionFilter.length > 0) {
+            filteredRegistrations = filteredRegistrations.filter(value => divisionFilter.includes(value.Division.replace(/\s|\-/g,'')));
+
+            // add filter badges for division
+            for (let i = 0; i < divisionFilter.length; i++) {
+                var filterBadge = createFilterBadge(divisionFilter[i]);
+
+                $('#divFilterBadges').append(filterBadge);                
+            }
+        }
+
+        var searchText = $('#tbSearch').val();
+
+        if (searchText) {
+            // split search input into array
+            var searchItems = searchText.split(' ');            
+
+            // loop through each search term
+            // if match found
+            // search the newly filtered items again
+            // with the next search term in the array
+            for (let i = 0; i < searchItems.length; i++) {
+                var searchItem = searchItems[i].toLowerCase();
+
+                filteredRegistrations = filteredRegistrations.filter(function(item) {
+                        // convert sport to searchable text
+                        var sport = item.Sport.replace('-',' ');
+
+                        if (item.Season.toLowerCase().includes(searchItem)) { return true; }
+                        if (item.Campus.toLowerCase().includes(searchItem)) { return true; }
+                        if (sport.toLowerCase().includes(searchItem)) { return true; }
+                        if (item.Gender.toLowerCase().includes(searchItem)) { return true; }
+                        if (item.Division.toLowerCase().includes(searchItem)) { return true; }                      
+                
+                    return false;
+                });
+            }
+        }
+
+        // rerender the grid
+        renderGrid(filteredRegistrations);
+    }
+
+    // unchecks the respective checkbox, then reapplies the filter
+    function removeFilterItem(filterValue) {
+        $('input[type=checkbox][value=' + filterValue + ']').prop('checked',false);
+
+        applyFilter();
+    }
+
+    function resetFilter() {
+        // hide grid and show spinner
+        toggleGridLoading();
+
+        // uncheck all checkboxes
+        $(':checkbox').attr('checked', false);
+
+        // clear search text input
+        $('#tbSearch').val('');
+
+        // clear badges
+        $('#divFilterBadges').html('');
+
+        renderGrid(activeRegistrations);
+    }
+
 
     //
     // mobile functions
@@ -504,34 +687,74 @@
     // desktop functions
     //
 
-    function addFilter() {
-        // hide grid and show spinner
-        toggleGridLoading();
+    // return an html filter badge
+    function createFilterBadge(filterValue) {
+        var div = document.createElement('div');
+        var span = document.createElement('span');
+        var closeIcon = document.createElement('i');
 
-        // get the form values from the modal
+        // configure the div
+        div.setAttribute('class','filter-badge');
+        div.setAttribute('onclick',`removeFilterItem('` + filterValue + `')`);
 
-        // filter activeRegistrations
-        var filteredRegistrations = activeRegistrations.filter( a => a.Sport === "Football" );
+        // get the text for the badge from the label of the filter checkbox
+        span.innerHTML = $('input[type=checkbox][value=' + filterValue + ']').parent().text();
 
-        // rerender the grid
-        renderGrid(filteredRegistrations);
+        div.append(span);
 
+        // configure closeIcon
+        closeIcon.setAttribute('class','fa fa-times');
+        closeIcon.setAttribute('aria-hidden','true');
+
+        div.append(closeIcon);
+
+        return div;
     }
 
-    function resetFilter() {
-        // hide grid and show spinner
-        toggleGridLoading();
+    // return an html checkbox
+    function createCheckboxItem(name, value, text) {
+        // create new html elements
+        var label = document.createElement('label');
+        var input = document.createElement('input');
 
-        // rendergrid with initial array
-        renderGrid(activeRegistrations);
+        // configure input and add to label
+        input.setAttribute('type','checkbox')
+        input.setAttribute('name',name);
+        input.setAttribute('value',value);
+
+        label.append(input);
+
+        // add the text
+        label.innerHTML += (' ' + text);
+
+        return label;
     }
+
 
     function toggleGridLoading() {
         $('#gridLoading').toggleClass('hidden');
         $('#tblGrid').toggleClass('hidden');
     }
 
-        // create a table cell and add it to a row
+    // return a table row for the desktop grid
+    function createTableRow(program, campus, gender, division, season, eventOccurrenceId) {
+        var row = document.createElement('tr');
+
+        var sport = getSport(program);
+
+        // add column data to row
+        addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport + '-red.png">');
+        addCellToRow(row, campus);
+        addCellToRow(row, program.replace('-',' '));
+        addCellToRow(row, gender);
+        addCellToRow(row, division, 'grid-division');
+        addCellToRow(row, season);
+        addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + eventOccurrenceId + '" class="btn btn-primary">More Info</a>' );
+
+        return row;
+    }
+
+    // create a table cell and add it to a row
     function addCellToRow(row, value, cssClass) {
         var cell = document.createElement('td');
 
@@ -550,23 +773,19 @@
         var sport = "";
 
         if (program.includes("baseball")) {
-            sport = "Baseball";
+            sport = "baseball";
         }
 
         if (program.includes("basketball")) {
-            sport = "Basketball";
+            sport = "basketball";
         }
 
         if (program.includes("football")) {
-            sport = "Football";
+            sport = "football";
         }
 
         if (program.includes("soccer")) {
-            sport = "Soccer";
-        }
-
-        if (program.includes("exceptional")) {
-            sport = "Exceptional Stars";
+            sport = "soccer";
         }
 
         return sport;
@@ -579,33 +798,33 @@
     // loop through array of items to hydrate mobile available arrays
     function hydrateAvailableMobileArrays(items) {
         // reset arrays
-        availableSeasons = [];
-        availableCampuses = [];
-        availableSports = [];
-        availableDivisions = [];
+        availableMobileSeasons = [];
+        availableMobileCampuses = [];
+        availableMobileSports = [];
+        availableMobileDivisions = [];
 
         for ( let i = 0; i < items.length; i++ ) {
-            if ( !availableSeasons.includes( items[i].Season ) ) {
-                availableSeasons.push(items[i].Season);
+            if ( !availableMobileSeasons.includes( items[i].Season ) ) {
+                availableMobileSeasons.push(items[i].Season);
             }
 
-            if ( !availableCampuses.includes( items[i].Campus ) ) {
-                availableCampuses.push(items[i].Campus);
+            if ( !availableMobileCampuses.includes( items[i].Campus ) ) {
+                availableMobileCampuses.push(items[i].Campus);
             }
 
-            if ( !availableSports.includes( items[i].Sport ) ) {
-                availableSports.push(items[i].Sport);
+            if ( !availableMobileSports.includes( items[i].Sport ) ) {
+                availableMobileSports.push(items[i].Sport);
             }
 
-            if ( !availableDivisions.includes( items[i].Division ) ) {
-                availableDivisions.push(items[i].Division);
+            if ( !availableMobileDivisions.includes( items[i].Division ) ) {
+                availableMobileDivisions.push(items[i].Division);
             }
         }
 
-        availableSeasons.sort();
-        availableCampuses.sort();
-        availableSports.sort();
-        availableDivisions.sort();
+        availableMobileSeasons.sort();
+        availableMobileCampuses.sort();
+        availableMobileSports.sort();
+        availableMobileDivisions.sort();
     }
 
     function applyMobileFilter() {
