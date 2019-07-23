@@ -952,6 +952,7 @@
 
     }
 
+    // Handles display of buttons on existing person selector
     function existingSelectorControl() {
 
         let that = {};
@@ -960,14 +961,10 @@
 
         let $existingPeople = $('.existing-people').find('input');
 
-        console.log($existingPeople);
-
         let validated = false;
 
         let handleOptionChange = function (e) {
-
             let $selected = $(e.currentTarget);
-            console.log("OPTION CHANGED", $selected);
             if (that.hasSelectedOption($selected)) {
                 that.toggleButtons();
             }
@@ -996,6 +993,9 @@
         that.toggleButtons();
 
         $existingPeople.on('change', handleOptionChange);
+
+        return that;
+
     }
 
     // scrolls window position to top of form
