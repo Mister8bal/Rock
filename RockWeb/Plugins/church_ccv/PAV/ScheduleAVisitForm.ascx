@@ -538,7 +538,7 @@
                             <Rock:NotificationBox ID="nbAlertExisting" runat="server" />
 
                         </div>
-                        <div class="form-navigation">
+                        <div class="form-navigation disabled-btns">
 
                             <asp:Button ID="btnAdultsExistingBack" runat="server" ClientIDMode="Static" OnClick="btnFormBack_Click" CommandName="pnlAdults" Text="Back" CssClass="btn btn-default" />
 
@@ -946,7 +946,56 @@
             } else {
                 $('#tbChildrenFormMobile').parents('div.form-group').removeClass('has-error');
             }
-        });        
+        });       
+
+        let selectorControl = existingSelectorControl();
+
+    }
+
+    function existingSelectorControl() {
+
+        let that = {};
+
+        let $buttonsEl = $('.disabled-btns');
+
+        let $existingPeople = $('.existing-people').find('input');
+
+        console.log($existingPeople);
+
+        let validated = false;
+
+        let handleOptionChange = function (e) {
+
+            let $selected = $(e.currentTarget);
+            console.log("OPTION CHANGED", $selected);
+            if (that.hasSelectedOption($selected)) {
+                that.toggleButtons();
+            }
+        }
+
+        that.hasSelectedOption = function ($el) {
+            if ($el && $el.is(':checked')) {
+                validated = true;
+                return true;
+            }
+            if($('.existing-people input:checked').length) {
+                validated = true;
+                return true;
+            }
+        }
+
+        that.toggleButtons = function () {
+            if (validated) {
+                $buttonsEl.find('input').attr('disabled', false);
+            } else {
+                $buttonsEl.find('input').attr('disabled', true);
+            }
+        }
+
+        that.hasSelectedOption();
+        that.toggleButtons();
+
+        $existingPeople.on('change', handleOptionChange);
     }
 
     // scrolls window position to top of form
