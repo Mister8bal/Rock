@@ -17,6 +17,13 @@
     background-color: #F9F9F9;
 }
 
+#section-d-bg {
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/footer-pav-ministries-adults.jpg");
+    background-size:cover;
+    background-position: center;
+    background-repeat:no-repeat
+}
+
 @media screen and (max-width: 927px) { 
     .navigation-tertiary-items-slick {
         padding-left: 50px;
