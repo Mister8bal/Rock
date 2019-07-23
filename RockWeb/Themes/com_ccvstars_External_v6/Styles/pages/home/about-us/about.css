@@ -21,13 +21,22 @@
     overflow: unset;
 }
 
-.title {
-    align-items: center;
-    padding: 42px 0;
+.stars-locations-title {
+    padding: 42px 0 0 0;
+    text-align: center;
 }
 
-.title h4 {
-    color: #EA3E29;
+.stars-locations-title h4 {
+    color: #e73d30;
+    padding-bottom: 0;
+    font-size: 35px;
+    line-height: 37px;
+}
+
+.stars-locations-title p {
+    color: #7c7c7c;
+    font-size: 17px;
+    line-height: 19px;
 }
 
 .title p {
@@ -47,26 +56,32 @@ span{
     font-weight: normal;
 }
 
+.weekly-mtag > ul {
+    font-weight: bold;
+}
+
 /* End Overrides */
 
 hr {
     border-top: 2px solid #ccc;
 }
 
-.history {
-    padding-top: 100px;
+.our-history {
+    padding-top: 150px;
 }
 
-.history p {
-    color: #333333;
+.our-history p {
+    color: #595959;
+    font-size: 17px;
+    line-height: 25px;
 }
 
-.history h3, .mtag h3, .weekly-mtag h3 {
+.our-history h3, .mtag h3, .weekly-mtag h3 {
     color: #EA3E29;
     text-align: left;
 }
 
-.history > ul {
+.our-history > ul {
     border-left: 2px solid red;
     list-style-type: none;
     padding: 10px 20px;
@@ -79,6 +94,8 @@ hr {
 
 .mtag p {
     color: #333333;
+    font-size: 17px;
+    line-height: 25px;
 }
 
 .mtag h4 {
@@ -112,6 +129,7 @@ hr {
 .weekly-mtag h3, .weekly-mtag p {
     color: #ffffff;
     padding-left: 20px; 
+    padding-bottom: 0;
 }
 
 .mtag > ul {
@@ -128,23 +146,110 @@ hr {
     margin-left: -1em;
 }
 
-/**** Phone Styling ****/
-@media screen and (max-width: 767.98px) {  
+.img-row img {
+    border-radius: 8px;
+}
+
+.desktop-view {
+    display: block;
+}
+
+.mobile-view {
+    display: none;
+}
+
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-about-us.jpg");
-        height: unset;
+        height: 440px;
     }
-
-    #zone-sectione {
+    .weekly-mtag-wrapper {
+        width: unset;
         margin: 0;
+        flex-direction: column-reverse;
     }
 
     .weekly-mtag {
         width: 100%;
+        padding: 0;
+        margin-bottom: 10px;
+        border-radius: 0px;
     }
+}
+
+/**** End Tablet Styling ****/
+
+
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {  
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-about-us.jpg");
+        height: 440px;
+    }
+
+    #zone-sectiona {
+        margin: 0 5%;
+    }
+
+    #zone-feature, #zone-sectione {
+        margin: 0;
+    }
+
+    .title {
+        display: none;
+    }
+
+    .stars-locations-title {
+        padding: 0;
+    }
+
+    .img-row img {
+        border-radius: 0;
+    }
+
+    .our-history {
+        padding-top: 0px;
+    }
+
+    .our-history p {
+        font-size: 13px;
+        line-height: 16px;
+    }
+
+    .our-history .btn-primary {
+        width: 100%;
+        margin: 0% 0 5% 0;
+        padding: 8px 12px;
+    }
+
+    /* .weekly-mtag-wrapper {
+        width: unset;
+        margin: 0;
+        flex-direction: column-reverse;
+    }
+
+    .weekly-mtag {
+        width: 100%;
+        padding: 0;
+        margin-bottom: 10px;
+        border-radius: 0px;
+    } */
 
     .mtag > ul {
         padding: 0 0 0 5%;
+    }
+
+    .desktop-view {
+        display: none;
+    }
+    
+    .mobile-view {
+        display: block;
+    }
+
+    .mobile-view .section-video {
+        padding-top: 0px;
     }
 }
 
