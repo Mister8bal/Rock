@@ -207,6 +207,11 @@ namespace church.ccv.CCVRest.MobileApp
                 groupResult.Zip = groupLoc.Location.PostalCode;
             }
 
+            // Check Group Capacity
+            if( GroupHasCapacity(group) )
+            {
+                groupResult.HasCapacity = true;
+            }
 
             // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
             Person associatePastor = null;
@@ -331,6 +336,21 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return groupResult;
+        }
+
+        private static bool GroupHasCapacity(Group g)
+        {
+            if(g.GroupCapacity == null )
+            {
+                return true;
+            }
+
+            if( g.GroupCapacity <= g.Members.Count() )
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static MAGroupMemberModel GetMAGroupMemberModel( Person person, MAGroupRole maGroupRole, bool includeContactInfo, Guid phoneType )
