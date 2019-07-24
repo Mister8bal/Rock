@@ -67,7 +67,7 @@ namespace church.ccv.MobileApp
                 // Instantiate as IQueryable so we don't store in memory just yet.
                 IQueryable<Group> gQuery = groupService.Queryable( "Schedule,GroupLocations.Location" ).AsNoTracking();
 
-                FilterOverCapacity( gQuery );
+                gQuery = FilterOverCapacity( gQuery );
 
                 // get all groups of this group type that are either public, if publicOnly is true, or either if publicOnly is false
 
@@ -185,7 +185,7 @@ namespace church.ccv.MobileApp
 
         // Modify and return a Group Query to filter 
         // out any group that is at capacity.
-        public static IQueryable FilterOverCapacity( IQueryable<Group> gQuery)
+        public static IQueryable<Group> FilterOverCapacity( IQueryable<Group> gQuery)
         {
             return gQuery.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
         }
