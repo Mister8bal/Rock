@@ -123,10 +123,7 @@ namespace church.ccv.MobileApp
                         groupResult.Filters = group.AttributeValues[ GroupFilters_Key ].Value;
                     }
 
-                    //if ( !GroupOverCapacity( group ) )
-                    //{
-                        resultGroups.Add( groupResult );
-                    //}
+                    resultGroups.Add( groupResult );
                     
                 }
             }
