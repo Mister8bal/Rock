@@ -219,10 +219,10 @@
                     if (campusSports.includes("basketball")) {
                         result += '<a href="/basketball-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png"></a>'
                     }
-                    if(campusSports.includes("flag-football") || campusSports.includes("tackle-football")) {
+                    if(campusSports.includes("football")) {
                         result += '<a href="/football-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
                     }
-                    if (campusSports.includes("united-soccer") || campusSports.includes("integra-soccer")) {
+                    if (campusSports.includes("soccer")) {
                         result += '<a href="/soccer-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
                     }
                 } else {

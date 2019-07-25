@@ -11,26 +11,23 @@
     max-width: 100%;
 }
 
-#zone-sectionc {
-    max-width: 100%;
-    margin: 0 15%;
-}
-
 /* Top section */
-.page-header {
-    font-family: "akrobat";
-    font-weight: 700;
+.title {
+    padding-top: 205px;
 }
 
-.margin-v-lg {
-    font-family: "akrobat";
-    font-weight: 700;
+.title h1 {
+    padding-bottom: 15px;
+}
+
+.title p {
+    width: 700px;
 }
 
 .top-and-bottom-container {
     position: relative;
     z-index: 1000;
-    margin-top: -500px;
+    margin-top: -450px;
 }
 
 .top {
@@ -133,6 +130,14 @@
     text-decoration: none;
 }
 
+.btn-primary:hover {
+    border: solid 1px #FFFFFF;
+}
+
+.locations-title {
+    padding-top: 75px;
+}
+
 .locations-title h2 {
     color: #E73D30;
     font-size: 50px;
@@ -151,15 +156,20 @@
 }
 /* Theme Overrides */
 
-/** Laptop Styling **/
-@media screen and (max-width: 1024px) {
-    /* Event Cards Styling */
+/**** Responsive Styling ****/
+@media screen and (max-width: 1439.98px) {
+    #section-feature-bg {
+        height: 730px;
+    }
+
     #zone-sectionc {
         max-width: 100%;
         margin: 0 5%;
     }
 
-    /* End Event Cards Styling */
+    .top-and-bottom-container {
+        margin-top: -325px;
+    }
 
     .image-top {
         height: 400px;
@@ -188,10 +198,8 @@
 
 /** End Laptop Styling **/
 
-
-
 /** Tablet Styling **/
-@media screen and (max-width: 768px) {   
+@media screen and (max-width: 1023.98px) { 
     #zone-sectionc {
         margin: 0 5%;
     }
@@ -236,18 +244,38 @@
 
 /** End Tablet Styling **/
 
-
-
 /** Mobile Styling **/
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 767.98px) {
     #section-feature-bg {
         height: unset;
     }
 
     #section-feature-bg {
-        height: 700px;
+        height: 340px;
         z-index: 999;
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-home.jpg");
+    }
+
+    .locations-title {
+        padding-top: 30px;
+    }
+
+    .locations-title h2 {
+        font-size: 26px;
+        line-height: 28px;
+    }
+
+    .locations-title p {
+        font-size: 16px;
+        line-height: 18px;
+    }
+
+    .title {
+        padding-top: 17.5px
+    }
+
+    .top-and-bottom-container {
+        margin-top: -250px;
     }
 
     .image-top {
