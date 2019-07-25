@@ -19,10 +19,8 @@
 }
 /* End Zones & Sections */
 
-.title {
-    justify-content: center;
-    height: 325px;
-    padding-top: 0;
+.title h1 {
+    padding: 30px;
 }
 
 .login-required h5 {
@@ -103,6 +101,10 @@
     align-items: center;
 }
 
+.filter-item .fa:hover {
+    cursor: pointer;
+}
+
 .filter-badges {
     padding-left: 5px;
 }
@@ -115,8 +117,6 @@
     margin: 0 1px;
     text-transform: capitalize;
 }
-
-
 
 /* configure Filter Modal */
 #modalConfigureFilter {
@@ -154,14 +154,6 @@
     margin-right: 5px;
 }
 
-
-
-
-
-
-
-
-
 /* Grid */
 .register-grid {
     background-color: #FFFFFF;
@@ -174,17 +166,60 @@
 
 .register-grid th, .register-grid td {
     border: 1px solid #e2e2e2;
-    padding: 20px 35px;
+    padding: 15px 20px;
     text-transform: capitalize;
 }
 
 .register-grid th {
     background-color: #e73d30;
     color: #FFFFFF;
+
+}
+
+.register-grid th:hover {
+    cursor: pointer;
 }
 
 .register-grid th:nth-child(even) {
-    background-color: #000000;
+    background-color: #A2A1A1;
+}
+
+.header-item {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.sort-chevron {
+    font-size: 18px;
+}
+
+.column-icon {
+    width: 65px;
+}
+
+.column-campus {
+    width: 150px;
+}
+
+.column-gender {
+    width: 115px;
+}
+
+.column-season {
+    width: 115px;
+}
+
+.column-action {
+    width: 165px;
+}
+
+.register-grid .btn {
+    width: 125px;
+}
+
+.register-grid .btn-secondary {
+    border: 1px solid #e73d30;
 }
 
 .grid-no-items {
@@ -192,18 +227,6 @@
     text-align: center;
     padding: 0 40px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* register details */
 .name-mobile {
@@ -318,9 +341,9 @@ button:focus {
         padding: 20px 10px;
         text-align: center;
     }
-
-    .grid-division {
-        width: 200px;
+    
+    .column-campus {
+        width: 95px;
     }
 }
 
@@ -347,15 +370,17 @@ button:focus {
         padding: 50px 10px;
     }
 
-    .register-grid th, .register-grid td {
-        padding: 20px 0;
+    .column-campus {
+        width: 115px;
     }
 
-    .grid-division {
-        width: 150px;
+    .column-sport {
+        min-width: 145px;
     }
 
-
+    .column-division {
+        width: 100px;
+    }
 
     /* Event Details */
 

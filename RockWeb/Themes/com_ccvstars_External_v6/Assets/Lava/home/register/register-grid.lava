@@ -33,13 +33,43 @@
     <div class="register-grid">
         <table id="tblGrid" class="hidden">
             <tr>
-                <th></th>
-                <th>Campus</th>
-                <th>Sport</th>
-                <th>Gender</th>
-                <th>Division</th>
-                <th>Season</th>
-                <th></th>
+                <th onclick="sortGrid('Sport')" class="column-icon"></th>
+                <th id="sortCampus" onclick="sortGrid('Campus')" class="column-campus">
+                    <div class="header-item">
+                        Campus
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
+                <th id="sortSport" onclick="sortGrid('Sport')" sortdirection="desc" class="column-sport">
+                    <div class="header-item">
+                        Sport
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
+                <th id="sortGender" onclick="sortGrid('Gender')" class="column-gender">
+                    <div class="header-item">
+                        Gender
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
+                <th id="sortDivision" onclick="sortGrid('Division')" class="column-division">
+                    <div class="header-item">
+                        Division
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
+                <th id="sortSeason" onclick="sortGrid('Season')" class="column-season">
+                    <div class="header-item">
+                        Season
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
+                <th class="column-action"></th>
             </tr>          
         </table>
         <div id="gridLoading" class="loading">
@@ -137,8 +167,10 @@
     // setup page
     //
 
-    // global variables
+    // global variables for desktop with default values
     var activeRegistrations = [];
+    var sortColumn = 'Sport'
+    var sortDirection = 'asc'
 
     // global variables for mobile
     var filteredMobileRegistrations = [];
@@ -146,14 +178,14 @@
     var availableMobileSports = [];
     var availableMobileCampuses = [];
     var availableMobileDivisions = [];
-    var selectedMobileSeason = "";
-    var selectedMobileCampus = "";
-    var selectedMobileSport = "";
-    var selectedMobileDivision = "";
-    var mobileState = "";
+    var selectedMobileSeason = '';
+    var selectedMobileCampus = '';
+    var selectedMobileSport = '';
+    var selectedMobileDivision = '';
+    var mobileState = '';
 
     // get active registrations
-    var getUrl = "/api/STARS/ActiveRegistrations?CalendarId=6";
+    var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
     
     $.get(getUrl, function(data, status){
         activeRegistrations = data.Data;
@@ -178,7 +210,11 @@
 
     // initialize desktop view
     function initializeGrid() {
+        // build filter options
         initializeModalFilterOptions();
+
+        // sort registrations
+        activeRegistrations.sort(compareValues(sortColumn,sortDirection));
 
         renderGrid(activeRegistrations);
     }
@@ -235,7 +271,6 @@
 
         // attach search event to text input
         $('#tbSearch').on('change keyup paste', function() {
-
             applyFilter();
         });
     }
@@ -243,7 +278,7 @@
     // initialize mobile view
     function initializeMobile() {
         // set state to season selection
-        mobileState = "SEASON";
+        mobileState = 'SEASON';
 
         renderMobile();
     }
@@ -267,7 +302,10 @@
         if (items.length !== 0) {
             // items to display
             for (let i = 0; i < items.length; i++) {
-                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season, items[i].EventOccurrenceId);
+
+                var waitListActive = items[i].SlotsAvailable === 0 && items[i].WaitListEnabled;
+
+                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season, items[i].EventOccurrenceId, waitListActive);
 
                 table.appendChild(newRow);
 
@@ -283,8 +321,23 @@
         }
 
         if ( itemsProcessed === items.length ) {
+            // set the sort icon
+            renderSortIcon();
+
             // everything has processed, hide spinner and show grid
             toggleGridLoading();
+        }
+    }
+
+    function renderSortIcon() {
+        // hide all sort icons
+        $('.sort-chevron').addClass('hidden');
+
+        // show active sort icon
+        if (sortDirection === 'asc' ) {
+            $('#sort' + sortColumn + ' .mdi-chevron-up').removeClass('hidden');
+        } else {
+            $('#sort' + sortColumn + ' .mdi-chevron-down').removeClass('hidden');
         }
     }
 
@@ -294,16 +347,16 @@
 
     function renderMobile() {
         switch (mobileState) {
-            case "CAMPUS":
+            case 'CAMPUS':
                 renderCampusSelection();             
                 break;
-            case "SPORT":
+            case 'SPORT':
                 renderSportSelection();
                 break;
-            case "DIVISION":
+            case 'DIVISION':
                 renderDivisionSelection();
                 break;
-            case "GRID":
+            case 'GRID':
                 renderRegistrationsGrid();
                 break;        
             default:
@@ -473,6 +526,18 @@
     // desktop functions
     // 
 
+    function sortGrid(newSortColumn) {
+        // change sort direction to its opposite
+        sortDirection === 'asc' ? sortDirection = 'desc' : sortDirection = 'asc';
+
+        // set the new sort column
+        sortColumn = newSortColumn;
+
+        // re-render grid by applying filter
+        applyFilter();
+    }
+
+    // by default sort by Sport column ascending
     function applyFilter() {
         // hide grid and show spinner
         toggleGridLoading();
@@ -562,21 +627,24 @@
             // with the next search term in the array
             for (let i = 0; i < searchItems.length; i++) {
                 var searchItem = searchItems[i].toLowerCase();
-
+            
                 filteredRegistrations = filteredRegistrations.filter(function(item) {
                         // convert sport to searchable text
                         var sport = item.Sport.replace('-',' ');
 
-                        if (item.Season.toLowerCase().includes(searchItem)) { return true; }
-                        if (item.Campus.toLowerCase().includes(searchItem)) { return true; }
-                        if (sport.toLowerCase().includes(searchItem)) { return true; }
-                        if (item.Gender.toLowerCase().includes(searchItem)) { return true; }
-                        if (item.Division.toLowerCase().includes(searchItem)) { return true; }                      
-                
-                    return false;
-                });
-            }
+                        // TODO: return coed options when search for gender
+                        return ( item.Season.toLowerCase().includes(searchItem) || 
+                                 item.Campus.toLowerCase().includes(searchItem) ||
+                                 sport.toLowerCase().includes(searchItem) ||
+                                 item.Division.toLowerCase().includes(searchItem) ||
+                                 item.Gender.toLowerCase().includes(searchItem)
+                            )
+                    });
+            }            
         }
+
+        // sort the registrations
+        filteredRegistrations.sort(compareValues(sortColumn,sortDirection));
 
         // rerender the grid
         renderGrid(filteredRegistrations);
@@ -602,6 +670,12 @@
         // clear badges
         $('#divFilterBadges').html('');
 
+        // reset sorting to default values and sort
+        sortColumn = 'Sport';
+        sortDirection = 'asc';
+
+        activeRegistrations.sort(compareValues(sortColumn,sortDirection));
+
         renderGrid(activeRegistrations);
     }
 
@@ -613,16 +687,16 @@
     function handleNextClick(nextState,selectedItem) {
         // set selected item based on current mobileState
         switch (mobileState) {
-            case "SEASON":
+            case 'SEASON':
                 selectedMobileSeason = selectedItem;
                 break;
-            case "CAMPUS":
+            case 'CAMPUS':
                 selectedMobileCampus = selectedItem;             
                 break;
-            case "SPORT":
+            case 'SPORT':
                 selectedMobileSport = selectedItem;
                 break;
-            case "DIVISION":
+            case 'DIVISION':
                 selectedMobileDivision = selectedItem
                 break;       
             default:
@@ -644,22 +718,22 @@
     function handleBackClick(targetState) {
         // reset selected items for intended state
         switch (targetState) {
-            case "SEASON":
+            case 'SEASON':
                 selectedMobileSeason = '';
                 selectedMobileCampus = '';
                 selectedMobileSport = '';
                 selectedMobileDivision = '';                
                 break;
-            case "CAMPUS":
+            case 'CAMPUS':
                 selectedMobileCampus = '';
                 selectedMobileSport = '';
                 selectedMobileDivision = '';                
                 break;
-            case "SPORT":
+            case 'SPORT':
                 selectedMobileSport = '';
                 selectedMobileDivision = '';   
                 break;
-            case "DIVISION":
+            case 'DIVISION':
                 selectedMobileDivision = '';   
                 break;       
             default:
@@ -677,7 +751,6 @@
 
         renderMobile();
     }
-
 
     //
     // helper functions
@@ -737,10 +810,13 @@
     }
 
     // return a table row for the desktop grid
-    function createTableRow(program, campus, gender, division, season, eventOccurrenceId) {
+    function createTableRow(program, campus, gender, division, season, eventOccurrenceId, waitListActive) {
         var row = document.createElement('tr');
 
         var sport = getSport(program);
+
+        var actionText = waitListActive ? 'Join Wait List' : 'Register';
+        var actionCSSClass = waitListActive ? 'btn btn-secondary' : 'btn btn-primary';
 
         // add column data to row
         addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport + '-red.png">');
@@ -749,7 +825,7 @@
         addCellToRow(row, gender);
         addCellToRow(row, division, 'grid-division');
         addCellToRow(row, season);
-        addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + eventOccurrenceId + '" class="btn btn-primary">More Info</a>' );
+        addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + eventOccurrenceId + '" class="' + actionCSSClass + '">' + actionText + '</a>' );
 
         return row;
     }
@@ -772,23 +848,48 @@
     function getSport(program) {
         var sport = "";
 
-        if (program.includes("baseball")) {
-            sport = "baseball";
+        if (program.includes('baseball')) {
+            sport = 'baseball';
         }
 
-        if (program.includes("basketball")) {
-            sport = "basketball";
+        if (program.includes('basketball')) {
+            sport = 'basketball';
         }
 
-        if (program.includes("football")) {
-            sport = "football";
+        if (program.includes('football')) {
+            sport = 'football';
         }
 
-        if (program.includes("soccer")) {
-            sport = "soccer";
+        if (program.includes('soccer')) {
+            sport = 'soccer';
         }
 
         return sport;
+    }
+
+    // sort array
+    function compareValues(key, order='asc') {
+        return function(a, b) {
+            // ensure property exists
+            if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+                return 0
+            }
+
+            // if property is string, convert to lowercase
+            var valueA = (typeof a[key] === 'string') ? a[key].toLowerCase() : a[key];
+            var valueB = (typeof b[key] === 'string') ? b[key].toLowerCase() : b[key];
+
+            // compare the values
+            var comparison = 0;
+
+            if (valueA > valueB) {
+                comparison = 1;
+            } else if (valueA < valueB) {
+                comparison = -1;
+            }
+
+            return ((order == 'desc') ? (comparison * -1) : comparison);
+        };
     }
 
     //
@@ -912,7 +1013,7 @@
         var buttonCSSClass = 'btn btn-primary';
 
         if (waitListActive) {
-            buttonText += " (wait list)"
+            buttonText += ' (wait list)'
             buttonCSSClass = 'btn btn-secondary';
         }
 
