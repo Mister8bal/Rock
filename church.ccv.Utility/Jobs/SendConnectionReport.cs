@@ -130,7 +130,7 @@ namespace church.ccv.Utility
                         CurrentStatus = s.ConnectionStatus.Name,
                         LastUpdated = s.ModifiedDateTime.ToString(),
                         Connector = s.ConnectorPersonAlias.Person
-                    } ).OrderBy( r => r.Person.LastName );
+                    } ).OrderBy( r => r.Person.LastName ).ToList();
 
                 mergeFields.Add( "rows", requests );
                 mergeFields.Add( "PageId", connectionPageId );
