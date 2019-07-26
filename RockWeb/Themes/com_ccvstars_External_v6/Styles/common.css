@@ -73,6 +73,10 @@ h6 {
     line-height: 24px;
 }
 
+hr {
+    border-top: 2px solid #ccc;
+}
+
 .button, html input[type="button"], input[type="reset"], input[type="submit"] {
     -webkit-appearance: button;
     cursor: pointer;

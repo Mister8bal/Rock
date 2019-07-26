@@ -1,0 +1,219 @@
+/* Zones & Sections */
+#section-feature-bg {
+    height: 946px;
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-about-us.jpg");
+    position: relative;
+}
+
+#zone-sectione {
+    max-width: 100%;
+}
+
+/* Feature */
+
+.title {
+    padding-top: 180px;
+}
+
+.title p {
+    color: #ffffff;
+}
+
+/* Content */
+
+.section-video {
+    margin-top: -450px;
+    padding-bottom: 50px;
+}
+
+.about-video {
+    height: 600px;
+    position: relative;
+}
+
+.about-content h3 {
+    color: #EA3E30;
+    padding-top: 20px;
+}
+
+.about-content p {
+    color: #333333;
+}
+
+.about-content h3 span {
+    font-weight: 400;
+}
+
+/* change font color of li bullet */
+.about-content ul {
+    list-style: none;
+    padding: 0 0 50px 14px;
+    margin-top: -10px;
+}
+  
+.about-content ul li::before {
+    content: "\2022"; 
+    color: #EA3E30;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+/* MTAG */
+.mtag-row {
+    display: flex;
+    justify-content: space-between;
+    width: 1050px;
+    height: 520px;
+    margin: 0 auto;
+    padding: 80px 0;
+}
+
+.mtag-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #EA3E30;
+    border-radius: 6px;
+    padding: 25px 40px;
+    margin-right: 15px;
+}
+
+.mtag-content span {
+    font-size: 23px;
+    line-height: 25px;
+}
+
+.mtag-content p {
+    font-size: 17px;
+    line-height: 20px;
+}
+
+.mtag-row img {
+    width: 55%;
+    height: 360px;
+    border-radius: 6px;
+}
+
+/* Locations */
+
+.locations-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.locations-title h4 {
+    color: #E73D30;
+}
+
+.locations-title p {
+    font-size: 21px;
+    color: #333333;
+}
+
+/**** Responsive Styling ****/
+@media screen and (max-width: 1439.98px) {
+    #section-feature-bg {
+        height: 590px;
+    }
+
+    .title {
+        padding-top: 90px;
+    }
+
+    .section-video {
+        margin-top: -320px;
+    }
+
+    .about-video {
+        height: 400px;
+    }
+
+    .mtag-row {
+        width: 900px;
+    }
+}
+
+/**** Tablet Styling  ****/
+@media screen and (max-width: 1023.98px) {
+    .mtag-row {
+        width: 650px;
+        height: 370px;
+        margin: 0 auto;
+        padding: 40px 0;
+    }
+
+    .mtag-content h3 {
+        font-size: 24px;
+        line-height: 26px;
+    }
+
+    .mtag-content span {
+        font-size: 17px;
+        line-height: 19px;
+    }
+
+    .mtag-content p {
+        font-size: 13px;
+        line-height: 15px;
+    }
+    
+    .mtag-row img {
+        height: 290px;
+    }
+}
+
+/**** End Tablet Styling ****/
+
+/** Mobile Styling **/
+@media screen and (max-width: 767.98px) {
+    #section-feature-bg {
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-about-us.jpg");
+        height: unset;
+    }
+
+    .section-video {
+        margin: 0 -15px;
+        padding-bottom: 15px;
+    }
+
+    .about-video {
+        height: 200px;
+    }
+
+    .about-content ul {
+        padding: 0 0 15px 14px;
+    }
+
+    .mtag-row {
+        width: 100%;
+        height: unset;
+        flex-direction: column-reverse;
+        padding: 20px 0;
+    }
+
+    .mtag-content {
+        margin-right: 0;
+    }
+
+    .mtag-row img {
+        width: unset;
+        height: 250px;
+        margin: 0 -15px 15px -15px;
+        border-radius: 0;
+    }
+
+    .locations-title {
+        padding: 10px 0;
+    }
+
+    .locations-title p {
+        font-size: 15px;
+        line-height: 17px;
+    }
+}
+
+/**** End Phone Styling ****/

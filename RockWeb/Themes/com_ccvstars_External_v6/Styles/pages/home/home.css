@@ -120,11 +120,11 @@
     background-color: #FFFFFF;
     border: solid 1px #EA3E29;
     text-decoration: none;
-    color: #EA3E29;
+    color: #EA3E30;
 }
 
 .btn-info:active {
-    color: #EA3E29;
+    color: #EA3E30;
     background-color: #FFFFFF;
     border: solid 1px #FFFFFF;
     text-decoration: none;
@@ -247,13 +247,16 @@
 /** Mobile Styling **/
 @media screen and (max-width: 767.98px) {
     #section-feature-bg {
-        height: unset;
+        height: 90px;
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-home.jpg");
     }
 
-    #section-feature-bg {
-        height: 340px;
-        z-index: 999;
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-home.jpg");
+    #zone-sectiona {
+        margin: 0;
+    }
+
+    .image-top, .image-middle-left, .image-middle-right, .image-bottom {
+        border-radius: 0;
     }
 
     .locations-title {
@@ -275,7 +278,7 @@
     }
 
     .top-and-bottom-container {
-        margin-top: -250px;
+        margin-top: 0;
     }
 
     .image-top {
