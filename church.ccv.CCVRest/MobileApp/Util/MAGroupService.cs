@@ -345,7 +345,7 @@ namespace church.ccv.CCVRest.MobileApp
                 return true;
             }
 
-            if( g.GroupCapacity <= g.Members.Count() )
+            if( g.GroupCapacity < g.Members.Count() )
             {
                 return true;
             }
