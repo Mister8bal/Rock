@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Common;
 using Quartz;
 
 using Rock;
@@ -129,7 +130,7 @@ namespace church.ccv.Utility
                         CurrentStatus = s.ConnectionStatus.Name,
                         LastUpdated = s.ModifiedDateTime.ToString(),
                         Connector = s.ConnectorPersonAlias.Person
-                    } ).OrderBy( r => r.Person.LastName ).ToList();
+                    } ).OrderBy( r => r.Person.LastName );
 
                 mergeFields.Add( "rows", requests );
                 mergeFields.Add( "PageId", connectionPageId );
@@ -142,8 +143,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -217,8 +218,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -292,8 +293,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -367,8 +368,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -442,8 +443,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -517,8 +518,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -592,8 +593,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
@@ -667,8 +668,8 @@ namespace church.ccv.Utility
                         emailMessage.AddRecipient( new RecipientData( email, mergeFields ) );
                     }
                     emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
-                    emailMessage.FromEmail = systemEmail.FromName;
-                    emailMessage.FromName = systemEmail.From;
+                    emailMessage.FromEmail = systemEmail.From;
+                    emailMessage.FromName = systemEmail.FromName;
                     emailMessage.Subject = systemEmail.Subject;
                     emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                     emailMessage.CreateCommunicationRecord = true;
