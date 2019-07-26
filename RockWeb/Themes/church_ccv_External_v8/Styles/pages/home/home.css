@@ -186,10 +186,9 @@
 
 
 /* Campus Cards Section */
-#section-b-bg {
-    background-color: #000;
+#section-c-bg {
+    background-color: #000000;
 }
-
 .campuses-cards {
     padding: 30px 0;
 }
@@ -302,6 +301,11 @@
 /* End Campus Cards Section */
 
 /* About Church Section */
+
+#section-b-bg {
+    background-color: #ffffff;
+}
+
 .about-church {
     display: flex;
     justify-content: space-between;
