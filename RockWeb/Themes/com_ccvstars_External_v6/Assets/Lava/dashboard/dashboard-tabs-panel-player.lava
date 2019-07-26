@@ -3,45 +3,124 @@
     {% include '~~/Assets/Lava/dashboard/dashboard-tabs-panel-player.lava' %}
 {% endcomment %}
 
+{% assign isCoach = false %}
 
-{% for group in Groups %}
-    {% assign groupid = group.Group.Id %}
-    {% groupmember where:'GroupId == {{groupid}}' %}
-        {% for groupMemberItem in groupmemberItems %}
-            {% if groupMemberItem.GroupRole.Name == 'Coach' %}
-                {% assign coach = groupMemberItem %}
-            {% else if groupMemberItem.GroupRole.Name == 'Assistant Coach' %}
-                {% assign assistantCoach = groupMemberItem %}    
-            {% endif %}
-        {% endfor %}
-    {% endgroupmember %}
-{% endfor %}
+
+<!-- Get all Youth Sports teams tied to Current Person -->
+
+<!--{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
+{% for group in currentPersonGroups %}
+    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" or group.GroupRole.Name == "Team Manager" %}
+        {% assign isCoach = true %}
+    {% endif %}
+{% endfor %} -->
+
+
+
 
 <!-- Now check for children teams -->	
 {% assign children = CurrentPerson | Children %}
 
-{% assign groupCount = Groups | Size %}
+{% assign childrenToDisplay = false %}
 
-{% if groupCount > 0 %}
-    <div class="desktop-view">
-        <!-- Desktop View Table -->	
-        <table class="desktop-view-table">
-            <tr class="desktop-view-table-row">
-                <th>Player</th>
-                <th>Sport</th>
-                <th>Coach</th>
-                <th>Color</th>
-                <th>Practice Days</th>
-                <th>Practice Time</th>
-                <th>Team Toolbox</th>
-            </tr>
+<div class="desktop-view">
+    <!-- Desktop View Table -->	
+    <table class="desktop-view-table">
+        <tr class="desktop-view-table-row">
+            <th></th>
+            <th>Player</th>
+            <th>Sport</th>
+            <th>Coach</th>
+            <th>Color</th>
+            <th>Practice Day/Time</th>
+            <th></th>
+        </tr>
 
-            <!-- Loop through children in family -->
-            {% for child in children %}
-                {% assign childGroups = child | Groups:'73','Active' %}
-                
+        <!-- Loop through children in family -->
+        {% for child in children %}
+            {% assign childGroups = child | Groups:'73','Active' %}
+            
+            {% assign groupCount = childGroups | Size %}
+
+            <!-- If child is part of more than one group  -->
+            {% if groupCount > 0 %}
+                {% assign childrenToDisplay = true %}
+                <!-- Loop through teams for each child (if any) -->
+                {% for childGroup in childGroups %}
+                    <!-- Get all Youth Sports teams tied to Current Person -->
+                    {% groupmember where:'GroupId == {{childGroup.Group.Id}}' %}
+                        {% for groupmemberItem in groupmemberItems %}
+                            {% if groupmemberItem.GroupRole.Name == 'Coach' %}
+                                {% assign coach = groupmemberItem %}
+                                {% if coach.Person.Id == CurrentPerson.Id %}
+                                    {% assign isCoach = true %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endgroupmember %}
+
+                    {% assign color = childGroup.Group | Attribute:'Color' %}
+                    {% assign practiceDays = childGroup.Group | Attribute:'PracticeDays' %}
+                    {% assign practiceTime = childGroup.Group | Attribute:'PracticeTime' %}
+                    
+                    <!-- Get campus that sport is hosted at -->
+                    {% assign campus = Campuses | Where: 'Id', childGroup.Group.CampusId %}
+                    
+                    <!-- get sport sport icons -->            
+                    {% assign sportName = childGroup.Group | Attribute:'Sport' %}
+
+                    {% if sportName contains 'Soccer' %}
+                        {% assign sportIcon = 'soccer' %}
+                    {% else if sportName contains 'Basketball' %} 
+                        {% assign sportIcon = 'basketball' %}
+                    {% else if sportName contains 'Football' %} 
+                        {% assign sportIcon = 'football' %}
+                    {% else if sportName contains 'Baseball' %}  
+                        {% assign sportIcon = 'baseball' %}
+                    {% endif %}
+
+                    {% if childGroup.Group.IsPublic and childGroup.IsLeader != true %}
+                        <tr class="desktop-view-table-row">
+                            <td><img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{sportIcon}}-red.png"></td>
+                            <td>{{ child.FullName }}</td>
+                            <td>{{ childGroup.Group | Attribute:'Sport' }}</td>
+                            <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
+                            <td>{{ color }}</td>
+                            <td>{{ practiceDays }} {{ practiceTime }}</td>
+                            <td><a type="button" class="btn btn-primary" href="team-toolbox/{{ LinkedPages.DetailPage }}?GroupId={{childGroup.Group.Id}}&campus={{campus}}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&paguid={{ child.PrimaryAlias.Guid }}">TEAM TOOLBOX</a></td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        {% if childrenToDisplay == false %}
+            <tr><td colspan="7"><h3 class="no-groups-text">Currently No Children On A Team</h3></td></tr> 
+        {% endif %}       
+    </table>
+</div>    
+
+    <div class="mobile-view">
+        <!-- Loop through children in family -->
+        {% for child in children %}
+            {% assign childGroups = child | Groups:'73','Active' %}
+
+            {% assign groupCount = childGroups | Size %}
+
+            {% if groupCount > 0 %}
                 <!-- Loop through teams for each child (if any) -->
                 {% for group in childGroups %}
+                    {% groupmember where:'GroupId == {{group.Group.Id}}' %}
+                        {% for groupmemberItem in groupmemberItems %}
+                            {% if groupmemberItem.GroupRole.Name == 'Coach' %}
+                                {% assign coach = groupmemberItem %}
+                                {% if coach.Person.Id == CurrentPerson.Id %}
+                                    {% assign isCoach = true %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endgroupmember %}
+
+
                     {% assign color = group.Group | Attribute:'Color' %}
                     {% assign practiceDays = group.Group | Attribute:'PracticeDays' %}
                     {% assign practiceTime = group.Group | Attribute:'PracticeTime' %}
@@ -49,99 +128,59 @@
                     <!-- Get campus that sport is hosted at -->
                     {% assign campus = Campuses | Where: 'Id', group.Group.CampusId %}
                     
-                    {% if sportName contains 'soccer' %}
-                        {% assign sportIcon = 'soccer' %}
-                    {% else if sportName contains 'basketball' %} 
-                        {% assign sportIcon = 'basketball' %}
-                    {% else if sportName contains 'football' %} 
-                        {% assign sportIcon = 'football' %}
-                    {% else if sportName contains 'baseball' %}  
-                        {% assign sportIcon = 'baseball' %}
-                    {% else if sportName contains 'golf' %}
-                        {% assign sportIcon = 'golf' %}
-                    {% else %}
-                    {% endif %}
-
                     {% if group.Group.IsPublic and group.IsLeader != true %}
-                        <tr class="desktop-view-table-row">
-                            <td>{{ child.FullName }}</td>
-                            <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{sportIcon}}-red.png">{{ group.Group | Attribute:'Sport' }}</td>
-                            <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
-                            <td>{{ color }}</td>
-                            <td>{{ practiceDays }}</td>
-                            <td>{{ practiceTime }}</td>
-                            <td><a href="team-toolbox/{{ LinkedPages.DetailPage }}?GroupId={{group.Group.Id}}&campus={{campus}}&Sport={{ group.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">TEAM TOOLBOX</a></td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </table>
-    </div>    
+                        <div class="faq-section">
+                            <div id="accordion" class="faq-list" role="tablist">
+                                <div class="card">
+                                    <div class="card-header" role="tab" id="heading3">
+                                        <h5 class="mb-0"><i class="fa-border fa-pull-left" data-toggle="collapse" href="#kk{{forloop.index}}" role="button" aria-expanded="false" aria-controls="collapse{{forloop.index}}"></i>
+                                            <a class="dropdown-toggle select-dropdown-button" data-toggle="collapse" href="#kk{{forloop.index}}" role="button" aria-expanded="false" aria-controls="collapse{{forloop.index}}">
+                                            <strong>{{ child.FullName }}<b class="fa fa-caret-down"></b></strong>
+                                            </a>
+                                        </h5>
+                                    </div>
 
-    <div class="mobile-view">
-        <!-- Loop through children in family -->
-        {% for child in children %}
-            {% assign childGroups = child | Groups:'73','Active' %}
-
-            <!-- Loop through teams for each child (if any) -->
-            {% for group in childGroups %}
-                {% assign color = group.Group | Attribute:'Color' %}
-                {% assign practiceDays = group.Group | Attribute:'PracticeDays' %}
-                {% assign practiceTime = group.Group | Attribute:'PracticeTime' %}
-                
-                <!-- Get campus that sport is hosted at -->
-                {% assign campus = Campuses | Where: 'Id', group.Group.CampusId %}
-                
-                {% if group.Group.IsPublic and group.IsLeader != true %}
-                    <div class="faq-section">
-                        <div id="accordion" class="faq-list" role="tablist">
-                            <div class="card">
-                                <div class="card-header" role="tab" id="heading3">
-                                    <h5 class="mb-0"><i class="fa-border fa-pull-left" data-toggle="collapse" href="#kk{{forloop.index}}" role="button" aria-expanded="false" aria-controls="collapse{{forloop.index}}"></i>
-                                        <a data-toggle="collapse" href="#kk{{forloop.index}}" role="button" aria-expanded="false" aria-controls="collapse{{forloop.index}}">
-                                        <strong>{{ child.FullName }}</strong>
-                                        </a>
-                                    </h5>
-                                </div>
-
-                                <div id="kk{{forloop.index}}" class="collapse" role="tabpanel" aria-labelledby="heading33" data-parent="#accordion">
-                                    <div class="card-body">        
-                                        <!-- Mobile View Table -->	
-                                        <table class="player-mobile-view-table">
-                                            <tr>
-                                                <th class="row-mobile-header">Sport</th>
-                                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{sportIcon}}-red.png">{{ group.Group | Attribute:'Sport' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="row-mobile-header">Coach</th>
-                                                <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="row-mobile-header">Color</th>
-                                                <td>{{ color }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="row-mobile-header">Practice Days</th>
-                                                <td>{{ practiceDays }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="row-mobile-header">Practice Time</th>
-                                                <td>{{ practiceTime }}</td>
-                                            </tr>
-                                            <tr class="last">
-                                                <th class="row-mobile-header" colspan="2"> <a type="button" class="btn btn-primary blue" href="team-toolbox/{{ LinkedPages.DetailPage }}?GroupId={{group.Group.Id}}&campus={{campus}}&Sport={{ group.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">TEAM TOOLBOX</a><th>
-                                            </tr>
-                                        </table>  
+                                    <div id="kk{{forloop.index}}" class="collapse" role="tabpanel" aria-labelledby="heading33" data-parent="#accordion">
+                                        <div class="card-body">        
+                                            <!-- Mobile View Table -->	
+                                            <table class="player-mobile-view-table">
+                                                <tr>
+                                                    <th class="row-mobile-header red">Sport</th>
+                                                    <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{sportIcon}}-red.png">{{ group.Group | Attribute:'Sport' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="row-mobile-header gray">Coach</th>
+                                                    <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="row-mobile-header red">Color</th>
+                                                    <td>{{ color }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="row-mobile-header gray">Practice Days</th>
+                                                    <td>{{ practiceDays }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="row-mobile-header red">Practice Time</th>
+                                                    <td>{{ practiceTime }}</td>
+                                                </tr>
+                                                <tr class="last">
+                                                    <th class="row-mobile-header" colspan="2"> <a type="button" class="btn btn-primary blue" href="team-toolbox/{{ LinkedPages.DetailPage }}?GroupId={{group.Group.Id}}&campus={{campus}}&Sport={{ group.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&paguid={{ child.PrimaryAlias.Guid }}">TOOLBOX</a><th>
+                                                </tr>
+                                            </table>  
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>        
-                {% endif %}
-            {% endfor %}
+                        </div>        
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         {% endfor %} 
-    </div>                        
-      
-{% else %}
-     <h1>No Groups Available To List</h1>                   
-{% endif %}
+
+        {% if childrenToDisplay == false %}
+            <h3 class="no-groups-text">Currently No Children On A Team</h3>
+        {% endif %}       
+
+    </div>  
+                       

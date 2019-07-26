@@ -2,11 +2,18 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-tabs-panels.lava' %}
 {% endcomment %}
 
+{% if practiceMap == "" %}
+    {% assign practiceMap = "No map to display." %}
+{% endif %}
 <div id="practice-schedule-panel" class="practice-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             <div class="left">
-                <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
+                {% if practiveMap != null %}
+                    <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
+                {% else %}
+                    <p>No Map To Display.</p>
+                {% endif %}    
             </div>
             <div class="right">
                 <h3>Practice Schedule</h3> 
@@ -21,7 +28,11 @@
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             <div class="left">
-                <img class="rounded-edge-img img-responsive" src="{{ gameMap }}" alt="{{ item.Title }}"> 
+                {% if gameMap != "" %}
+                    <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
+                {% else %}
+                    <p>No Map To Display.</p>
+                {% endif %}   
             </div>
             <div class="right">
                 <h3>Game Schedule</h3> 

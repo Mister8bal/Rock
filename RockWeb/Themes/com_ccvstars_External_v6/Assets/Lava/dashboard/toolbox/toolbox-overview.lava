@@ -2,8 +2,11 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-overview.lava' %}
 {% endcomment %}
 
-{% comment %} Get the teams Coach and assign isCoach to true {% endcomment %}
 
+{% comment %} Get the target person {% endcomment %}
+{% assign personChild = PageParameter.paguid | PersonByAliasGuid %}
+
+{% comment %} Get the teams Coach and assign isCoach to true {% endcomment %}
 {% assign isCoach = false %}
 {% assign isAssistantCoach = false %}
 
@@ -32,7 +35,7 @@
 
 <div class="person-summary">
     <div class="person-details">
-        <h2>Player Name?</h2>
+        <h2>{{ personChild.FullName }}</h2>
         <div class="person-details-row">
             <div class="person-details-item">
                 <h6>Practice Day(s)</h6>
@@ -87,7 +90,7 @@
         <!-- if currentperson is the coach, show dropdown with other teams that currentperson coaches (if any) -->
         {% if isCoach == "true" or isAssistantCoach == "true" %}
             <div class="teams-dropdown">
-                <button id="btnTeamsSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
                 <ul class="dropdown-menu">
                     {% for group in currentPersonGroups %}
                         <!-- Get campus that sport is hosted at -->
@@ -104,7 +107,7 @@
 
             <!-- if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down. -->
             <div class="teams-dropdown">
-                <button id="btnTeamsSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Select Child<b class="fa fa-caret-down"></b></button>
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ personChild.FullName }}<b class="fa fa-caret-down"></b></button>
                 <!-- Loop through children in family -->
                 {% for child in children %}
                     <!-- Get child groups of youth sports type -->
@@ -114,7 +117,7 @@
                         {% for group in childGroups %}
                             <!-- Check to see if group is active and currentperson is not the leader (coach) of group -->
                             {% if group.Group.IsPublic and group.IsLeader != true %}
-                                <li><a href="{{ LinkedPages.DetailPage }}?GroupId={{group.Group.Id}}&campus={{campus}}&Sport={{ group.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ child.FullName }}</a></li>
+                                <li><a href="{{ LinkedPages.DetailPage }}?GroupId={{group.Group.Id}}&campus={{campus}}&Sport={{ group.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&paguid={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>

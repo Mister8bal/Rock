@@ -85,7 +85,7 @@ h3 {
 }
 
 .person-head-button {
-    margin: 0 400px;
+    margin: 0 40% 5%;
 }
 
 .person-add-buttons {
@@ -136,7 +136,22 @@ h3 {
     font-weight: bold;
 }
 
+.nextstep-modal-baptism-buttons-person-profile {
+    display: none;
+}
+
 /* End Person Info */
+
+
+/**** Large Laptop Styling  ****/
+@media screen and (max-width: 1440px) {
+    .person-head-button {
+        margin: 0 36% 5%;
+    }
+}
+
+/**** Large Laptop Styling  ****/
+
 
 
 /**** Tablet Styling  ****/
@@ -169,7 +184,7 @@ h3 {
     }
 
     .person-head-button {
-        margin: 0;
+        margin: 0 34% 5%;
     }
     
     .person-edit-buttons {
@@ -242,6 +257,10 @@ h3 {
 
     .person-head-row {
         padding: 10% 16px;
+    }
+
+    .person-head-button {
+        margin: 0 5% 10%;
     }
 
     .person-head-name {

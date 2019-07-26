@@ -84,44 +84,10 @@ table {
     text-align: center;
 }
 
-th {
-    text-align: center;
-    padding: 10px;
-}  
-
-table tr:nth-child(even) {
-    background-color: #f7f7f7;
-}
-
-table tr:nth-child(odd) {
-    background-color: #fff;
-}
-
-table, th, td {
-    border: 2px solid rgb(224, 224, 224);
-    border-collapse: collapse;
-}
-
-td, th {
-    padding: 5px;
-}
-
-td {
-    width: 200px;
-}
 
 #player-panel, #coach-panel {
     padding: 25px 20px 20px 20px;
     background-color: #efefef;
-}
-
-td a {
-    color: #308fc8;
-}
-
-a:hover, a:focus {
-    color: #308fc8;
-    text-decoration: underline;
 }
 
 /* End Person Info */
@@ -130,6 +96,20 @@ a:hover, a:focus {
 /* Start Table */
 .desktop-view-table {
     width: 100%;
+}
+
+.desktop-view-table th, .desktop-view-table td {
+    padding: 20px 35px;
+}
+
+.desktop-view-table th:nth-child(even) {
+    background-color: #A0A0A0;
+    color: #ffffff;
+}
+
+.desktop-view-table th:nth-child(odd) {
+    background-color: #E73D30;
+    color: #ffffff;
 }
 
 .player-mobile-view-table {
@@ -164,10 +144,31 @@ td > a > img {
     margin: 0 10px;
 }
 
+table, th, td {
+    border: 2px solid rgb(224, 224, 224);
+    border-collapse: collapse;
+    text-align: center;
+}
+
+a:hover, a:focus {
+    text-decoration: none;
+}
+
+.no-groups-text {
+    text-align:center;
+    color:#E73D30;
+    font-weight:700;
+}
+
 /* End Table */
 
 
 /* Overrides */
+
+.card {
+    margin-bottom: 0px;
+    border: none;
+}
 
 .tabbed-panel-view-cards {
     background-color: #ffffff;
@@ -177,7 +178,7 @@ td > a > img {
     color: #000000;
 }
 
-h5 {
+.item-headers h5 {
     font-size: 16px;
     line-height: 18px;
     font-weight: 900;
@@ -186,7 +187,53 @@ h5 {
     text-align: left;
 }
 
+.select-dropdown-button {
+    border: 1px solid #dddddd;
+}
+
+.recent-registrations {
+    padding: 5% 0;
+}
+
+.recent-registrations h3 {
+    color: #E73D30;
+}
+
+.recent-registrations .title {
+    padding-top: 0;
+    text-align: left;
+}
+
+.links a {
+    color: #000000;
+}
+
+.links a:hover, .links a:active, .links a:focus  {
+    color: #656363;
+}
+
 /* End Overrides */
+
+
+/**** Laptop Sytling  ****/
+@media screen and (max-width: 1439.98px) {
+    .desktop-view-table th, .desktop-view-table td {
+        padding: 20px 10px;
+        text-align: center;
+    }
+}
+
+/**** End Laptop Sytling  ****/
+
+
+/**** Tablet Sytling  ****/
+/* Reduce by 40% */
+@media screen and (max-width: 1023.98px) {
+    .desktop-view-table th, .desktop-view-table td {
+        padding: 20px 0;
+    }
+}
+/**** End Tablet Sytling  ****/
 
 
 /**** Phone Styling ****/
@@ -215,11 +262,25 @@ h5 {
         padding: 20px;
     }
 
+    .tab {
+        padding: 13px 23px;
+        width: 50%;
+    }
+
+    .mobile-items {
+        width: 100%;
+        display: flex;
+    }
+    
     /* End Overrides */
 
     /* Person Info */
     .person-details-item {
         width: 100%;
+    }
+
+    .person-row p {
+        font-size: 13px;
     }
 
     .item-headers {
@@ -262,10 +323,22 @@ h5 {
         border: 1px solid rgb(224, 224, 224);
     }
 
+    .player-mobile-view-table td {
+        background-color: #ffffff;
+    }
+
+    .coach-mobile-view-table td {
+        background-color: #ffffff;
+    }
+
+    td, th {
+        padding: 12px 0;
+    }
+
     .desktop-view-table {
         display: none;
     }
-    
+
     .player-mobile-view-table {
         display: block;
     }
@@ -282,10 +355,10 @@ h5 {
         display: block;
     }
     
-    .mobile-view-table td {
-        border: 1px solid rgb(224, 224, 224);
-        border-right: none;
-        padding-left: 25%;
+    .player-mobile-view-table, .coach-mobile-view-table {
+        border-top: none;
+        border-left: none;
+        border-bottom: none;
     }
 
     td {
@@ -293,8 +366,8 @@ h5 {
     }
 
     .last th {
-        border: none;
-        padding: 0 10px;
+        border: 1px solid rgb(224, 224, 224);
+        padding: 12px 0;
     }
 
     .dashboard-table-row {
@@ -318,12 +391,6 @@ h5 {
         border: none;
     }
 
-    .blue {
-        color: #ffffff;
-        background-color: #418aca;
-        border-color: #418aca;
-    }
-
     .mobile-items .tab-selected {
         background-color: #E73D30;
         color: #ffffff !important;
@@ -333,9 +400,30 @@ h5 {
         color: #EA3E29;
     }
 
+    .card-header h5 {
+        font-weight: 700;
+        padding: 0;
+    }
+
+    .red {
+        background-color: #E73D30;
+        color: #ffffff;
+        width: 25%;
+        border-radius: 2px;
+    }
+
+    .gray {
+        background-color: #A0A0A0;
+        color: #ffffff;
+        width: 25%;
+        border-radius: 2px;
+    }
+
+    .sport-icon {
+        margin: 0 10px;    
+    }
+
     /* End Table */
 }
-
-
 
 /**** End Phone Styling ****/

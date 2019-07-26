@@ -32,9 +32,9 @@
         <div class="tabbed-panel-view-mobile">
             <div class="mobile-items">
                 <div class="select-dropdown">
-                    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Toolbox</h6><b class="fa fa-caret-down"></b></button>
+                    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Players</h6><b class="fa fa-caret-down"></b></button>
                     <ul class="dropdown-menu">
-                        <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Toolbox</div></li>
+                        <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Players</div></li>
                         {% if isCoach == "true" %}
                             <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
                         {% endif %}
@@ -51,7 +51,7 @@
 <div class="tabbed-panel-view-cards">
     <div class="tabbed-panel-view-desktop">
         <div class="tabs">
-            <div id="players-button" class="tab" onClick="linkClicked(this, 'players')">Toolbox</div>
+            <div id="players-button" class="tab" onClick="linkClicked(this, 'players')">Players</div>
             {% if isCoach == "true" %}
                 <div id="contact-team-button" class="tab" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
             {% endif %}

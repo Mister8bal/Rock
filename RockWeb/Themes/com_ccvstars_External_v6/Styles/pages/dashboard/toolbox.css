@@ -71,14 +71,14 @@ strong {
     display: none;
 }
 
-.header {
-    height: 80px;
-}
-
 .tab {
     font-size: 24px;
     line-height: 26px;
     padding: 10px 20px;
+}
+
+.tabbed-panel-view-cards .header {
+    height: 70px;
 }
 
 /* End Overrides */
@@ -124,7 +124,7 @@ strong {
     line-height: 18px;
     font-weight: 900;
     color: #000000;
-    text-transform: capitalize;
+    text-transform: none;
     text-align: left;
 }
 
@@ -155,11 +155,30 @@ strong {
     border: 1px solid #e0e0e0;
 }
 
+#btnTeamsSelect {
+    padding: 22px 5px;
+    border: none;
+    border-right: 1px solid #dddddd;
+    border-radius: 0px;
+    font-size: 18px;
+    line-height: 20px;
+    font-family: akrobat;
+    font-weight: 900;
+    color: #EA3E29;
+    text-transform: capitalize;
+}
+
+.no-groups-text {
+    text-align:center;
+    color:#E73D30;
+    font-weight:700;
+}
+
 /* End Person Info */
 
 /* Panels */
 #players-panel {
-    padding: 0 30px;
+    padding: 0 15px;
 }
 
 .player-image img {
@@ -182,6 +201,10 @@ strong {
     width: 45%;
     display: flex;
     padding-bottom: 10px;
+}
+
+.player-info {
+    font-size: 13px;
 }
 
 .player-info h6 {
@@ -243,6 +266,10 @@ strong {
         line-height: 34px;
     }
 
+    #btnTeamsSelect {
+        padding: 18px 5px;
+    }
+
     /* End Overrides */
 
     /* Panels */
@@ -260,4 +287,3 @@ strong {
 }
 
 /**** End Phone Styling ****/
-
