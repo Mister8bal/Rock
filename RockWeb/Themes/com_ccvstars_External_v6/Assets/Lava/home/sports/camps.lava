@@ -11,7 +11,7 @@
         <div class="camps-row">
             <h3>{{ item.Title }} </h3> 
             <p class="camp-heading">{{ item.Headline | Default:'Please join us for this seasons camps.' }}</p>
-            <p>{{ item.Content }} </p> 
+            <p>{{ item.CampSummary }} </p> 
             {% if registerLink != '' %}
                 <div class="btn-row">
                     <a class="btn btn-primary" href="{{ registerLink }}">Register</a>

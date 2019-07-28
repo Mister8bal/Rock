@@ -3,6 +3,10 @@
     min-height: 300px;
 }
 
+.title {
+    padding-top: 120px;
+}
+
 #pnlSportDetails {
     margin-bottom: 115px;
 }
@@ -61,16 +65,6 @@
     padding-bottom: 15px;
 }
 
-.right a {
-    color: #1ea0d4;
-    text-decoration: none;
-    font-family: heebo;
-    font-size: 26px;
-    line-height: 29px;
-    font-weight: 400;
-    padding-bottom: 30px; 
-}
-
 .rules-panel object {
     min-height: 600px;
 }
@@ -82,6 +76,14 @@
 
 #pdfRulesDownload {
     display: none;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 .mobile-register {
@@ -103,6 +105,16 @@
     padding-top: 20px;
 }
 
+.btn-secondary {
+    padding: 15px 0;
+    margin: 20px 5px;
+    border-radius: 6px;
+    font-size: 20px;
+    line-height: 22px;
+    font-weight: 800;
+    width: 250px;
+}
+
 /* End Overrides */
 
 /**** Responsive Styling ****/
@@ -118,6 +130,9 @@
 
 /**** Tablet Styling ****/
 @media screen and (max-width: 1023.98px) {
+    .title {
+        padding-top: 75px;
+    }
     .sport-title h3 {
         padding: 25px 0 15px 0;
     }
@@ -127,6 +142,10 @@
         line-height: 32px;
         font-weight: 400;
         padding-bottom: 45px;
+    }
+
+    .left-and-right-container {
+        flex-direction: column-reverse;
     }
 
     .left-and-right-container .left {
@@ -140,12 +159,20 @@
     .left-and-right-container .right {
         align-items: flex-start;
     }
+    
+    .btn-secondary {
+        width: 100%;
+    }
 }
 
 /* End Tablet Styling */
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {
+    .title {
+        padding-top: 17.5px;
+    }
+
     #pnlSportDetails {
         margin-bottom: 0;
     }
@@ -189,7 +216,19 @@
 
     .mobile-register {
         display: flex;
-        margin: -30px 20px 20px 20px;
+        margin: 20px;
         padding: 15px 0;
+    }
+
+    .right h3 {
+        width: 100%;
+    }
+
+    #pdfRules {
+        display: none;
+    }
+
+    #pdfRulesDownload {
+        display: flex;
     }
 }

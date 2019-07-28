@@ -118,7 +118,7 @@ hr {
     border-radius: 6px;
 }
 
-.btn-primary:hover, .btn-primary:active, .btn-register:hover, .btn-register:active {
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-register:hover, .btn-register:active, .btn-register:focus {
     background-color: #FFFFFF;
     border: solid 1px #E73D30;
     text-decoration: none;
@@ -528,7 +528,7 @@ a:focus {
     text-transform: uppercase;
 }
 
-.right p {
+.right p, .left p {
     color: #333333;
     font-size: 17px;
     line-height: 24px;
@@ -574,9 +574,9 @@ a:focus {
     max-width: 50%;
 }
 
-.right h3, .right p {
+/* .right h3, .right p {
     width: 650px;
-}
+} */
 
 .left-and-right-container .rounded-edge-img {
     border-radius: 5px;
@@ -682,10 +682,6 @@ a:focus {
 }
 
 /* Select Sytle Dropdown */
-.summer-camps-mobile {
-    display: none;
-}
-
 .select-dropdown-button {
     padding: 8px 20px 8px 25px;
     background-color: #FFFFFF;
@@ -723,10 +719,14 @@ a:focus {
 }
 
 /* Summer Camps Section */
+.summer-camps-mobile {
+    display: none;
+}
+
 .summer-camps-row {
-    padding-bottom: 90px;
     display: flex;
     justify-content: center;
+    padding-top: 45px;
 }
 
 .summer-camps-row .rectangle {
@@ -736,6 +736,7 @@ a:focus {
     justify-content: center;
     align-items: center;
     width: 1375px;
+    padding: 15px;
 }
 
 .summer-camps-row .rectangle button {
@@ -747,14 +748,28 @@ a:focus {
     font-size: 22px;
     line-height: 16px;
     padding: 8px 20px;
-    margin: 38px 0;
     margin-left: 50px;
 }
 
 .summer-camps-row .select-dropdown .dropdown-menu {
-    margin-top: -37px;
     margin-left: 50px;
 }
+
+.summer-camps-row .btn-secondary {
+    min-width: unset;
+    width: 200px;
+    max-width: 200px;
+    margin-left: 50px;
+}
+
+.summer-camps-row .btn-secondary h6 {
+    color: #E73D30;
+}
+
+.summer-camps-row .btn-secondary h6:hover {
+    color: #FFFFFF;
+}
+
 
 /* Map Section */
 .our-campuses-map-window {
@@ -1231,10 +1246,6 @@ a:focus {
         line-height: 17px;
     }
 
-    .summer-camps-row {
-        padding-bottom: 63px;
-    }
-
     .summer-camps-row .rectangle button {
         margin: 27px 0;
         margin-left: 50px;
@@ -1365,6 +1376,10 @@ a:focus {
     }
 
     /* Summer camp */
+    .summer-camps-row {
+        padding-top: 25px;
+    }
+
     .summer-camps-row .rectangle {
         justify-content: space-evenly;
     }
@@ -1578,6 +1593,12 @@ a:focus {
         width: 100%;
     }
 
+    .left-and-right-container .btn-row a {
+        width: 100%;
+        max-width: 100%;
+        margin-right: 0;
+    }
+
     .select-dropdown, .select-dropdown-button {
         width: 100%;
         display: flex;
@@ -1617,8 +1638,14 @@ a:focus {
     }
 
     /* summer camps dropdown */
+    .summer-camps-row .btn-secondary {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+    }
+
     .summer-camps-row {
-        padding: 0 8.5px;
+        padding: 25px 0 0 0;
     }
 
     .summer-camps-row .rectangle {

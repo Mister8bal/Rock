@@ -214,16 +214,16 @@
             result += '<div class="sports-offered">'
                 if ( campusSports.length > 0 ) {
                     if (campusSports.includes("baseball")) {
-                        result += '<a href="/baseball-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/baseball-red.png"></a>'
+                        result += '<a href="/baseball-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/baseball-red.png"></a>'
                     }
                     if (campusSports.includes("basketball")) {
-                        result += '<a href="/basketball-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png"></a>'
+                        result += '<a href="/basketball-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png"></a>'
                     }
                     if(campusSports.includes("football")) {
-                        result += '<a href="/football-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
+                        result += '<a href="/football-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
                     }
                     if (campusSports.includes("soccer")) {
-                        result += '<a href="/soccer-v2?Campus=' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
+                        result += '<a href="/soccer-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
                     }
                 } else {
                     result += '<p>No sports currently offered</p>'

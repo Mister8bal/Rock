@@ -1,16 +1,41 @@
-{% comment %} TODO: Add defaults so something always shows {% endcomment %}
+{% comment %}
+    {% assign practiceMap = "" %}
+    {% assign practiceSchedule = "" %}
+    {% assign gameMap = "" %}
+    {% assign gameSchedule = "" %}
+    {% assign seasonCalendar = "" %}
+    {% assign rules = "" %}
+
+    {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
+{% endcomment %}
 
 <div id="practice-panel">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
-            <div class="left">
-                <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}" alt="{{ item.Title }}"> 
-            </div>
-            <div class="right">
-                <h3>Practice Schedule</h3> 
-                <a href="{{ seasonCalendar }}">Season Calendar</a> 
-                <a href="{{ practiceSchedule }}">Practice Schedule </a> 
-            </div>
+            {% if practiceMap != "" or seasonCalendar != "" or practiceSchedule != "" %}
+                <div class="left">
+                    {% if practiceMap != "" %}
+                        <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}">
+                    {% else %}
+                        <p class="placeholder">Practice Map Unavailable</p>
+                    {% endif %}
+                </div>
+                <div class="right">
+                    {% if seasonCalendar != "" or practiceSchedule != "" %}
+                        <h3>Practice Schedule</h3>
+                        {% if seasonCalendar != "" %}
+                            <a href="{{ seasonCalendar }}" class="btn btn-secondary">Season Calendar</a>
+                        {% endif %}
+                        {% if practiceSchedule != "" %}
+                            <a href="{{ practiceSchedule }}" class="btn btn-secondary">Practice Schedule </a>
+                        {% endif %}
+                    {% else %}
+                        <p class="placeholder">Practice Schedule Unavailable</p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p class="placeholder">Practice Map and Schedule Unavailable</p>
+            {% endif %}
         </div>
     </div>     
 </div>
@@ -18,23 +43,45 @@
 <div id="game-panel" class="game-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
-            <div class="left">
-                <img class="rounded-edge-img img-responsive" src="{{ gameMap }}" alt="{{ item.Title }}"> 
-            </div>
-            <div class="right">
-                <h3>Game Schedule</h3> 
-                <a href="{{ seasonCalendar }}">Season Calendar</a> 
-                <a href="{{ gameSchedule }}">Game Schedule </a> 
-            </div>
+            {% if gameMap != "" or seasonCalendar != "" or gameSchedule != "" %}
+                <div class="left">
+                    {% if gameMap != "" %}
+                        <img class="rounded-edge-img img-responsive" src="{{ gameMap }}"> 
+                    {% else %}
+                        <p class="placeholder">Game Map Unavailable</p>
+                    {% endif %}
+                </div>
+                <div class="right">
+                    {% if seasonCalendar != "" or gameSchedule != "" %}
+                        <h3>Game Schedule</h3>
+                        {% if seasonCalendar != "" %}
+                            <a href="{{ seasonCalendar }}" class="btn btn-secondary">Season Calendar</a> 
+                        {% endif %}
+                        {% if gameSchedule != "" %}
+                            <a href="{{ gameSchedule }}" class="btn btn-secondary">Game Schedule </a>
+                        {% endif %}
+                    {% else %}
+                        <p class="placeholder">Game Schedule Unavailable</p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p class="placeholder">Game Map and Schedule Unavailable</p>
+            {% endif %}
         </div>
     </div>   
 </div>
 
 <div id="rules-panel" class="rules-panel" style="display: none;">
-    <h3>Rules</h3>
-    <div id="pdfRulesDownload">
-        <a href="{{ rules }}">Download Rules</a>
-    </div>
+    <div class="background-card">
+        {% if rules != "" %}
+            <h3>Rules</h3>
+            <div id="pdfRulesDownload">
+                <a href="{{ rules }}" class="btn btn-secondary">Download Rules</a>
+            </div>
 
-    <object id="pdfRules" data="{{ rules }}" width="100%" height="100%" type="application/pdf"></object>   
+            <object id="pdfRules" data="{{ rules }}" width="100%" height="100%" type="application/pdf"></object>   
+        {% else %}
+            <p class="placeholder">Rules Unavailable</p>
+        {% endif %}
+    </div>
 </div>

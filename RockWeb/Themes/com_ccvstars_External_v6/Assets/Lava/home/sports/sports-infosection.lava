@@ -1,7 +1,7 @@
 {% comment %} 
     {% assign title = "Sport Title goes here" %}
     {% assign content = "Content goes here" %}
-    {% assign sport = "Sport goes here" %}
+    {% assign sport = "Sport goes here" %}  - Note: omit this if you do not want the campus picker to render
 
     {% include '~~/Assets/Lava/home/sports/sports-infosection.lava' %}
 {% endcomment %}
@@ -25,22 +25,25 @@
     <h3>{{ title }}</h3>
     <p>{{ content }}</p>
 </div>
-<br />
-<div>
-    {% if campusSports contains sport %}
-        {% comment %} sport available at specified campus {% endcomment %}
-        <div class="btn-row">
-            <a href="/sport/{{ sport }}/{{ campusParameter }}" class="btn btn-primary">More Info</a>
-        </div>
-    {% else %}
-        {% comment %} sport not available at specified campus {% endcomment %}
-        {% if campusParameter %}
-            <p><strong>Not available at this campus, select a different campus.</strong></p>
+{% comment %} only display the following if a sport was specified {% endcomment %}
+{% if sport %}
+    <br />
+    <div>
+        {% if campusSports contains sport %}
+            {% comment %} sport available at specified campus {% endcomment %}
+            <div class="btn-row">
+                <a href="/sport/{{ sport }}/{{ campusParameter }}" class="btn btn-primary">More Info</a>
+            </div>
         {% else %}
-            <p><strong>Programs vary by Location</strong></p>
+            {% comment %} sport not available at specified campus {% endcomment %}
+            {% if campusParameter %}
+                <p><strong>Not available at this campus, select a different campus.</strong></p>
+            {% else %}
+                <p><strong>Programs vary by Location</strong></p>
+            {% endif %}
+            <div class="btn-row">    
+                {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+            </div>
         {% endif %}
-        <div class="btn-row">    
-            {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
-        </div>
-    {% endif %}
-</div>
+    </div>
+{% endif %}

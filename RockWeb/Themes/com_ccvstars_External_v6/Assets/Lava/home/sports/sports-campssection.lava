@@ -1,0 +1,84 @@
+{% comment %} 
+    {% assign sport = "Sport goes here" %}
+    {% assign year = "Camps year goes here" %}
+
+    {% include '~~/Assets/Lava/home/sports/sports-campssection.lava' %}
+{% endcomment %}
+
+{% comment %} check for campus page paramenter {% endcomment %}
+{% assign campusParameter = PageParameter.Campus | Downcase %}
+
+{% assign now = 'Now' | Date:'yyyyMMddHmmss' %}
+
+{% assign displayCamps = false %}
+{% assign availableCampuses = '' %}
+
+{% comment %} Check for active summer camps for the sport. {% endcomment %}
+{% contentchannelitem where:'ContentChannelId == 304' %}
+    {% for item in contentchannelitemItems %}
+
+        {% comment %} ensure sport is lowercase before comparing {% endcomment %}
+        {% assign sport = sport | Downcase %}
+        {% assign itemSport = item | Attribute:'Sport' | Downcase %}
+
+        {% if itemSport == sport %}        
+            {% comment %} match found, now check that item is active by start/expire date {% endcomment %}
+            {% assign itemStart = item.StartDateTime | Date:'yyyyMMddHmmss'  %}
+            {% assign itemEnd = item.ExpireDateTime | Date:'yyyyMMddHmmss'  %}
+
+            {% if now >= itemStart and now <= itemEnd %}
+                {% comment %} now check if we are on a campus specific sports page {% endcomment %}
+                {% if campusParameter %}
+                    {% assign itemCampusName = item.Campus | Downcase %}
+
+                    {% if campusParameter == itemCampusName %}
+                        {% comment %} summer camp item match found for campus {% endcomment %}
+                        {% assign displayCamps = true %}
+                        {% unless availableCampuses contains item.Campus %}
+                            {% assign availableCampuses = availableCampuses | Append:item.Campus | Append:',' %}
+                        {% endunless %}
+                    {% endif %}
+
+                {% else %}
+                    {% comment %} summer camp found, display for all available campuses {% endcomment %}
+                    {% assign displayCamps = true %}
+                    {% unless availableCampuses contains item.Campus %}
+                        {% assign availableCampuses = availableCampuses | Append:item.Campus | Append:',' %}
+                    {% endunless %}                   
+                {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+
+    {% endfor %}
+{% endcontentchannelitem %}
+
+{% if displayCamps == true %}
+    <div class="summer-camps-row">
+        <div class="rectangle">
+            <h3 class="summer-camps-desktop">{{ sport }} Summer Camps {{ year }}</h3>
+            <div class="summer-camps-mobile">
+                <h3>
+                    {{ sport }}<br />
+                    Summer Camps {{ year }}
+                </h3>
+            </div>
+
+            {% if campusParameter %}
+                <a href="/summer-camps/{{ sport | Downcase | Replace: ' ', '-' }}/{{ campusParameter }}" class="btn btn-secondary"><h6>More Info</h6></a>
+            {% else %}
+                <div class="select-dropdown">
+                    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A CAMPUS' }}</h6><b class="fa fa-caret-down"></b></button>
+                    <ul class="dropdown-menu">
+                        {% assign campusOptions = availableCampuses | Split:',' %}
+
+                        {% for campusOption in campusOptions %}
+                            <li><a href="/summer-camps/{{ sport | Downcase | Replace: ' ', '-' }}/{{ campusOption }}">{{ campusOption | Replace: '-',' ' | Capitalize }}</a></li>
+                        {% endfor %} 
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
