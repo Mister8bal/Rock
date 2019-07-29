@@ -64,9 +64,14 @@ namespace church.ccv.MobileApp
                 // we MUST have a geoPoint (from which latitude / long derive)
                 if( specifiedLocation.GeoPoint == null ) break;
 
+                // Instantiate as IQueryable so we don't store in memory just yet.
+                IQueryable<Group> gQuery = groupService.Queryable( "Schedule,GroupLocations.Location" ).AsNoTracking();
+
+                gQuery = FilterOverCapacity( gQuery );
+
                 // get all groups of this group type that are either public, if publicOnly is true, or either if publicOnly is false
-                IEnumerable<Group> groupList = groupService.Queryable( "Schedule,GroupLocations.Location" ).AsNoTracking( )
-                                                           .Where( a => a.GroupTypeId == groupTypeId && (a.IsPublic == publicOnly || publicOnly == false) )
+
+                IEnumerable<Group> groupList = gQuery.Where( a => a.GroupTypeId == groupTypeId && (a.IsPublic == publicOnly || publicOnly == false) )
                                                            .Include( a => a.GroupLocations ).ToList( );
                 
 
@@ -93,10 +98,12 @@ namespace church.ccv.MobileApp
                 // grab the nth set
                 groupList = groupList.Skip( skip );
                 groupList = groupList.Take( top ).ToList();
+               
 
                 // now take only what we need from each group (drops our return package to about 2kb, from 40kb)
                 foreach( Group group in groupList )
                 {
+
                     Location locationObj = group.GroupLocations.First( ).Location;
 
                     GroupResult groupResult = new GroupResult( )
@@ -117,6 +124,7 @@ namespace church.ccv.MobileApp
                     }
 
                     resultGroups.Add( groupResult );
+                    
                 }
             }
             while( false );
@@ -169,6 +177,14 @@ namespace church.ccv.MobileApp
             }
 
             return success;
+        }
+
+
+        // Modify and return a Group Query to filter 
+        // out any group that is at capacity.
+        public static IQueryable<Group> FilterOverCapacity( IQueryable<Group> gQuery)
+        {
+            return gQuery.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
         }
 
         public static bool RegisterPersonInGroup(GroupRegModel regModel)
