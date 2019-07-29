@@ -410,6 +410,12 @@
             </asp:Panel>
 
         </div>
+
+        <asp:HiddenField runat="server" ID="hfDecipticon" ClientIdMode="Static" />
+
+        <asp:HiddenField runat="server" ID ="hfDecepticon" ClientIDMode="Static" />
+        <asp:HiddenField runat="server" ID ="hfDecepticonMult" ClientIDMode="Static" />
+        
     </ContentTemplate>
 
 </asp:UpdatePanel>

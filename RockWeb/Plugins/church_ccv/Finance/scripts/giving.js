@@ -4,6 +4,27 @@
 
 // Components that persist through postbacks
 function pageLoad() {
+
+    let decepticonMult;
+    let decepticonVar;
+    let decepticonVal;
+
+    //Attaches validation data to the form.
+    const attachValidation = function () {
+        $('#hfDecepticon').val(decepticonMult * decepticonVar);
+        $('#hfDecepticonMult').val(decepticonMult);
+    }
+
+    const initDecepticon = function () {
+        decepticonMult = Math.floor(Math.random() * Math.floor(5));
+        decepticonVar = 0;
+        setInterval(function () {
+            decepticonVar++;
+        }, 1000);
+
+    }
+
+    initDecepticon();
     //
     // Transaction Panel
     //
@@ -23,6 +44,8 @@ function pageLoad() {
     // Disable processing submit button after its clicked to prevent duplicate submits
     $('#btnConfirmNext').on('click', function () {
         $('#btnConfirmNext').attr('disabled', 'disabled');
+        //Attach anti-scripting validation.
+        attachValidation();
     });
 
     // Disable progress buttons if they are not in a complete state
