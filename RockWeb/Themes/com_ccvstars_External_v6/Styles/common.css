@@ -14,6 +14,15 @@
    =================================================================== */
 
 /*** Defaults ***/
+#masthead {
+    position: fixed;
+    z-index: 999;
+}
+
+.main-feature {
+    padding-top: 120px;
+}
+
 #section-feature-bg {
     height: 325px;
 }
@@ -118,6 +127,14 @@ hr {
     border-radius: 6px;
 }
 
+.btn-live {
+    display: inline;
+    color: #FFFFFF;
+    margin: 0px 10px;
+    background-color: #741315;
+    border: none;
+}
+
 .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-register:hover, .btn-register:active, .btn-register:focus {
     background-color: #FFFFFF;
     border: solid 1px #E73D30;
@@ -155,15 +172,21 @@ a:focus {
 }
 
 .announcement-bar {
-    padding-top: 5px;
-    background-color: #E73D30;
-    color: #FFFFFF;
-    font-weight: normal;
-    font-family: akrobat;
+    min-height: 55px;
+    background-color: #f5d127;
+    color: #000;
+    font-weight: 400;
+    font-family: Heebo;
     text-align: center;
-    padding: 10px 0px;
-    margin-bottom: 5px;
-    font-size: 20px;
+    font-size: 23px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* spacer for when announcement bar is active */
+.announcement-bar-showing {
+    padding-top: 175px;
 }
 
 .masthead-upper {
@@ -1155,6 +1178,10 @@ a:focus {
         max-width: 90%;
     }
 
+    .announcement-bar {
+        font-size: 18px;
+    }
+
     /* 
         Original font values
         h1: 88px lh: 78
@@ -1306,6 +1333,10 @@ a:focus {
     /* Zones & Sections */
     #section-feature-bg {
         height: 208px;
+    }
+
+    .announcement-bar {
+        font-size: 15px;
     }
 
     /* Navigation */
@@ -1468,6 +1499,15 @@ a:focus {
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {
+    /* defaults */
+    .main-feature {
+        padding-top: 55px;
+    }
+
+    .announcement-bar-showing {
+        padding-top: 110px;
+    }
+
     /* Phone styling based on mobile design mookups */
     h1 {
         font-size: 28px;

@@ -1,24 +1,41 @@
 {% comment %} 
-{% include '~~/Assets/Lava/header/announcement-bar.lava' %}
+    % include '~~/Assets/Lava/header/announcement-bar.lava' %}
 {% endcomment %}
+
+{% assign announcementBarShowing = false %}
 
 {% assign ccvLive = 'Global' | Attribute:'CCVLive' %}
 {% if ccvLive == 'Yes' %}
+    {% assign announcementBarShowing = true %}
+    
     {% if CurrentPerson %}
         {% assign liveURL = '/ssologin' %}
     {% else %}
         {% assign liveURL = 'http://live.ccv.church' %}
     {% endif %}
     <div class="announcement-bar">
-        <btn id="ccvlive" class="btn btn-default btn-live">Live</btn>CCV is live!<span> <a href="{{ liveURL }}">Tune into the sermon now ></a></span>
+        <button id="ccvlive" class="btn btn-default btn-live">Live</button>CCV is live!<span> <a href="{{ liveURL }}">Tune into the sermon now ></a></span>
     </div>
-{% else %}
+{% else %}    
     {% assign upcomingMaintenance = 'Global' | Attribute:'UpcomingMaintenance' %}
 
     {% unless upcomingMaintenance == '' %}
+        {% assign announcementBarShowing = true %}
+
         <div class="announcement-bar">
             CCV Stars's website will be unavailable for scheduled maintenance starting at {{ upcomingMaintenance }}.
         </div>
     {% endunless %}
 {% endif %}
+
+<script>
+    $(document).ready(function() {
+        {% if announcementBarShowing %}
+            // override header height to push content down
+            $('.main-feature').addClass("announcement-bar-showing");                
+        {% else %}
+            $('.main-feature').removeClass("announcement-bar-showing");
+        {% endif %}
+    });
+</script>
 
