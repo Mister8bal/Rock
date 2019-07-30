@@ -1,0 +1,26 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-coach-resources.lava' %}
+{% endcomment %}
+
+
+{% comment %} Get the number of items {% endcomment %}
+{% assign numberOfResources = Items | Size %}
+
+{% if numberOfResources > 0 %}
+    {% for item in Items %}
+        {% assign resourceLink = item | Attribute: 'ResourceUrl' %}
+        <div class="resources-row">
+            <h4>{{ item.Title }} </h4> 
+            <p>{{ item.Summary }} </p> 
+            {% if resourceLink != '' %}
+                <div class="btn-row">
+                    <a class="btn btn-primary" href="{{ resourceLink }}">View</a>
+                </div>    
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="resources-missing">
+        <p>No resources at this time. Please check back later.</p>
+    </div>
+{% endif %}

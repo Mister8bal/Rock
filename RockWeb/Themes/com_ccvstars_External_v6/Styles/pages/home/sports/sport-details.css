@@ -59,6 +59,7 @@
 .right {
     display: flex;
     flex-direction: column;
+    padding-top: 20px;
 }
 
 .right h3 {
@@ -78,14 +79,6 @@
     display: none;
 }
 
-.placeholder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
 .mobile-register {
     display: none;
 }
@@ -99,10 +92,6 @@
 
 #zone-sectiona .left-and-right-container {
     padding-top: unset;
-}
-
-.left-and-right-container .right {
-    padding-top: 20px;
 }
 
 .btn-secondary {

@@ -4,8 +4,13 @@
 
 <div class="person-row">
     <div class="person-photo">
-        {% assign imageGuid = CurrentPerson.person | Attribute:'PhotoId ' %}
-        <a href="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}"><img src="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}&width=600"></a>
+        {% if CurrentPerson.PhotoId != null %}
+            <a href="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}"><img src="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}&width=600"></a>
+        {% else if CurrentPerson.Person.Gender == 1 %}
+            <img src="/Assets/Images/person-no-photo-male.svg?" />
+        {% else if CurrentPerson.Person.Gender == 2 %}
+            <img src="/Assets/Images/person-no-photo-female.svg?" />
+        {% endif %}
     </div>
     <div class="person-profile-info">
         <div class="person-summary">

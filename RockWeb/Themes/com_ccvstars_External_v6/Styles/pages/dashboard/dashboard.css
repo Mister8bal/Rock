@@ -6,6 +6,26 @@
 /* End Zones & Sections */
 
 /* Start Person Info */
+.person-row {
+    display: flex;
+    padding: 5% 0;
+}
+
+.person-photo img {
+    width: 200px;
+    height: 200px;
+}
+
+.person-profile-info {
+    margin-left: 5%;
+    width: 100%;
+    display: flex;
+}
+
+.person-summary {
+    width: 100%;
+}
+
 .person-heading h3 {
     color: #EA3E29;
     text-align: left;
@@ -15,34 +35,8 @@
     line-height: 38px;
 }
 
-.header {
-    height: unset;
-}
-
-.header h3 {
+.person-row p {
     color: #000000;
-}
-
-.person-details-item h5 {
-    padding: 5px 0;
-}
-
-.person-details-item p {
-    margin: 0;
-    padding: 5px 0;
-}
-
-.person-details div:nth-child(1) {
-    padding-right: 10px;
-}
-
-.person-summary {
-    width: 100%;
-}
-
-.person-photo img {
-    width: 200px;
-    height: 200px;
 }
 
 .person-details {
@@ -51,31 +45,50 @@
     width: 100%;
 }
 
-.person-row {
-    display: flex;
-    padding: 5% 0;
-}
-
-.person-profile-info {
-    margin-left: 5%;
-    width: 100%;
-    display: flex;
+.person-details div:nth-child(1) {
+    padding-right: 10px;
 }
 
 .person-details-item {
     display: flex;
     flex-direction: column;
 }
+.person-details-item h5 {
+    padding: 5px 0;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 900;
+    color: #000000;
+    text-transform: capitalize;
+    text-align: left;
+}
 
-hr {
+.person-details-item p {
+    margin: 0;
+    padding: 5px 0;
+}
+
+.person-row hr {
     border-top: 1px solid #EA3E29;
     text-align: left;
     width: 150px;
     margin: 0 0 5px 0;
 }
 
+/* End Person Info */
+
+/* Start Table */
 #pnlGroupView {
-    margin: 0px -15px 40px -15px;
+    padding-bottom: 50px;
+}
+
+.mobile-view {
+    display: none;
+}
+
+#player-panel, #coach-panel {
+    padding: 25px 20px 20px 20px;
+    background-color: #efefef;
 }
 
 table {
@@ -84,56 +97,29 @@ table {
     text-align: center;
 }
 
-
-#player-panel, #coach-panel {
-    padding: 25px 20px 20px 20px;
-    background-color: #efefef;
-}
-
-/* End Person Info */
-
-
-/* Start Table */
-.desktop-view-table {
-    width: 100%;
+td {
+    border: 1px solid #e2e2e2;
+    background-color: #FFFFFF;
 }
 
 .desktop-view-table th, .desktop-view-table td {
-    padding: 20px 35px;
+    padding: 20px 25px;
+}
+
+.desktop-view-table th, .desktop-view-table-row th {
+    text-align: center;
 }
 
 .desktop-view-table th:nth-child(even) {
     background-color: #A0A0A0;
+    border: 1px solid #A0A0A0;
     color: #ffffff;
 }
 
 .desktop-view-table th:nth-child(odd) {
     background-color: #E73D30;
+    border: 1px solid #E73D30;
     color: #ffffff;
-}
-
-.player-mobile-view-table {
-    display: none;
-}
-
-.coach-mobile-view-table {
-    display: none;
-}
-
-.dashboard-title {
-    margin: 0 15px;
-}
-
-.dashboard-title h2 {
-    color: #000000;
-}
-
-.desktop-view {
-    display: block;
-}
-
-.mobile-view {
-    display: none;
 }
 
 td > img {
@@ -142,12 +128,6 @@ td > img {
 
 td > a > img {
     margin: 0 10px;
-}
-
-table, th, td {
-    border: 2px solid rgb(224, 224, 224);
-    border-collapse: collapse;
-    text-align: center;
 }
 
 a:hover, a:focus {
@@ -162,35 +142,7 @@ a:hover, a:focus {
 
 /* End Table */
 
-
-/* Overrides */
-
-.card {
-    margin-bottom: 0px;
-    border: none;
-}
-
-.tabbed-panel-view-cards {
-    background-color: #ffffff;
-}
-
-.person-row p {
-    color: #000000;
-}
-
-.item-headers h5 {
-    font-size: 16px;
-    line-height: 18px;
-    font-weight: 900;
-    color: #000000;
-    text-transform: capitalize;
-    text-align: left;
-}
-
-.select-dropdown-button {
-    border: 1px solid #dddddd;
-}
-
+/* Recent Registrations */
 .recent-registrations {
     padding: 5% 0;
 }
@@ -203,15 +155,16 @@ a:hover, a:focus {
     padding-top: 0;
     text-align: left;
 }
+/* End recent registrations */
 
-.links a {
-    color: #000000;
+/* Overrides */
+.tabbed-panel-view-cards {
+    background-color: #ffffff;
 }
 
-.links a:hover, .links a:active, .links a:focus  {
-    color: #656363;
+button:focus {
+    outline: none;
 }
-
 /* End Overrides */
 
 
@@ -221,6 +174,7 @@ a:hover, a:focus {
         padding: 20px 10px;
         text-align: center;
     }
+
 }
 
 /**** End Laptop Sytling  ****/
@@ -232,6 +186,91 @@ a:hover, a:focus {
     .desktop-view-table th, .desktop-view-table td {
         padding: 20px 0;
     }
+
+    /* Start Table */
+    .tabbed-panel-view-mobile {
+        padding-top: 20px;
+    }
+
+    .tabbed-panel-view-cards {
+        margin-bottom: 20px;
+        border-radius: 0;
+    }
+
+    .mobile-items .tab-selected {
+        background-color: #E73D30;
+        color: #ffffff !important;
+    }
+
+    #player-panel, #coach-panel {
+        padding: 0;
+        background-color: #FFFFFF;
+    }
+
+    .desktop-view {
+        display: none;
+    }
+    
+    .mobile-view {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid #e2e2e2;
+        border-left: 1px solid #e2e2e2;
+        border-right: 1px solid #e2e2e2;
+    }
+
+    .player-mobile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        border-top: 1px solid #e2e2e2;
+        background-color: #FFFFFF;
+    }
+
+    .player-mobile h5, .player-mobile b {
+        color: #E73D30;
+    }
+
+    .player-mobile .mdi {
+        font-size: 24px;
+    }
+
+    .player-mobile-details th {
+        text-align: center;
+    }
+
+    .player-mobile-details td {
+        border: none;
+        border-top: 1px solid #e2e2e2;
+        border-bottom: 1px solid #e2e2e2;
+        padding: 12px 0;
+    }
+
+    .row-mobile-button {
+        padding: 20px;
+    }
+
+    .row-mobile-button a {
+        padding: 10px;
+        width: 100%;
+    }
+
+    .red {
+        background-color: #E73D30;
+        color: #ffffff;
+    }
+
+    .gray {
+        background-color: #A0A0A0;
+        color: #ffffff;
+    }
+
+    .sport-icon {
+        margin: 0 10px;    
+    }
+
+    /* End Table */
 }
 /**** End Tablet Sytling  ****/
 
@@ -258,29 +297,44 @@ a:hover, a:focus {
     /* End Zones & Sections */
 
     /* Start Overrides */
-    .tabbed-panel-view-cards .header {
-        padding: 20px;
-    }
-
     .tab {
         padding: 13px 23px;
-        width: 50%;
     }
 
     .mobile-items {
-        width: 100%;
         display: flex;
     }
     
     /* End Overrides */
 
     /* Person Info */
-    .person-details-item {
-        width: 100%;
+    .person-row {
+        flex-direction: column;
     }
 
     .person-row p {
         font-size: 13px;
+    }
+
+    .person-row hr {
+        width: unset;
+    }
+
+    .person-photo {
+        padding-bottom: 5%;
+    }
+
+    .person-photo img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .person-profile-info {
+        margin-left: 0;
+    }
+
+    .person-details-item {
+        width: 100%;
     }
 
     .item-headers {
@@ -294,136 +348,9 @@ a:hover, a:focus {
     .person-details-item a {
         width: 100%;
     }
-    
-    #player-panel, #coach-panel {
-        padding: 0;
-    }
-
-    .person-row {
-        flex-direction: column;
-    }
-
-    .person-photo img {
-        width: 100%;
-        height: 100%;
-    }
-
-    .person-photo {
-        padding-bottom: 5%;
-    }
-
-    .person-profile-info {
-        margin-left: 0;
-    }
-
     /* End Person Info */
 
-    /* Start Table */
-    table, th, td {
-        border: 1px solid rgb(224, 224, 224);
-    }
-
-    .player-mobile-view-table td {
-        background-color: #ffffff;
-    }
-
-    .coach-mobile-view-table td {
-        background-color: #ffffff;
-    }
-
-    td, th {
-        padding: 12px 0;
-    }
-
-    .desktop-view-table {
-        display: none;
-    }
-
-    .player-mobile-view-table {
-        display: block;
-    }
     
-    .coach-mobile-view-table {
-        display: block;
-    }
-    
-    .desktop-view {
-        display: none;
-    }
-    
-    .mobile-view {
-        display: block;
-    }
-    
-    .player-mobile-view-table, .coach-mobile-view-table {
-        border-top: none;
-        border-left: none;
-        border-bottom: none;
-    }
-
-    td {
-        width: 100%;
-    }
-
-    .last th {
-        border: 1px solid rgb(224, 224, 224);
-        padding: 12px 0;
-    }
-
-    .dashboard-table-row {
-        display: none;
-    }
-
-    th a {
-        width: 100%;
-    }
-
-    .row-mobile-header a {
-        margin: 15px 0;
-        padding: 10px;    
-    }
-
-    tr.last {
-        border: none;
-    }
-
-    .panel {
-        border: none;
-    }
-
-    .mobile-items .tab-selected {
-        background-color: #E73D30;
-        color: #ffffff !important;
-    }
-
-    .card-header a {
-        color: #EA3E29;
-    }
-
-    .card-header h5 {
-        font-weight: 700;
-        padding: 0;
-    }
-
-    .red {
-        background-color: #E73D30;
-        color: #ffffff;
-        width: 25%;
-        border-radius: 2px;
-    }
-
-    .gray {
-        background-color: #A0A0A0;
-        color: #ffffff;
-        width: 25%;
-        border-radius: 2px;
-    }
-
-    .sport-icon {
-        margin: 0 10px;    
-    }
-
-    /* End Table */
 }
 
 /**** End Phone Styling ****/

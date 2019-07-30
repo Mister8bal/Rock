@@ -12,15 +12,26 @@
 {% endunless %}
 
 
-{% assign isCoach = false %}
 
-<!-- Get all Youth Sports teams tied to Current Person -->
-{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
-{% for group in currentPersonGroups %}
-    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" %}
-        {% assign isCoach = true %}
-    {% endif %}
-{% endfor %}
+{% assign isCoach = false %}
+{% assign isAssistantCoachOrTeamManager = false %}
+
+{% comment %} Loop through group members in group to find coach, assistant coach and team manager {% endcomment %}
+{% groupmember where:'GroupId == {{PageParameter.GroupId}}' %}
+    {% for groupMemberItem in groupmemberItems %}
+        {% if groupMemberItem.GroupRole.Name == 'Coach' %}
+            {% assign coach = groupMemberItem %}
+            {% if coach.Person.Id == CurrentPerson.Id %}
+                 {% assign isCoach = true %}
+            {% endif %}
+        {% else if groupMemberItem.GroupRole.Name == 'Assistant Coach' or groupMemberItem.GroupRole.Name == 'Team Manager' %}
+            {% assign assistantCoachOrTeamManager = groupMemberItem %}
+            {% if assistantCoachOrTeamManager.Person.Id == CurrentPerson.Id %}
+                 {% assign isAssistantCoachOrTeamManager = true %}
+            {% endif %}   
+        {% endif %}
+    {% endfor %}
+{% endgroupmember %}
 
 <div class="navigation-and-title">
     <div class="header">
@@ -35,12 +46,15 @@
                     <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Players</h6><b class="fa fa-caret-down"></b></button>
                     <ul class="dropdown-menu">
                         <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Players</div></li>
-                        {% if isCoach == "true" %}
+                        {% if isCoach == "true" or isAssistantCoachOrTeamManager == "true"  %}
                             <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
                         {% endif %}
                         <li><div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule', true)" class="item">Practice Schedule</div></li>   
                         <li><div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule', true)" class="item">Game Schedule</div></li> 
-                        <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>                          
+                        <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>  
+                        {% if isCoach == "true" or isAssistantCoachOrTeamManager == "true" %}
+                            <li><div id="resources-mobile-button" onClick="linkClicked(this, 'resources', true)" class="item">Resources</div></li>
+                        {% endif %}
                     </ul>
                 </div>                    
             </div>
@@ -52,12 +66,15 @@
     <div class="tabbed-panel-view-desktop">
         <div class="tabs">
             <div id="players-button" class="tab" onClick="linkClicked(this, 'players')">Players</div>
-            {% if isCoach == "true" %}
+            {% if isCoach == "true" or isAssistantCoachOrTeamManager == "true" %}
                 <div id="contact-team-button" class="tab" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
             {% endif %}
-            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice Schedule</div>
-            <div id="game-schedule-button" class="tab" onClick="linkClicked(this, 'game-schedule')">Game Schedule</div>
-            <div id="rules-button" class="tab" onClick="linkClicked(this, 'rules', false)">Rules</div>
+            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice <span class="responsive-hide">Map & Schedule</span></div>
+            <div id="game-schedule-button" class="tab" onClick="linkClicked(this, 'game-schedule')">Game <span class="responsive-hide">Map & Schedule</span></div>
+            <div id="rules-button" class="tab" onClick="linkClicked(this, 'rules')">Rules</div>
+            {% if isCoach == "true" or isAssistantCoachOrTeamManager == "true" %}
+                <div id="resources-button" class="tab" onClick="linkClicked(this, 'resources')">Resources</div>
+            {% endif %}
         </div>
     </div>
 </div>    
