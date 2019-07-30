@@ -3,17 +3,10 @@
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-volunteer.jpg");
 }
 
-hr {
-    margin-top: 50px;
-    border-top: 2px solid #dcdcdc;
+.faq-section h3 {
+    color: #E73D30;
+    padding-top: 100px;
 }
-
-/** Start Overrides **/
-p {
-    color: #7c7c7c;
-}
-
-/** End Overrides **/
 
 .faq-card {
     position: relative;
@@ -70,8 +63,12 @@ p {
     padding: 0.75rem 1.25rem;
 }
 
+.faq-list .faq-card .card-body p, .faq-list .faq-card .card-body li, .area-of-interest label {
+    color: #7c7c7c;
+}
+
 .serve-header {
-    padding: 50px 0;
+    padding-top: 50px;
 }
 
 .serve-header h3 {
@@ -94,6 +91,20 @@ textarea.form-control {
     margin-top: 15px;
     width: 200px;
 }
+
+.area-of-interest {
+    padding: 10px 0;
+}
+
+.workflow-entry {
+    padding-bottom: 100px;
+}
+
+/* overrides */
+.email-box {
+    margin-bottom: 5px;
+}
+/* end overrides */
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {
