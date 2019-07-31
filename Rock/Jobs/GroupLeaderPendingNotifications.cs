@@ -79,7 +79,7 @@ namespace Rock.Jobs
                 Guid? systemEmailGuid = dataMap.GetString( "NotificationEmail" ).AsGuidOrNull();
                 Guid? groupRoleFilterGuid = dataMap.GetString( "GroupRoleFilter" ).AsGuidOrNull();
                 int? pendingAge = dataMap.GetString( "PendingAge" ).AsIntegerOrNull();
-
+                List<int> notifiedPersonIds = new List<int>();
 
                 bool includePreviouslyNotificed = dataMap.GetString( "IncludePreviouslyNotified" ).AsBoolean();
 
@@ -123,9 +123,8 @@ namespace Rock.Jobs
 
                     var pendingGroupMembers = qry.ToList();
 
-
                     var groups = pendingGroupMembers.GroupBy( m => m.Group );
-
+                    
                     foreach ( var groupKey in groups )
                     {
                         var group = groupKey.Key;
@@ -144,6 +143,8 @@ namespace Rock.Jobs
                         }
 
                         var pendingIndividuals = qryPendingIndividuals.Select( m => m.Person ).ToList();
+
+                        pendingMembersCount = pendingMembersCount + pendingIndividuals.Count();
 
                         // get list of leaders
                         var groupLeaders = group.Members.Where( m => m.GroupRole.IsLeader == true );
@@ -170,16 +171,19 @@ namespace Rock.Jobs
                             notificationsSent += recipients.Count();
                         }
 
-                        // mark pending members as notified as we go in case the job fails
-                        var notifiedPersonIds = pendingIndividuals.Select( p => p.Id );
-                        foreach ( var pendingGroupMember in pendingGroupMembers.Where( m => m.IsNotified == false && notifiedPersonIds.Contains( m.PersonId ) ) )
-                        {
-                            pendingGroupMember.IsNotified = true;
-                        }
-
-                        rockContext.SaveChanges();
+                        notifiedPersonIds.AddRange(pendingIndividuals.Select( p => p.Id ).ToList());
 
                     }
+
+                    // mark pending members as notified as we go in case the job fails
+                    
+                    foreach ( var pendingGroupMember in pendingGroupMembers.Where( m => m.IsNotified == false && notifiedPersonIds.Contains( m.PersonId ) ) )
+                    {
+                        pendingGroupMember.IsNotified = true;
+                    }
+
+                    rockContext.SaveChanges();
+
                 }
 
                 context.Result = string.Format( "Sent {0} emails to leaders for {1} pending individuals", notificationsSent, pendingMembersCount );
