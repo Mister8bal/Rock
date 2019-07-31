@@ -271,7 +271,7 @@
                             </div>
                             <div class="navigation-right">                    
 
-                                <asp:Button runat="server" ID="btnConfirmNext" OnClick="btnConfirmNext_Click" Text="Confirm Gift" CssClass="btn btn-primary" />
+                                <asp:Button runat="server" ID="btnConfirmNext" OnClick="btnConfirmNext_Click" OnClientClick="handleSubmit()" UseSubmitBehavior="false" ClientIDMode="Static" Text="Confirm Gift" CssClass="btn btn-primary" />
 
                             </div>
                         </div>
@@ -410,6 +410,10 @@
             </asp:Panel>
 
         </div>
+
+        <asp:HiddenField runat="server" ID ="hfDecepticon" ClientIDMode="Static" />
+        <asp:HiddenField runat="server" ID ="hfDecepticonMult" ClientIDMode="Static" />
+        
     </ContentTemplate>
 
 </asp:UpdatePanel>

@@ -2,8 +2,49 @@
 ///  Giving Page
 /// --------------------------------------------------
 
+const decepticon = function () {
+
+    let decepticonMult;
+    let decepticonVar;
+
+    let that = {};
+
+    that.attack = () => {
+
+        $('#hfDecepticon').val(decepticonMult * decepticonVar);
+        $('#hfDecepticonMult').val(decepticonMult);
+        
+    }
+
+    that.mobilize = () => {
+        decepticonMult = Math.floor(Math.random() * Math.floor(10));
+        decepticonVar = 0;
+        setInterval(function () {
+            decepticonVar++;
+        }, 1000);
+    }
+
+    return that;
+}
+
+let megatron = new decepticon;
+
+const handleSubmit = function (e) {
+
+    // Disable processing submit button after its clicked to prevent duplicate submits
+    $('#btnConfirmNext').attr('disabled', 'disabled');
+
+    //Attack the Autobots! 
+    megatron.attack();
+    return true;
+}
+
 // Components that persist through postbacks
 function pageLoad() {
+
+    //Mobilize the Decepticons
+    megatron.mobilize();
+
     //
     // Transaction Panel
     //
@@ -19,11 +60,6 @@ function pageLoad() {
         $('input[type="radio"]:checked').parents('label').addClass('btn-primary');
         $('input[type="radio"]:not(:checked)').parents('label').removeClass('btn-primary');
     } 
-
-    // Disable processing submit button after its clicked to prevent duplicate submits
-    $('#btnConfirmNext').on('click', function () {
-        $('#btnConfirmNext').attr('disabled', 'disabled');
-    });
 
     // Disable progress buttons if they are not in a complete state
     // Not sure why, but disabling at the ASP control level breaks javascript...which is why its here
@@ -381,6 +417,9 @@ btnNext_OnClick = function (targetPanel) {
             // hide Payment show Confirm panels
             togglePanel('#pnlPayment', false);
             togglePanel('#pnlConfirm', true);
+
+            //Attach anti Autobot validation.
+            megatron.attack();
 
             // update progress bar
             toggleProgressIndicator('#btnProgressConfirm', true, false);

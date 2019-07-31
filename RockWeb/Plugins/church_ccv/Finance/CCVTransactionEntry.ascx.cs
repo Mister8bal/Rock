@@ -265,9 +265,10 @@ TransactionAcountDetails: [
         /// <param name="e"></param>
         protected void btnConfirmNext_Click( object sender, EventArgs e )
         {
+
             string errorMessage = string.Empty;
 
-            if ( ProcessTransaction( out errorMessage ) )
+            if ( ValidateDecepticon( out errorMessage ) && ProcessTransaction( out errorMessage ) )
             {
                 // Success - hide Transaction panel and show payment success panel
                 nbMessage.Visible = false;
@@ -720,6 +721,7 @@ TransactionAcountDetails: [
         private bool ProcessTransaction( out string errorMessage )
         {
             var rockContext = new RockContext();
+
             if ( string.IsNullOrWhiteSpace( TransactionCode ) )
             {
                 // get gateway info
@@ -1421,8 +1423,42 @@ TransactionAcountDetails: [
         }
 
         #endregion
-        
+
         #region Methods used globally
+
+        /// <summary>
+        /// Checks the value of the Decepticon timer. 
+        /// </summary>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns></returns>
+        private bool ValidateDecepticon( out string errorMessage )
+        {
+
+            errorMessage = String.Empty;
+
+            int decepticon;
+            bool hasDecepticon = int.TryParse( hfDecepticon.Value.TrimStart(), out decepticon );
+
+            int decepticonMult;
+            bool hasDecepticonMult = int.TryParse( hfDecepticonMult.Value.TrimStart(), out decepticonMult );
+
+            if(!hasDecepticon || !hasDecepticonMult )
+            {
+                errorMessage = "We're sorry, but we cannot process your payment at this time.";
+                return false;
+            }
+
+            if ( decepticonMult > 0 && decepticon / decepticonMult > 3 )
+            {
+                return true;
+            }
+            else
+            {
+                errorMessage = "We're sorry, but we cannot process your payment at this time.";
+                return false;
+            }
+
+        }
 
         /// <summary>
         /// Gets the person.
