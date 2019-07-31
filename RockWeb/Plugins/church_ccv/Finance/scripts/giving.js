@@ -30,8 +30,11 @@ const decepticon = function () {
 let megatron = new decepticon;
 
 const handleSubmit = function (e) {
-    console.log("SUBMITED.");
+
+    // Disable processing submit button after its clicked to prevent duplicate submits
     $('#btnConfirmNext').attr('disabled', 'disabled');
+
+    //Attack the Autobots! 
     megatron.attack();
     return true;
 }
@@ -39,6 +42,7 @@ const handleSubmit = function (e) {
 // Components that persist through postbacks
 function pageLoad() {
 
+    //Mobilize the Decepticons
     megatron.mobilize();
 
     //
@@ -56,12 +60,6 @@ function pageLoad() {
         $('input[type="radio"]:checked').parents('label').addClass('btn-primary');
         $('input[type="radio"]:not(:checked)').parents('label').removeClass('btn-primary');
     } 
-
-    // Disable processing submit button after its clicked to prevent duplicate submits
-    $('#btnConfirmNext').on('click', function (e) {
-        
-        
-    });
 
     // Disable progress buttons if they are not in a complete state
     // Not sure why, but disabling at the ASP control level breaks javascript...which is why its here
@@ -420,8 +418,7 @@ btnNext_OnClick = function (targetPanel) {
             togglePanel('#pnlPayment', false);
             togglePanel('#pnlConfirm', true);
 
-            //Attach anti-scripting validation.
-            console.log("ATTACHING VALIDATION");
+            //Attach anti Autobot validation.
             megatron.attack();
 
             // update progress bar
