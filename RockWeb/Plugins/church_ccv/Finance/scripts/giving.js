@@ -2,29 +2,45 @@
 ///  Giving Page
 /// --------------------------------------------------
 
-// Components that persist through postbacks
-function pageLoad() {
+const decepticon = function () {
 
     let decepticonMult;
     let decepticonVar;
-    let decepticonVal;
 
-    //Attaches validation data to the form.
-    const attachValidation = function () {
+    let that = {};
+
+    that.attack = () => {
+
         $('#hfDecepticon').val(decepticonMult * decepticonVar);
         $('#hfDecepticonMult').val(decepticonMult);
+        
     }
 
-    const initDecepticon = function () {
-        decepticonMult = Math.floor(Math.random() * Math.floor(5));
+    that.mobilize = () => {
+        decepticonMult = Math.floor(Math.random() * Math.floor(10));
         decepticonVar = 0;
         setInterval(function () {
             decepticonVar++;
         }, 1000);
-
     }
 
-    initDecepticon();
+    return that;
+}
+
+let megatron = new decepticon;
+
+const handleSubmit = function (e) {
+    console.log("SUBMITED.");
+    $('#btnConfirmNext').attr('disabled', 'disabled');
+    megatron.attack();
+    return true;
+}
+
+// Components that persist through postbacks
+function pageLoad() {
+
+    megatron.mobilize();
+
     //
     // Transaction Panel
     //
@@ -42,10 +58,9 @@ function pageLoad() {
     } 
 
     // Disable processing submit button after its clicked to prevent duplicate submits
-    $('#btnConfirmNext').on('click', function () {
-        $('#btnConfirmNext').attr('disabled', 'disabled');
-        //Attach anti-scripting validation.
-        attachValidation();
+    $('#btnConfirmNext').on('click', function (e) {
+        
+        
     });
 
     // Disable progress buttons if they are not in a complete state
@@ -404,6 +419,10 @@ btnNext_OnClick = function (targetPanel) {
             // hide Payment show Confirm panels
             togglePanel('#pnlPayment', false);
             togglePanel('#pnlConfirm', true);
+
+            //Attach anti-scripting validation.
+            console.log("ATTACHING VALIDATION");
+            megatron.attack();
 
             // update progress bar
             toggleProgressIndicator('#btnProgressConfirm', true, false);
