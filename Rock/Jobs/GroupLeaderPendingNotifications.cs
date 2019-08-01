@@ -173,16 +173,15 @@ namespace Rock.Jobs
 
                         notifiedPersonIds.AddRange(pendingIndividuals.Select( p => p.Id ).ToList());
 
-                    }
+                        // mark pending members as notified as we go in case the job fails
+                        foreach ( var pendingGroupMember in qryPendingIndividuals.Where( m => m.IsNotified == false && notifiedPersonIds.Contains( m.PersonId ) ) )
+                        {
+                            pendingGroupMember.IsNotified = true;
+                        }
 
-                    // mark pending members as notified as we go in case the job fails
-                    
-                    foreach ( var pendingGroupMember in pendingGroupMembers.Where( m => m.IsNotified == false && notifiedPersonIds.Contains( m.PersonId ) ) )
-                    {
-                        pendingGroupMember.IsNotified = true;
-                    }
+                        rockContext.SaveChanges();
 
-                    rockContext.SaveChanges();
+                    }
 
                 }
 
