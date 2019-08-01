@@ -7,11 +7,7 @@
 
 {% assign item = Items | First %}
 
-<div id="pnlSportLoading" class="loading">
-    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-</div>
-
-<div id="pnlSportDetails" class="hidden">
+<div id="pnlSportDetails">
     {% if item %}
         {% comment %} render sport details {% endcomment %}
         <div class="navigation-and-title">
@@ -38,8 +34,8 @@
             </div>
 
             <div class="sport-title">
-                <h3 id="campusSportTitle"></h3>
-                <p id="campusSportSummary"></p>
+                <h3>{{ item.Title }}</h3>
+                <p>{{ item | Attribute:'SportSummary' }}</p>
             </div>
         </div>
 
@@ -50,30 +46,26 @@
                     <div id="game-button" class="btn tab" onClick="linkClicked(this, 'game')">Game <span class="responsive-hide">Map & Schedule</span></div>
                     <div id="rules-button" class="btn tab" onClick="linkClicked(this, 'rules')">Rules</div>
                 </div>
-                <a href="/register-v2?Sport={{ sport }}&Campus={{ campus }}" id="" class="btn btn-register">Register</a>
+                <a href="/register-v2?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
             </div>
 
             {% comment %} variables needed for sport-details-tabs.lava {% endcomment %}
             {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
             {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
+            {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
             {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
             {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
-            {% assign seasonCalendar = item | Attribute: 'SeasonCalendar', 'Url' %}
             {% assign rules = item | Attribute: 'Rules', 'Url' %}
 
             {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
 
-            <a href="/register-v2" id="" class="btn btn-register mobile-register">Register</a>
+            <a href="/register-v2?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register mobile-register">Register</a>
         </div>
         <script>
             var gCurrentLink;
             var gCurrentPanel;
 
             $(document).ready(function() {
-                // set sport info
-                $('#campusSportTitle').text('{{ item.Title }}');
-                $('#campusSportSummary').text('{{ item.Content }}');       
-
                 // default to the first panel
                 gCurrentLink = $("#practice-button")[0];
                 gCurrentPanel = $("#practice-panel")[0];
@@ -119,19 +111,10 @@
             {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
         </div>
         <div class="sport-title">
-            <h3>{{ campus | Replace:'-',' ' | Capitalize }} {{ sport | Replace:'-',' ' | Capitalize }}</h3>
+            <h3>{{ sport | Replace:'-',' ' | Capitalize }}</h3>
+        </div>
+        <div class="sport-unavailable">
             <p>Sport program information is currently unavailable, please try another campus or sport.</p>            
         </div>
     {% endif %}        
 </div>
-
-<script>
-    $(document).ready(function() {
-        // hide loading spinner and unhide content
-        $('.loading').toggle();
-        $('#pnlSportDetails').removeClass('hidden');  
-    });
-</script>
-
-
-   

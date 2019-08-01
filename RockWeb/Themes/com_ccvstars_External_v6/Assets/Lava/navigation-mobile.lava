@@ -42,7 +42,7 @@
             {% endif %}
         {% endfor %}
         
-        <li><a class="navigation-mobile-item" href="https://ccv.church">CCV Website</a></li>
+        <li><a class="navigation-mobile-item" href="https://ccv.church" target="_blank">CCV Website</a></li>
 
     {% endif %}
 

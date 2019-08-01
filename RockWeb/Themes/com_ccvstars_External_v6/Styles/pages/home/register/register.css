@@ -29,8 +29,8 @@
 }
 
 .login-required p {
-    font-size: 22px;
-    line-height: 33px;
+    font-size: 18px;
+    line-height: 27px;
     font-weight: 400;
     color: #505050;
     text-align: center;
@@ -65,8 +65,8 @@
     color: #FFFFFF;
     font-family: akrobat;
     font-weight: 700;
-    font-size: 17px;
-    line-height: 17.5px;
+    font-size: 14px;
+    line-height: 14.5px;
     padding-bottom: 20px;
 }
 
@@ -138,20 +138,17 @@
 
 .modal-body .filter-row {
     display: flex;
+    flex-wrap: wrap;
     padding-bottom: 20px;
 }
 
 .modal-body .filter-row label {
-    margin: 0 20px;
+    margin: 0 20px 0 0;
     text-transform: capitalize;
 }
 
-.modal-body .filter-row label:first-of-type {
-    margin-left: 0;
-}
-
-.modal-body .filter-row label {
-    margin-right: 5px;
+.modal-body .divisions label {
+    width: 250px;
 }
 
 /* Grid */
@@ -168,6 +165,7 @@
     border: 1px solid #e2e2e2;
     padding: 15px 20px;
     text-transform: capitalize;
+    text-align: center;
 }
 
 .register-grid th {
@@ -188,6 +186,7 @@
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
+    justify-content: center;
 }
 
 .sort-chevron {
@@ -289,15 +288,15 @@
 }
 
 .cost h6 {
-    font-size: 24px;
+    font-size: 19px;
     color: #e73d30;
     padding-bottom: 20px;
 }
 
 .action .btn {
     font-weight: 800;
-    font-size: 26px;
-    line-height: 29px;
+    font-size: 21px;
+    line-height: 23px;
     letter-spacing: -1.5px;
     padding: 18px 40px;
     border-radius: 6px;
@@ -437,6 +436,10 @@ button:focus {
     .title {
         padding-top: 17.5px;
         height: auto;
+    }
+
+    .title h1 {
+        padding: 0;
     }
 
     .login-required p {

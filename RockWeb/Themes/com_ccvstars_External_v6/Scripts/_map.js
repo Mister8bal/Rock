@@ -209,8 +209,20 @@
         var campusSports = campus.sports
         var campusRoute = campus.name.replace(' ','-').toLowerCase()
 
+        // create clickable map link
+        var campusMapLink = ""
+        var mapNewWindow = `target="_blank"`
+        if ((navigator.platform.indexOf("iPhone") != -1) || (navigator.platform.indexOf("iPad") != -1) || (navigator.platform.indexOf("iPod") != -1)) {
+            // ios - chrome ios doesnt like target blank so dont add it
+            campusMapLink = "http://maps.apple.com/?q=" + campus.geo.lat + "," + campus.geo.lng
+            mapNewWindow = ""
+        } else {
+            // everything else
+            campusMapLink = "https://maps.google.com/maps?daddr=" + campus.geo.lat + "," + campus.geo.lng + "&amp;ll="
+        }
+
         result  = '<div class="campus-info-window">'
-            result += '<h6>SPORTS AT THIS LOCATION</h6>'
+            result += '<h6>' + campus.name + '</h6>'
             result += '<div class="sports-offered">'
                 if ( campusSports.length > 0 ) {
                     if (campusSports.includes("baseball")) {
@@ -220,17 +232,17 @@
                         result += '<a href="/basketball-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/basketball-red.png"></a>'
                     }
                     if(campusSports.includes("football")) {
-                        result += '<a href="/football-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png">'
+                        result += '<a href="/football-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/football-red.png"></a>'
                     }
                     if (campusSports.includes("soccer")) {
-                        result += '<a href="/soccer-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png">'
+                        result += '<a href="/soccer-v2/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png"></a>'
                     }
                 } else {
                     result += '<p>No sports currently offered</p>'
                 }
-            result += '  </div>'
-            result += '  <p>CCV CAMPUS</p>'
-            
+            result += '</div>'
+            result += `<a href="` + campusMapLink + `" ` + mapNewWindow + `><p>` + campus.street + '<br />'
+            result += campus.city + ',' + campus.state + ' ' + campus.zip + '</p></a>'            
 
             result += '  <a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
         result += '</div>'

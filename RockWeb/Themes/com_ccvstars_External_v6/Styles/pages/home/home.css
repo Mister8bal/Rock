@@ -1,6 +1,6 @@
 
 #section-feature-bg {
-    height: 946px;
+    height: 846px;
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-home.jpg");
     position: relative;
 }
@@ -13,7 +13,7 @@
 
 /* Top section */
 .title {
-    padding-top: 205px;
+    padding-top: 105px;
 }
 
 .title h1 {
@@ -27,7 +27,7 @@
 .top-and-bottom-container {
     position: relative;
     z-index: 900;
-    margin-top: -450px;
+    margin-top: -425px;
 }
 
 .top {
@@ -99,8 +99,8 @@
 }
 
 .btn-homepage {
-	font-size: 22px;
-	line-height: 24px;
+	font-size: 18px;
+	line-height: 20px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -115,15 +115,12 @@
     padding-top: 75px;
 }
 
-.locations-title h2 {
+.locations-title h3 {
     color: #E73D30;
-    font-size: 50px;
-    line-height: 40px;
-    letter-spacing: -1px;
 }
 
 .locations-title p {
-    font-size: 21px;
+    font-size: 17px;
     color: #4f4f4f;
 }
 
@@ -136,7 +133,7 @@
 /**** Responsive Styling ****/
 @media screen and (max-width: 1439.98px) {
     #section-feature-bg {
-        height: 730px;
+        height: 630px;
     }
 
     #zone-sectionc {
@@ -182,7 +179,7 @@
     }
 
     #zone-feature {
-        margin: 0;
+        margin: 0 auto;
     }
      
     .service-times-title {

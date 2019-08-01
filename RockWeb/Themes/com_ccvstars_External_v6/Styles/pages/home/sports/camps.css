@@ -28,8 +28,8 @@
 }
 
 .camps-row .btn-primary {
-    font-size: 22px;
-    line-height: 24px;
+    font-size: 18px;
+    line-height: 20px;
 }
 
 .camps-row .btn-row {
@@ -38,8 +38,8 @@
 
 .camps-row p {
     color: #333333;
-    font-size: 17px;
-    line-height: 24px;
+    font-size: 14px;
+    line-height: 19px;
     width: 50%;
 }
 
@@ -56,8 +56,8 @@
 }
 
 .camps-missing p {
-    font-size: 24px;
-    line-height: 26px;
+    font-size: 19px;
+    line-height: 21px;
     color: #E73D30;
 }
 

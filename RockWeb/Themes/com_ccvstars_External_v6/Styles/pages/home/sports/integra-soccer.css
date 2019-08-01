@@ -1,0 +1,59 @@
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-soccer.jpg");
+}
+
+#section-e-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/background/background-soccer.jpg");
+}
+
+#section-b-bg, #section-d-bg {
+    background-color: #ededed;
+}
+
+#zone-sectiona {
+    padding-bottom: 100px;
+}
+
+p {
+    color: #6e6e6e;
+}
+
+.title h1 {
+    padding: 30px;
+}
+
+.sport-title {
+    padding-left: 45px;
+}
+
+.sport-title h3 {
+    color: #E73D30;
+    padding: 30px 0 25px 0;
+}
+
+.sport-title p {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 24px;
+    padding-bottom: 35px;
+}
+
+.tab-panel {
+    padding: 30px;
+}
+
+.tab-panel h1,.tab-panel h2,.tab-panel h3,.tab-panel h4,.tab-panel h5,.tab-panel h6 {
+	color: #E73D30;
+}
+
+.tournament-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tournament-image {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+    border: 1px solid rgba(0,0,0,0.15);
+}
+

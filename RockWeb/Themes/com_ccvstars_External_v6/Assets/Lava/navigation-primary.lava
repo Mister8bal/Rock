@@ -56,7 +56,7 @@
 
         <li class="navigation-primary-item">
             <div class="navigation-primary-item-button" >
-                <a href="https://ccv.church">CCV Website</a>
+                <a href="https://ccv.church" target="_blank">CCV Website</a>
             </div>
         </li>
     </ul>

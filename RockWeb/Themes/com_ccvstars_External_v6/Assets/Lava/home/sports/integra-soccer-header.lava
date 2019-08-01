@@ -1,0 +1,55 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/sports/integra-soccer-header.lava' %}
+{% endcomment %}
+
+<div class="tabbed-panel-view-desktop">
+    <div class="tabs">
+        <div id="general-button" class="btn tab" onClick="linkClicked(this, 'general')">Integra/Academy</div>
+        <div id="resources-button" class="btn tab" onClick="linkClicked(this, 'resources')">Resources & Forms</div>
+        <div id="coaches-button" class="btn tab" onClick="linkClicked(this, 'coaches')">Coaches & Pro Staff</div>
+        <div id="tournament-button" class="btn tab" onClick="linkClicked(this, 'tournament')">Tournament</div>
+        <div id="store-button" class="btn tab" onClick="linkClicked(this, 'store')">Store</div>
+
+    </div>
+    <a href="" class="btn btn-register">Register</a>
+</div>
+
+<script>
+    var gCurrentLink;
+    var gCurrentPanel;
+
+    $(document).ready(function() {
+        // default to the first panel
+        gCurrentLink = $("#general-button")[0];
+        gCurrentPanel = $("#general-panel")[0];
+
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    });
+
+    function togglePanel(panelLink, panelObj, enabled) {
+        if( enabled ) {
+            panelLink.classList.add('tab-selected');
+            panelObj.style.display="block";
+        }
+        else {
+            panelLink.classList.remove('tab-selected');
+            panelObj.style.display="none";
+        }
+    }
+            
+    function linkClicked(linkElement, sectionName, mobileView = false) {
+        // turn off existing panel
+        togglePanel( gCurrentLink, gCurrentPanel, false );
+        
+        var targetPanel = $("#" + sectionName + "-panel")[0];
+        gCurrentPanel = targetPanel;
+        gCurrentLink = linkElement;
+
+        // update button text with selection
+        if ( mobileView === true ) {
+            $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
+        }
+        
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    }
+</script>

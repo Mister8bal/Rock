@@ -1,6 +1,5 @@
 {% comment %} 
     {% assign sport = "Sport goes here" %}
-    {% assign year = "Camps year goes here" %}
 
     {% include '~~/Assets/Lava/home/sports/sports-campssection.lava' %}
 {% endcomment %}
@@ -11,7 +10,7 @@
 {% assign now = 'Now' | Date:'yyyyMMddHmmss' %}
 
 {% assign displayCamps = false %}
-{% assign availableCampuses = '' %}
+{% assign availableCampuses = "" %}
 
 {% comment %} Check for active summer camps for the sport. {% endcomment %}
 {% contentchannelitem where:'ContentChannelId == 304' %}
@@ -57,13 +56,7 @@
 {% if displayCamps == true %}
     <div class="summer-camps-row">
         <div class="rectangle">
-            <h3 class="summer-camps-desktop">{{ sport }} Summer Camps {{ year }}</h3>
-            <div class="summer-camps-mobile">
-                <h3>
-                    {{ sport }}<br />
-                    Summer Camps {{ year }}
-                </h3>
-            </div>
+            <h3 class="summer-camps-desktop">{{ sport }} Camps</h3>
 
             {% if campusParameter %}
                 <a href="/summer-camps/{{ sport | Downcase | Replace: ' ', '-' }}/{{ campusParameter }}" class="btn btn-secondary"><h6>More Info</h6></a>

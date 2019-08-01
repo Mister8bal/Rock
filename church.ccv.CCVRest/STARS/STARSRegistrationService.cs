@@ -60,7 +60,14 @@ namespace church.ccv.CCVRest.STARS
                             continue;
                         }
 
-                        int slotsAvailable = linkage.RegistrationInstance.MaxAttendees - linkage.RegistrationInstance.Registrations.Count;
+                        // -1 indicates unlimited slots available, MaxAttendees 0 = unlimited slots
+                        int slotsAvailable = -1;
+
+                        if ( linkage.RegistrationInstance.MaxAttendees > 0 )
+                        {
+                            // There is a MaxAttnedees number set, calculate slots available, ensure no negative number
+                            slotsAvailable = Math.Max( 0, ( linkage.RegistrationInstance.MaxAttendees - linkage.RegistrationInstance.Registrations.Count ) );
+                        }
 
                         // "Boys & Girls" gender needs to be returned as 2 event items to display and filter properly
                         // I know, not best idea having to depend on a string attribute
@@ -88,7 +95,7 @@ namespace church.ccv.CCVRest.STARS
                                         Gender = splitGender ? "Boys" : gender,
                                         Division = division,
                                         Season = season,
-                                        SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                        SlotsAvailable = slotsAvailable,
                                         WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                                     };
 
@@ -106,7 +113,7 @@ namespace church.ccv.CCVRest.STARS
                                             Gender = "Girls",
                                             Division = division,
                                             Season = season,
-                                            SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                            SlotsAvailable = slotsAvailable,
                                             WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                                         };
 
@@ -127,7 +134,7 @@ namespace church.ccv.CCVRest.STARS
                                 Gender = splitGender ? "Boys" : gender,
                                 Division = division,
                                 Season = season,
-                                SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                SlotsAvailable = slotsAvailable,
                                 WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                             };
 
@@ -145,7 +152,7 @@ namespace church.ccv.CCVRest.STARS
                                     Gender = "Girls",
                                     Division = division,
                                     Season = season,
-                                    SlotsAvailable = slotsAvailable > 0 ? slotsAvailable : 0,
+                                    SlotsAvailable = slotsAvailable,
                                     WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
                                 };
 

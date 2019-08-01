@@ -39,7 +39,7 @@
             {% if campusParameter %}
                 <p><strong>Not available at this campus, select a different campus.</strong></p>
             {% else %}
-                <p><strong>Programs vary by Location</strong></p>
+                <p><strong>Programs vary by location</strong></p>
             {% endif %}
             <div class="btn-row">    
                 {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}

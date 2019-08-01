@@ -8,7 +8,7 @@
 }
 
 #pnlSportDetails {
-    margin-bottom: 115px;
+    padding-bottom: 115px;
 }
 
 #pnlSportDetails h3, #pnlSportDetails h4, #pnlSportDetails h5 {
@@ -46,9 +46,9 @@
 
 .sport-title p {
     font-weight: 300;
-    font-size: 18px;
-    line-height: 24px;
-    padding-bottom: 65px;
+    font-size: 15px;
+    line-height: 19px;
+    padding-bottom: 35px;
 }
 
 .left img {
@@ -83,6 +83,18 @@
     display: none;
 }
 
+.sport-unavailable {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 250px;
+    color: rgba(0, 0, 0, 0.87);
+    background-color: #eeeeee;
+    border-radius: 5px;
+}
+
 /* End Zones & Sections */
 
 /* Overrides */
@@ -94,14 +106,18 @@
     padding-top: unset;
 }
 
-.btn-secondary {
+.tabbed-panel-view-cards {
+    min-height: 450px;
+}
+
+.btn-primary {
     padding: 15px 0;
-    margin: 20px 5px;
-    border-radius: 6px;
-    font-size: 20px;
-    line-height: 22px;
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 18px;
     font-weight: 800;
     width: 250px;
+    border-radius: 6px;
 }
 
 /* End Overrides */
@@ -163,7 +179,7 @@
     }
 
     #pnlSportDetails {
-        margin-bottom: 0;
+        padding-bottom: 0;
     }
     .navigation-and-title {
         display: flex;

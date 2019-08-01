@@ -216,7 +216,8 @@
         // sort registrations
         activeRegistrations.sort(compareValues(sortColumn,sortDirection));
 
-        renderGrid(activeRegistrations);
+        // first apply the filter in case page parameters were passed
+        applyFilter();
     }
 
     function initializeModalFilterOptions() {
@@ -269,6 +270,27 @@
             $('#filterDivision').append(newCheckbox);
         }
 
+        // check for query parameters and check respective filter items
+        {% if PageParameter.Sport %}            
+            // sport parameter found, look for a matching filter check box
+            var sportCheckbox = $('input[type=checkbox][value=' + "{{ PageParameter.Sport | Replace:'-','' }}]");
+
+            if (sportCheckbox) {
+                // sport checkbox with matching value found, set it to true
+                sportCheckbox.prop('checked',true);
+            }
+        {% endif %}
+
+        {% if PageParameter.Campus %}            
+            // campus parameter found, look for a matching filter check box
+            var campusCheckbox = $('input[type=checkbox][value=' + "{{ PageParameter.Campus | Capitalize | Replace:'-','' }}]");
+
+            if (campusCheckbox) {
+                // campus checkbox with matching value found, set it to true
+                campusCheckbox.prop('checked',true);
+            }
+        {% endif %}
+
         // attach search event to text input
         $('#tbSearch').on('change keyup paste', function() {
             applyFilter();
@@ -303,7 +325,7 @@
             // items to display
             for (let i = 0; i < items.length; i++) {
 
-                var waitListActive = items[i].SlotsAvailable === 0 && items[i].WaitListEnabled;
+                var waitListActive = items[i].SlotsAvailable !== -1 && items[i].SlotsAvailable === 0 && items[i].WaitListEnabled;
 
                 var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season, items[i].EventOccurrenceId, waitListActive);
 
@@ -508,7 +530,7 @@
         for (let i = 0; i < filteredMobileRegistrations.length; i++) {
             var itemUrl = '/register-v2/details?EventOccurrenceId=' + filteredMobileRegistrations[i].EventOccurrenceId;
 
-            var waitListActive = filteredMobileRegistrations[i].SlotsAvailable === 0 && filteredMobileRegistrations[i].WaitListEnabled;
+            var waitListActive = filteredMobileRegistrations[i].SlotsAvailable !== -1 && filteredMobileRegistrations[i].SlotsAvailable === 0 && filteredMobileRegistrations[i].WaitListEnabled;
 
             var itemNew = createEventLinkSelectionItem(filteredMobileRegistrations[i].Gender, itemUrl, waitListActive);
 
@@ -539,8 +561,10 @@
 
     // by default sort by Sport column ascending
     function applyFilter() {
-        // hide grid and show spinner
-        toggleGridLoading();
+        // hide grid (if its not hidden) and show spinner
+        if (!$('#tblGrid').hasClass('hidden')) {
+            toggleGridLoading();
+        }
 
         // get badges div and clear it
         $('#divFilterBadges').html('');
@@ -761,7 +785,7 @@
     //
 
     // return an html filter badge
-    function createFilterBadge(filterValue) {
+    function createFilterBadge(filterValue,filterText) {
         var div = document.createElement('div');
         var span = document.createElement('span');
         var closeIcon = document.createElement('i');
@@ -771,7 +795,11 @@
         div.setAttribute('onclick',`removeFilterItem('` + filterValue + `')`);
 
         // get the text for the badge from the label of the filter checkbox
-        span.innerHTML = $('input[type=checkbox][value=' + filterValue + ']').parent().text();
+        if (filterText) {
+            span.innerHTML = filterText;
+        } else {
+            span.innerHTML = $('input[type=checkbox][value=' + filterValue + ']').parent().text();
+        }
 
         div.append(span);
 

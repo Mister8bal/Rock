@@ -3,19 +3,10 @@
 {% endcomment %}
 
 {% assign announcementBarShowing = false %}
+{% assign fieldStatus = false %}
 
-{% assign ccvLive = 'Global' | Attribute:'CCVLive' %}
-{% if ccvLive == 'Yes' %}
-    {% assign announcementBarShowing = true %}
-    
-    {% if CurrentPerson %}
-        {% assign liveURL = '/ssologin' %}
-    {% else %}
-        {% assign liveURL = 'http://live.ccv.church' %}
-    {% endif %}
-    <div class="announcement-bar">
-        <button id="ccvlive" class="btn btn-default btn-live">Live</button>CCV is live!<span> <a href="{{ liveURL }}">Tune into the sermon now ></a></span>
-    </div>
+{% if fieldStatus %}
+    {% comment %} field status logic will go here {% endcomment %}
 {% else %}    
     {% assign upcomingMaintenance = 'Global' | Attribute:'UpcomingMaintenance' %}
 
