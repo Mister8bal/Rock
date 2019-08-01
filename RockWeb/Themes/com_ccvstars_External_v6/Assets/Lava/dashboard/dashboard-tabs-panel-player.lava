@@ -42,22 +42,17 @@
                             {% assign coach = groupmemberItems | First %}
                         {% endgroupmember %}
 
-                        {% assign teamCampus = "" %}   
-                        
-                        <!-- Try to get campus that sport is hosted at by looking at child groups campus Id-->
-                        {% assign campus = Campuses | Where: 'Id', childGroup.Group.CampusId %}
+                        {% comment %}  Try to get campus that sport is hosted at by looking at child groups campus Id{% endcomment %}
+                        {% assign campus = "" %}   
+                        {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
 
-                        {% if campus != '' %}
-                            {% assign teamCampus = campus %}
-                            Team Campus: {{teamCampus}}
-                        {% else %} 
+                        {% unless campus %}
                             {% comment %} 
                                 Get campus the sport is hosted at 
                                 by walking up parent groups (max 10 levels) 
                                 until you get to League type group, then get 
                                 Campus attribute
                             {% endcomment %}
-                            Campus: {{campus}}
                             {% assign parentGroupId = childGroup.Group.ParentGroupId %}
                             {% for i in (0..9) %}
                                 {% if parentGroupId != "" %}
@@ -67,7 +62,7 @@
 
                                     {% if parentGroup.GroupTypeId == 70 %}
                                         {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
-                                        {% assign teamCampus = parentGroup.CampusId | FromCache:'Campus' %}
+                                        {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
                                         {% break %}
                                     {% else %}
                                         {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
@@ -78,7 +73,7 @@
                                     {% break %}
                                 {% endif %}
                             {% endfor %}
-                        {% endif %}
+                        {% endunless %}
 
                         {% comment %} set sport icon {% endcomment %}
                         {% assign sportIcon = "" %}      
@@ -97,11 +92,11 @@
                         <tr class="desktop-view-table-row">
                             <td><img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
                             <td>{{ child.FullName }}</td>
-                            <td>{{ sportName | Captialize }}</td>
+                            <td>{{ childGroup.Group | Attribute:'Sport' }}</td>
                             <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
                             <td>{{ childGroup.Group | Attribute:'Color' }}</td>
                             <td>{{ childGroup.Group | Attribute:'PracticeDays' }} {{ childGroup.Group | Attribute:'PracticeTime' }}</td>
-                            <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ teamCampus }}&Sport={{ sportName | Replace:' ','-' }}&Player={{ child.PrimaryAlias.Guid }}">TEAM TOOLBOX</a></td>
+                            <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ','-' }}&Player={{ child.PrimaryAlias.Guid }}">TEAM TOOLBOX</a></td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -134,14 +129,11 @@
                         {% assign coach = groupmemberItems | First %}
                     {% endgroupmember %}
                     
-                    {% assign teamCampus = "" %}
-                    
-                    <!-- Try to get campus that sport is hosted at by looking at child groups campus Id-->
+                    {% comment %}  Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                    {% assign campus = "" %}
                     {% assign campus = Campuses | Where: 'Id', childGroup.Group.CampusId %}
 
-                    {% if campus != '' %}
-                        {% assign teamCampus = campus %}
-                    {% else %} 
+                    {% if campus == "" %}
                         {% comment %} 
                             Get campus the sport is hosted at 
                             by walking up parent groups (max 10 levels) 
@@ -157,7 +149,7 @@
 
                                 {% if parentGroup.GroupTypeId == 70 %}
                                     {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
-                                    {% assign teamCampus = parentGroup.CampusId | FromCache:'Campus' %}
+                                    {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
                                     {% break %}
                                 {% else %}
                                     {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
@@ -209,7 +201,7 @@
                                     <td>{{ childGroup.Group | Attribute:'PracticeTime' }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ teamCampus }}&Sport={{ sportName | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">TEAM TOOLBOX</a><th>
+                                    <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">TEAM TOOLBOX</a><th>
                                 </tr>
                             </table>  
                         </div>

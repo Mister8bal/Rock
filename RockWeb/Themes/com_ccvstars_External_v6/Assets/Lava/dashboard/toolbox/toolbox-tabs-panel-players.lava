@@ -4,7 +4,7 @@
 
 {% assign isCoach = false %}
 
-<!-- Get all Youth Sports teams tied to Current Person -->
+ {% comment %} Get all Youth Sports teams tied to Current Person  {% endcomment %}
 {% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
 {% for group in currentPersonGroups %}
     {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" or group.GroupRole.Name == "Team Manager" %}
@@ -18,7 +18,7 @@
             
             {% assign parents = groupmemberItem.Person | Parents %}
 
-            <!-- if group member is not a coach -->
+             {% comment %} if group member is not a coach  {% endcomment %}
             {% if groupmemberItem.GroupRole.Name == "Player" %}
                 <div class="player">    
                     <div class="player-image">
@@ -36,13 +36,13 @@
                         <strong>Parents:</strong>
                         {% for person in parents %}
                             {{ person.FirstName }}
-                            <!-- put a comma after first parent name, only if player has both parents in rock -->
+                             {% comment %} put a comma after first parent name, only if player has both parents in rock  {% endcomment %}
                             {% if forloop.first and forloop.rindex != 1 %}
                                 {{ ',' }}
                             {% endif %}
                         {% endfor %}
 
-                        <!-- if currentperson is the coach, add extra player details -->
+                         {% comment %} if currentperson is the coach, add extra player details  {% endcomment %}
                         {% if isCoach == true %}
                             <div>
                                 <strong>Birthday: </strong>{{ groupmemberItem.Person.BirthDate | Date:'MM/dd/yyyy' }}<br>

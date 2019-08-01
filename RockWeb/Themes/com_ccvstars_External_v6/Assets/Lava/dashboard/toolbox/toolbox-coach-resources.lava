@@ -9,15 +9,26 @@
 {% if numberOfResources > 0 %}
     {% for item in Items %}
         {% assign resourceLink = item | Attribute: 'ResourceUrl' %}
+        {% assign resourceFile = item | Attribute: 'ResourceFile','Url' %}
+
         <div class="resources-row">
-            <h4>{{ item.Title }} </h4> 
-            <p>{{ item.Summary }} </p> 
-            {% if resourceLink != '' %}
-                <div class="btn-row">
+            <div class="resources-content">
+                <h4>{{ item.Title }} </h4> 
+                <p>{{ item.Summary }} </p> 
+            </div>
+            <div class="resources-actions">
+
+                {% if resourceLink != '' %}
                     <a class="btn btn-primary" href="{{ resourceLink }}">View</a>
-                </div>    
-            {% endif %}
+                {% endif %}
+
+                {% if resourceFile != '' %}
+                    <a class="btn btn-primary" href="{{ resourceFile }}">View</a>
+                {% endif %}
+
+            </div>
         </div>
+        
     {% endfor %}
 {% else %}
     <div class="resources-missing">

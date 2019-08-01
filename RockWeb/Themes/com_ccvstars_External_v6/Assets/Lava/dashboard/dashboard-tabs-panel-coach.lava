@@ -25,15 +25,12 @@
                 {% groupmember where:'GroupId == {{ group.Group.Id }} && GroupRoleId == 99' %}
                     {% assign coach = groupmemberItems | First %}
                 {% endgroupmember %}
-
-                {% assign teamCampus = "" %}
                 
-                <!-- Try to get campus that sport is hosted at by looking at child groups campus Id-->
-                {% assign campus = Campuses | Where: 'Id', group.Group.CampusId %}
+                {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                {% assign campus = "" %}   
+                {% assign campus = group.Group.CampusId | FromCache:'Campus' %}
 
-                {% if campus != '' %}
-                    {% assign teamCampus = campus %}
-                {% else %} 
+                {% unless campus %}
                     {% comment %} 
                         Get campus the sport is hosted at 
                         by walking up parent groups (max 10 levels) 
@@ -49,7 +46,7 @@
 
                             {% if parentGroup.GroupTypeId == 70 %}
                                 {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
-                                {% assign teamCampus = parentGroup.CampusId | FromCache:'Campus' %}
+                                {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
                                 {% break %}
                             {% else %}
                                 {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
@@ -60,7 +57,7 @@
                             {% break %}
                         {% endif %}
                     {% endfor %}
-                {% endif %}
+                {% endunless %}
 
                 {% comment %} set sport icon {% endcomment %}
                 {% assign sportIcon = "" %}      
@@ -83,7 +80,7 @@
                     <td>{{ group.Group | Attribute:'Color' }}</td>
                     <td>{{ group.Group | Attribute:'PracticeDays' }}</td>
                     <td>{{ group.Group | Attribute:'PracticeTime' }}</td>
-                    <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ teamCampus }}&Sport={{ sportName | Replace:' ','-' }}">TEAM TOOLBOX</a></td>
+                    <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ','-' }}">TEAM TOOLBOX</a></td>
                 </tr>
             {% endfor %}
         </table> 
@@ -103,14 +100,11 @@
                 {% assign coach = groupmemberItems | First %}
             {% endgroupmember %}
 
-            {% assign teamCampus = "" %}
-            
-            <!-- Try to get campus that sport is hosted at by looking at child groups campus Id-->
-            {% assign campus = Campuses | Where: 'Id', group.Group.CampusId %}
+            {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+            {% assign campus = "" %}   
+            {% assign campus = group.Group.CampusId | FromCache:'Campus' %}
 
-            {% if campus != '' %}
-                {% assign teamCampus = campus %}
-            {% else %} 
+            {% unless campus != '' %}
                 {% comment %} 
                     Get campus the sport is hosted at 
                     by walking up parent groups (max 10 levels) 
@@ -126,7 +120,7 @@
 
                         {% if parentGroup.GroupTypeId == 70 %}
                             {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
-                            {% assign teamCampus = parentGroup.CampusId | FromCache:'Campus' %}
+                            {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
                             {% break %}
                         {% else %}
                             {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
@@ -137,7 +131,7 @@
                         {% break %}
                     {% endif %}
                 {% endfor %}
-            {% endif %}
+            {% endunless %}
 
             {% comment %} set sport icon {% endcomment %}
             {% assign sportIcon = "" %}      
@@ -178,7 +172,7 @@
                             <td>{{ group.Group | Attribute:'PracticeTime' }}</td>
                         </tr>
                         <tr class="last">
-                            <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ teamCampus }}&Sport={{ sportName | Replace: ' ', '-' }}">TEAM TOOLBOX</a><th>
+                            <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ', '-' }}">TEAM TOOLBOX</a><th>
                         </tr>
                     </table>
                 </div>

@@ -4,7 +4,7 @@
 
 {% assign isCoach = false %}
 
-<!-- Get all Youth Sports teams tied to Current Person -->
+{% comment %}  Get all Youth Sports teams tied to Current Person  {% endcomment %}
 {% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
 {% for group in currentPersonGroups %}
     {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" or group.GroupRole.Name == "Team Manager" %}
@@ -29,24 +29,24 @@
                         <img src="~~/Assets/Images/icon/person-no-photo-child-female.svg" />
                     {% endif %}
                 </div>
-                <!-- if currentperson is the coach, assistant coach or team manager -->
+                {% comment %}  if currentperson is the coach, assistant coach or team manager  {% endcomment %}
                 <div class="player-info">
                     <h6>{{ groupmemberItem.Person.FullName }}</h6>
 
-                    <!-- if group member is a coach, put "spouse" instead of "parents" -->
+                    {% comment %}  if group member is a coach, put "spouse" instead of "parents"  {% endcomment %}
                     {% if groupmemberItem.GroupRole.Name == "Coach" or groupmemberItem.GroupRole.Name == "Assistant Coach" %}
                             <strong>Spouse: </strong>{{ spouse.FullName }}
                     {% else %} 
                         <strong>Parents:</strong>
                         {% for person in parents %}
                             {{ person.FirstName }}
-                            <!-- put a comma after first parent name, only if player has both parents in rock -->
+                            {% comment %}  put a comma after first parent name, only if player has both parents in rock  {% endcomment %}
                             {% if forloop.first and forloop.rindex != 1 %}
                                 {{ ',' }}
                             {% endif %}
                         {% endfor %}
 
-                        <!-- if currentperson is the coach, add extra player details -->
+                        {% comment %}  if currentperson is the coach, add extra player details  {% endcomment %}
                         {% if isCoach == true %}
                             <div>
                                 <strong>Age: </strong>{{ groupmemberItem.Person.Age }}<br>

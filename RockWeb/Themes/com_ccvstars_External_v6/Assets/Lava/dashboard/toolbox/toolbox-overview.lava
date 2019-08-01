@@ -34,13 +34,27 @@
 {% endgroup %}
 
 <div class="person-summary">
+    <h2>{{ personChild.FullName }}</h2>
     <div class="person-details">
-        <h2>{{ personChild.FullName }}</h2>
         <div class="person-details-row">
-            <div class="person-details-item">
+            <div class="person-details-item">   
                 <h6>Practice Day(s)</h6>
                 <p>{{ group | Attribute:'PracticeDays' }}</p>
             </div>
+            <div class="person-details-item">
+                <h6>Practice Time</h6>
+                <p>{{ group | Attribute:'PracticeTime' }}</p>
+            </div>
+            <div class="person-details-item">
+                <h6>Practice Location</h6>
+                <p>{{ group | Attribute:'PracticeLocation' }}</p>
+            </div>
+            <div class="person-details-item">
+                <h6>Coach</h6>
+                <p>{{ coach.Person.FullName }}</p>
+            </div>
+        </div>
+        <div class="person-details-row">
             <div class="person-details-item">
                 <h6>Assistant Coach</h6>
                 {% for assistantCoach in group.Members %}
@@ -49,21 +63,9 @@
                     {% endif %}     
                 {% endfor %}
             </div>
-        </div>
-        <div class="person-details-row">
-            <div class="person-details-item">
-                <h6>Practice Time</h6>
-                <p>{{ group | Attribute:'PracticeTime' }}</p>
-            </div>
             <div class="person-details-item">
                 <h6>Color</h6>
                 <p>{{ group | Attribute:'Color' }}</p>
-            </div>
-        </div>
-        <div class="person-details-row">
-            <div class="person-details-item">
-                <h6>Coach</h6>
-                <p>{{ coach.Person.FullName }}</p>
             </div>
             <div class="person-details-item">
                 <h6>Sport</h6>
@@ -77,50 +79,51 @@
         <h2>Teams</h2>
     </div>
     
-    <!-- Get all Youth Sports teams tied to Current Person -->
+     {% comment %} Get all Youth Sports teams tied to Current Person  {% endcomment %}
     {% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
 
-    <!-- Get group count -->
+     {% comment %} Get group count  {% endcomment %}
     {% assign groupCount = currentPersonGroups | Size %}
 
-    <!-- if no groups in either coach or player toolboxes -->
+     {% comment %} if no groups in either coach or player toolboxes  {% endcomment %}
     {% if groupCount == 0 %}
         <div> No Groups Available To List</div>
     {% else %}
-        <!-- if currentperson is the coach, show dropdown with other teams that currentperson coaches (if any) -->
+         {% comment %} if currentperson is the coach, show dropdown with other teams that currentperson coaches (if any)  {% endcomment %}
         {% if isCoach == "true" or isAssistantCoachOrTeamManager == "true" %}
             <div class="teams-dropdown">
                 <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
                 <ul class="dropdown-menu">
                     {% for currentPersonGroup in currentPersonGroups %}
-                        <!-- Get campus that sport is hosted at -->
-                        {% assign campus = Campuses | Where: 'Id', currentPersonGroup.Group.CampusId %}
+                         {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                        {% assign campus = "" %}   
+                        {% assign campus = currentPersonGroup.Group.CampusId | FromCache:'Campus' %}
 
-                        <li><a href="/team-toolbox?GroupId=?GroupId={{currentPersonGroup.Group.Id}}&Campus={{campus}}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ currentPersonGroup.Group.Name }}</a></li>
+                        <li><a href="/team-toolbox?GroupId={{currentPersonGroup.Group.Id}}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ currentPersonGroup.Group.Name }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         {% else %}
 
-            <!-- Now check for children teams -->	
+             {% comment %} Now check for children teams  {% endcomment %}	
             {% assign children = CurrentPerson | Children %}
 
-            <!-- if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down. -->
+             {% comment %} if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down.  {% endcomment %}
             <div class="teams-dropdown">
                 <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ personChild.FullName }}<b class="fa fa-caret-down"></b></button>
-                <!-- Loop through children in family -->
+                 {% comment %} Loop through children in family  {% endcomment %}
                 {% for child in children %}
-                    <!-- Get child groups of youth sports type -->
+                     {% comment %} Get child groups of youth sports type  {% endcomment %}
                     {% assign childGroups = child | Groups:'73','Active' %}
-                    <!-- drop down list with teams that child is in -->
+                     {% comment %} drop down list with teams that child is in  {% endcomment %}
                     <ul class="dropdown-menu">
                         {% for childGroup in childGroups %}
-                            <!-- Get campus that sport is hosted at -->
-                            {% assign campus = Campuses | Where: 'Id', childGroup.Group.CampusId %}
-
-                            <!-- Check to see if group is active and currentperson is not the leader (coach) of group -->
+                             {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                            {% assign campus = "" %}   
+                            {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
+                             {% comment %} Check to see if group is active and currentperson is not the leader (coach) of group  {% endcomment %}
                             {% if childGroup.Group.IsPublic and childGroup.IsLeader != true %}
-                                <li><a href="/team-toolbox?GroupId={{childGroup.Group.Id}}&Campus={{campus}}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&paguid={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
+                                <li><a href="/team-toolbox?GroupId={{childGroup.Group.Id}}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&paguid={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>
