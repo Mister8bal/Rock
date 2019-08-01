@@ -37,6 +37,17 @@
                 {% else %}
             {% endcase %}
 
+            {% if childPage.Id == '2368' %}
+                <li class="navigation-primary-item {{ activeClass }}">
+                    <button class="navigation-primary-item-button" onclick="return false;">Locations</button>
+                    <div class="navigation-primary-dropdown-content-wrapper">
+                        <div class="navigation-primary-dropdown-content"> 
+                            <a class="navigation-primary-item-a dropdown-content-item" href="/stars-v2#locations">Locations</a>
+                        </div>
+                    </div>
+                </li>
+            {% endif %}
+
             <li class="navigation-primary-item {{ activeClass }}">
                 <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
                 <div class="navigation-primary-dropdown-content-wrapper">
