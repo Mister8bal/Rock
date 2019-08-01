@@ -12,7 +12,7 @@
     justify-content: center;
     padding: 0 10%;
     background-color: #ffffff;
-    height: 500px;
+    height: 400px;
 }
 
 .camps-row:nth-child(even) {
@@ -69,7 +69,7 @@
 
     .camps-row {
         padding: 0 5%;
-        height: 400px;
+        height: 300px;
     }
 
     .camps-row h3 {
@@ -96,6 +96,11 @@
 @media screen and (max-width: 767.98px) { 
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-mobile-camps.jpg");
+        height: 100px;
+    }
+
+    .camps-row {
+        height: 300px;
     }
 
     .camps-missing {
