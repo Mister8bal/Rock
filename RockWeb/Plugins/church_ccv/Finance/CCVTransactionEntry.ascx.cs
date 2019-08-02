@@ -776,6 +776,12 @@ TransactionAcountDetails: [
                     return false;
                 }
 
+                if(paymentInfo.Amount < 10 )
+                {
+                    errorMessage = "The donation amount must be at least $10.00.";
+                    return false;
+                }
+
 
                 // transaction variables
                 var transactionGuid = hfTransactionGuid.Value.AsGuid();
