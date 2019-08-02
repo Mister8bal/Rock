@@ -2,13 +2,42 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-coach-resources.lava' %}
 {% endcomment %}
 
+{% assign itemsToDisplay = false %}
 
-{% comment %} Get the number of items {% endcomment %}
-{% assign numberOfResources = Items | Size %}
+{% comment %} 
+    Check if current person is member of the passed group and then check their group role
+    99: Coach
+    105: Assistant Coach:
+    106: Team Manager:    
+{% endcomment %}
+{% assign showCoachTools = false %}
 
-{% if numberOfResources > 0 %}
-    {% for item in Items %}
-        {% assign resourceLink = item | Attribute: 'ResourceUrl' %}
+{% assign groupMembers = CurrentPerson | Group:PageParameter.GroupId %}
+
+{% for groupMember in groupMembers %}
+    {% if groupMember.GroupRole.Id == 99 or groupMember.GroupRole.Id == 105 or groupMember.GroupRole.Id == 106 %}
+        {% assign showCoachTools = true %}
+    {% endif %}
+{% endfor %}
+
+{% for item in Items %}
+    {% assign displayItem = false %}
+    {% assign itemAudience = item | Attribute:'Audience' %}
+
+    {% if showCoachTools %}
+        {% if itemAudience contains "coach" %}
+            {% assign displayItem = true %}
+            {% assign itemsToDisplay = true %}
+        {% endif %}
+    {% else %}
+        {% if itemAudience contains "player" %}
+            {% assign displayItem = true %}
+            {% assign itemsToDisplay = true %}
+        {% endif %}
+    {% endif %}
+
+        {% if displayItem %}
+        {% assign resourceLink = item | Attribute: 'ResourceUrl','Url' %}
         {% assign resourceFile = item | Attribute: 'ResourceFile','Url' %}
 
         <div class="resources-row">
@@ -28,9 +57,12 @@
 
             </div>
         </div>
-        
-    {% endfor %}
-{% else %}
+    {% endif %}   
+
+{% endfor %}
+
+
+{% if itemsToDisplay == false %}
     <div class="resources-missing">
         <p>No resources at this time. Please check back later.</p>
     </div>

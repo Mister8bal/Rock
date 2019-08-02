@@ -29,7 +29,7 @@
 <div id="practice-schedule-panel" class="practice-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
-            {% if practiceMap != "" or seasonCalendar != "" or practiceSchedule != "" %}
+            {% if practiceMap != "" or practiceSchedule != "" or keyDates != "" %}
                 <div class="left">
                     {% if practiceMap != "" %}
                         <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}">
@@ -38,20 +38,20 @@
                     {% endif %}
                 </div>
                 <div class="right">
-                    {% if seasonCalendar != "" or practiceSchedule != "" %}
-                        <h3>Practice Schedule</h3>
-                        {% if seasonCalendar != "" %}
-                            <a href="{{ seasonCalendar }}" class="btn btn-secondary">Season Calendar</a>
+                    {% if practiceSchedule !="" or keyDates != "" %}
+                        <h3>Resources</h3>
+                        {% if keyDates != "" %}
+                            <a href="{{ keyDates }}" class="btn btn-primary">Key Dates</a>
                         {% endif %}
                         {% if practiceSchedule != "" %}
-                            <a href="{{ practiceSchedule }}" class="btn btn-secondary">Practice Schedule </a>
+                            <a href="{{ practiceSchedule }}" class="btn btn-primary">Practice Schedule</a>
                         {% endif %}
                     {% else %}
-                        <p class="placeholder">Practice Schedule Unavailable</p>
+                        <p class="placeholder">Resources Unavailable</p>
                     {% endif %}
                 </div>
             {% else %}
-                <p class="placeholder">Practice Map and Schedule Unavailable</p>
+                <p class="placeholder">Practice Resources Unavailable</p>
             {% endif %}
         </div>
     </div>
@@ -60,7 +60,7 @@
 <div id="game-schedule-panel" class="game-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
-            {% if gameMap != "" or seasonCalendar != "" or gameSchedule != "" %}
+            {% if gameMap != "" or gameSchedule != "" %}
                 <div class="left">
                     {% if gameMap != "" %}
                         <img class="rounded-edge-img img-responsive" src="{{ gameMap }}"> 
@@ -69,13 +69,10 @@
                     {% endif %}
                 </div>
                 <div class="right">
-                    {% if seasonCalendar != "" or gameSchedule != "" %}
+                    {% if gameSchedule != "" %}
                         <h3>Game Schedule</h3>
-                        {% if seasonCalendar != "" %}
-                            <a href="{{ seasonCalendar }}" class="btn btn-secondary">Season Calendar</a> 
-                        {% endif %}
                         {% if gameSchedule != "" %}
-                            <a href="{{ gameSchedule }}" class="btn btn-secondary">Game Schedule </a>
+                            <a href="{{ gameSchedule }}" class="btn btn-primary">Game Schedule </a>
                         {% endif %}
                     {% else %}
                         <p class="placeholder">Game Schedule Unavailable</p>
@@ -93,7 +90,7 @@
         {% if rules != "" %}
             <h3>Rules</h3>
             <div id="pdfRulesDownload">
-                <a href="{{ rules }}" class="btn btn-secondary">Download Rules</a>
+                <a href="{{ rules }}" class="btn btn-primary">Download Rules</a>
             </div>
 
             <object id="pdfRules" data="{{ rules }}" width="100%" height="100%" type="application/pdf"></object>   

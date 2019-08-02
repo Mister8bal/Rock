@@ -2,13 +2,20 @@
     {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-tabs-panel-players.lava' %}
 {% endcomment %}
 
-{% assign isCoach = false %}
+{% comment %} 
+    Check if current person is member of the passed group and then check their group role
+    We need to know this before rendering the roster so we can show more detail for coaches
+    99: Coach
+    105: Assistant Coach:
+    106: Team Manager:    
+{% endcomment %}
+{% assign showCoachTools = false %}
 
- {% comment %} Get all Youth Sports teams tied to Current Person  {% endcomment %}
-{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
-{% for group in currentPersonGroups %}
-    {% if group.GroupRole.Name == "Coach" or group.GroupRole.Name == "Assistant Coach" or group.GroupRole.Name == "Team Manager" %}
-        {% assign isCoach = true %}
+{% assign groupMembers = CurrentPerson | Group:PageParameter.GroupId %}
+
+{% for groupMember in groupMembers %}
+    {% if groupMember.GroupRole.Id == 99 or groupMember.GroupRole.Id == 105 or groupMember.GroupRole.Id == 106 %}
+        {% assign showCoachTools = true %}
     {% endif %}
 {% endfor %}
 
@@ -18,8 +25,8 @@
             
             {% assign parents = groupmemberItem.Person | Parents %}
 
-             {% comment %} if group member is not a coach  {% endcomment %}
-            {% if groupmemberItem.GroupRole.Name == "Player" %}
+             {% comment %} only show players on roster - 98: Player group role id {% endcomment %}
+            {% if groupmemberItem.GroupRole.Id == 98 %}
                 <div class="player">    
                     <div class="player-image">
                         {% if groupmemberItem.Person.PhotoId != null %}
@@ -43,7 +50,7 @@
                         {% endfor %}
 
                          {% comment %} if currentperson is the coach, add extra player details  {% endcomment %}
-                        {% if isCoach == true %}
+                        {% if showCoachTools %}
                             <div>
                                 <strong>Birthday: </strong>{{ groupmemberItem.Person.BirthDate | Date:'MM/dd/yyyy' }}<br>
                                 <strong>Address: </strong>{{ groupmemberItem.Person | Address:'Home' }}<br>
