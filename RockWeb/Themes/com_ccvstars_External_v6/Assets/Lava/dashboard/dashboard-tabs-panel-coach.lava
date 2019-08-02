@@ -1,9 +1,13 @@
-
 {% comment %} 
     {% include '~~/Assets/Lava/dashboard/dashboard-tabs-panel-coach.lava' %}
 {% endcomment %}
 
-{% if Groups != empty %}
+{% comment %} 
+    Lava file that includes this file should pass currentPersonTeams
+    if it doesnt, default to display nothing to show
+{% endcomment %}
+
+{% if currentPersonTeams != empty %}
     <div class="desktop-view">
         <table class="desktop-view-table">
             <tr>
@@ -15,29 +19,105 @@
                 <th>Practice Time</th>
                 <th></th>
             </tr>
-            {% for group in Groups %}
+            {% for coachTeam in currentPersonTeams %}
+                {% if coachTeam.Group.IsPublic and coachTeam.GroupRole.Id == 99 or coachTeam.GroupRole.Id == 105 or coachTeam.GroupRole.Id == 106 %}
+                    {% comment %} 
+                        Get the coach of the team. 
+                        Coach GrouproleId = 99. 
+                        For now we are just grabbing the first coach returned
+                    {% endcomment %}
+                    {% assign coach = "" %}
+                    {% groupmember where:'GroupId == {{ coachTeam.Group.Id }} && GroupRoleId == 99' %}
+                        {% assign coach = groupmemberItems | First %}
+                    {% endgroupmember %}
+                    
+                    {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                    {% assign campus = "" %}   
+                    {% assign campus = coachTeam.Group.CampusId | FromCache:'Campus' %}
+
+                    {% unless campus %}
+                        {% comment %} 
+                            Get campus the sport is hosted at 
+                            by walking up parent groups (max 10 levels) 
+                            until you get to League type group, then get 
+                            Campus attribute
+                        {% endcomment %}
+                        {% assign parentGroupId = coachTeam.Group.ParentGroupId %}
+                        {% for i in (0..9) %}
+                            {% if parentGroupId != "" %}
+                                {% comment %} always start with empty parentGroup {% endcomment %}
+                                {% assign parentGroup = "" %}
+                                {% assign parentGroup = parentGroupId | GroupById %}
+
+                                {% if parentGroup.GroupTypeId == 70 %}
+                                    {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
+                                    {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
+                                    {% break %}
+                                {% else %}
+                                    {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
+                                    {% assign parentGroupId = parentGroup.ParentGroupId | Default:'' %}
+                                {% endif %}
+                            {% else %}
+                                {% comment %} we dont have a parentGroupId, break out of for loop {% endcomment %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endunless %}
+
+                    {% comment %} set sport icon {% endcomment %}
+                    {% assign sportIcon = "" %}      
+                    {% assign sportName = coachTeam.Group | Attribute:'Sport' | Downcase %}
+
+                    {% if sportName contains 'soccer' %}
+                        {% assign sportIcon = 'soccer' %}
+                    {% else if sportName contains 'basketball' %} 
+                        {% assign sportIcon = 'basketball' %}
+                    {% else if sportName contains 'football' %} 
+                        {% assign sportIcon = 'football' %}
+                    {% else if sportName contains 'baseball' %}  
+                        {% assign sportIcon = 'baseball' %}
+                    {% endif %}
+
+                    <tr>
+                        <td><img class="sport-icon" width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
+                        <td>{{ coachTeam.Group | Attribute:'Sport' }}</td>
+                        <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
+                        <td>{{ coachTeam.Group | Attribute:'Color' | Default:'Not Assigned' }}</td>
+                        <td>{{ coachTeam.Group | Attribute:'PracticeDays' | Default:'Not Assigned' }}</td>
+                        <td>{{ coachTeam.Group | Attribute:'PracticeTime' | Default:'Not Assigned' }}</td>
+                        <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ coachTeam.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ','-' }}">TEAM TOOLBOX</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table> 
+    </div>  
+        
+    <div class="mobile-view">
+        {% for mobileCoachTeam in currentPersonTeams %}
+            {% if mobileCoachTeam.Group.IsPublic and mobileCoachTeam.GroupRole.Id == 99 or mobileCoachTeam.GroupRole.Id == 105 or mobileCoachTeam.GroupRole.Id == 106 %}
+                {% assign teamNumber = forloop.index %}
                 {% comment %} 
                     Get the coach of the team. 
                     Coach GrouproleId = 99. 
                     For now we are just grabbing the first coach returned
                 {% endcomment %}
                 {% assign coach = "" %}
-                {% groupmember where:'GroupId == {{ group.Group.Id }} && GroupRoleId == 99' %}
+                {% groupmember where:'GroupId == {{ mobileCoachTeam.Group.Id }} && GroupRoleId == 99' %}
                     {% assign coach = groupmemberItems | First %}
                 {% endgroupmember %}
-                
+
                 {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
                 {% assign campus = "" %}   
-                {% assign campus = group.Group.CampusId | FromCache:'Campus' %}
+                {% assign campus = mobileCoachTeam.Group.CampusId | FromCache:'Campus' %}
 
-                {% unless campus %}
+                {% unless campus != '' %}
                     {% comment %} 
                         Get campus the sport is hosted at 
                         by walking up parent groups (max 10 levels) 
                         until you get to League type group, then get 
                         Campus attribute
                     {% endcomment %}
-                    {% assign parentGroupId = group.Group.ParentGroupId %}
+                    {% assign parentGroupId = mobileCoachTeam.Group.ParentGroupId %}
                     {% for i in (0..9) %}
                         {% if parentGroupId != "" %}
                             {% comment %} always start with empty parentGroup {% endcomment %}
@@ -61,7 +141,7 @@
 
                 {% comment %} set sport icon {% endcomment %}
                 {% assign sportIcon = "" %}      
-                {% assign sportName = group.Group | Attribute:'Sport' | Downcase %}
+                {% assign sportName = mobileCoachTeam.Group | Attribute:'Sport' | Downcase %}
 
                 {% if sportName contains 'soccer' %}
                     {% assign sportIcon = 'soccer' %}
@@ -73,112 +153,54 @@
                     {% assign sportIcon = 'baseball' %}
                 {% endif %}
 
-                <tr>
-                    <td><img class="sport-icon" width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
-                    <td>{{ group.Group | Attribute:'Sport' }}</td>
-                    <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
-                    <td>{{ group.Group | Attribute:'Color' }}</td>
-                    <td>{{ group.Group | Attribute:'PracticeDays' }}</td>
-                    <td>{{ group.Group | Attribute:'PracticeTime' }}</td>
-                    <td><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ','-' }}">TEAM TOOLBOX</a></td>
-                </tr>
-            {% endfor %}
-        </table> 
-    </div>  
-        
-    <div class="mobile-view">
-        {% for group in Groups %}
-            {% assign teamNumber = forloop.index %}
-            {% assign groupNumber = forloop.index %}
-            {% comment %} 
-                Get the coach of the team. 
-                Coach GrouproleId = 99. 
-                For now we are just grabbing the first coach returned
-            {% endcomment %}
-            {% assign coach = "" %}
-            {% groupmember where:'GroupId == {{ group.Group.Id }} && GroupRoleId == 99' %}
-                {% assign coach = groupmemberItems | First %}
-            {% endgroupmember %}
-
-            {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
-            {% assign campus = "" %}   
-            {% assign campus = group.Group.CampusId | FromCache:'Campus' %}
-
-            {% unless campus != '' %}
-                {% comment %} 
-                    Get campus the sport is hosted at 
-                    by walking up parent groups (max 10 levels) 
-                    until you get to League type group, then get 
-                    Campus attribute
-                {% endcomment %}
-                {% assign parentGroupId = group.Group.ParentGroupId %}
-                {% for i in (0..9) %}
-                    {% if parentGroupId != "" %}
-                        {% comment %} always start with empty parentGroup {% endcomment %}
-                        {% assign parentGroup = "" %}
-                        {% assign parentGroup = parentGroupId | GroupById %}
-
-                        {% if parentGroup.GroupTypeId == 70 %}
-                            {% comment %} League type group found, assign team campus from the groups campus id and break out of for loop {% endcomment %}
-                            {% assign campus = parentGroup.CampusId | FromCache:'Campus' %}
-                            {% break %}
-                        {% else %}
-                            {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
-                            {% assign parentGroupId = parentGroup.ParentGroupId | Default:'' %}
-                        {% endif %}
-                    {% else %}
-                        {% comment %} we dont have a parentGroupId, break out of for loop {% endcomment %}
-                        {% break %}
-                    {% endif %}
-                {% endfor %}
-            {% endunless %}
-
-            {% comment %} set sport icon {% endcomment %}
-            {% assign sportIcon = "" %}      
-            {% assign sportName = group.Group | Attribute:'Sport' | Downcase %}
-
-            {% if sportName contains 'soccer' %}
-                {% assign sportIcon = 'soccer' %}
-            {% else if sportName contains 'basketball' %} 
-                {% assign sportIcon = 'basketball' %}
-            {% else if sportName contains 'football' %} 
-                {% assign sportIcon = 'football' %}
-            {% else if sportName contains 'baseball' %}  
-                {% assign sportIcon = 'baseball' %}
-            {% endif %}
-
-            <button id="teamToggle{{ teamNumber }}{{ groupNumber }}" class="player-mobile" type="button" data-toggle="collapse" data-target="#team{{ teamNumber }}{{ groupNumber }}"><h5>{{ group.Group.Name }}</h5><b class="mdi mdi-chevron-down"></b></button>
-            <div id="team{{ teamNumber }}{{ groupNumber }}" class="collapse">
-                <div class="player-mobile-details">
-                    <table class="coach-mobile-view-table">
-                        <tr>
-                            <th class="row-mobile-header red">Sport</th>
-                            <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ group.Group | Attribute:'Sport' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="row-mobile-header gray">Coach</th>
-                            <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
-                        </tr>
-                        <tr>
-                            <th class="row-mobile-header red">Color</th>
-                            <td>{{ group.Group | Attribute:'Color' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="row-mobile-header gray">Practice Days</th>
-                            <td>{{ group.Group | Attribute:'PracticeDays' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="row-mobile-header red">Practice Time</th>
-                            <td>{{ group.Group | Attribute:'PracticeTime' }}</td>
-                        </tr>
-                        <tr class="last">
-                            <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ group.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ', '-' }}">TEAM TOOLBOX</a><th>
-                        </tr>
-                    </table>
+                <button id="teamToggle{{ teamNumber }}" class="player-mobile" type="button" data-toggle="collapse" data-target="#team{{ teamNumber }}"><h5>{{ mobileCoachTeam.Group.Name }}</h5><b class="mdi mdi-chevron-down"></b></button>
+                <div id="team{{ teamNumber }}" class="collapse">
+                    <div class="player-mobile-details">
+                        <table class="coach-mobile-view-table">
+                            <tr>
+                                <th class="row-mobile-header red">Sport</th>
+                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ mobileCoachTeam.Group | Attribute:'Sport' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="row-mobile-header gray">Coach</th>
+                                <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
+                            </tr>
+                            <tr>
+                                <th class="row-mobile-header red">Color</th>
+                                <td>{{ mobileCoachTeam.Group | Attribute:'Color' | Default:'Not Assigned' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="row-mobile-header gray">Practice Days</th>
+                                <td>{{ mobileCoachTeam.Group | Attribute:'PracticeDays' | Default:'Not Assigned' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="row-mobile-header red">Practice Time</th>
+                                <td>{{ mobileCoachTeam.Group | Attribute:'PracticeTime' | Default:'Not Assigned' }}</td>
+                            </tr>
+                            <tr class="last">
+                                <th class="row-mobile-button" colspan="2"><a type="button" class="btn btn-primary" href="/team-toolbox?GroupId={{ mobileCoachTeam.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ sportName | Replace:' ', '-' }}">TEAM TOOLBOX</a><th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-            </div>       
-        {% endfor %}    
+
+                <script>
+                    $(document).ready(function() {
+                        $('#teamToggle{{ teamNumber }}').on('click', function(){
+                            if ($('#team{{ teamNumber }}').hasClass('in')) {
+                                $('#teamToggle{{ teamNumber }} b').addClass('mdi-chevron-down');
+                                $('#teamToggle{{ teamNumber }} b').removeClass('mdi-chevron-up');
+                            } else {
+                                $('#teamToggle{{ teamNumber }} b').removeClass('mdi-chevron-down');
+                                $('#teamToggle{{ teamNumber }} b').addClass('mdi-chevron-up');
+
+                            }
+                        });
+                    });
+                </script>
+            {% endif %}
+        {% endfor %}  
     </div>
 {% else %}
-    <h3 class="no-groups-text">No Groups Available To List</h3>
+    <h3 class="no-groups-text">No Teams Available To List</h3>
 {% endif %}

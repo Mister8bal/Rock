@@ -2,21 +2,25 @@
     {% include '~~/Assets/Lava/dashboard/dashboard-tabs.lava' %}
 {% endcomment %}
 
-<div id="pnlDashboardLoading" class="loading">
-    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-</div>
-
 {% assign showCoachTools = false %}
 
-{% comment %} Get all Youth Sports teams tied to Current Person {% endcomment %}
-{% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
-{% for currentPersonGroup in currentPersonGroups %}
-    {% if currentPersonGroup.GroupRole.Name == "Coach" or currentPersonGroup.GroupRole.Name == "Assistant Coach" %}
+{% comment %} 
+    Get all Youth Sports teams tied to Current Person and
+    see if current person is a coach, assistant coach, or team manager 
+    in any of the teams so that we know to display the coach tab
+        99: Coach
+        105: Assistant Coach:
+        106: Team Manager:  
+{% endcomment %}
+{% assign currentPersonTeams = CurrentPerson | Groups:'73','Active' %}
+
+{% for currentPersonTeam in currentPersonTeams %}
+    {% if currentPersonTeam.GroupRole.Id == 99 or currentPersonTeam.GroupRole.Id == 105 or currentPersonTeam.GroupRole.Id == 106 %}
         {% assign showCoachTools = true %}
     {% endif %}
 {% endfor %}
 
-<div id="pnlDashboardDetails" class="hidden">
+<div id="pnlDashboardDetails">
     {% comment %} mobile View buttons {% endcomment %}
     <div class="tabbed-panel-view-mobile">
         <div class="mobile-items">
@@ -31,7 +35,7 @@
     <div class="tabbed-panel-view-cards">
         <div class="tabbed-panel-view-desktop">
             <div class="tabs">
-                <div id="player-button" class="btn tab" onClick="linkClicked(this, 'player')">Player</div>
+                <div id="player-button" class="btn tab tab-selected" onClick="linkClicked(this, 'player')">Player</div>
                 {% if showCoachTools %}
                     <div id="coach-button" class="btn tab" onClick="linkClicked(this, 'coach')">Coach</div>
                 {% endif %} 
@@ -53,7 +57,6 @@
     </div>
 
     <script>
-
             var gCurrentLink;
             var gCurrentPanel;
 
@@ -97,13 +100,6 @@
     </script>  
 </div>
 
-<script>
-    $(document).ready(function() {
-        // hide loading spinner and unhide content
-        $('.loading').toggle();
-        $('#pnlDashboardDetails').removeClass('hidden');  
-    });
-</script>
 
 
    

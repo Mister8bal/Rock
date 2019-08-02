@@ -88,53 +88,77 @@
     </div>
     {% comment %} if currentperson is the coach, show dropdown with other teams that currentperson coaches (if any)  {% endcomment %}
     {% if showCoachTools %}
-        {% comment %} Coach View: Get all Youth Sports teams tied to Current Person  {% endcomment %}
+        {% comment %} Coach View {% endcomment %}
+        {% comment %} Count number of groups current person is coach, assistant coach, or team manager is in  {% endcomment %}
+        {% assign numberOfCoachGroups = 0 %}
         {% assign currentPersonGroups = CurrentPerson | Groups:'73','Active' %}
 
-        <div class="teams-dropdown">
-            <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
-            <ul class="dropdown-menu">
-                {% for currentPersonGroup in currentPersonGroups %}
-                    {% unless currentPersonGroup.Group.Id == group.Id %}
-                        {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
-                        {% assign campus = "" %}   
-                        {% assign campus = currentPersonGroup.Group.CampusId | FromCache:'Campus' %}
+        {% for currentPersonGroup in currentPersonGroups %}
+            {% if currentPersonGroup.GroupRole.Id == 99 or currentPersonGroup.GroupRole.Id == 105 or currentPersonGroup.GroupRole.Id == 106 %}            
+                {% assign numberOfCoachGroups = numberOfCoachGroups | Plus:1 %}
+            {% endif %}        
+        {% endfor %}
 
-                        <li><a href="/team-toolbox?GroupId={{currentPersonGroup.Group.Id}}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ currentPersonGroup.Group.Name }}</a></li>
-                    {% endunless %}
-                {% endfor %}
-            </ul>
-        </div>
-    {% else %}    
-        {% comment %} Parent View: Now check for children teams  {% endcomment %}	
-        {% assign children = CurrentPerson | Children %}
-
-        {% comment %} if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down.  {% endcomment %}
-        <div class="teams-dropdown">
-            <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ personChild.FullName }}<b class="fa fa-caret-down"></b></button>
-            <ul class="dropdown-menu">
-                {% comment %} Loop through children in family  {% endcomment %}
-                {% for child in children %}
-                    {% comment %} Get child groups of youth sports type  {% endcomment %}
-                    {% assign childGroups = "" %}
-                    {% assign childGroups = child | Groups:'73','Active' %}
-
-                    {% comment %} drop down list with teams that child is in  {% endcomment %}
-                    {% for childGroup in childGroups %}
-                        {% unless childGroup.Group.Id == group.Id %}
+        {% comment %} display dropdown if more than one group, other just display name {% endcomment %}
+        {% if numberOfCoachGroups > 1 %}
+            <div class="teams-dropdown">
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
+                <ul class="dropdown-menu">
+                    {% for currentPersonGroup in currentPersonGroups %}
+                        {% unless currentPersonGroup.Group.Id == group.Id %}
                             {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
                             {% assign campus = "" %}   
-                            {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
-                            
-                            {% comment %} Check to see if group is active and currentperson is not the leader (coach) of group  {% endcomment %}
-                            {% if childGroup.Group.IsPublic %}
-                                <li><a href="/team-toolbox?GroupId={{childGroup.Group.Id}}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
-                            {% endif %}
+                            {% assign campus = currentPersonGroup.Group.CampusId | FromCache:'Campus' %}
+
+                            <li><a href="/team-toolbox?GroupId={{ currentPersonGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ currentPersonGroup.Group.Name }}</a></li>
                         {% endunless %}
                     {% endfor %}
-                {% endfor %}
-            </ul>
-        </div>
+                </ul>
+            </div>
+        {% else %}
+            <div class="teams-dropdown">
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" onclick="return false;">{{ group.Name }}</button>
+            </div>
+        {% endif %}
+    {% else %}    
+        {% comment %} Player View {% endcomment %}
+        {% comment %} Check for children teams  {% endcomment %}	
+        {% assign children = CurrentPerson | Children %}
+
+        {% assign numberOfChildren = children | Size %}
+
+        {% if numberOfChildren > 1 %}
+            {% comment %} if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down.  {% endcomment %}
+            <div class="teams-dropdown">
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ personChild.FullName }}<b class="fa fa-caret-down"></b></button>
+                <ul class="dropdown-menu">
+                    {% comment %} Loop through children in family  {% endcomment %}
+                    {% for child in children %}
+                        {% comment %} Get child groups of youth sports type  {% endcomment %}
+                        {% assign childGroups = "" %}
+                        {% assign childGroups = child | Groups:'73','Active' %}
+
+                        {% comment %} drop down list with teams that child is in  {% endcomment %}
+                        {% for childGroup in childGroups %}
+                            {% unless childGroup.Group.Id == group.Id %}
+                                {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                                {% assign campus = "" %}   
+                                {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
+                                
+                                {% comment %} Check to see if group is active and currentperson is not the leader (coach) of group  {% endcomment %}
+                                {% if childGroup.Group.IsPublic %}
+                                    <li><a href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
+                                {% endif %}
+                            {% endunless %}
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="teams-dropdown">
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" onclick="return false;">{{ personChild.FullName }}</button>
+            </div>
+        {% endif %}
     {% endif %}
 </div>
 <hr>
