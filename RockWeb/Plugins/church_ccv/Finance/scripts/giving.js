@@ -645,6 +645,7 @@ validateAmountFormFields = function () {
     // get amount and selected fund value
     var amount = $('#nbAmount').val();
     var fund = $('#ddlAccounts').find(':selected').val();
+    var minDonation = parseFloat($('#hfMinDonation').val());
 
     // check if schedule input is toggled
     var isScheduledTransaction = false;
@@ -660,7 +661,7 @@ validateAmountFormFields = function () {
         scheduledTransactionReady = true;
     }
 
-    if ((amount && amount !== '$') && (fund && fund !== '-1') && (parseFloat(amount.replace('$','')) >= 10.00) && scheduledTransactionReady === true && $('.has-error').length === 0) {
+    if ((amount && amount !== '$') && (fund && fund !== '-1') && (parseFloat(amount.replace('$', '')) >= minDonation) && scheduledTransactionReady === true && $('.has-error').length === 0) {
         $('#nbHTMLMessage').addClass('hidden');
         return true;
     } else {
@@ -673,7 +674,7 @@ validateAmountFormFields = function () {
             errorMessage += "<br />You must enter a valid amount greater than $10.00";
         }
 
-        if (parseFloat(amount.replace('$', '')) < 10.00) {
+        if (parseFloat(amount.replace('$', '')) < minDonation) {
             $('#nbAmount').parents('div.amount-wrapper').addClass('has-error');
             errorMessage += "<br />You must enter a valid amount greater than $10.00";
         }

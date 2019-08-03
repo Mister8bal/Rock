@@ -68,6 +68,7 @@
                         <div class="amount-wrapper">
                             
                             <asp:TextBox ID="nbAmount" runat="server" Placeholder="10.00" ClientIDMode="Static" CssClass="amount form-control" />
+                            <asp:HiddenField ID="hfMinDonation" runat="server" ClientIDMode="Static" />
 
                         </div>
 

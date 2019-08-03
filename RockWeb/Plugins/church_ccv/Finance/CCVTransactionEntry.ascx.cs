@@ -89,7 +89,6 @@ TransactionAcountDetails: [
     [BooleanField( "Enable Comment Entry", "Allows the guest to enter the the value that's put into the comment field (will be appended to the 'Payment Comment' setting)", false, "", 29 )]
     [TextField( "Comment Entry Label", "The label to use on the comment edit field (e.g. Trip Name to give to a specific trip).", false, "Comment", "", 30 )]
     [TextField( "Fund / Account Dropdown Placeholder", "The placeholder text to use in the account/fund dropdown (e.g. --Select a Fund-- or --Select a Trip--).", false, "--Select A Fund--", "", 31, "FundDropdownPlaceholder" )]
-
     #endregion
 
     public partial class CCVTransactionEntry : Rock.Web.UI.RockBlock
@@ -101,7 +100,10 @@ TransactionAcountDetails: [
         private GatewayComponent _ccGatewayComponent = null;
         private FinancialGateway _achGateway;
         private GatewayComponent _achGatewayComponent = null;
-        
+
+        //Set the required minimum donation.
+        const float minDonation = 10;
+
         #endregion
 
         #region Properties
@@ -208,6 +210,9 @@ TransactionAcountDetails: [
             {
                 // create new transaction guid
                 hfTransactionGuid.Value = Guid.NewGuid().ToString();
+
+                // Set the min donation amount.
+                hfMinDonation.Value = minDonation.ToString();
                 
                 // Bind dropdown lists
                 BindFundAccounts();
@@ -720,6 +725,7 @@ TransactionAcountDetails: [
         /// <returns></returns>
         private bool ProcessTransaction( out string errorMessage )
         {
+
             var rockContext = new RockContext();
 
             if ( string.IsNullOrWhiteSpace( TransactionCode ) )
