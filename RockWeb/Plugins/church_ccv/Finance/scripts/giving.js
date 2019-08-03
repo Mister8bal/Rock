@@ -645,7 +645,8 @@ validateAmountFormFields = function () {
     // get amount and selected fund value
     var amount = $('#nbAmount').val();
     var fund = $('#ddlAccounts').find(':selected').val();
-    
+    var minDonation = parseFloat($('#hfMinDonation').val());
+
     // check if schedule input is toggled
     var isScheduledTransaction = false;
     var scheduledTransactionReady = false;
@@ -660,13 +661,22 @@ validateAmountFormFields = function () {
         scheduledTransactionReady = true;
     }
 
-    if ((amount && amount !== '$') && (fund && fund !== '-1') && scheduledTransactionReady === true && $('.has-error').length === 0) {
+    if ((amount && amount !== '$') && (fund && fund !== '-1') && (parseFloat(amount.replace('$', '')) >= minDonation) && scheduledTransactionReady === true && $('.has-error').length === 0) {
         $('#nbHTMLMessage').addClass('hidden');
         return true;
     } else {
+
+        let errorMessage = "Please correct errors and try again.";
+
         // highlight fields not ready
-        if ((!amount || amount === '$')) {
+        if (!amount || amount === '$') {
             $('#nbAmount').parents('div.amount-wrapper').addClass('has-error');
+            errorMessage += "<br />You must enter a valid amount greater than $10.00";
+        }
+
+        if (parseFloat(amount.replace('$', '')) < minDonation) {
+            $('#nbAmount').parents('div.amount-wrapper').addClass('has-error');
+            errorMessage += "<br />You must enter a valid amount greater than $10.00";
         }
 
         if ((!fund || fund === '-1')) {
@@ -683,7 +693,7 @@ validateAmountFormFields = function () {
             }
         }
 
-        displayMessage('Please correct errors and try again.', 'danger');
+        displayMessage(errorMessage, 'danger');
         return false;
     }
 
