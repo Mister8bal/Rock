@@ -102,7 +102,7 @@ TransactionAcountDetails: [
         private GatewayComponent _achGatewayComponent = null;
 
         //Set the required minimum donation.
-        const float minDonation = 10;
+        const decimal minDonation = 10;
 
         #endregion
 
@@ -782,7 +782,7 @@ TransactionAcountDetails: [
                     return false;
                 }
 
-                if(paymentInfo.Amount < 10 )
+                if(paymentInfo.Amount < minDonation )
                 {
                     errorMessage = "The donation amount must be at least $10.00.";
                     return false;
