@@ -59,6 +59,9 @@
                         {% for grandchildPage in childPage.Pages  %}
                             <a class="navigation-primary-item-a dropdown-content-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a>
                         {% endfor %}
+                        {% if childPageTitle == 'about stars' %}
+                            <a class="navigation-primary-item-a dropdown-content-item" href="/field-status-v2">Field Status</a>
+                        {% endif %}
                     </div>
                 </div>
             </li>

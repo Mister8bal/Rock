@@ -57,7 +57,7 @@
 
     // Marker Styles
     CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg' : '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg';
-    CCV.marker = new google.maps.MarkerImage(CCV.markerFile, null, null, null, new google.maps.Size(200,78));
+    CCV.marker = new google.maps.MarkerImage(CCV.markerFile, null, null, null, new google.maps.Size(200,64));
 
 
 

@@ -155,6 +155,11 @@ a:hover, a:focus {
     padding-top: 0;
     text-align: left;
 }
+
+.recent-registrations .links a:active, .recent-registrations .links a:focus {
+    color: #000000;
+}
+
 /* End recent registrations */
 
 /* Overrides */

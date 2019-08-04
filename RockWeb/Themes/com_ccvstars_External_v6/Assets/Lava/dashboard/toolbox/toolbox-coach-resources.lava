@@ -37,7 +37,7 @@
     {% endif %}
 
         {% if displayItem %}
-        {% assign resourceLink = item | Attribute: 'ResourceUrl','Url' %}
+        {% assign resourceLink = item | Attribute: 'ResourceUrl', 'RawValue' %}
         {% assign resourceFile = item | Attribute: 'ResourceFile','Url' %}
 
         <div class="resources-row">
