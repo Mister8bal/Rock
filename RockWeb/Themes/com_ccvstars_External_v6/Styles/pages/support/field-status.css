@@ -1,0 +1,158 @@
+
+/* Campus Card Section */
+.field-status-title {
+    color: #E73D30;
+    font-family: Akrobat;
+    font-weight: bold;
+    text-align: center;
+}
+
+.campus-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.campus-card {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px 20px 10px;
+    width: 345px;
+    min-width: 345px;
+    max-width: 345px;
+    height: 375px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+    border: unset;
+    border-width: unset;
+    background-color: #FFFFFF;
+    z-index: 1;
+    overflow: hidden;
+}
+ 
+.card-header h4 {
+    color: #E73D30;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 10px 16px;
+}
+ 
+.content p {
+    color: #000000;
+}
+
+.campus-card .header {
+    display: flex;
+    flex-direction: column;
+}
+ 
+.campus-card .link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+ 
+.contact-phone {
+    color: #E73D30;
+}
+
+
+
+
+/* Mobile */
+.campus-cards-row-mobile {
+    display: none;
+}
+
+.campus-dropdown li {
+    margin: 0%;
+}
+
+.campus-dropdown ul {
+    width: 100%;
+}
+
+.campus-dropdown button {
+    width: 100%;
+    padding: 5px 15px 5px 25px;
+    border: none;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.campus-dropdown button:hover {
+    background-color: #E73D30;
+    color: white;
+}
+
+.dropdown-menu {
+    top: unset;
+    width: 100%;
+    position: absolute;
+    float: left;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: none;
+}
+
+#btnCampusSelect {
+    color: #FFFFFF;
+    width: 100%;
+    background-color: #E73D30;
+    border-color: #b2bdc5;
+    border-radius: 10px;
+    height: 30px;
+    min-width: 200px;
+    margin-bottom: 5%;
+}
+
+/* End Mobile */
+
+
+/* Campus Card Responsive Styling */
+@media screen and (max-width: 760px) {
+    .campus-cards-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .campus-card {
+        height: 400px;
+        margin: 0 auto;
+    }
+
+    .campus-cards-row-mobile {
+        display: block;
+        padding-bottom: 30px;
+    }
+
+    .campus-cards-row {
+        display: none; 
+    }
+
+    .campus-card .link {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .contact-phone {
+        margin-bottom: 10px !important;
+    }
+
+    .btn-primary {
+        min-width: 100%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .campus-card {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+}
