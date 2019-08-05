@@ -1,0 +1,141 @@
+{% comment %}
+    {% assign title = 'Toolbox Title' %}
+
+    {% person dataview:'741' where:'Id == "{{ CurrentPerson.Id }}"' %}
+        {% for person in personItems %}
+            {% assign canAccessToolbox = true %}
+        {% endfor %}
+    {% endperson %}
+    {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/toolbox-header.lava' %}
+
+    You must add all the above code into content channel block setting above the lava include and configure for relative toolbox
+
+    Kids Coach Dataviews
+    741 - 2 Year Olds
+    742 - Early Kids
+    743 - Later Kids
+    
+{% endcomment %}
+
+<script>
+    // adds on "onload" hook to the window.onload function chain
+    var oldonload = window.onload;
+    window.onload = (typeof window.onload != 'function') ?
+        handleOnLoad : function() { 
+            oldonload(); handleOnLoad(); 
+        };
+
+    var gCurrentLink;
+    var gCurrentPanel;
+
+    function handleOnLoad() {
+        // default to the dashboard panel
+        gCurrentLink = $("#videos-button")[0];
+        gCurrentPanel = $("#videos-panel")[0];
+        togglePanel( gCurrentLink, gCurrentPanel, true );        
+    }
+
+    function togglePanel(panelLink, panelObj, enabled) {
+        if( enabled ) {
+            panelLink.classList.add('toolbox-subnav-div-selected');
+            panelObj.style.display="block";
+        }
+        else {
+            panelLink.classList.remove('toolbox-subnav-div-selected');
+            panelObj.style.display="none";
+        }
+    }
+         
+    function linkClicked(linkElement, sectionName, showInfoBanner = true) {
+        if ( document.readyState === "complete") {
+            // remove styling from default mobile panel
+            $('#videos-mobile-button').removeClass('toolbox-subnav-div-selected');
+
+            // turn off existing panel
+            togglePanel( gCurrentLink, gCurrentPanel, false );
+            
+            var targetPanel = $("#" + sectionName + "-panel")[0];
+            gCurrentPanel = targetPanel;
+            gCurrentLink = linkElement;
+            
+            togglePanel( gCurrentLink, gCurrentPanel, true );
+        }
+    }
+
+    function setNextPreviousState(currentIndex, totalItems) {
+        var lastItemIndex = totalItems - 1;
+        
+        switch (currentIndex) {
+            case 0:
+                // at newest item, hide next button
+                $('#nextItem').addClass('hidden');
+                $('#previousItem').removeClass('hidden');
+                break;
+            case lastItemIndex:
+                // at last item, hide previous button
+                $('#nextItem').removeClass('hidden');
+                $('#previousItem').addClass('hidden');
+                break;
+            default:
+                // show both buttons
+                $('#nextItem').removeClass('hidden');
+                $('#previousItem').removeClass('hidden');
+                break;
+        }
+    }
+
+    // loop through all divs and hide them
+    function hideAllCoachVideoDivs(totalDivs) {
+        for (let i = 0; i < totalDivs; i++) {
+            $('#divCoachVideos' + (i)).addClass('hidden');         
+        }
+    }
+</script>
+
+{% comment %} canAccessToolbox is set before the include in block settings (dataview has to be hardcoded){% endcomment %}
+{% if canAccessToolbox == false %}
+    {% if CurrentPersonCanEdit %}
+        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because you do not have Kid Coach Toolbox access</p>
+    {% else %}
+        {{ '/dashboard' | PageRedirect }}
+    {% endif %}
+{% endif %}
+
+<div class="header">
+    <h4>{{ title }}</h4>
+</div>
+
+<div class="toolbox-subnav-desktop">
+    <div id="videos-button" onClick="linkClicked(this, 'videos')">Videos</div>
+    <div id="resources-button" onClick="linkClicked(this, 'resources')">Resources</div>
+</div>
+
+<div class="toolbox-subnav-mobile">
+    <div class="toolbox-subnav-mobile-items">
+        <div id="videos-mobile-button" onClick="linkClicked(this, 'videos')" class="subnav-item toolbox-subnav-div-selected">Videos</div>
+        <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('.toolbox-subnav-mobile-items').slick({
+            infinite: false,
+            slidesToShow: 2,
+            swipeToSlide: true,    
+            arrows: true,
+            variableWidth: true,
+            prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
+            nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
+        });
+    });
+    
+    $('.nav-prev').click(function(){
+        $('.toolbox-subnav-mobile-items').slick('slickPrev');
+    });
+
+    $('.nav-next').click(function(){
+        $('.toolbox-subnav-mobile-items').slick('slickNext');
+    });
+</script>
+   
