@@ -33,7 +33,7 @@
 
         $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost }}</h6>');
 
-        $('.action').html('<a href="/stars-registration-v2?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>')
+        $('.action').html('<a href="/stars-registration?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>')
 
         $('.details-image').html(`<img src="/Themes/com_ccvstars_External_V6/Assets/Images/feature/feature-{{ Event | Attribute:'Sport' }}.jpg" />`);
 

@@ -46,7 +46,7 @@
                     <div id="game-button" class="btn tab" onClick="linkClicked(this, 'game')">Game <span class="responsive-hide">Map & Schedule</span></div>
                     <div id="rules-button" class="btn tab" onClick="linkClicked(this, 'rules')">Rules</div>
                 </div>
-                <a href="/register-v2?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
+                <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
             </div>
 
             {% comment %} variables needed for sport-details-tabs.lava {% endcomment %}
@@ -59,7 +59,7 @@
 
             {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
 
-            <a href="/register-v2?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register mobile-register">Register</a>
+            <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register mobile-register">Register</a>
         </div>
         <script>
             var gCurrentLink;

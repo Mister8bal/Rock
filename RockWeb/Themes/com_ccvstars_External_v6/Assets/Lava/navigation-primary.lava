@@ -42,7 +42,7 @@
                     <button class="navigation-primary-item-button" onclick="return false;">Locations</button>
                     <div class="navigation-primary-dropdown-content-wrapper">
                         <div class="navigation-primary-dropdown-content"> 
-                            <a class="navigation-primary-item-a dropdown-content-item" href="/stars-v2#locations">Locations</a>
+                            <a class="navigation-primary-item-a dropdown-content-item" href="/stars#locations">Locations</a>
                         </div>
                     </div>
                 </li>
@@ -60,7 +60,7 @@
                             <a class="navigation-primary-item-a dropdown-content-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a>
                         {% endfor %}
                         {% if childPageTitle == 'about stars' %}
-                            <a class="navigation-primary-item-a dropdown-content-item" href="/field-status-v2">Field Status</a>
+                            <a class="navigation-primary-item-a dropdown-content-item" href="/field-status">Field Status</a>
                         {% endif %}
                     </div>
                 </div>

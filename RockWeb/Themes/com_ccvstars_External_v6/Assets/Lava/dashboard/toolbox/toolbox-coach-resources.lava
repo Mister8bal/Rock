@@ -48,11 +48,11 @@
             <div class="resources-actions">
 
                 {% if resourceLink != '' %}
-                    <a class="btn btn-primary" href="{{ resourceLink }}">View</a>
+                    <a class="btn btn-primary" href="{{ resourceLink }}" target="_blank">View</a>
                 {% endif %}
 
                 {% if resourceFile != '' %}
-                    <a class="btn btn-primary" href="{{ resourceFile }}">View</a>
+                    <a class="btn btn-primary" href="{{ resourceFile }}" target="_blank">View</a>
                 {% endif %}
 
             </div>

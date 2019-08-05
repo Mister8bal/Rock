@@ -528,7 +528,7 @@
 
         // add regististrations from filtered array
         for (let i = 0; i < filteredMobileRegistrations.length; i++) {
-            var itemUrl = '/register-v2/details?EventOccurrenceId=' + filteredMobileRegistrations[i].EventOccurrenceId;
+            var itemUrl = '/register/details?EventOccurrenceId=' + filteredMobileRegistrations[i].EventOccurrenceId;
 
             var waitListActive = filteredMobileRegistrations[i].SlotsAvailable !== -1 && filteredMobileRegistrations[i].SlotsAvailable === 0 && filteredMobileRegistrations[i].WaitListEnabled;
 
@@ -853,7 +853,7 @@
         addCellToRow(row, gender);
         addCellToRow(row, division, 'grid-division');
         addCellToRow(row, season);
-        addCellToRow(row, '<a href="/register-v2/details?EventOccurrenceId=' + eventOccurrenceId + '" class="' + actionCSSClass + '">' + actionText + '</a>' );
+        addCellToRow(row, '<a href="/register/details?EventOccurrenceId=' + eventOccurrenceId + '" class="' + actionCSSClass + '">' + actionText + '</a>' );
 
         return row;
     }
