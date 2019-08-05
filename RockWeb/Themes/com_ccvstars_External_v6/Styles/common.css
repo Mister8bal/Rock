@@ -846,6 +846,18 @@ a:focus {
     margin-right: 10px;
 }
 
+.campus-contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.campus-contact img {
+    width: 30px;
+    height: 30px;
+    margin-left: 30px;
+}
+
 /* google overrides */
 .gm-style .gm-style-iw-c {
     border-radius: 0;

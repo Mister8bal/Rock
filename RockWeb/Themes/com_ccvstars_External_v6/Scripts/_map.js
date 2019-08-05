@@ -242,9 +242,11 @@
                 }
             result += '</div>'
             result += `<a href="` + campusMapLink + `" ` + mapNewWindow + `><p>` + campus.street + '<br />'
-            result += campus.city + ',' + campus.state + ' ' + campus.zip + '</p></a>'            
-
-            result += '  <a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
+            result += campus.city + ',' + campus.state + ' ' + campus.zip + '</p></a>'     
+            result += '<div class="campus-contact">'
+            result += '<a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
+            result += '<a href="mailto:' + campus.name.replace(' ','').toLowerCase() +  '@ccvstars.com"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>'
+            result += '</div>'
         result += '</div>'
         return result
     }
