@@ -26,10 +26,10 @@
                     </div>
                 </div>
 
-                {% assign selectButtonText = sport | Replace:'-',' ' | Capitalize %}
+                {% assign selectButtonText = "Select a different sport" %}
                 {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
 
-                {% assign selectButtonText = campus | Replace:'-',' '  %}
+                {% assign selectButtonText = "Select a different campus"  %}
                 {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
             </div>
 
