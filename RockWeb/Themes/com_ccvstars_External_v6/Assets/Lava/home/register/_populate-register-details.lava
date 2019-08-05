@@ -4,20 +4,20 @@
     Note: The page must include register-details.lava for this to work.
 {% endcomment %}
 
-{% assign onWaitList = "false" %}
+{% assign onWaitList = false %}
 
 {% case RegistrationStatusLabel %}
 {% when 'Full' %}
-    {% assign actionButtonText = 'Registration Full' %}
-    {% assign actionButtonClass = 'btn-primary' %}
-    {% assign actionButtonDisabled = 'disabled' %}
+    {% assign actionButtonText = "Registration Full" %}
+    {% assign actionButtonClass = "btn-primary" %}
+    {% assign actionButtonDisabled = "disabled" %}
 {% when 'Join Wait List' %}
-    {% assign onWaitList = "true" %}
-    {% assign actionButtonText = 'Join Wait List' %}
-    {% assign actionButtonClass = 'btn-secondary' %}
+    {% assign onWaitList = true %}
+    {% assign actionButtonText = "Join Wait List" %}
+    {% assign actionButtonClass = "btn-secondary" %}
 {% else %}
-    {% assign actionButtonText = 'Register Now' %}
-    {% assign actionButtonClass = 'btn-primary' %}
+    {% assign actionButtonText = "Register Now" %}
+    {% assign actionButtonClass = "btn-primary" %}
 {% endcase %}
 
 <script>
@@ -25,7 +25,7 @@
         $('.campus-sport').text('{{ EventItemOccurrence.Campus.Name }} {{ Event | Attribute:'Sport' | Replace:'-',' ' }}');
         $('.division-gender').text('{{ Event | Attribute:'Division' }} {{ Event | Attribute:'Gender' }}');
 
-        {% if onWaitList == "true" %}
+        {% if onWaitList %}
             $('.wait-list').html('<h4>Now on wait list</h4>');
         {% endif %}
 
@@ -33,7 +33,14 @@
 
         $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost }}</h6>');
 
-        $('.action').html('<a href="/stars-registration?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>')
+        var actionHtml = '<a href="/stars-registration-v2?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>';
+        
+        {% assign newPlayerEventOccurrenceId = Event | Attribute:'NewPlayerEventOccurrenceId' %}
+
+        {% if newPlayerEventOccurrenceId != "" and onWaitList == false %}
+            actionHtml += '<div class="new-player">{{ newPlayerContent }} <a href="/stars-registration-v2?EventOccurrenceId={{ newPlayerEventOccurrenceId }}" class="new-player-registration">Click here for a 50% discount.</a></div>'
+        {% endif %}
+        $('.action').html(actionHtml);
 
         $('.details-image').html(`<img src="/Themes/com_ccvstars_External_V6/Assets/Images/feature/feature-{{ Event | Attribute:'Sport' }}.jpg" />`);
 
