@@ -3,5 +3,5 @@
 {% endcomment %}
 
 {% unless CurrentPerson %}
-    <a id="masthead-navitem-register" class="masthead-navitem" href="/stars-create-account">CREATE ACCOUNT</a>
+    <a id="masthead-navitem-register" class="masthead-navitem" href="/create-account">CREATE ACCOUNT</a>
 {% endunless %}
