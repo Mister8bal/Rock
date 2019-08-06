@@ -75,6 +75,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
                     lTitle.Text = "<h4 class=\"panel-title\">" + "AP Board: " + apBoardItem.Title + "</h4>";
                     tbContent.Text = apBoardItem.Content;
                     tbTipOfTheWeek.Text = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+                    tbVideo.Text = apBoardItem.AttributeValues["WistiaId"].ToString();
 
                     success = true;
                 }
@@ -112,6 +113,7 @@ namespace RockWeb.Plugins.church_ccv.Groups
 
                     apBoardItem.Content = tbContent.Text;
                     apBoardItem.AttributeValues["TipOfTheWeek"].Value = tbTipOfTheWeek.Text;
+                    apBoardItem.AttributeValues["WistiaId"].Value = tbVideo.Text;
                     apBoardItem.StartDateTime = DateTime.Now.Date;
 
                     apBoardItem.SaveAttributeValues( rockContext );

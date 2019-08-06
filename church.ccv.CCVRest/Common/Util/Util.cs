@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,9 +8,11 @@ using System.Net.Http;
 using System.Text;
 using church.ccv.CCVRest.Common.Model;
 using Newtonsoft.Json;
+using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
+using RestSharp;
 
 namespace church.ccv.CCVRest.Common
 {
@@ -112,8 +115,11 @@ namespace church.ccv.CCVRest.Common
             InvalidImage
         }
 
-        public static UpdatePersonPhotoResult UpdatePersonPhoto( PersonPhotoModel personPhoto )
+        public static UpdatePersonPhotoResult UpdatePersonPhoto( PersonPhotoModel personPhoto, out int? photoId )
         {
+            // assume null, and set it only if this is successfull
+            photoId = null;
+
             const int ProfilePicture_BinaryFileTypeId = 5;
             const int PhotoReview_GroupId = 1207885;
             const int PhotoReviewPending_GroupRoleId = 59;
@@ -177,7 +183,91 @@ namespace church.ccv.CCVRest.Common
             groupMember.GroupMemberStatus = GroupMemberStatus.Pending;
             rockContext.SaveChanges();
 
+            photoId = personAlias.Person.PhotoId;
             return UpdatePersonPhotoResult.Success;
+        }
+
+        public static List<string> GetAPForwardingNumber( Guid? apPrimaryAliasGuid )
+        {
+            const int DefinedTypeId_APForwardNumber = 32;
+            const string ResponseRecipientKey = "ResponseRecipient";
+
+            // given the primary alias guid of an Associate Pastor, get their forwarding phone number
+            var smsForwardValues = new DefinedValueService( new RockContext() ).Queryable()
+                                                                               .AsNoTracking()
+                                                                               .Where( dv => dv.DefinedTypeId == DefinedTypeId_APForwardNumber )
+                                                                               .ToList();
+
+            // go thru each sms forward defined value
+            List<string> phoneNumbers = new List<string>( );
+            foreach ( var smsForward in smsForwardValues )
+            {
+                // see if it contains a key tying it to a person
+                smsForward.LoadAttributes();
+                if ( smsForward.AttributeValues.ContainsKey( ResponseRecipientKey ) )
+                {
+                    // if the guid matches the target person, take it
+                    Guid? personAliasGuid = smsForward.AttributeValues[ResponseRecipientKey].Value.AsGuidOrNull();
+                    if ( personAliasGuid == apPrimaryAliasGuid )
+                    {
+                        phoneNumbers.Add( smsForward.Value );
+                    }
+                }
+            }
+
+            return phoneNumbers;
+        }
+
+        public static void GetWistiaMedia( string mediaHashedId, Action<HttpStatusCode, WistiaMedia> response )
+        {
+            const string Wistia_MediaURL = "https://api.wistia.com/v1/medias/{0}.json?api_password={1}";
+            string wistiaAPIKey = GlobalAttributesCache.Value( "WistiaMobileAppKey" );
+
+            // do a simple request to wistia for the media id 
+            string requestUrl = string.Format( Wistia_MediaURL, mediaHashedId, wistiaAPIKey );
+
+            RestClient restClient = new RestClient( requestUrl );
+            RestRequest restRequest = new RestRequest( Method.GET );
+
+            WistiaMedia media = null;
+            HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
+            try
+            {
+                var restResponse = restClient.Execute( restRequest );
+
+                statusCode = restResponse.StatusCode;
+                if ( restResponse.StatusCode == HttpStatusCode.OK )
+                {
+                    // parse the response appropriately
+                    media = JsonConvert.DeserializeObject<WistiaMedia>( restResponse.Content );
+                }
+            }
+            finally
+            {
+                // whether it went well or not, provide the status code and object from Wistia
+                response( statusCode, media );
+            }
+        }
+
+        public static string GetWistiaAssetMpeg4URL( WistiaMedia media, string platformType )
+        {
+            // Wistia provides direct URLs as .bin files. Some devices need a recognizable
+            // type, so Wistia's documentation says to drop the .bin, put a /, and then a file name and extension.
+            var videoAsset = media.Assets.Where( a => a.Type.ToLower() == platformType ).SingleOrDefault();
+
+            if ( videoAsset != null )
+            {
+                string videoURL = videoAsset.URL.Replace( ".bin", "" );
+
+                // make sure this platform type has mpeg 4 as its type
+                if ( videoAsset.ContentType == "video/mp4" )
+                {
+                    // use the id of the media for the filename, to help with client caching.
+                    return videoURL + "/" + media.Id + ".mp4";
+                }
+            }
+
+            return null;
         }
     }
 }

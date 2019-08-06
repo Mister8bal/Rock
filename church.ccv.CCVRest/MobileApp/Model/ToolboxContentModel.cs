@@ -11,13 +11,15 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
     public class ToolboxResourceModel
     {
+        public int SeriesId;
         public string SeriesName;
         public string SeriesImageURL;
+        public int MessageId;
         public string MessageName;
         public DateTime WeekendDate;
         public int WeekNumber;
         public string DiscussionGuideURL;
-        public string WistiaId;
+        public string VideoURL;
     }
 
     public class APBoardModel
@@ -29,6 +31,9 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string Summary;
         public string TipOfTheWeek;
-        public string WistiaId;
+        public string VideoURL;
+        public DateTime VideoDate;
+        public string VideoName;
+        public string VideoThumbnailURL;
     }
 }

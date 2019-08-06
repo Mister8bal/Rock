@@ -79,6 +79,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string LastName;
 
+        public string Email;
+
         public int? Age;
 
         public string DisplayAge;

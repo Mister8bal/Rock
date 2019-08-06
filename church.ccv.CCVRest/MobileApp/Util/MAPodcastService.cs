@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Podcast;
 using Rock;
@@ -11,10 +14,9 @@ namespace church.ccv.CCVRest.MobileApp
     {
         public static MASeriesModel PodcastSeriesToMobileAppSeries( PodcastUtil.PodcastSeries series )
         {
-            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
-
             MASeriesModel maSeriesModel = new MASeriesModel();
 
+            maSeriesModel.Id = series.Id;
             maSeriesModel.Name = series.Name;
             maSeriesModel.Description = series.Description;
 
@@ -30,16 +32,8 @@ namespace church.ccv.CCVRest.MobileApp
                 maSeriesModel.DateRange = startDate + " - " + endDate;
             }
 
-            // set the images
-            if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
-            {
-                maSeriesModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"];
-            }
-
-            if ( string.IsNullOrWhiteSpace( series.Attributes["Image_1_1"] ) == false )
-            {
-                maSeriesModel.ThumbnailURL = publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_1_1"];
-            }
+            // set the image
+            maSeriesModel.ImageURL = GetSeriesImageURL( series );
 
             // after we process messages, we'll use this value for deciding whether the Series is hidden.
             bool allMessagesHidden = true;
@@ -48,56 +42,13 @@ namespace church.ccv.CCVRest.MobileApp
             maSeriesModel.Messages = new List<MobileAppMessageModel>();
             foreach ( PodcastUtil.PodcastMessage message in series.Messages )
             {
-                MobileAppMessageModel maMessageModel = new MobileAppMessageModel();
+                MobileAppMessageModel maMessageModel = PodcastMessageToMobileAppMessage( message, maSeriesModel.ImageURL );
 
-                // (because this is a new attrib, and not all messages have it, check for null. default to TRUE since that's what thye'll want the majority of the time.)
-                // This is totally confusing, but the KEY is called "Active", however, its name in Rock is "Approved". So confusing. My mistake. Ugh.
-                bool messageActive = true;
-                if ( message.Attributes.ContainsKey( "Active" ) )
+                // if we find a message that isn't hidden, flag that so we know the series doesn't HAVE to be hidden
+                // (it still could be the series itself is flagged hidden)
+                if ( maMessageModel.Hidden == false )
                 {
-                    messageActive = bool.Parse( message.Attributes["Active"] );
-                }
-
-                // if the message doesn't start yet, or hasn't been approved, set it to private.
-                if ( message.Date > RockDateTime.Now || messageActive == false )
-                {
-                    maMessageModel.Hidden = true;
-                }
-                else
-                {
-                    // this message is _NOT_ hidden, therefore we can set allMessagesHidden to false
                     allMessagesHidden = false;
-                }
-
-                maMessageModel.Name = message.Name;
-                maMessageModel.Speaker = message.Attributes["Speaker"];
-                maMessageModel.Date = message.Date.Value.ToShortDateString();
-                maMessageModel.ImageURL = maSeriesModel.ImageURL;
-                maMessageModel.ThumbnailURL = maSeriesModel.ThumbnailURL;
-
-                string noteUrlValue = message.Attributes["NoteUrl"];
-                if ( string.IsNullOrWhiteSpace( noteUrlValue ) == false )
-                {
-                    maMessageModel.NoteURL = noteUrlValue;
-                }
-
-                string watchUrlValue = message.Attributes["WatchUrl"];
-                if ( string.IsNullOrWhiteSpace( watchUrlValue ) == false )
-                {
-                    maMessageModel.VideoURL = watchUrlValue;
-                }
-
-                string shareUrlValue = message.Attributes["ShareUrl"];
-                if ( string.IsNullOrWhiteSpace( shareUrlValue ) == false )
-                {
-                    maMessageModel.ShareURL = shareUrlValue;
-                }
-
-                string discussionGuideUrlValue = null;
-                message.Attributes.TryGetValue( "DiscussionGuideUrl", out discussionGuideUrlValue );
-                if ( string.IsNullOrWhiteSpace( discussionGuideUrlValue ) == false )
-                {
-                    maMessageModel.DiscussionGuideURL = discussionGuideUrlValue;
                 }
 
                 maSeriesModel.Messages.Add( maMessageModel );
@@ -125,8 +76,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // use an i iterator so we can get the "WeekNumber" more easily
             int i = 0;
-            for( i = 0; i < series.Messages.Count; i++ )
-            //foreach ( PodcastUtil.PodcastMessage message in series.Messages )
+            for ( i = 0; i < series.Messages.Count; i++ )
             {
                 PodcastUtil.PodcastMessage message = series.Messages[i];
 
@@ -140,9 +90,11 @@ namespace church.ccv.CCVRest.MobileApp
                     messageActive = bool.Parse( message.Attributes["Active"] );
                 }
 
-                if ( messageActive && message.Date <= RockDateTime.Now  )
+                if ( messageActive && message.Date <= RockDateTime.Now )
                 {
+                    resource.SeriesId = series.Id;
                     resource.SeriesName = series.Name;
+                    resource.MessageId = message.Id;
                     resource.MessageName = message.Name;
 
                     if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
@@ -161,7 +113,15 @@ namespace church.ccv.CCVRest.MobileApp
                     string wistiaId = message.Attributes["WistiaId"];
                     if ( string.IsNullOrWhiteSpace( wistiaId ) == false )
                     {
-                        resource.WistiaId = wistiaId;
+                        // fetch the actual media for this asset, and get a direct URL to its video
+                        Common.Util.GetWistiaMedia( wistiaId,
+                            delegate ( HttpStatusCode statusCode, WistiaMedia media )
+                            {
+                                if ( statusCode == HttpStatusCode.OK )
+                                {
+                                    resource.VideoURL = Common.Util.GetWistiaAssetMpeg4URL( media, WistiaAsset.IPhoneVideoFile );
+                                }
+                            } );
                     }
 
                     string discussionGuideUrlValue = null;
@@ -183,6 +143,116 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return toolboxResources;
+        }
+
+        public static MobileAppMessageModel PodcastMessageToMobileAppMessage( PodcastUtil.PodcastMessage message, string parentSeriesImageURL )
+        {
+            MobileAppMessageModel maMessageModel = new MobileAppMessageModel();
+
+            // (because this is a new attrib, and not all messages have it, check for null. default to TRUE since that's what thye'll want the majority of the time.)
+            // This is totally confusing, but the KEY is called "Active", however, its name in Rock is "Approved". So confusing. My mistake. Ugh.
+            bool messageActive = true;
+            if ( message.Attributes.ContainsKey( "Active" ) )
+            {
+                messageActive = bool.Parse( message.Attributes["Active"] );
+            }
+
+            // if the message doesn't start yet, or hasn't been approved, set it to private.
+            if ( message.Date > RockDateTime.Now || messageActive == false )
+            {
+                maMessageModel.Hidden = true;
+            }
+
+            maMessageModel.Id = message.Id;
+            maMessageModel.Name = message.Name;
+            maMessageModel.Speaker = message.Attributes["Speaker"];
+            maMessageModel.Date = message.Date.Value;
+            maMessageModel.ImageURL = parentSeriesImageURL;
+
+            string noteUrlValue = message.Attributes["NoteUrl"];
+            if ( string.IsNullOrWhiteSpace( noteUrlValue ) == false )
+            {
+                maMessageModel.NoteURL = noteUrlValue;
+            }
+
+            string watchUrlValue = message.Attributes["HostedVideoUrl"];
+            if ( string.IsNullOrWhiteSpace( watchUrlValue ) == false )
+            {
+                maMessageModel.VideoURL = watchUrlValue;
+            }
+
+            string extraDetailsValue = message.Attributes["ExtraDetails"];
+            if ( string.IsNullOrWhiteSpace( extraDetailsValue ) == false )
+            {
+                maMessageModel.ResourcesHTML = extraDetailsValue;
+            }
+
+            string discussionGuideUrlValue = null;
+            message.Attributes.TryGetValue( "DiscussionGuideUrl", out discussionGuideUrlValue );
+            if ( string.IsNullOrWhiteSpace( discussionGuideUrlValue ) == false )
+            {
+                maMessageModel.DiscussionGuideURL = discussionGuideUrlValue;
+            }
+
+            return maMessageModel;
+        }
+
+        public static string GetSeriesImageURL( PodcastUtil.PodcastSeries series )
+        {
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
+            {
+                return publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"];
+            }
+
+            return string.Empty;
+        }
+
+        public static MobileAppMessageModel GetLatestMessage()
+        {
+            // This is a little weird, but we need the "Latest Message" which is a very abstract concept.
+            MobileAppMessageModel latestMessage = null;
+
+            // Basically, it's the first Series we find that isn't Hidden. Within that, the first Message that isn't Hidden.
+            // That is the technical definition of "Latest Message".
+
+            // we will grab the 3 most recent series, because generally speaking that is more than enough to have a public message.
+            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, 3 );
+            if ( rootCategory != null )
+            {
+                // iterate over each series
+                foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
+                {
+                    // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
+                    PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
+
+                    // this is terrible performance-wise, but simpler to maintain and read.
+
+                    // Convert the series
+                    MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
+
+                    // see if it's hidden
+                    if ( maSeriesModel.Hidden == false )
+                    {
+                        // it isn't, so it is GOING to have the message we want
+                        foreach ( MobileAppMessageModel maMessageModel in maSeriesModel.Messages )
+                        {
+                            if ( maMessageModel.Hidden == false )
+                            {
+                                // we found our message! Return it.
+                                latestMessage = maMessageModel;
+                                break;
+                            }
+                        }
+
+                        // we can break out of the series now because we know we have a latest message
+                        break;
+                    }
+                }
+            }
+
+            // after all the searching above, if we have a latest message, yay.
+            return latestMessage;
         }
     }
 }

@@ -10,5 +10,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
    
         public DateTime? EventStartTime;
 #pragma warning restore 0649
+
+        public MobileAppMessageModel LatestMessage;
     }
 }

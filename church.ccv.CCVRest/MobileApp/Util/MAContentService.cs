@@ -72,9 +72,13 @@ namespace church.ccv.CCVRest.MobileApp
                     {
                         realGrade = 9;
                     }
+                    else if ( person.Age >= 12 )
+                    {
+                        realGrade = 7;
+                    }
                     else if ( person.Age >= 10 )
                     {
-                        realGrade = 6;
+                        realGrade = 5;
                     }
                     else if ( person.Age >= 6 )
                     {
@@ -314,6 +318,14 @@ namespace church.ccv.CCVRest.MobileApp
                         resourceModel.Content = resource.Content;
                         resourceModel.Author = resource.AttributeValues["Author"].Value.ToString();
                         resourceModel.URL = resource.AttributeValues["URL"].Value.ToString();
+
+                        // add a hint for the mobile app so it knows whether to show a book detail page or not.
+                        // if there's content, and an author, it's a book.
+                        if ( string.IsNullOrWhiteSpace( resourceModel.Content ) == false &&
+                            string.IsNullOrWhiteSpace( resourceModel.Author ) == false )
+                        {
+                            resourceModel.IsBook = true;
+                        }
 
                         // is there an image?
                         string resourceImageGuid = resource.AttributeValues["Image"].Value.ToString();

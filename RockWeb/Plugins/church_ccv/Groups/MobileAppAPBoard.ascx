@@ -20,6 +20,11 @@
                     <Rock:RockTextBox runat="server" TextMode="MultiLine" Rows="2" ClientIDMode="Static" ID="tbTipOfTheWeek"></Rock:RockTextBox>
                 </div>
                 <br/>
+                <div class="editable-item">
+                    <asp:Literal runat="server"><p class="title">Video (Wistia Id)</p></asp:Literal>
+                    <Rock:RockTextBox runat="server" ClientIDMode="Static" ID="tbVideo"></Rock:RockTextBox>
+                </div>
+                <br/>
                 <asp:LinkButton ID="btnSave" ClientIDMode="Static" runat="server" Text="Save" CssClass="btn btn-primary" OnClick="btnSave_Click" />
             </div>
         </div>

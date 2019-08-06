@@ -9,19 +9,20 @@ namespace church.ccv.CCVRest.MobileApp.Model
     [Serializable]
     public class MobileAppMessageModel
     {
+        public int Id;
+
         public string Name;
 
         public string Speaker;
 
-        public string Date;
+        public DateTime Date;
 
-        // These will always be the same as the Parent Series but are here for convenience
+        // This will always be the same as the Parent Series but is here for convenience
         public string ImageURL;
-        public string ThumbnailURL;
 
         public string NoteURL;
         public string VideoURL;
-        public string ShareURL;
+        public string ResourcesHTML;
         public string DiscussionGuideURL;
 
         // This will be true if EITHER:

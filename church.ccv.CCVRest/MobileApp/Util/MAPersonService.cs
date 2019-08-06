@@ -87,6 +87,7 @@ namespace church.ccv.CCVRest.MobileApp
                         PrimaryAliasId = groupMember.Person.PrimaryAliasId ?? groupMember.Person.Id,
                         FirstName = groupMember.Person.FirstName,
                         LastName = groupMember.Person.LastName,
+                        Email = groupMember.Person.Email,
                         Age = groupMember.Person.Age
                     };
 
@@ -260,15 +261,38 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // JHM 5-15-2019 HACK - Turn on all steps for test user
-            if ( person.Id == 666918 )
+            if ( person.Id == 680078 )
             {
-                personModel.BaptismDate = DateTime.Now.AddYears( -1 );
+                personModel.BaptismDate = new DateTime( 2018, 1, 5 );
                 personModel.IsBaptised = true;
                 personModel.IsWorshipping = true;
                 personModel.IsGiving = true;
                 personModel.IsServing = true;
                 personModel.IsConnected = true;
                 personModel.IsCoaching = true;
+                personModel.SharedStory = true;
+            }
+            else if ( person.Id == 680080 ) //baby
+            {
+                personModel.IsWorshipping = true;
+            }
+            else if ( person.Id == 680081 ) // 9 year old
+            {
+                personModel.IsBaptised = true;
+                personModel.BaptismDate = new DateTime( 2018, 1, 5 );
+                personModel.IsWorshipping = true;
+                personModel.IsGiving = true;
+                personModel.IsServing = true;
+                personModel.IsConnected = true;
+            }
+            else if ( person.Id == 680082 ) //14 year old
+            {
+                personModel.IsBaptised = true;
+                personModel.BaptismDate = new DateTime( 2018, 1, 5 );
+                personModel.IsWorshipping = true;
+                personModel.IsGiving = true;
+                personModel.IsServing = true;
+                personModel.IsConnected = true;
                 personModel.SharedStory = true;
             }
 

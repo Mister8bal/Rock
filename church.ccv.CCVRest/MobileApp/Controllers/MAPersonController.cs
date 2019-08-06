@@ -8,6 +8,7 @@ using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Rest.Filters;
+using Rock.Web.Cache;
 
 namespace church.ccv.CCVRest.MobileApp
 {
@@ -229,17 +230,27 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage PersonPhoto( [FromBody] PersonPhotoModel personPhoto )
         {
-            Common.Util.UpdatePersonPhotoResult photoResult = Common.Util.UpdatePersonPhoto( personPhoto );
+            int? photoId = null;
+            Common.Util.UpdatePersonPhotoResult photoResult = Common.Util.UpdatePersonPhoto( personPhoto, out photoId );
             switch( photoResult )
             {
                 case Common.Util.UpdatePersonPhotoResult.Success:
-                    return Common.Util.GenerateResponse( true, PersonPhotoResponse.Success.ToString(), null );
+                {
+                        // on success, provide the mobile app with the updated photoURL
+                    string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+                    string photoURL = publicAppRoot + "GetImage.ashx?Id=" + photoId;
+                    return Common.Util.GenerateResponse( true, PersonPhotoResponse.Success.ToString(), photoURL );
+                }
 
                 case Common.Util.UpdatePersonPhotoResult.PersonNotFound:
+                {
                     return Common.Util.GenerateResponse( false, PersonPhotoResponse.PersonNotFound.ToString(), null );
+                }
 
                 default:
+                {
                     return Common.Util.GenerateResponse( false, PersonPhotoResponse.InvalidModel.ToString(), null );
+                }
             }
         }
     }

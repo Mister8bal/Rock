@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Datamart.Model;
 using Rock;
@@ -239,7 +241,12 @@ namespace church.ccv.CCVRest.MobileApp
                     // AP
                     if ( associatePastor != null )
                     {
-                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
+                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Guid.Empty );
+
+                        // for the AP, get their forwarding number, and if there are more than one, just use the first we find
+                        List<string> phoneNumbers = CCVRest.Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid );
+                        maAssociatePastor.PhoneNumberDigits = phoneNumbers.FirstOrDefault();
+
                         groupResult.Members.Add( maAssociatePastor );
                     }
 
@@ -262,7 +269,12 @@ namespace church.ccv.CCVRest.MobileApp
                     // AP
                     if ( associatePastor != null )
                     {
-                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
+                        MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Guid.Empty );
+
+                        // for the AP, get their forwarding number, and if there are more than one, just use the first we find
+                        List<string> phoneNumbers = CCVRest.Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid );
+                        maAssociatePastor.PhoneNumberDigits = phoneNumbers.FirstOrDefault();
+
                         groupResult.Members.Add( maAssociatePastor );
                     }
 
@@ -315,6 +327,10 @@ namespace church.ccv.CCVRest.MobileApp
                 if ( photoGuid.IsEmpty() == false )
                 {
                     groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                }
+                else
+                {
+                    groupResult.PhotoURL = publicAppRoot + "Themes/church_ccv_External_v8/Assets/Images/support/mobile-app-no-group-photo.jpg";
                 }
             }
 
@@ -580,6 +596,23 @@ namespace church.ccv.CCVRest.MobileApp
                 apBoardModel.Summary = apBoardItem.Content;
                 apBoardModel.Date = apBoardItem.StartDateTime.Date;
                 apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+
+                // fetch the actual media for this asset, and get a direct URL to its video
+                string wistiaId = apBoardItem.AttributeValues["WistiaId"].ToString();
+                if ( string.IsNullOrWhiteSpace( wistiaId ) == false )
+                {
+                    Common.Util.GetWistiaMedia( wistiaId,
+                        delegate ( HttpStatusCode statusCode, WistiaMedia media )
+                        {
+                            if ( statusCode == HttpStatusCode.OK )
+                            {
+                                apBoardModel.VideoURL = Common.Util.GetWistiaAssetMpeg4URL( media, WistiaAsset.IPhoneVideoFile );
+                                apBoardModel.VideoDate = media.Created;
+                                apBoardModel.VideoName = media.Name;
+                                apBoardModel.VideoThumbnailURL = media.Thumbnail.URL;
+                            }
+                        } );
+                }
             }
 
             return apBoardModel;

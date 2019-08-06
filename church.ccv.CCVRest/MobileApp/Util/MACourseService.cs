@@ -24,7 +24,7 @@ namespace church.ccv.CCVRest.MobileApp
         //const string Course_EndDate_Key = "CourseEndDate";
         const string Course_RegStartDate_Key = "RegistrationStartDate";
         const string Course_RegEndDate_Key = "RegistrationEndDate";
-        //const string Course_Topic_Key = "CourseTopic";
+        const string Course_Topic_Key = "CourseTopic";
         //const string Course_Confidential_Key = "Confidential";
        
         public static List<MACourseModel> GetMobileAppCourses( string nameKeyword,
@@ -75,7 +75,7 @@ namespace church.ccv.CCVRest.MobileApp
             foreach ( var group in groupList )
             {
                 group.LoadAttributes();
-
+                
                 if ( group.AttributeValues.ContainsKey( Course_RegStartDate_Key ) && group.AttributeValues.ContainsKey( Course_RegEndDate_Key ) )
                 {
                     // grab the values
@@ -166,14 +166,12 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 return null;
             }
-            
+
             // build the mobile app model
             MACourseModel courseResult = new MACourseModel()
             {
                 Id = group.Id,
-
-                Name = group.Name,
-
+                SubTitle = group.Name,
                 MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : ""
             };
 
@@ -224,16 +222,63 @@ namespace church.ccv.CCVRest.MobileApp
                 courseResult.Description = group.AttributeValues[Course_Description_Key].Value;
             }
 
-            // todo: load the appropriate picture
-            /*if ( group.AttributeValues.ContainsKey( FamilyPicture_Key ) )
+            // the title of the course will be its course topic
+            if ( group.AttributeValues.ContainsKey( Course_Topic_Key ) )
             {
-                // build a URL for retrieving the group's pic
-                Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
-                if ( photoGuid.IsEmpty() == false )
+                string courseTopic = group.AttributeValues[Course_Topic_Key].Value;
+                courseResult.Title = courseTopic + " Course";
+                
+                // Get the picture based on the life training topic.
+                // Not great, but we have no other way of associating a picture with a topic.
+                // Alternatives would be a defined type with an image attribute, but then we'd have to make a custom block
+                // to get the website to read it (or a custom API)
+                string topicImageURL = string.Empty;
+                switch ( courseTopic )
                 {
-                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                    case "Marriage":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg";
+                        break;
+                    case "Divorce":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg";
+                        break;
+                    case "Finance":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-finance.jpg";
+                        break;
+                    case "Parenting":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-parenting.jpg";
+                        break;
+                    case "Blended Families":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-parenting.jpg";
+                        break;
+                    case "Addiction":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-addiction.jpg";
+                        break;
+                    case "Grief":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg";
+                        break;
+                    case "Abuse":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-trauma-and-abuse.jpg";
+                        break;
+                    case "Pornography":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-sex-and-sexuality.jpg";
+                        break;
+                    case "Pornography Spouse Support":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-sex-and-sexuality.jpg";
+                        break;
+                    case "Pain & Suffering":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-pain-and-grief.jpg";
+                        break;
+                    case "Premarital":
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-premarital.jpg";
+                        break;
+
+                    default:
+                        topicImageURL = "/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-life-training-marriage.jpg";
+                        break;
                 }
-            }*/
+
+                courseResult.PhotoURL = publicAppRoot + topicImageURL;
+            }
 
             return courseResult;
         }

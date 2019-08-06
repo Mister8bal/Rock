@@ -8,7 +8,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
     {
         public int Id;
 
-        public string Name;
+        public string Title;
+        public string SubTitle;
         public string Description;
 
         public double Latitude;

@@ -22,5 +22,6 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string Author;
         public string URL;
         public string ImageURL;
+        public bool IsBook;
     }
 }

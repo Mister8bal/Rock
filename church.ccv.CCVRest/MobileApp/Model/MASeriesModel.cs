@@ -9,13 +9,13 @@ namespace church.ccv.CCVRest.MobileApp.Model
     [Serializable]
     public class MASeriesModel
     {
+        public int Id;
+
         public string Name;
 
         public string Description;
 
         public string ImageURL;
-
-        public string ThumbnailURL;
 
         public string DateRange;
 

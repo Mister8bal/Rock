@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.PersonalizationEngine.Data;
 using church.ccv.PersonalizationEngine.Model;
@@ -87,6 +89,9 @@ namespace church.ccv.CCVRest.MobileApp
                 var responseJToken = countdownResponse["response"];
                 JToken itemToken = responseJToken["item"];
                 CCVLiveCountdownModel liveResponse = itemToken.ToObject<CCVLiveCountdownModel>();
+
+                // now add the data for the latest message, since the countdown banner wants that as well.
+                liveResponse.LatestMessage = MAPodcastService.GetLatestMessage();
 
                 return Common.Util.GenerateResponse( true, CCVLiveCountdownResponse.Success.ToString(), liveResponse );
             }
@@ -345,7 +350,15 @@ namespace church.ccv.CCVRest.MobileApp
                 if ( wistiaIdAV != null )
                 {
                     //todo: figure out how we'll link to this video
-                    campusModel.VideoURL = wistiaIdAV.ToString();
+                    //jhm 7-29-19: like this:
+                    Common.Util.GetWistiaMedia( wistiaIdAV.ToString(),
+                            delegate ( HttpStatusCode statusCode, WistiaMedia media )
+                            {
+                                if ( statusCode == HttpStatusCode.OK )
+                                {
+                                    campusModel.VideoURL = Common.Util.GetWistiaAssetMpeg4URL( media, WistiaAsset.IPhoneVideoFile );
+                                }
+                            } );
                 }
 
                 // include the campus image (in case the wistia video isn't available)
@@ -671,6 +684,40 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 // something went wrong with our content channels - at least let the caller know
                 return Common.Util.GenerateResponse( false, LifeTrainingResponse.ContentInvalid.ToString(), null );
+            }
+        }
+
+        [Serializable]
+        public enum SpanishTranslationAvailableResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            InvalidCampus
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/SpanishTranslationAvailable" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage SpanishTranslationAvailable(int campusId)
+        {
+            try
+            {
+                //TODO: Look at the upcoming service time for the campus provided, and see if it offers spanish translation.
+                // We should probably decide (here) on a window of time leading up to the service that we want it to say yes to.
+                bool isAvailable = false;
+                if ( campusId == 9 )
+                {
+                    isAvailable = true;
+                }
+
+                return Common.Util.GenerateResponse( true, SpanishTranslationAvailableResponse.Success.ToString(), isAvailable );
+            }
+            catch
+            {
+                // something went wrong with our content channels - at least let the caller know
+                return Common.Util.GenerateResponse( false, SpanishTranslationAvailableResponse.InvalidCampus.ToString(), null );
             }
         }
     }

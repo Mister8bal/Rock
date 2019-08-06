@@ -53,15 +53,68 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         [Serializable]
+        public enum PodcastSingleSeriesResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            NotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Podcast/SingleSeries" )]
+        public HttpResponseMessage SingleSeries( int seriesId )
+        {
+            // get the requested series
+            PodcastUtil.PodcastSeries series = PodcastUtil.GetSeries( seriesId );
+            if ( series == null )
+            {
+                return Common.Util.GenerateResponse( false, PodcastSingleSeriesResponse.NotFound.ToString(), null );
+            }
+
+            MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
+            return Common.Util.GenerateResponse( true, PodcastSingleSeriesResponse.Success.ToString(), maSeriesModel );
+        }
+
+        [Serializable]
+        public enum PodcastMessageResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            NotFound
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Podcast/Message" )]
+        public HttpResponseMessage Message( int messageId )
+        {
+            // get the requested message
+            PodcastUtil.PodcastMessage message = PodcastUtil.GetMessage( messageId );
+            if ( message == null )
+            {
+                return Common.Util.GenerateResponse( false, PodcastMessageResponse.NotFound.ToString(), null );
+            }
+
+            // now we need the parent series so we can grab the image
+            // dont check for null because the series MUST exist for the message to exist, or something catastrophic happened
+            PodcastUtil.PodcastSeries series = PodcastUtil.GetSeries( message.SeriesId );
+            string seriesImageUrl = MAPodcastService.GetSeriesImageURL( series );
+
+            MobileAppMessageModel maMessageModel = MAPodcastService.PodcastMessageToMobileAppMessage( message, seriesImageUrl );
+            return Common.Util.GenerateResponse( true, PodcastMessageResponse.Success.ToString(), maMessageModel );
+        }
+
+        [Serializable]
         public enum PodcastLatestMessageResponse
         {
             NotSet = -1,
 
             Success,
 
-            NotAvailable,
-
-            PodcastError
+            NotAvailable
         }
 
         [System.Web.Http.HttpGet]
@@ -69,54 +122,27 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage LatestMessage()
         {
-            // This is a little weird, but we need the "Latest Message" which is a very abstract concept.
-            MobileAppMessageModel latestMessage = null;
+            // The primary reason to call this endpoint is to advertise a banner to the user with a quick link to the latest message.
+            // We want to make this Advertisement window server-side so that updates can be made without pushing an app update.
 
-            // Basically, it's the first Series we find that isn't Hidden. Within that, the first Message that isn't Hidden.
-            // That is the technical definition of "Latest Message".
+            // get the "latest" message, which should be basically the newest available message in the newest series.
+            MobileAppMessageModel latestMessage = MAPodcastService.GetLatestMessage( );
 
-            // we will grab the 3 most recent series, because generally speaking that is more than enough to have a public message.
-            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, 3 );
-            if ( rootCategory == null )
-            {
-                // if this failed something really bad happened
-                return Common.Util.GenerateResponse( false, PodcastSeriesResponse.PodcastError.ToString(), null );
-            }
-
-            // iterate over each series
-            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
-            {
-                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
-                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
-
-                // this is terrible performance-wise, but simpler to maintain and read.
-
-                // Convert the series
-                MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
-
-                // see if it's hidden
-                if ( maSeriesModel.Hidden == false )
-                {
-                    // it isn't, so it is GOING to have the message we want
-                    foreach ( MobileAppMessageModel maMessageModel in maSeriesModel.Messages )
-                    {
-                        if ( maMessageModel.Hidden == false )
-                        {
-                            // we found our message! Return it.
-                            latestMessage = maMessageModel;
-                            break;
-                        }
-                    }
-
-                    // we can break out of the series now because we know we have a latest message
-                    break;
-                }
-            }
-
-            // after all the searching above, if we have a latest message, yay.
             if ( latestMessage != null )
             {
-                return Common.Util.GenerateResponse( true, PodcastSeriesResponse.Success.ToString(), latestMessage );
+                MobileAppLatestMessageModel latestMessageWrapper = new MobileAppLatestMessageModel();
+                latestMessageWrapper.Message = latestMessage;
+
+                // TODO: Make this window data driven
+                // should the banner be displayed?
+                // yes, if it's a weekend and within our (hardcoded for now) service hours
+                if ( ( DateTime.Now.DayOfWeek == DayOfWeek.Saturday && DateTime.Now.Hour >= 15 && DateTime.Now.Hour <= 20 )  //Saturday from 3pm to 8pm
+                  || ( DateTime.Now.DayOfWeek == DayOfWeek.Sunday && DateTime.Now.Hour >= 8 && DateTime.Now.Hour <= 15 ) ) //Sunday from 8am to 3pm
+                {
+                    latestMessageWrapper.ShouldDisplayBanner = true;
+                }
+
+                return Common.Util.GenerateResponse( true, PodcastSeriesResponse.Success.ToString(), latestMessageWrapper );
             }
             else
             {
