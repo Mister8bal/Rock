@@ -48,7 +48,7 @@
 
             {% assign numberOfGrandChildPages = childPage.Pages | Size %}
 
-            {% if numberOfGrandChildPages > 1 %}
+            {% if numberOfGrandChildPages >= 1 %}
                 <li class="navigation-primary-item {{ activeClass }}">
                     <button class="navigation-primary-item-button" onclick="return false;">{{ childPage.Title }}</button>
                     <div class="navigation-primary-dropdown-content-wrapper">
@@ -60,9 +60,6 @@
                             {% for grandchildPage in childPage.Pages  %}
                                 <a class="navigation-primary-item-a dropdown-content-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a>
                             {% endfor %}
-                            {% if childPageTitle == 'about stars' %}
-                                <a class="navigation-primary-item-a dropdown-content-item" href="/field-status">Field Status</a>
-                            {% endif %}
                         </div>
                     </div>
                 </li>
