@@ -14,7 +14,7 @@
                 <button class="dropdown-toggle navigation-mobile-item" type="button" data-toggle="dropdown">Dashboard<b class="fa fa-caret-down"></b></button>
                 <ul class="dropdown-menu">
                     <li><a class="navigation-mobile-item" href="/stars-dashboard">Dashboard</a></li>
-                    <li><a class="navigation-mobile-item" href="/stars-dashboard/profile">Profile</a></li>
+                    <li><a class="navigation-mobile-item" href="/manage-family">Manage Family</a></li>
                 </ul>
             <div>
         </li>
@@ -49,8 +49,8 @@
     {% if CurrentPerson %}
         <li><a class="navigation-mobile-item" onclick="logout();">Logout</a></li>
     {% else %}
-        <li><a class="navigation-mobile-item" href="/register">Create Account</a></li>
-        <li><a class="navigation-mobile-item" href="/login">Login</a></li>
+        <li><a class="navigation-mobile-item" href="/stars-create-account">Create Account</a></li>
+        <li><a class="navigation-mobile-item" href="/stars-login">Login</a></li>
     {% endif %}
 </ul>
 
