@@ -7,7 +7,7 @@
 
 {% if numberOfCamps > 0 %}
     {% for item in Items %}
-        {% assign registerLink = item | Attribute: 'RegisterUrl' %}
+        {% assign registerLink = item | Attribute: 'RegisterUrl','RawValue' %}
         <div class="camps-row">
             <h3>{{ item.Title }} </h3> 
             <p class="camp-heading">{{ item.Headline | Default:'Please join us for this seasons camps.' }}</p>

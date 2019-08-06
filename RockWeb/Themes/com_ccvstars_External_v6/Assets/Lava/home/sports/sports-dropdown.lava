@@ -21,8 +21,8 @@
                 {% assign campusSports = campusItem.Sports | Split:',' %}
 
                 {% for sportItem in campusSports %}
-                    {% comment %} dont show in list if its currently selected sport {% endcomment %}
-                    {% unless sportItem == sport %}
+                    {% comment %} dont show in list if its currently selected sport or temporarily of exceptional stars {% endcomment %}
+                    {% unless sportItem == sport or sportItem contains "exceptional" %}
                         <li><a href="https://{{ 'Global' | Page:'Host' }}/sport/{{ sportItem }}/{{ campus }}">{{ sportItem | Replace:'-',' ' | Capitalize }}</a></li>
                     {% endunless %}
                 {% endfor %}

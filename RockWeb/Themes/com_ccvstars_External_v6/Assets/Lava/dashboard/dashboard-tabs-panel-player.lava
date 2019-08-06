@@ -173,7 +173,7 @@
             {% endfor %}
         {% endfor %}
         {% if playerToDisplay == false %}
-            <tr><td colspan="7"><h3 class="no-groups-text">Player has not been assigned a team yet</h3></td></tr> 
+            <tr><td colspan="7"><h3 class="no-groups-text">No players currently assigned to a team</h3></td></tr> 
         {% endif %}       
     </table>
 </div>    
@@ -409,7 +409,7 @@
             {% endif %}
         {% endfor %} 
     {% else %}
-        <h3 class="no-groups-text">Player has not been assigned a team yet</h3>
+        <h3 class="no-groups-text">No players currently assigned to a team</h3>
     {% endif %}
 </div>  
                        

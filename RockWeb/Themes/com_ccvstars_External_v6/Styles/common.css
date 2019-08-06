@@ -266,7 +266,7 @@ a:focus {
 }
 
 .ccv-link {
-    color: #E73D30;
+    color: #E73D30 !important;
 }
 
 .navigation-primary-item-button a:hover {

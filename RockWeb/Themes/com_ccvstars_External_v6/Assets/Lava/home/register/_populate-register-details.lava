@@ -31,14 +31,14 @@
 
         $('.content-details').html(`{{ Event.Description }}`);
 
-        $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost }}</h6>');
+        $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost | Default:"0.00" }}</h6>');
 
-        var actionHtml = '<a href="/stars-registration-v2?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>';
+        var actionHtml = '<a href="/stars-registration?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>';
         
         {% assign newPlayerEventOccurrenceId = Event | Attribute:'NewPlayerEventOccurrenceId' %}
 
         {% if newPlayerEventOccurrenceId != "" and onWaitList == false %}
-            actionHtml += '<div class="new-player">{{ newPlayerContent }} <a href="/stars-registration-v2?EventOccurrenceId={{ newPlayerEventOccurrenceId }}" class="new-player-registration">Click here for a 50% discount.</a></div>'
+            actionHtml += '<div class="new-player">{{ newPlayerContent }} <a href="/stars-registration?EventOccurrenceId={{ newPlayerEventOccurrenceId }}" class="new-player-registration">Click here for a 50% discount.</a></div>'
         {% endif %}
         $('.action').html(actionHtml);
 

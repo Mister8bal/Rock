@@ -12,6 +12,7 @@
     {% comment %} match found {% endcomment %}
     {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
     {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
+    {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
     {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
     {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
     {% assign seasonCalendar = item | Attribute: 'SeasonCalendar', 'Url' %}
@@ -20,6 +21,7 @@
     {% comment %} match not found {% endcomment %}
     {% assign practiceMap = "" %}
     {% assign practiceSchedule = "" %}
+    {% assign keyDates = "" %}
     {% assign gameMap = "" %}
     {% assign gameSchedule = "" %}
     {% assign seasonCalendar = "" %}
