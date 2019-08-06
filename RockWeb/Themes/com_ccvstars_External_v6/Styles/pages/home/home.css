@@ -124,6 +124,13 @@
     color: #4f4f4f;
 }
 
+a.anchor {
+    display: inline-block;
+    position: relative;
+    top: -50px;
+    visibility: hidden;
+}
+
 /* Theme Overrides */
 .main-feature {
     overflow: unset;
