@@ -237,16 +237,19 @@
                     if (campusSports.includes("soccer")) {
                         result += '<a href="/soccer/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png"></a>'
                     }
+                    if (campusSports.includes("exceptional-stars")) {
+                        result += '<a href="/exceptional-stars/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/exceptional-stars-red.png"></a>'
+                    }
                 } else {
                     result += '<p>No sports currently offered</p>'
                 }
             result += '</div>'
-            result += `<a href="` + campusMapLink + `" ` + mapNewWindow + `><p>` + campus.street + '<br />'
-            result += campus.city + ',' + campus.state + ' ' + campus.zip + '</p></a>'     
             result += '<div class="campus-contact">'
-            result += '<a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
             result += '<a href="mailto:' + campus.name.replace(' ','').toLowerCase() +  '@ccvstars.com"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>'
+            result += `<a href="` + campusMapLink + `" ` + mapNewWindow + `><p>` + campus.street + '<br />'
+            result += campus.city + ', ' + campus.state + ' ' + campus.zip + '</p></a>'
             result += '</div>'
+            result += '<a href="https://ccv.church/' + campusRoute + '">ccv.church/'+ campusRoute +'</a>'
         result += '</div>'
         return result
     }

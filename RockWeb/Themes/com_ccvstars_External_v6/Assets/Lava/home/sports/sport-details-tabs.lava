@@ -17,7 +17,7 @@
                     {% if practiceMap != "" %}
                         <img class="rounded-edge-img img-responsive" src="{{ practiceMap }}">
                     {% else %}
-                        <p class="placeholder">Practice Map Unavailable</p>
+                        <p class="placeholder">Practice Map Not Yet Available</p>
                     {% endif %}
                 </div>
                 <div class="right">
@@ -30,11 +30,11 @@
                             <a href="{{ practiceSchedule }}" class="btn btn-primary">Practice Schedule</a>
                         {% endif %}
                     {% else %}
-                        <p class="placeholder">Resources Unavailable</p>
+                        <p class="placeholder">Resources Not Yet Available</p>
                     {% endif %}
                 </div>
             {% else %}
-                <p class="placeholder">Practice Resources Unavailable</p>
+                <p class="placeholder">Practice Map and Resources Not Yet Available</p>
             {% endif %}
         </div>
     </div>     
@@ -48,7 +48,7 @@
                     {% if gameMap != "" %}
                         <img class="rounded-edge-img img-responsive" src="{{ gameMap }}"> 
                     {% else %}
-                        <p class="placeholder">Game Map Unavailable</p>
+                        <p class="placeholder">Game Map Not Yet Available</p>
                     {% endif %}
                 </div>
                 <div class="right">
@@ -58,11 +58,11 @@
                             <a href="{{ gameSchedule }}" class="btn btn-primary">Game Schedule </a>
                         {% endif %}
                     {% else %}
-                        <p class="placeholder">Game Schedule Unavailable</p>
+                        <p class="placeholder">Game Schedule Not Yet Available</p>
                     {% endif %}
                 </div>
             {% else %}
-                <p class="placeholder">Game Map and Schedule Unavailable</p>
+                <p class="placeholder">Game Map and Schedule Not Yet Available</p>
             {% endif %}
         </div>
     </div>   
@@ -78,7 +78,7 @@
 
             <object id="pdfRules" data="{{ rules }}" width="100%" height="100%" type="application/pdf"></object>   
         {% else %}
-            <p class="placeholder">Rules Unavailable</p>
+            <p class="placeholder">Rules Not Yet Available</p>
         {% endif %}
     </div>
 </div>

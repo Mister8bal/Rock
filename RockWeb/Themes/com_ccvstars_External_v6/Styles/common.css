@@ -262,6 +262,10 @@ a:focus {
 }
 
 .navigation-primary-item-button a {
+    color: #FFFFFF;
+}
+
+.ccv-link {
     color: #E73D30;
 }
 
@@ -828,6 +832,9 @@ a:focus {
 
 .campus-info-window p {
     margin: 0;
+    font-size: 10px;
+    font-weight: 400;
+
 }
 
 .campus-info-window a {
@@ -850,12 +857,13 @@ a:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 10px;
 }
 
 .campus-contact img {
     width: 30px;
     height: 30px;
-    margin-left: 30px;
+    margin-right: 10px;
 }
 
 /* google overrides */

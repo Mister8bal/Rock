@@ -57,3 +57,33 @@ p {
     border: 1px solid rgba(0,0,0,0.15);
 }
 
+/**** Responsive Styling ****/
+@media screen and (max-width: 1439.98px) {
+    .tab {
+        padding: 13px 20px;
+    }
+}
+
+/**** Tablet Sytling  ****/
+@media screen and (max-width: 1023.98px) {
+    .tab {
+        padding: 13px 10px;
+    }
+}
+
+
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {
+    .title h1 {
+        padding: 0;
+    }
+
+    .navigation-and-title {
+        background-color: #FFFFFF;
+        padding-bottom: 20px;
+    }
+
+    .tournament-table th:first-child, .tournament-table td:first-child {
+        display: none;
+    }
+}

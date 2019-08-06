@@ -43,7 +43,7 @@
                         {% if showCoachTools %}
                             <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
                         {% endif %}
-                        <li><div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule', true)" class="item">Practice Schedule</div></li>   
+                        <li><div id="practice-schedule-mobile-button" onClick="linkClicked(this, 'practice-schedule', true)" class="item">Practice Resources</div></li>   
                         <li><div id="game-schedule-mobile-button" onClick="linkClicked(this, 'game-schedule', true)" class="item">Game Schedule</div></li> 
                         <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>  
                         <li><div id="resources-mobile-button" onClick="linkClicked(this, 'resources', true)" class="item">Resources</div></li>
@@ -61,7 +61,7 @@
             {% if showCoachTools %}
                 <div id="contact-team-button" class="tab" onClick="linkClicked(this, 'contact-team')">Contact Team</div>
             {% endif %}
-            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice <span class="responsive-hide">Map & Schedule</span></div>
+            <div id="practice-schedule-button" class="tab" onClick="linkClicked(this, 'practice-schedule')">Practice <span class="responsive-hide">Map & Resources</span></div>
             <div id="game-schedule-button" class="tab" onClick="linkClicked(this, 'game-schedule')">Game <span class="responsive-hide">Map & Schedule</span></div>
             <div id="rules-button" class="tab" onClick="linkClicked(this, 'rules')">Rules</div>
             <div id="resources-button" class="tab" onClick="linkClicked(this, 'resources')">Resources</div>

@@ -5,7 +5,7 @@
 <div class="footer">
     <div class="footer-right">
         <a href="/" class="stars-logo"><img src="~~/Assets/Images/logo/stars-logo-white.png"></a>
-        <a href="https://ccv.church" class="ccv-logo"><img src="~~/Assets/Images/logo/ccv-logo-black.png"></a>
+        <a href="https://ccv.church" class="ccv-logo" target="_blank"><img src="~~/Assets/Images/logo/ccv-logo-black.png"></a>
     </div>
     <div class="footer-center">
         <div class="footer-links-section">
