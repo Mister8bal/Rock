@@ -18,15 +18,15 @@
         </div>
         <div class="footer-links-section">
             <h5>Reach Out</h5>
-            <a href="/contact-us">Contact Us</a>
-            <a href="/volunteer">Volunteer</a>
+            <a href="/stars-contact-us">Contact Us</a>
+            <a href="/stars-volunteer">Volunteer</a>
             <a href="/register">Register</a>
         </div>
         <div class="footer-links-section">
             <h5>Resources</h5>
             <a href="/field-status">Field Status</a>
-            <a href="privacy-policy">Privacy Policy</a>
-            <a href="/faq">Faq</a>
+            <a href="/stars-privacy-policy">Privacy Policy</a>
+            <a href="/stars-faq">Faq</a>
         </div>
     </div>    
     <div class="footer-left">
