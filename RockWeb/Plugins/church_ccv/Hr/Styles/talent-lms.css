@@ -1,5 +1,5 @@
 ﻿.talentlms {
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 
 .talentlms-navigation {
@@ -238,4 +238,42 @@
     }
 
     
+}
+
+/**
+ * BT Change to accordian with tab functionality.
+ */
+
+/** Bootstrap overrides for tabs **/
+.nav-tabs {
+    background-color: #edeae6;
+}
+
+a.accordion-toggle  {
+    display:block;
+    overflow:hidden;
+}
+
+.accordion-toggle i {
+    float:right; 
+}
+
+.tabbable a {
+    color: #6a6a6a;
+    font-weight: 900;
+} 
+
+.talentlms .nav-tabs>li>a {
+    border-radius:0;
+}
+
+.talentlms 
+.nav-tabs>li.active>a, 
+.nav-tabs>li.active>a:hover, 
+.nav-tabs>li.active>a:focus {
+    background:#fff;
+}
+
+#pnlTalentLmsPanel .panel-title {
+    width: 100%;
 }

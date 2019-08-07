@@ -87,7 +87,7 @@ namespace RockWeb.Plugins.church_ccv.Hr
                 if ( !RequestUser( out _userBlob ) )
                 {
                     // user doesnt exist, hide talentLMS and stop processing
-                    pnlTalentLMS.Visible = false;
+                    pnlTalentLmsPanel.Visible = false;
                     return;
                 }
  
