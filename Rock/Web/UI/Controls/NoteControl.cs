@@ -778,7 +778,7 @@ namespace Rock.Web.UI.Controls
 
                     if ( IsPrivate )
                     {
-                        heading += "( Private Note )";
+                        heading += " ( Private Note )";
                     }
 
                     if ( !string.IsNullOrWhiteSpace( Caption ) )
