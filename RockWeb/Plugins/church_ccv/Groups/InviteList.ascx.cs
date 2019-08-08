@@ -64,6 +64,7 @@ If you have any further questions, please don’t hesitate to contact me directl
     {% endfor %}
 {[ endgooglemap ]}", "", 7 )]
     [LavaCommandsField( "Enabled Lava Commands", "The Lava commands that should be enabled for this HTML block.", false, order: 8 )]
+    [TextField( "Message Preview Notification", "The message that is displayed before sending invites.", true, "{0} people are selected to receive this invite.  Feel free to personalize the invite below.", "", 9 )]
     public partial class InviteList : RockBlock, ICustomGridColumns
     {
         #region Fields
@@ -99,6 +100,7 @@ If you have any further questions, please don’t hesitate to contact me directl
             base.OnInit( e );
             gList.GridRebind += gList_GridRebind;
             gList.ShowActionRow = false;
+            gList.DataKeyNames = new string[] { "Id" };
 
             // this event gets fired after block settings are updated. it's nice to repaint the screen if these settings would alter it
             this.BlockUpdated += Block_BlockUpdated;
@@ -184,6 +186,20 @@ If you have any further questions, please don’t hesitate to contact me directl
 
         protected void btnOpenEditor_Click( object sender, EventArgs e )
         {
+            // display a message of how many people will be invited so that it is clear to the leader
+            int personCount = 0;
+            if ( gList.SelectedKeys.Count > 0 )
+            {
+                // if people were selected in the grid, only count those who were selected
+                personCount = gList.SelectedKeys.Count();
+            }
+            else
+            {
+                // else count everyone
+                personCount = _inviteHouseholds.SelectMany( h => h.People.Select( p => p ) ).Count();
+            }
+            nbRecepientCount.Text = string.Format( GetAttributeValue( "MessagePreviewNotification" ), personCount );
+
             var template = GetAttributeValue( "MessageTemplate" );
 
             // Going to pre-resolve the mergefields so the email template looks "ready to send" to the leader.
@@ -211,30 +227,42 @@ If you have any further questions, please don’t hesitate to contact me directl
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnSendEmail_Click( object sender, EventArgs e )
         {
-            if ( _inviteHouseholds.Any() )
+            List<int> personIds = new List<int>();
+            if ( gList.SelectedKeys.Count > 0 )
+            {
+                // if people were selected in the grid, only count those who were selected
+                personIds = gList.SelectedKeys.OfType<int>().ToList();
+            }
+            else
+            {
+                // else count everyone
+                personIds = _inviteHouseholds.SelectMany( h => h.People.Select( p => p.Id ) ).ToList();
+            }
+
+            if ( personIds.Any() )
             {
                 var rockContext = new RockContext();
                 var attributeKey = AttributeCache.Read( GetAttributeValue( "LastInviteDateAttribute" ).AsGuid() ).Key;
+
+                // get the list of people
+                var people = new PersonService( rockContext ).Queryable().Where( p => personIds.Contains( p.Id ) ).ToList();
 
                 var template = tbEmailEditor.Text;
                 if ( template.IsNotNullOrWhiteSpace() )
                 {
                     var recipients = new List<RecipientData>();
 
-                    foreach ( var household in _inviteHouseholds )
+                    foreach ( var person in people )
                     {
-                        foreach ( var person in household.People )
-                        {
-                            // Save last invite date
-                            person.LoadAttributes();
-                            person.SetAttributeValue( attributeKey, RockDateTime.Now );
-                            person.SaveAttributeValue( attributeKey, rockContext );
+                        // Save last invite date
+                        person.LoadAttributes();
+                        person.SetAttributeValue( attributeKey, RockDateTime.Now );
+                        person.SaveAttributeValue( attributeKey, rockContext );
 
-                            // add recipient
-                            var personDict = new Dictionary<string, object>();
-                            personDict.Add( "Person", person );
-                            recipients.Add( new RecipientData( person.Email, personDict ) );
-                        }
+                        // add recipient
+                        var personDict = new Dictionary<string, object>();
+                        personDict.Add( "Person", person );
+                        recipients.Add( new RecipientData( person.Email, personDict ) );
                     }
 
                     // send email
@@ -279,10 +307,19 @@ If you have any further questions, please don’t hesitate to contact me directl
             RockContext rockContext = new RockContext();
             PersonService personService = new PersonService( rockContext );
 
-            var personIds = invitees.SelectMany( i => i.People.Select( p => p.Id ) ).ToList();
-            var qry = personService.Queryable().Where( p => personIds.Contains( p.Id ) ).OrderBy( p => p.LastName ).ThenBy( p => p.NickName );
+            var people = invitees.SelectMany( i => i.People,
+                ( i, People ) => new
+                {
+                    Id = People.Id,
+                    Name = People.FullName,
+                    NickName = People.NickName,
+                    LastName = People.LastName,
+                    Gender = People.Gender,
+                    Email = People.Email,
+                    Location = i.Location.Street1,
+                } );
 
-            gList.DataSource = qry.ToList();
+            gList.DataSource = people.OrderBy( p => p.LastName ).ThenBy( p => p.NickName ).ToList();
             gList.DataBind();
         }
 
