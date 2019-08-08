@@ -592,10 +592,21 @@ namespace church.ccv.CCVRest.MobileApp
                 apBoardModel = new APBoardModel();
                 apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
                 apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
-
-                apBoardModel.Summary = apBoardItem.Content;
-                apBoardModel.Date = apBoardItem.StartDateTime.Date;
                 apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+
+                // For the Summary, we'll need its value AND its ModifiedDateTime
+                AttributeValueCache summaryAVCache = apBoardItem.AttributeValues["APBoardContent"];
+                apBoardModel.Summary = summaryAVCache.ToString();
+
+                // for the date, see the last time the summary value was updated.
+                // Because AttributeValueCache doesn't bother to contain the AV's ID, we have to go the long way :-|
+                // Try to get the modified date time, and just use 'now' if something turns up null
+                var summaryAV = new AttributeValueService( rockContext ).Queryable()
+                                                                          .AsNoTracking()
+                                                                          .Where( av => av.EntityId == summaryAVCache.EntityId && 
+                                                                                        av.AttributeId == summaryAVCache.AttributeId )
+                                                                          .FirstOrDefault();
+                apBoardModel.Date = summaryAV?.ModifiedDateTime?.Date ?? DateTime.Now;
 
                 // fetch the actual media for this asset, and get a direct URL to its video
                 string wistiaId = apBoardItem.AttributeValues["WistiaId"].ToString();

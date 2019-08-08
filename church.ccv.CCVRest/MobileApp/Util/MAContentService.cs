@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Spatial;
 using System.Linq;
 using church.ccv.CCVRest.MobileApp.Model;
@@ -123,7 +124,7 @@ namespace church.ccv.CCVRest.MobileApp
             ContentChannel atCCV = contentChannelService.Get( ContentChannelId_AtCCV );
 
             // sort by date
-            var atCCVItems = atCCV.Items.OrderByDescending( i => i.StartDateTime );
+            var atCCVItems = atCCV.Items.OrderByDescending( i => i.CreatedDateTime );
 
             // now take the first one that matches our grade offset.
 
@@ -148,7 +149,7 @@ namespace church.ccv.CCVRest.MobileApp
             ContentChannel faithBuilding = contentChannelService.Get( ContentChannelId_FaithBuilding );
 
             // sort by date
-            var faithBuildingItems = faithBuilding.Items.OrderByDescending( i => i.StartDateTime );
+            var faithBuildingItems = faithBuilding.Items.OrderByDescending( i => i.CreatedDateTime );
 
             // as above, we'll iterate over the whole list in memory, knowing we'll actually only load attributes for about 4 items.
             ContentChannelItem faithBuildingItem = null;
@@ -204,12 +205,16 @@ namespace church.ccv.CCVRest.MobileApp
                 KidsContentModel contentModel = new KidsContentModel();
 
                 // At CCV
-                contentModel.AtCCV_Title = atCCVItem.Title;
-                contentModel.AtCCV_Date = atCCVItem.StartDateTime;
-                contentModel.AtCCV_Content = atCCVItem.Content;
-                contentModel.AtCCV_Date = atCCVItem.StartDateTime;
+                contentModel.AtCCV_Title = atCCVItem.AttributeValues["AtCCVTitle"].ToString();
+                contentModel.AtCCV_Content = atCCVItem.AttributeValues["AtCCVContent"].ToString();
                 contentModel.AtCCV_DiscussionTopic_One = atCCVItem.AttributeValues["DiscussionTopic1"].ToString();
                 contentModel.AtCCV_DiscussionTopic_Two = atCCVItem.AttributeValues["DiscussionTopic2"].ToString();
+
+                string dateTime = atCCVItem.AttributeValues["WeekendDate"].ToString();
+                if ( string.IsNullOrWhiteSpace( dateTime ) == false )
+                {
+                    contentModel.AtCCV_Date = DateTime.Parse( dateTime );
+                }
 
                 string seriesImageGuid = atCCVItem.AttributeValues["SeriesImage"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( seriesImageGuid ) == false )
@@ -222,8 +227,8 @@ namespace church.ccv.CCVRest.MobileApp
                 }
 
                 // Faith building
-                contentModel.FaithBuilding_Title = faithBuildingItem.Title;
-                contentModel.FaithBuilding_Content = faithBuildingItem.Content;
+                contentModel.FaithBuilding_Title = faithBuildingItem.AttributeValues["FBTitle"].ToString();
+                contentModel.FaithBuilding_Content = faithBuildingItem.AttributeValues["FBContent"].ToString();
 
                 // resources CAN be empty, so just take whatever's available
                 contentModel.Resources = new List<KidsResourceModel>();
@@ -232,7 +237,7 @@ namespace church.ccv.CCVRest.MobileApp
                 {
                     KidsResourceModel resModel = new KidsResourceModel
                     {
-                        Title = resourceItem.Title,
+                        Title = resourceItem.AttributeValues["ResourceTitle"].ToString(),
                         Subtitle = resourceItem.AttributeValues["Subtitle"].ToString(),
                         URL = resourceItem.AttributeValues["URL"].ToString()
                     };
@@ -341,6 +346,9 @@ namespace church.ccv.CCVRest.MobileApp
                         ltTopicModel.Resources.Add( resourceModel );
                     }
                 }
+
+                // sort resources with books on top
+                ltTopicModel.Resources = ltTopicModel.Resources.OrderByDescending( a => a.IsBook ).ToList();
 
                 ltTopicModels.Add( ltTopicModel );
             }
