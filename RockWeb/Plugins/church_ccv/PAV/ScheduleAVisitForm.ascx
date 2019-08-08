@@ -603,7 +603,7 @@
 
                         <div class="form-header">
                             <h2>Child Pre-Register</h2>
-                            <p>Security is very important to us. Your mobile number will be used to log into your family on our system, and to contact you for any reason during service.</p>
+                            <p>Security is very important to us. Your mobile number will be used to log into your family on our system and to contact you for any reason during service.</p>
                         </div>
 
                         <div class="form">
