@@ -852,8 +852,29 @@ namespace church.ccv.Podcast.Rest
                                 writer.WriteStartElement( "Date" );
                                 writer.WriteValue( message.Date.Value.ToShortDateString( ) );
                                 writer.WriteEndElement( );
-                            
-                                string noteUrlValue = message.Attributes["NoteUrl"];
+
+
+                                string noteUrlValue = string.Empty;
+                                // JHM 8-8-19: We're going to move to a direct file uploading scheme, which will
+                                // replace having to copy/paste a URL into a text field. Until some time goes by,
+                                // we need to check for the existance of the attribute, and fallback to the old one
+                                // if it doesn't exist.
+                                if ( message.Attributes.ContainsKey( "NoteFile" ) )
+                                {
+                                    string noteFileGuid = message.Attributes["NoteFile"];
+                                    if ( string.IsNullOrWhiteSpace( noteFileGuid ) == false )
+                                    {
+                                        string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+                                        noteUrlValue = publicAppRoot + "GetFile.ashx?Guid=" + noteFileGuid;
+                                    }
+                                }
+                                // Backwards compatibility - remove once 12 series' worth of notes in the new app are using 
+                                // the above value.
+                                else
+                                {
+                                    noteUrlValue = message.Attributes["NoteUrl"];
+                                }
+
                                 if( string.IsNullOrWhiteSpace( noteUrlValue ) == false )
                                 {
                                     writer.WriteStartElement( "NoteUrl" );
