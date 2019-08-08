@@ -844,6 +844,8 @@ a:focus {
 
 .sports-offered {
     display: flex;
+    justify-content: center;
+    align-items: center;
     padding-bottom: 10px;
 }
 
@@ -851,6 +853,12 @@ a:focus {
     width: 33px;
     height: 33px;
     margin-right: 10px;
+}
+
+.exceptional-stars img {
+    width: 45px;
+    height: 45px;
+    margin-left: -3px;
 }
 
 .campus-contact {

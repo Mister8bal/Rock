@@ -241,7 +241,7 @@
                         result += '<a href="/soccer/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/soccer-red.png"></a>'
                     }
                     if (campusSports.includes("exceptional-stars")) {
-                        result += '<a href="/exceptional-stars/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/exceptional-stars-red.png"></a>'
+                        result += '<a class="exceptional-stars" href="/exceptional-stars/' + campusRoute + '"><img src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/exceptional-stars-red.png"></a>'
                     }
                 } else {
                     campusEmail = "youthsports@ccvstars.com"
