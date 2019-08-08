@@ -426,7 +426,7 @@
 
                         <div class="form-header">
                             <h2>Let us know you're coming</h2>
-                            <p>We want to make your first visit as smooth and enjoyable as possible</p>
+                            <p>We want to make your first visit as smooth and enjoyable as possible.</p>
                         </div>
 
                         <div class="form">
@@ -518,7 +518,7 @@
                         <div class="form-header">
                             <h2>
                                 Whoops, it looks like you may<br /> 
-                                already be in our system.
+                                already be in our system
                             </h2>
                             <p>
                                 The following shares your last name and email.<br />
