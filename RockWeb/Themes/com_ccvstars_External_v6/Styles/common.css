@@ -758,7 +758,7 @@ a:focus {
 .summer-camps-row {
     display: flex;
     justify-content: center;
-    padding-top: 45px;
+    padding-bottom: 45px;
 }
 
 .summer-camps-row .rectangle {
