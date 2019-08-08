@@ -16,9 +16,6 @@ namespace church.ccv.CCVCore.PlanAVisit.Model
         public int? AdultTwoPersonAliasId { get; set; }
 
         [DataMember]
-        public int FamilyId { get; set; }
-
-        [DataMember]
         public int ScheduledCampusId { get; set; }
 
         [DataMember]
