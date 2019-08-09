@@ -325,6 +325,22 @@ strong {
 
 /* End Panels */
 
+/* Request Changes Form */
+.toolbox-form-card {
+    padding: 50px;
+}
+
+.toolbox-form-card h2 {
+    color: #000000;
+}
+
+.btn-request {
+    align-self: flex-end;
+    max-width: 190px;
+}
+
+/* End Changes Form */
+
 /**** Responsive Styling ****/
 @media screen and (max-width: 1439.98px) {
     .responsive-hide {

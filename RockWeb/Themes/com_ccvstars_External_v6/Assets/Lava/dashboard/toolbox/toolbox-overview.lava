@@ -41,6 +41,43 @@
     {% endif %}
 {% endfor %}
 
+{% comment %} Check if we should be showing the Team Change Request button {% endcomment %}
+{% assign now = 'Now' | Date:'M/d/yyyy hh:mm:ss tt' | AsDateTime %}
+{% assign showChangeRequestButton = false %}
+
+{% comment %} 
+    Walk the parent groups and look for a "Youth Sports Bracket"
+    type group (max 10 levels) 
+    Once found, check the Change Request start and end date
+{% endcomment %}
+{% assign parentGroupId = group.ParentGroupId %}
+
+{% for i in (0..9) %}
+    {% if parentGroupId != "" %}
+        {% comment %} always start with empty parentGroup {% endcomment %}
+        {% assign parentGroup = "" %}
+        {% assign parentGroup = parentGroupId | GroupById %}
+
+        {% if parentGroup.GroupTypeId == 71 %}
+            {% comment %} Bracket type group found, check its attributes and break {% endcomment %}
+            {% assign changeRequestStartDate = parentGroup | Attribute:'TeamChangeRequestStartDate' | AsDateTime %}
+            {% assign changeRequestEndDate = parentGroup | Attribute:'TeamChangeRequestEndDate' | AsDateTime %}
+
+            {% if now > changeRequestStartDate and now < changeRequestEndDate %}
+                {% assign showChangeRequestButton = true %}
+            {% endif %}
+
+            {% break %}
+        {% else %}
+            {% comment %} League type group not found, reassign parentGroupId and check again {% endcomment %}
+            {% assign parentGroupId = parentGroup.ParentGroupId | Default:'' %}
+        {% endif %}
+    {% else %}
+        {% comment %} we dont have a parentGroupId, break out of for loop {% endcomment %}
+        {% break %}
+    {% endif %}
+{% endfor %}
+
 <div class="person-summary">
     {% if showCoachTools %}
         <h2>{{ group.Name }}</h2>
@@ -81,6 +118,9 @@
             </div>
         </div>
     </div>
+    {% if showChangeRequestButton and showCoachTools == false %}
+        <a class="btn btn-primary btn-request" href="https://ccvstars.com/page/2459?GroupId={{ PageParameter.GroupId }}&Campus={{ PageParameter.Campus }}&Sport={{ PageParameter.Sport }}&Player={{ PageParameter.Player }}">Request Team Change</a>
+    {% endif %}
 </div>
 <div class="person-toolbox-teams"> 
     <div class="toolbox-teams">
@@ -124,8 +164,20 @@
         {% comment %} Player View {% endcomment %}
         {% comment %} Check for children teams  {% endcomment %}	
         {% assign children = CurrentPerson | Children %}
+        {% assign numberOfChildren = 0 %}
 
-        {% assign numberOfChildren = children | Size %}
+        {% comment %} First loop through the children to determine whether to show the dropdown {% endcomment %}
+        {% for child in children %}
+            {% comment %} Get child groups of youth sports type  {% endcomment %}
+            {% assign childGroups = "" %}
+            {% assign childGroups = child | Groups:'73','Active' %}
+
+            {% for childGroup in childGroups %}
+                {% unless childGroup.Group.Id == group.Id %}
+                    {% assign numberOfChildren = numberOfChildren | Plus:1 %}
+                {% endunless %}
+            {% endfor %}
+        {% endfor %}
 
         {% if numberOfChildren > 1 %}
             {% comment %} if currentperson is a parent, show dropdown of currentperson's other childrens teams (if any). Or if currentpersons child plays on two teams, show all teams in drop down.  {% endcomment %}
