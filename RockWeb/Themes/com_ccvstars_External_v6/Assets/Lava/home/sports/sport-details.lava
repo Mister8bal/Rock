@@ -26,11 +26,13 @@
                     </div>
                 </div>
 
-                {% assign selectButtonText = "Select a different sport" %}
-                {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
+                <div class="dropdowns-desktop-view">
+                    {% assign selectButtonText = "Select a different sport" %}
+                    {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
 
-                {% assign selectButtonText = "Select a different campus"  %}
-                {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+                    {% assign selectButtonText = "Select a different campus"  %}
+                    {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+                </div>
             </div>
 
             <div class="sport-title">
@@ -59,8 +61,34 @@
 
             {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
 
-            <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register mobile-register">Register</a>
+            {% comment %} variables needed for game and practice map {% endcomment %}
+            {% assign practiceWhereToGo = item | Attribute: 'PracticeWhereToGo', 'Url' %}
+            {% assign gameWhereToGo = item | Attribute: 'GameWhereToGo', 'Url' %}
+
+            {% comment %} display game and practice map {% endcomment %}
+            <div class="practice-and-game-map">
+                <h3 id="map-heading">NOT SURE WHERE TO GO FOR PRACTICE?</h3>
+                <p id="map-description">Use this map to find things like field numbers, restrooms, or entrances.</p>
+
+                {% if gameWhereToGo != "" and practiceWhereToGo != "" %}
+                    <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ practiceWhereToGo }}">
+                {% else %}
+                    <p class="placeholder">Map Not Yet Available</p>
+                {% endif %}
+            </div>
+
+            <div class="mobile-register">
+                <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
+            </div>
+            <div class="dropdowns-mobile-view">
+                {% assign selectButtonText = "Select a different sport" %}
+                {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
+
+                {% assign selectButtonText = "Select a different campus"  %}
+                {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
+            </div>
         </div>
+
         <script>
             var gCurrentLink;
             var gCurrentPanel;
@@ -118,3 +146,33 @@
         </div>
     {% endif %}        
 </div>
+
+<script>
+
+    var practiceWhereToGo = "{{ practiceWhereToGo }}";
+    var gameWhereToGo = "{{ gameWhereToGo }}";
+
+    $('#practice-button, #practice-mobile-button').on({
+        'click': function(){
+            $('#map-image').attr('src', practiceWhereToGo);
+            $('#map-heading').text("NOT SURE WHERE TO GO FOR PRACTICE?");
+            $('#map-description').text("Use this map to find things like field numbers, restrooms, or entrances.");
+        }
+    });
+
+    $('#game-button, #game-mobile-button').on({
+        'click': function(){
+            $('#map-image').attr('src', gameWhereToGo);
+            $('#map-heading').text("NOT SURE WHERE TO GO ON GAME DAY?");
+            $('#map-description').text("Use this map to find things like field numbers or where to get a snack before the game.");
+        }
+    });
+
+    $('#rules-button, #rules-mobile-button').on({
+        'click': function(){
+            $('#map-image').attr('src', "");
+            $('#map-heading').text("");
+            $('#map-description').text("");
+        }
+    });
+</script>

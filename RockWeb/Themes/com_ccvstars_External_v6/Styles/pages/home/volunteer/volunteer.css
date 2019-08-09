@@ -87,16 +87,12 @@ textarea.form-control {
 }
 
 .actions .btn {
-    margin-top: 15px;
     width: 200px;
+    margin-top: 45px;
 }
 
 .area-of-interest {
     padding: 10px 0;
-}
-
-.workflow-entry {
-    padding-bottom: 100px;
 }
 
 /* overrides */
@@ -122,6 +118,11 @@ textarea.form-control {
     .serve-header h3 {
         font-size: 30px;
         line-height: 20px;
+    }
+
+    .actions .btn {
+        width: 100%;
+        margin-top: 45px;
     }
 }
 

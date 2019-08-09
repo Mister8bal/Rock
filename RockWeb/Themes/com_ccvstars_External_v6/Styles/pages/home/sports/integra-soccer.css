@@ -38,6 +38,10 @@ p {
     padding-bottom: 35px;
 }
 
+#general-panel, #uniform-panel, #resources-panel, #coaches-panel, #tournament-panel {
+    background-color: #EEEEEE;
+}
+
 .tab-panel {
     padding: 30px;
 }

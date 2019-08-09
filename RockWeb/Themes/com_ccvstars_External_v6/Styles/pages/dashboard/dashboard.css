@@ -95,6 +95,7 @@ table {
     border-collapse: collapse;
     width: 100%;
     text-align: center;
+    background-color: #FFFFFF;
 }
 
 td {
@@ -163,10 +164,6 @@ a:hover, a:focus {
 /* End recent registrations */
 
 /* Overrides */
-.tabbed-panel-view-cards {
-    background-color: #ffffff;
-}
-
 button:focus {
     outline: none;
 }
@@ -205,11 +202,6 @@ button:focus {
     .mobile-items .tab-selected {
         background-color: #E73D30;
         color: #ffffff !important;
-    }
-
-    #player-panel, #coach-panel {
-        padding: 0;
-        background-color: #FFFFFF;
     }
 
     .desktop-view {
@@ -310,6 +302,10 @@ button:focus {
         display: flex;
     }
     
+    #player-panel, #coach-panel {
+        padding: 0;
+        background-color: #efefef;
+    }
     /* End Overrides */
 
     /* Person Info */
@@ -350,8 +346,6 @@ button:focus {
         width: 100%;
     }
     /* End Person Info */
-
-    
 }
 
 /**** End Phone Styling ****/

@@ -34,6 +34,15 @@
     margin-left: 15px;
 }
 
+.dropdowns-desktop-view {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dropdowns-mobile-view {
+    display: none;
+}
+
 /* End Campus / Sport dropdown */
 
 .sport-title {
@@ -111,16 +120,26 @@
 }
 
 .btn-primary {
-    padding: 15px 0;
-    margin: 10px 0;
-    font-size: 16px;
-    line-height: 18px;
-    font-weight: 800;
     width: 250px;
-    border-radius: 6px;
 }
 
 /* End Overrides */
+
+
+/* Start Maps / Where To Go Section */
+.practice-and-game-map {
+    background-color: #eeeeee;
+    padding: 0 5% 5% 5%;
+}
+
+.map-image {
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+}
+
+/* End Maps / Where To Go Section */
+
 
 /**** Responsive Styling ****/
 @media screen and (max-width: 1439.98px) {
@@ -174,13 +193,27 @@
 
 /**** Phone Styling ****/
 @media screen and (max-width: 767.98px) {
+    .btn-primary {
+        width: 100%;
+    }
+
     .title {
         padding-top: 17.5px;
+    }
+
+    .dropdowns-desktop-view {
+        display: none;
+    }
+    
+    .dropdowns-mobile-view {
+        display: block;
+        margin: 20px;
     }
 
     #pnlSportDetails {
         padding-bottom: 0;
     }
+
     .navigation-and-title {
         display: flex;
         flex-direction: column-reverse;
@@ -189,10 +222,13 @@
     #pnlSportDetails .dropdown-row {
         flex-direction: column-reverse;
         justify-content: flex-start;
+        margin-left: -15px;
+        margin-right: -15px;
+        background-color: #eeeeee;
     }
 
     .select-dropdown {
-        padding: 10px 0;
+        padding-bottom: 10px;
     }
 
     #pnlSportDetails .dropdown-row .select-dropdown .select-dropdown-button {
@@ -212,19 +248,27 @@
     .tabbed-panel-view-cards {
         margin: 0 -15px;
         border-radius: 0;
+        background-color: #eeeeee;
     }
 
     .tabbed-panel-view-cards .background-card {
-        margin: 20px 15px;
+        margin: 0px 15px;
         padding: 0;
     }
 
+    .tabbed-panel-view-mobile {
+        padding: 15px;
+    }
+    
     .mobile-register {
         display: flex;
         margin: 20px;
-        padding: 15px 0;
     }
 
+    .mobile-register a {
+        padding: 10px 20px;
+    }
+    
     .right h3 {
         width: 100%;
     }
@@ -235,5 +279,13 @@
 
     #pdfRulesDownload {
         display: flex;
+    }
+
+    .practice-and-game-map .img-responsive {
+        max-width: 100%;
+    }
+
+    .map-image {
+        padding: 0px;
     }
 }
