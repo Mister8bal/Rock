@@ -887,11 +887,6 @@ namespace Rock.Web.UI.Controls
 
                 note.NoteTypeId = NoteTypeId.Value;
 
-                if ( string.IsNullOrWhiteSpace( note.Caption ) )
-                {
-                    note.Caption = string.Empty;
-                }
-
                 note.Text = Text;
                 note.IsAlert = IsAlert;
                 note.IsPrivateNote = IsPrivate;
