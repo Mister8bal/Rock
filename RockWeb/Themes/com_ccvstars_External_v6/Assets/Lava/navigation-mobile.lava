@@ -38,7 +38,11 @@
                     </div>
                 </li>
             {% else %}
-                <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
+                {% if childPage.Id == "2368" %}
+                    <li><a class="navigation-mobile-item" href="/stars#locations">Locations</a></li>
+                {% else %}
+                    <li><a class="navigation-mobile-item" href="{{ childPage.Url }}">{{ childPage.Title }}</a></li>
+                {% endif %}
             {% endif %}
         {% endfor %}
         

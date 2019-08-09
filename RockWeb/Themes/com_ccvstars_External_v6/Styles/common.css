@@ -1046,6 +1046,7 @@ a:focus {
     letter-spacing: -.5px;
     font-weight: 600;
     color: #b2b2b2;
+    font-family: heebo;
     -webkit-font-smoothing: antialiased;
 }
 

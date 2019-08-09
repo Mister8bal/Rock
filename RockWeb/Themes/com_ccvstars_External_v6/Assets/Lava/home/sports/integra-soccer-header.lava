@@ -14,7 +14,7 @@
                         <li><div id="resources-mobile-button" onClick="linkClicked(this, 'resources', true)" class="item">Resources & Forms</div></li>
                         <li><div id="coaches-mobile-button" onClick="linkClicked(this, 'coaches', true)" class="item">Coaches & Pro Staff</div></li>  
                         <li><div id="tournament-mobile-button" onClick="linkClicked(this, 'tournament', true)" class="item">Tournament</div></li>  
-                        <li><div id="store-mobile-button" onClick="linkClicked(this, 'store', true)" class="item">Store</div></li>                           
+                        <li><div id="uniform-mobile-button" onClick="linkClicked(this, 'uniform', true)" class="item">Uniform</div></li>                           
                     </ul>
                 </div>                    
             </div>
@@ -29,7 +29,7 @@
         <div id="resources-button" class="btn tab" onClick="linkClicked(this, 'resources')">Resources & Forms</div>
         <div id="coaches-button" class="btn tab" onClick="linkClicked(this, 'coaches')">Coaches & Pro Staff</div>
         <div id="tournament-button" class="btn tab" onClick="linkClicked(this, 'tournament')">Tournament</div>
-        <div id="store-button" class="btn tab" onClick="linkClicked(this, 'store')">Store</div>
+        <div id="uniform-button" class="btn tab" onClick="linkClicked(this, 'uniform')">Uniform</div>
 
     </div>
 </div>
