@@ -892,6 +892,10 @@
             sport = 'soccer';
         }
 
+        if (program.includes('exceptional')) {
+            sport = 'exceptional-stars';
+        }
+
         return sport;
     }
 
