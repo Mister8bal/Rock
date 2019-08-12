@@ -173,9 +173,7 @@
             {% assign childGroups = child | Groups:'73','Active' %}
 
             {% for childGroup in childGroups %}
-                {% unless childGroup.Group.Id == group.Id %}
-                    {% assign numberOfChildren = numberOfChildren | Plus:1 %}
-                {% endunless %}
+                {% assign numberOfChildren = numberOfChildren | Plus:1 %}
             {% endfor %}
         {% endfor %}
 
@@ -190,9 +188,9 @@
                         {% assign childGroups = "" %}
                         {% assign childGroups = child | Groups:'73','Active' %}
 
-                        {% comment %} drop down list with teams that child is in  {% endcomment %}
+                        {% comment %} drop down list of other players  {% endcomment %}
                         {% for childGroup in childGroups %}
-                            {% unless childGroup.Group.Id == group.Id %}
+                            {% unless personChild.Id == child.Id %}
                                 {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
                                 {% assign campus = "" %}   
                                 {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
