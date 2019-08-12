@@ -9,7 +9,7 @@
     <div class="panel panel-block">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <a role="button" class="accordion-toggle" data-toggle="collapse" href="#pnlTalentLMS" aria-expanded="true" aria-controls="#pnlTalentLms">Talent LMS <i class="fas fa-chevron-down"></i></a>
+            <a role="button" class="accordion-toggle" data-toggle="collapse" href="#pnlTalentLMS" aria-expanded="true" aria-controls="#pnlTalentLms">Staff Development <i class="fas fa-chevron-down"></i></a>
         </h4>
     </div>
 
