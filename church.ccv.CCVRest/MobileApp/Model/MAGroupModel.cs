@@ -48,5 +48,6 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string PhoneNumberDigits;
         public string Email;
         public MAGroupRole Role;
+        public bool IsPending;
     }
 }

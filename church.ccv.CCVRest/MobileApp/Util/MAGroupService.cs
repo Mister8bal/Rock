@@ -258,6 +258,10 @@ namespace church.ccv.CCVRest.MobileApp
                     foreach ( var groupMember in nonCoachGroupMembers )
                     {
                         MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( groupMember.Person, MAGroupRole.Member, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                        
+                        // If pending, flag that, so the mobile app's toolbox can let a Coach know.
+                        maGroupMember.IsPending = groupMember.GroupMemberStatus == GroupMemberStatus.Pending;
+
                         groupResult.Members.Add( maGroupMember );
                     }
                     break;
