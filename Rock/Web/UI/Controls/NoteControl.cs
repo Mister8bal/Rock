@@ -774,12 +774,20 @@ namespace Rock.Web.UI.Controls
                         }
                     }
 
-                    string heading = Caption;
-                    if ( string.IsNullOrWhiteSpace( Caption ) )
+                    string heading = CreatedByName;
+
+                    if ( IsPrivate )
                     {
-                        heading = CreatedByName;
+                        heading += " ( Private Note )";
                     }
+
+                    if ( !string.IsNullOrWhiteSpace( Caption ) )
+                    {
+                        heading += " " + Caption + " ";
+                    }
+
                     writer.Write( heading.EncodeHtml() );
+
                     if ( CreatedDateTime.HasValue )
                     {
                         writer.Write( " " );
@@ -878,10 +886,7 @@ namespace Rock.Web.UI.Controls
                 }
 
                 note.NoteTypeId = NoteTypeId.Value;
-                if ( string.IsNullOrWhiteSpace( note.Caption ) )
-                {
-                    note.Caption = IsPrivate ? "You - Personal Note" : string.Empty;
-                }
+
                 note.Text = Text;
                 note.IsAlert = IsAlert;
                 note.IsPrivateNote = IsPrivate;
