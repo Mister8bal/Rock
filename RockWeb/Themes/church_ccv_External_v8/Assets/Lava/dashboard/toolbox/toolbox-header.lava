@@ -76,7 +76,7 @@
         <div id="training-center-button" onClick="linkClicked(this, 'training-center')">Training Center</div>
         <div id="baptisms-button" onClick="linkClicked(this, 'baptisms')">Baptisms</div>
         <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)">Group Details</div>
-        <div id="invite-button" onClick="linkClicked(this, 'invite', false)">Invite List</div>
+        <div id="invite-button"><a style="color: inherit; text-decoration: none;" href="/invitelist?GroupId={{ 'Global' | PageParameter:'GroupId' }}">Invite List</a></div>
     </div>
 
     <div class="toolbox-subnav-mobile">
@@ -86,7 +86,7 @@
             <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
             <div id="baptisms-mobile-button" onClick="linkClicked(this, 'baptisms')" class="subnav-item">Baptisms</div>
             <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)" class="subnav-item">Group Details</div>
-          <div id="invite-button" onClick="linkClicked(this, 'invite', false)" class="subnav-item">>Invite List</div>
+            <div id="invite-button" class="subnav-item"><a style="color: inherit; text-decoration: none;" href="/invitelist?GroupId={{ 'Global' | PageParameter:'GroupId' }}" >Invite List</a></div>
         </div>
     </div>
 
