@@ -114,38 +114,49 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/PersonalizedContent" )]
         [Authenticate, Secured]
-        public HttpResponseMessage GetPersonalizedContent( int numCampaigns = 1, int? primaryAliasId = null )
+        public HttpResponseMessage GetPersonalizedContent( int numCampaigns = 1, int? primaryAliasId = null, bool includeAllOverride = false )
         {
             const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
 
-            // assume we'll need default campaigns
-            bool useDefaultCampaigns = true;
-
             List<Campaign> campaignResults = new List<Campaign>();
 
-            if ( primaryAliasId.HasValue )
+            // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
+            if ( includeAllOverride )
             {
-                // get the personId
-                PersonAliasService paService = new PersonAliasService( new RockContext() );
-                PersonAlias personAlias = paService.Get( primaryAliasId.Value );
+                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
 
-                if ( personAlias != null )
+                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
+                campaignResults.AddRange( defaultcampaigns );
+            }
+            else
+            {
+                // assume we'll need default campaigns
+                bool useDefaultCampaigns = true;
+
+                if ( primaryAliasId.HasValue )
                 {
-                    // try getting campaigns for his person
-                    campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personAlias.PersonId, numCampaigns );
+                    // get the personId
+                    PersonAliasService paService = new PersonAliasService( new RockContext() );
+                    PersonAlias personAlias = paService.Get( primaryAliasId.Value );
 
-                    // and if we found at least 1, then we won't need default
-                    if ( campaignResults.Count > 0 )
+                    if ( personAlias != null )
                     {
-                        useDefaultCampaigns = false;
+                        // try getting campaigns for his person
+                        campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personAlias.PersonId, numCampaigns );
+
+                        // and if we found at least 1, then we won't need default
+                        if ( campaignResults.Count > 0 )
+                        {
+                            useDefaultCampaigns = false;
+                        }
                     }
                 }
-            }
 
-            // if we got down here, either they want default campaigns, or there weren't any relevant campaigns for the user
-            if ( useDefaultCampaigns )
-            {
-                campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
+                // if we got down here, either they want default campaigns, or there weren't any relevant campaigns for the user
+                if ( useDefaultCampaigns )
+                {
+                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
+                }
             }
 
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();

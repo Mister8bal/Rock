@@ -121,7 +121,7 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
+        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
         {
             // get all campaigns of the provided types, that fall within the requested date range
 
@@ -141,9 +141,6 @@ namespace church.ccv.PersonalizationEngine.Data
             // Default campaigns are those that are NOT tied to a persona.
             // if isDefault is FALSE, then we get campaigns that ARE tied to personas
             // if isDefault is TRUE, then we get campaigns that are NOT tied to personas
-
-            //note: the dates are treated as inclusive, meaning the campaign must have a startDate BEFORE the provided startDate
-            // and an end date that lands AFTER the provided endDate
 
             using ( RockContext rockContext = new RockContext( ) )
             {
