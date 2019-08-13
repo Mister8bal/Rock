@@ -32,6 +32,10 @@
     {% assign rules = "" %}
 {% endif %}
 
+{% comment %} variables needed for game and practice map {% endcomment %}
+{% assign practiceWhereToGo = item | Attribute: 'PracticeWhereToGo', 'Url' %}
+{% assign gameWhereToGo = item | Attribute: 'GameWhereToGo', 'Url' %}
+
 <div id="practice-schedule-panel" class="practice-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
@@ -64,6 +68,15 @@
             {% endif %}
         </div>
     </div>
+
+    {% comment %} display practice map {% endcomment %}
+    <div class="practice-and-game-map">
+        <h3>Not sure where to go for practice?</h3>
+        <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
+        {% if practiceWhereToGo != "" %}
+            <img class="rounded-edge-img img-responsive map-image" src="{{ practiceWhereToGo }}">
+        {% endif %}
+    </div>
 </div>
 
 <div id="game-schedule-panel" class="game-panel" style="display: none;">
@@ -92,6 +105,15 @@
             {% endif %}
         </div>
     </div>  
+    
+    {% comment %} display game map {% endcomment %}
+    <div class="practice-and-game-map">
+        <h3>Not sure where to go for games?</h3>
+        <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
+        {% if gameWhereToGo != "" %}
+            <img class="rounded-edge-img img-responsive map-image" src="{{ gameWhereToGo }}">
+        {% endif %}
+    </div>
 </div>
 
 <div id="rules-panel" class="rules-panel" style="display: none;">

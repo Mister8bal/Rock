@@ -17,6 +17,15 @@
 
 /* End Zones & Sections */
 
+/* Back button */
+.back-button .btn {
+    min-width: 60px;
+    max-width: 60px;
+    padding: 10px;
+}
+
+/* End Back button */
+
 /* Overrides */
 hr {
     margin-top: 70px;
@@ -54,7 +63,7 @@ strong {
     line-height: 18px;
     font-weight: 800;
     width: 250px;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 /* End Overrides */
@@ -231,7 +240,7 @@ strong {
 .btn-secondary {
     padding: 15px 0;
     margin: 20px 5px;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 16px;
     line-height: 18px;
     font-weight: 800;
@@ -275,6 +284,24 @@ strong {
 }
 
 /* End Contact Card Styling */
+
+/* Start Maps / Where To Go Section */
+.practice-and-game-map {
+    background-color: #eeeeee;
+    padding: 0 5% 5% 5%;
+}
+
+.practice-and-game-map h3 {
+    color: #E73D30;
+}
+
+.map-image {
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+}
+
+/* End Maps / Where To Go Section */
 
 /* Start Reources Styling */
 .resources-row {
@@ -328,7 +355,7 @@ strong {
 /* End Reources Styling */
 
 /* Start Contact Panel  */
-    .grid-actions .btn {
+.grid-actions .btn {
     width: unset;
 }
 /* End Contact Panel */
@@ -460,6 +487,18 @@ strong {
     .players {
         width: 100%;
         padding-bottom: 10px;
+    }
+
+    .practice-and-game-map .img-responsive {
+        max-width: 100%;
+    }
+
+    .practice-and-game-map h3 {
+        line-height: 27px;
+    }
+
+    .map-image {
+        padding: 0px;
     }
 
     .resources-row {
