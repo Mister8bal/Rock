@@ -54,7 +54,7 @@
                                         <p>Distance: {{ groupdistancelist.Distance }} miles away</p>                                      
                                     {% endif %} 
                                 {% endfor %}
-                                {% if seatsRemaning > 0 or group.GroupCapacity == null %}
+                                {% if seatsRemaining > 0 or group.GroupCapacity == null %}
                                     {% if LinkedPages.RegisterPage and LinkedPages.RegisterPage != '' %}
                                         {% if LinkedPages.RegisterPage contains '?' %}
                                             <a class="btn btn-primary" href='{{ LinkedPages.RegisterPage }}&GroupId={{ group.Id }}'>Register</a>
