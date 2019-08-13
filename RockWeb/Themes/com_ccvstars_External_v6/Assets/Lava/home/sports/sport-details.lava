@@ -54,6 +54,8 @@
             {% comment %} variables needed for sport-details-tabs.lava {% endcomment %}
             {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
             {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
+            {% assign practiceMiscButtonText = item | Attribute: 'PracticeMiscButtonText' %}
+            {% assign practiceMiscUrl = item | Attribute: 'PracticeMiscUrl', 'RawValue' %}
             {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
             {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
             {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}

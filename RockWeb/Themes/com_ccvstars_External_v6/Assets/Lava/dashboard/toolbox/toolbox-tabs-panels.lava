@@ -12,6 +12,8 @@
     {% comment %} match found {% endcomment %}
     {% assign practiceMap = item | Attribute: 'PracticeMap', 'Url' %}
     {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
+    {% assign practiceMiscButtonText = item | Attribute: 'PracticeMiscButtonText' %}
+    {% assign practiceMiscUrl = item | Attribute: 'PracticeMiscUrl', 'RawValue' %}
     {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
     {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
     {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
@@ -21,6 +23,8 @@
     {% comment %} match not found {% endcomment %}
     {% assign practiceMap = "" %}
     {% assign practiceSchedule = "" %}
+    {% assign practiceMiscButtonText = "" %}
+    {% assign practiceMiscUrl = "" %}
     {% assign keyDates = "" %}
     {% assign gameMap = "" %}
     {% assign gameSchedule = "" %}
@@ -47,6 +51,9 @@
                         {% endif %}
                         {% if practiceSchedule != "" %}
                             <a href="{{ practiceSchedule }}" class="btn btn-primary">Practice Schedule</a>
+                        {% endif %}
+                        {% if practiceMiscUrl != "" %}
+                            <a href="{{ practiceMiscUrl }}" class="btn btn-primary">{{ practiceMiscButtonText | Default:'Miscellaneous' }}</a>
                         {% endif %}
                     {% else %}
                         <p class="placeholder">Resources Not Yet Available</p>

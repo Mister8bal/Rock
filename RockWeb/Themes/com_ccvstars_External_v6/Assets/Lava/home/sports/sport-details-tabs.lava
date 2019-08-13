@@ -21,13 +21,16 @@
                     {% endif %}
                 </div>
                 <div class="right">
-                    {% if practiceSchedule !="" or keyDates != "" %}
+                    {% if practiceSchedule !="" or keyDates != "" or practiceMiscUrl != "" %}
                         <h3>Resources</h3>
                         {% if keyDates != "" %}
                             <a href="{{ keyDates }}" class="btn btn-primary">Key Dates</a>
                         {% endif %}
                         {% if practiceSchedule != "" %}
                             <a href="{{ practiceSchedule }}" class="btn btn-primary">Practice Schedule</a>
+                        {% endif %}
+                        {% if practiceMiscUrl != "" %}
+                            <a href="{{ practiceMiscUrl }}" class="btn btn-primary">{{ practiceMiscButtonText | Default:'Miscellaneous' }}</a>
                         {% endif %}
                     {% else %}
                         <p class="placeholder">Resources Not Yet Available</p>
