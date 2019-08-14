@@ -931,7 +931,7 @@
         // add column data to row
         addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport + '-red.png">');
         addCellToRow(row, campus);
-        addCellToRow(row, program.replace('-',' '));
+        addCellToRow(row, program.replace(/\s|\-/g,' '));
         addCellToRow(row, gender);
         addCellToRow(row, division, 'grid-division');
         addCellToRow(row, season);
