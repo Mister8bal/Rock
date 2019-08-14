@@ -2,7 +2,7 @@
     {% include '~~/Assets/Lava/home/register/register-grid.lava' %}
 {% endcomment %}
 
-<!-- Desktop Grid -->
+{% comment %} Desktop Grid {% endcomment %}
 <div class="register-card">
     <div class="register-filter-row">
         <div class="filter-row-left">
@@ -17,11 +17,6 @@
             <div class="filter-item" data-toggle="modal" data-target="#modalConfirmReset" >
                 <i class="fa fa-undo" aria-hidden="true"></i><span>Reset</span>
             </div>
-            <!-- <div class="option limit-results">   not sure if gonna allow limiting results
-                <span>Show</span>
-                <input type="number" value="25">
-                <span>sports</span>
-            </div> -->
         </div>
         <div class="filter-row-right">
             <div class="search">
@@ -82,7 +77,7 @@
     </div>
 </div>
 
-<!-- Confirm Modal -->
+{% comment %} Confirm Modal {% endcomment %}
 <div id="modalConfirmReset" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -100,7 +95,7 @@
     </div>
 </div>
 
-<!-- Configure Filter Modal -->
+{% comment %} Filter Modal {% endcomment %}
 <div id="modalConfigureFilter" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -111,32 +106,27 @@
                 </div>
             </div>
             <div class="modal-body">
-                <!-- Season filter -->
                 <h6>Season</h6>
-                <div id="filterSeason" class="filter-row seasons">
-                </div>
+                <div id="filterSeason" class="filter-row seasons"></div>
 
-                <!-- Campus filter -->
                 <h6>Campus</h6>
-                <div id="filterCampus" class="filter-row campuses">
-                </div>
+                <div id="filterCampus" class="filter-row campuses"></div>
 
-                <!-- Season filter -->
                 <h6>Sport</h6>
-                <div id="filterSport" class="filter-row sports">
-                </div>
+                <div id="filterSport" class="filter-row sports"></div>
 
-                <!-- Gender filter -->
                 <h6>Gender</h6>
                 <div id="filterGender" class="filter-row gender">
                     <label><input type="checkbox" name="gender" value="Boys"> Boys</label>
                     <label><input type="checkbox" name="gender" value="Girls"> Girls</label>
-                    <label><input type="checkbox" name="gender" value="Co-ed"> Co-Ed</label>
                 </div>
 
-                <!-- Division filter -->
-                <h6>Division</h6>
-                <div id="filterDivision" class="filter-row divisions">
+                <h6>Grade</h6>
+                <div id="filterGrade" class="filter-row grades"></div>
+
+                {% comment %} Hidden filter options {% endcomment %}
+                <div style="display: none;">
+                    <div id="filterHidden"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -146,7 +136,7 @@
     </div>
 </div>
 
-<!-- Mobile Grid -->
+{% comment %} Mobile Grid {% endcomment %}
 <div class="register-mobile">
     <h4 class="current-section"></h4>
     <div class="register-card-mobile">
@@ -224,25 +214,39 @@
         var availableSeasons = [];
         var availableCampuses = [];
         var availableSports = [];
-        var availableDivisions = [];
+        var availableGrades = [];
 
         // hydrate available arrays
-        for (let i = 0; i < activeRegistrations.length; i++) {
-            if (!availableSeasons.includes(activeRegistrations[i].Season)) {
-                availableSeasons.push(activeRegistrations[i].Season)
-            }
+        // add seasons
+        availableSeasons.push("Spring");
+        availableSeasons.push("Summer");
+        availableSeasons.push("Fall");
+        availableSeasons.push("Winter");
 
-            if (!availableCampuses.includes(activeRegistrations[i].Campus)) {
-                availableCampuses.push(activeRegistrations[i].Campus);
-            }
+        // add sports
+        availableSports.push("baseball");
+        availableSports.push("basketball");
+        availableSports.push("exceptional-stars");
+        availableSports.push("football");
+        availableSports.push("soccer");
 
-            if (!availableSports.includes(activeRegistrations[i].Sport)) {
-                availableSports.push(activeRegistrations[i].Sport);
-            }
+        // add campuses
+        {% for campus in Campuses %}
+            // skip CCV Live campus
+            {% unless campus.Id == 12 %}
+                if (!availableCampuses.includes('{{ campus.Name | Downcase }}')) {
+                    availableCampuses.push('{{ campus.Name | Downcase }}');
+                }
+            {% endunless %}
+        {% endfor %}
 
-            if (!availableDivisions.includes(activeRegistrations[i].Division)) {
-                availableDivisions.push(activeRegistrations[i].Division);
-            }            
+        // add grade levels
+        for (let i = 0; i < 14; i++) {
+            const grade = getGrade(i);   
+
+            if (!availableGrades.includes(grade)) {
+                availableGrades.push(grade);
+            }      
         }
 
         // add checkbox options for each filter
@@ -264,30 +268,49 @@
             $('#filterSport').append(newCheckbox);
         }
 
-        for (let i = 0; i < availableDivisions.length; i++) {
-            var newCheckbox = createCheckboxItem('division', availableDivisions[i].replace(/\s|\-/g,''), availableDivisions[i]);
+        for (let i = 0; i < availableGrades.length; i++) {
+            var newCheckbox = createCheckboxItem('grade', availableGrades[i].replace(/\s|\-/g,''), availableGrades[i]);
 
-            $('#filterDivision').append(newCheckbox);
+            $('#filterGrade').append(newCheckbox);
         }
 
         // check for query parameters and check respective filter items
-        {% if PageParameter.Sport %}            
-            // sport parameter found, look for a matching filter check box
-            var sportCheckbox = $('input[type=checkbox][value=' + "{{ PageParameter.Sport | Replace:'-','' }}]");
+        {% if PageParameter.Sport and PageParameter.Sport != "" %}        
+            // sport parameter found
+            var pageParameterSport = `{{ PageParameter.Sport }}`.split(',');
 
-            if (sportCheckbox) {
-                // sport checkbox with matching value found, set it to true
-                sportCheckbox.prop('checked',true);
-            }
+            for (let i = 0; i < pageParameterSport.length; i++) {
+                var sportCheckbox = $('input[type=checkbox][value=' + pageParameterSport[i]);
+
+                if (sportCheckbox.length) {
+                    // sport checkbox with matching value found, set it to true
+                    sportCheckbox.prop('checked',true);
+                } else {
+                    // matching filter option not found, add a filter checkbox to the hidden group
+                    var newCheckbox = createCheckboxItem('sport', pageParameterSport[i].replace(/\s|\-/g,''), pageParameterSport[i].replace(/\s|\-/g,' '), true );
+
+                    $('#filterHidden').append(newCheckbox);
+                }                
+            }            
         {% endif %}
 
-        {% if PageParameter.Campus %}            
-            // campus parameter found, look for a matching filter check box
-            var campusCheckbox = $('input[type=checkbox][value=' + "{{ PageParameter.Campus | Capitalize | Replace:'-','' }}]");
+        {% if PageParameter.Campus and PageParameter.Campus != "" %}            
+            // campus parameter found
+            var pageParameterCampus = `{{ PageParameter.Campus }}`.split(',');
 
-            if (campusCheckbox) {
-                // campus checkbox with matching value found, set it to true
-                campusCheckbox.prop('checked',true);
+            for (let i = 0; i < pageParameterCampus.length; i++) {
+                // look for a matching filter check box
+                var campusCheckbox = $('input[type=checkbox][value=' + pageParameterCampus[i]);
+
+                if (campusCheckbox.length) {
+                    // campus checkbox with matching value found, set it to true
+                    campusCheckbox.prop('checked',true);
+                } else {
+                    // matching filter option not found, add a filter checkbox to the hidden group
+                    var newCheckbox = createCheckboxItem('campus', pageParameterCampus[i].replace(/\s|\-/g,''), pageParameterCampus[i].replace(/\s|\-/g,' '), true );
+
+                    $('#filterHidden').append(newCheckbox);
+                }             
             }
         {% endif %}
 
@@ -337,7 +360,7 @@
             // no items to display
             var row = document.createElement('tr');
 
-            row.innerHTML = `<td colspan="7"><h4 class="grid-no-items">Nothing to display</h4></td>`;
+            row.innerHTML = `<td colspan="7"><h4 class="grid-no-items">No registrations found.<br />Click <a href="/register">here</a> to search again.</h4></td>`;
 
             table.appendChild(row);
         }
@@ -577,7 +600,7 @@
         var campusFilter = $('input:checked[name="campus"]').map(function() { return $(this).val(); }).get();
         var sportFilter = $('input:checked[name="sport"]').map(function() { return $(this).val(); }).get();
         var genderFilter = $('input:checked[name="gender"]').map(function() { return $(this).val(); }).get();
-        var divisionFilter = $('input:checked[name="division"]').map(function() { return $(this).val(); }).get();
+        var gradeFilter = $('input:checked[name="grade"]').map(function() { return $(this).val(); }).get();
 
         // apply filters
 
@@ -593,7 +616,7 @@
         }
 
         if (campusFilter.length > 0) {
-            filteredRegistrations = filteredRegistrations.filter(value => campusFilter.includes(value.Campus.replace(/\s|\-/g,'')));
+            filteredRegistrations = filteredRegistrations.filter(value => campusFilter.includes(value.Campus.toLowerCase().replace(/\s|\-/g,'')));
 
             // add filter badges for campus
             for (let i = 0; i < campusFilter.length; i++) {
@@ -604,15 +627,46 @@
         }
 
         if (sportFilter.length > 0) {
-            filteredRegistrations = filteredRegistrations.filter(value => sportFilter.includes(value.Sport.replace(/\s|\-/g,'')));
+            // first determine if we need to filter by any general sports
+            // set the variables to something that doesnt match a sport name
+            var baseball = 'undefined';
+            var basketball = 'undefined';
+            var football = 'undefined';
+            var soccer = 'undefined';
+            var exceptional = 'undefined'
 
-            // add filter badges for sport
+            // loop through each filter item and specifically look for general sport and then
+            // set the text value to the sport name so it will match in the below filter include
+            for (let i = 0; i < sportFilter.length; i++) {
+                if ( sportFilter[i] === 'baseball' ) {
+                    baseball = 'baseball';
+                } else if ( sportFilter[i] === 'basketball' ) {
+                    basketball = 'basketball';
+                } else if ( sportFilter[i] === 'football' ) {
+                    football = 'football';
+                } else if ( sportFilter[i] === 'soccer' ) {
+                    soccer = 'soccer';
+                } else if ( sportFilter[i] === 'exceptionalstars') {
+                    exceptional = 'exceptional';
+                }
+            }
+
+            // now apply the filter
+            // show item if general sport is in its name, IE football in flag football, soccer in united soccer
+            // or show item if specific sport specified, ie flag football
+            filteredRegistrations = filteredRegistrations.filter(value => value.Sport.includes(baseball) || 
+                                                                          value.Sport.includes(basketball) || 
+                                                                          value.Sport.includes(football) || 
+                                                                          value.Sport.includes(soccer) || 
+                                                                          value.Sport.includes(exceptional) ||
+                                                                          sportFilter.includes(value.Sport.replace(/\s|\-/g,'')) );     
+
+            // add filter badges
             for (let i = 0; i < sportFilter.length; i++) {
                 var filterBadge = createFilterBadge(sportFilter[i]);
 
                 $('#divFilterBadges').append(filterBadge);                
             }
-
         }
 
         if (genderFilter.length > 0) {
@@ -628,12 +682,15 @@
             }
         }
         
-        if (divisionFilter.length > 0) {
-            filteredRegistrations = filteredRegistrations.filter(value => divisionFilter.includes(value.Division.replace(/\s|\-/g,'')));
+        if (gradeFilter.length > 0) {
+            // loop through the grade filter options and filter
+            for (let i = 0; i < gradeFilter.length; i++) {
+                filteredRegistrations = filteredRegistrations.filter(value => value.Grades.includes(gradeFilter[i]));           
+            }
 
-            // add filter badges for division
-            for (let i = 0; i < divisionFilter.length; i++) {
-                var filterBadge = createFilterBadge(divisionFilter[i]);
+            // add filter badges for Grades
+            for (let i = 0; i < gradeFilter.length; i++) {
+                var filterBadge = createFilterBadge(gradeFilter[i]);
 
                 $('#divFilterBadges').append(filterBadge);                
             }
@@ -645,25 +702,46 @@
             // split search input into array
             var searchItems = searchText.split(' ');            
 
-            // loop through each search term
-            // if match found
-            // search the newly filtered items again
-            // with the next search term in the array
+            // filter by each search item
             for (let i = 0; i < searchItems.length; i++) {
                 var searchItem = searchItems[i].toLowerCase();
-            
-                filteredRegistrations = filteredRegistrations.filter(function(item) {
+
+                // decided to hard code gender searching to ensure correct results are returend
+                // ie: search for boys should return boys and coed, etc
+                if ( searchItem === "bo" || 
+                    searchItem === "boy" || 
+                    searchItem === "boys" ) 
+                {
+                    filteredRegistrations = filteredRegistrations.filter(value => value.Gender === "Boys" || value.Gender === 'Co-ed');
+                } 
+                else if ( searchItem === "gi" || 
+                            searchItem === "gir" || 
+                            searchItem === "girl" || 
+                            searchItem === "girls" ) 
+                {
+                    filteredRegistrations = filteredRegistrations.filter(value => value.Gender === "Girls" || value.Gender === 'Co-ed');
+                } 
+                else if ( searchItem === "co" || 
+                            searchItem === "co-" || 
+                            searchItem === "co-e" ||
+                            searchItem === "co-ed" ||
+                            searchItem === "coe" ||
+                            searchItem === "coed" ) 
+                {
+                    filteredRegistrations = filteredRegistrations.filter(value => value.Gender === 'Co-ed');
+                } 
+                else 
+                {
+                    filteredRegistrations = filteredRegistrations.filter(function(item) {                            
                         // convert sport to searchable text
                         var sport = item.Sport.replace('-',' ');
 
-                        // TODO: return coed options when search for gender
                         return ( item.Season.toLowerCase().includes(searchItem) || 
-                                 item.Campus.toLowerCase().includes(searchItem) ||
-                                 sport.toLowerCase().includes(searchItem) ||
-                                 item.Division.toLowerCase().includes(searchItem) ||
-                                 item.Gender.toLowerCase().includes(searchItem)
-                            )
+                                item.Campus.toLowerCase().includes(searchItem) ||
+                                sport.toLowerCase().includes(searchItem) ||
+                                item.Grades.toLowerCase().includes(searchItem) )
                     });
+                }
             }            
         }
 
@@ -813,7 +891,7 @@
     }
 
     // return an html checkbox
-    function createCheckboxItem(name, value, text) {
+    function createCheckboxItem(name, value, text, checked = false) {
         // create new html elements
         var label = document.createElement('label');
         var input = document.createElement('input');
@@ -822,6 +900,10 @@
         input.setAttribute('type','checkbox')
         input.setAttribute('name',name);
         input.setAttribute('value',value);
+        
+        if (checked) {
+            input.setAttribute('checked',true);
+        }
 
         label.append(input);
 
@@ -891,12 +973,36 @@
         if (program.includes('soccer')) {
             sport = 'soccer';
         }
+        
+        if (program.includes('exceptional')) {
+            sport = 'exceptional-stars';
+        }
 
         if (program.includes('exceptional')) {
             sport = 'exceptional-stars';
         }
 
         return sport;
+    }
+
+    // return a formated grade
+    function getGrade(index) {
+        var grade = "";
+        if ( index == 0 ) {
+            grade = "Pre-K";
+        } else if ( index == 1 ) {
+            grade = "Kindergarten";
+        } else if ( index == 2 ) {
+            grade = "1st";
+        } else if ( index == 3 ) {
+            grade = "2nd";
+        } else if ( index == 4 ) {
+            grade = "3rd";
+        } else {
+            grade = index - 1 + "th";
+        }
+
+        return grade;
     }
 
     // sort array

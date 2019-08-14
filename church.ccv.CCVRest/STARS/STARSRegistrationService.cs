@@ -53,9 +53,14 @@ namespace church.ccv.CCVRest.STARS
                         string sport = calendarItem.AttributeValues["Sport"].Value;
                         string gender = calendarItem.AttributeValues["Gender"].Value;
                         string division = calendarItem.AttributeValues["Division"].Value;
+                        string grades = calendarItem.AttributeValues["Grades"].Value;
                         string season = calendarItem.AttributeValues["Season"].Value;
 
-                        if (sport.IsNullOrWhiteSpace() || gender.IsNullOrWhiteSpace() || division.IsNullOrWhiteSpace() || season.IsNullOrWhiteSpace() )
+                        if ( sport.IsNullOrWhiteSpace() || 
+                             gender.IsNullOrWhiteSpace() || 
+                             division.IsNullOrWhiteSpace() || 
+                             season.IsNullOrWhiteSpace() ||
+                             grades.IsNullOrWhiteSpace() )
                         {
                             continue;
                         }
@@ -94,6 +99,7 @@ namespace church.ccv.CCVRest.STARS
                                         Sport = sport,
                                         Gender = splitGender ? "Boys" : gender,
                                         Division = division,
+                                        Grades = grades,
                                         Season = season,
                                         SlotsAvailable = slotsAvailable,
                                         WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
@@ -112,6 +118,7 @@ namespace church.ccv.CCVRest.STARS
                                             Sport = sport,
                                             Gender = "Girls",
                                             Division = division,
+                                            Grades = grades,
                                             Season = season,
                                             SlotsAvailable = slotsAvailable,
                                             WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
@@ -133,6 +140,7 @@ namespace church.ccv.CCVRest.STARS
                                 Sport = sport,
                                 Gender = splitGender ? "Boys" : gender,
                                 Division = division,
+                                Grades = grades,
                                 Season = season,
                                 SlotsAvailable = slotsAvailable,
                                 WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
@@ -151,6 +159,7 @@ namespace church.ccv.CCVRest.STARS
                                     Sport = sport,
                                     Gender = "Girls",
                                     Division = division,
+                                    Grades = grades,
                                     Season = season,
                                     SlotsAvailable = slotsAvailable,
                                     WaitListEnabled = linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled
