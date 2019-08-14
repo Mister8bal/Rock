@@ -108,6 +108,11 @@ TransactionAcountDetails: [
 
         #region Properties
 
+        public string FormattedMinDonation
+        {
+            get { return string.Format( "{0:C}", minDonation );  }
+        }
+
         /// <summary>
         /// Gets or sets the group location identifier.
         /// </summary>
@@ -226,6 +231,10 @@ TransactionAcountDetails: [
 
                 pnlScheduledTransactionToggle.Visible = GetAttributeValue( "AllowScheduled" ).AsBoolean();
                 pnlScheduledTransaction.Visible = GetAttributeValue( "AllowScheduled" ).AsBoolean();
+
+                //Set the mininmum Donation text value 
+                //hfMinDonation.Value = FormattedMinDonation;
+                nbAmount.Text = FormattedMinDonation;
 
                 // if person logged in, prepopulate form fields
                 if ( _person != null )
@@ -727,6 +736,7 @@ TransactionAcountDetails: [
         {
 
             var rockContext = new RockContext();
+            
 
             if ( string.IsNullOrWhiteSpace( TransactionCode ) )
             {
@@ -784,7 +794,7 @@ TransactionAcountDetails: [
 
                 if(paymentInfo.Amount < minDonation )
                 {
-                    errorMessage = "The donation amount must be at least $10.00.";
+                    errorMessage = "The donation amount must be at least "+FormattedMinDonation+".";
                     return false;
                 }
 
