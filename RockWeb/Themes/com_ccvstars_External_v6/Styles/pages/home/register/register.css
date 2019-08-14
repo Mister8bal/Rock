@@ -148,8 +148,12 @@
     text-transform: capitalize;
 }
 
-.modal-body .divisions label {
-    width: 250px;
+.modal-body .campuses label,.modal-body .sports label {
+    width: 150px;
+}
+
+.modal-body .grades label {
+    width: 120px;
 }
 
 /* Grid */
@@ -225,7 +229,15 @@
 .grid-no-items {
     color: #e73d30;
     text-align: center;
-    padding: 0 40px;
+    padding: 40px;
+}
+
+.grid-no-items a {
+    color: #505050;
+}
+
+.grid-no-items a:hover {
+    text-decoration: none;
 }
 
 /* register details */

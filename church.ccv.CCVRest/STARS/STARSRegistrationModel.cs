@@ -19,6 +19,8 @@ namespace church.ccv.CCVRest.STARS
 
         public string Season;
 
+        public string Grades;
+
         public int SlotsAvailable;
 
         public bool WaitListEnabled;

@@ -43,6 +43,10 @@ h3 {
     height: 150px;
 }
 
+.leader span.text-muted {
+    font-family: 'Heebo', sans-serif;
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     h3 {
