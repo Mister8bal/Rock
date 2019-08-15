@@ -108,6 +108,9 @@ TransactionAcountDetails: [
 
         #region Properties
 
+        /// <summary>
+        /// Gets the formatted minimum donation amount
+        /// </summary>
         public string FormattedMinDonation
         {
             get { return string.Format( "{0:C}", minDonation );  }
@@ -233,7 +236,6 @@ TransactionAcountDetails: [
                 pnlScheduledTransaction.Visible = GetAttributeValue( "AllowScheduled" ).AsBoolean();
 
                 //Set the mininmum Donation text value 
-                //hfMinDonation.Value = FormattedMinDonation;
                 nbAmount.Text = FormattedMinDonation;
 
                 // if person logged in, prepopulate form fields
