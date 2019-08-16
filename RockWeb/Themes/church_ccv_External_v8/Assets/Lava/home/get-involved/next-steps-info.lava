@@ -132,10 +132,10 @@
             <h2>COACH</h2>
         </div>
         <p>
-            CCV Coaches are trained individuals within the church whose sole responsibility is to help you determine your Next Steps at CCV.
+           CCV Coaches provide environments where real life and community can thrive. They lead and facilitate spiritual growth through authentic relationship building and the study of God's word. Coaching is NOT about being perfect, it's about serving and encouraging others. Take the Next Step of leadership and see how God can use you!
         </p>
         <div class="btn-row">
-            <a href="/get-involved/next-steps/coach-request?Whattypeofcoaching=Request%20a%20Coach" class="btn btn-default">REQUEST A COACH</a>
+            <!--<a href="/get-involved/next-steps/coach-request?Whattypeofcoaching=Request%20a%20Coach" class="btn btn-default">REQUEST A COACH</a>-->
             <a href="/get-involved/next-steps/coach-request?Whattypeofcoaching=Become%20a%20Coach" class="btn btn-default">BECOME A COACH</a>
         </div>
     </div>
