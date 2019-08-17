@@ -70,13 +70,13 @@
     </div>
 
     {% comment %} display practice map {% endcomment %}
-    <div class="practice-and-game-map">
-        <h3>Not sure where to go for practice?</h3>
-        <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
-        {% if practiceWhereToGo != "" %}
+    {% if practiceWhereToGo != "" %}
+        <div class="practice-and-game-map">
+            <h3>Not sure where to go for practice?</h3>
+            <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
             <img class="rounded-edge-img img-responsive map-image" src="{{ practiceWhereToGo }}">
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}    
 </div>
 
 <div id="game-schedule-panel" class="game-panel" style="display: none;">
@@ -107,13 +107,13 @@
     </div>  
     
     {% comment %} display game map {% endcomment %}
-    <div class="practice-and-game-map">
-        <h3>Not sure where to go for games?</h3>
-        <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
-        {% if gameWhereToGo != "" %}
+    {% if gameWhereToGo != "" %}
+        <div class="practice-and-game-map">
+            <h3>Not sure where to go for games?</h3>
+            <p>Use this map to find things like field numbers, restrooms, or entrances.</p>
             <img class="rounded-edge-img img-responsive map-image" src="{{ gameWhereToGo }}">
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 </div>
 
 <div id="rules-panel" class="rules-panel" style="display: none;">

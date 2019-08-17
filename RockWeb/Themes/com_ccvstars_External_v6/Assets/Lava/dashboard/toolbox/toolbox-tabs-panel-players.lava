@@ -39,10 +39,10 @@
                     </div>
 
                     <div class="player-info">
-                        <h6>{{ groupmemberItem.Person.FullName }} <small>({{ groupmemberItem.Person.Age }})</small></h6>
+                        <h6>{{ groupmemberItem.Person.NickName }} {{ groupmemberItem.Person.LastName }} <small>({{ groupmemberItem.Person.Age }})</small></h6>
                         <strong>Parents:</strong>
                         {% for person in parents %}
-                            {{ person.FirstName }}
+                            {{ person.NickName }}
                              {% comment %} put a comma after first parent name, only if player has both parents in rock  {% endcomment %}
                             {% if forloop.first and forloop.rindex != 1 %}
                                 {{ ',' }}

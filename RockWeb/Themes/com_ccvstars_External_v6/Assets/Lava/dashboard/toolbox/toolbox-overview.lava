@@ -124,7 +124,11 @@
 </div>
 <div class="person-toolbox-teams"> 
     <div class="toolbox-teams">
-        <h2>Teams</h2>
+        {% if showCoachTools %}
+            <h2>My Teams</h2>
+        {% else %}
+            <h2>My Kids</h2>
+        {% endif %}
     </div>
     {% comment %} if currentperson is the coach, show dropdown with other teams that currentperson coaches (if any)  {% endcomment %}
     {% if showCoachTools %}
