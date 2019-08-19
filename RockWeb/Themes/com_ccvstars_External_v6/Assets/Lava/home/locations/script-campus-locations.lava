@@ -27,6 +27,11 @@ CCV.locations = [
     vimeoid: '{{ campus.CampusTourVimeoId }}',
     facebook: '{{ campus.FacebookURL }}',
     sports: '{{ campus.Sports | Downcase | Replace: ' ', '-' }}',
+    {% if campus.StarsContactNumber %}
+      starsContactNumber: '{{ campus.StarsContactNumber }}',
+    {% else %}
+      starsContactNumber: '{{ campus.PhoneNumber }}',
+    {% endif %}
     serviceTimes: {
       {% capture renderedTimes %}
       {% for time in campus.ServiceTimes %}
