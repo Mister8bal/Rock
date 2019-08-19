@@ -1,0 +1,51 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/area-leader-student-toolbox.lava' %}  
+{% endcomment %}
+
+{% assign parentGroupId = PageParameter.GroupId | Plus: 0 %}
+
+<div class="area-toolbox">
+    <div class="back-button">
+        {% if PageParameter.client != 'mobile-app' %}
+            <a class="btn btn-primary" href="##" onClick="history.go(-1); return false;">Back</a>
+        {% endif %}
+    </div>
+
+    {% for group in Groups %}
+        {% if group.Group.Id == parentGroupId %}
+            <div class="area-toolbox-row">
+                <h4>{{ group.Group.Name }}</h4>
+                <div class="area-toolbox-groups-row">
+                    {% for childGroup in group.Group.Groups %}
+                        {% if childGroup.ParentGroup.Id == parentGroupId %}
+                            {% comment %} render the group {% endcomment %}
+                            <div class="area-toolbox-group-card">
+                                <div class="area-toolbox-group-image" style="justify-content: left; align-items: normal;">
+									<div class="margin-h-sm">
+										<h4>Leaders</h4>
+										{% assign count = 0 %}
+										{% for member in childGroup.Members %}
+											{% if member.GroupRole.Name == 'Coach' or member.Role.Name == 'Co-Coach' or member.Role.Name == 'Host' %}
+												<b>{{ member.Person.FullName }}</b> ({{ member.GroupRole.Name }})<br/>
+												Mobile: {{ member.Person | PhoneNumber:'Mobile' }}<br/>
+												<br/>
+											{% endif %}
+										{% endfor %}
+									</div>
+                                </div>
+                                <div>
+                                    <a href="/toolbox?GroupId={{ childGroup.Id }}">
+                                        <div class="area-toolbox-group-link">
+                                            <span>{{ childGroup.Name }}</span>
+                                            <i class="mdi mdi-chevron-right dashboard-icon" style="color: #7A1315; margin: 0;"></i>                                   
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
