@@ -806,13 +806,8 @@ a:focus {
 }
 
 .summer-camps-row .btn-secondary h6 {
-    color: #E73D30;
+    color: inherit;
 }
-
-.summer-camps-row .btn-secondary h6:hover {
-    color: #FFFFFF;
-}
-
 
 /* Map Section */
 .our-campuses-map-window {
