@@ -12,7 +12,7 @@ namespace church.ccv.CCVRest.STARS
     class STARSRegistrationService
     {
         // attribute ids for stars calendar attributes
-        private static int _attributeIdLinkType = 94197;
+        private static int _attributeIdLinkType = 95183;
 
         /// <summary>
         /// Return a list of regular active registrations
