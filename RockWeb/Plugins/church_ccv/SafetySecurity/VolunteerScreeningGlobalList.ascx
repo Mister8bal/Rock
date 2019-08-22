@@ -18,11 +18,13 @@
                         <Rock:RockDropDownList ID="ddlApplicationType" runat="server" Label="Application Type" />
                         <Rock:RockCheckBoxList ID="cblCampus" runat="server" Label="Campus" DataTextField="Name" DataValueField="Id" RepeatDirection="Horizontal" />
                         <Rock:RockTextBox ID="tbApplicantName" runat="server" Label="Applicant Name" />
-                        <Rock:RockTextBox ID="tbMinistryLeader" runat="server" Label="Ministry Leader" />
+                        <Rock:DefinedValuePicker ID="dvpMinistryServingWith" runat="server" Label="Ministry Serving With" />
+                        <Rock:PersonPicker ID="ppRequester" runat="server" Label="Requester" />
                         <Rock:RockCheckBoxList ID="cblApplicationCompleted" runat="server" Label="Application Completed" RepeatDirection="Horizontal">
                             <asp:ListItem>Completed</asp:ListItem>
                             <asp:ListItem>Not Completed</asp:ListItem>
                         </Rock:RockCheckBoxList>
+                        <Rock:DateRangePicker ID="drpApplicationSentDate" runat="server" Label="Application Date" />
                     </Rock:GridFilter>
 
                     <Rock:Grid ID="gGrid" runat="server" AllowSorting="true" OnRowSelected="gGrid_Edit">
@@ -33,7 +35,9 @@
                             <Rock:RockBoundField DataField="CompletedDate" HeaderText="Application Completed" SortExpression="CompletedDate" DataFormatString="{0:M/dd/yy}" NullDisplayText="Not Completed" />
                             <Rock:RockBoundField DataField="Campus" HeaderText="Campus" SortExpression="Campus" />
                             <Rock:RockBoundField DataField="ApplicationType" HeaderText="Application Type" SortExpression="ApplicationType" />
-                            <Rock:RockBoundField DataField="MinistryLeader" HeaderText="Ministry Leader" SortExpression="MinistryLeader" />
+                            <Rock:RockBoundField DataField="MinistryServingWith" HeaderText="Ministery Serving With" SortExpression="MinistyServingWith" />
+                            <Rock:RockBoundField DataField="Requester" HeaderText="Requester" SortExpression="Requester" />
+                            <Rock:DeleteField OnClick="gGrid_Delete" />
                         </Columns>
                     </Rock:Grid>
                 </div>
