@@ -197,7 +197,7 @@
                 
                 {% comment %}  Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
                 {% assign campus = "" %}
-                {% assign campus = Campuses | Where: 'Id', playerTeam.Group.CampusId %}
+                {% assign campus = playerTeam.Group.CampusId | FromCache:'Campus' %}
 
                 {% if campus == "" %}
                     {% comment %} 
@@ -312,7 +312,7 @@
                         
                         {% comment %}  Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
                         {% assign campus = "" %}
-                        {% assign campus = Campuses | Where: 'Id', childGroup.Group.CampusId %}
+                        {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
 
                         {% if campus == "" %}
                             {% comment %} 
