@@ -85,7 +85,7 @@ namespace church.ccv.CCVRest.MobileApp
                     FamilyMemberModel familyMember = new FamilyMemberModel
                     {
                         PrimaryAliasId = groupMember.Person.PrimaryAliasId ?? groupMember.Person.Id,
-                        FirstName = groupMember.Person.FirstName,
+                        FirstName = groupMember.Person.NickName,
                         LastName = groupMember.Person.LastName,
                         Email = groupMember.Person.Email,
                         Age = groupMember.Person.Age
