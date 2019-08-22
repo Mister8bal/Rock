@@ -242,6 +242,9 @@ namespace church.ccv.CCVRest.Common
                     media = JsonConvert.DeserializeObject<WistiaMedia>( restResponse.Content );
                 }
             }
+            catch
+            {
+            }
             finally
             {
                 // whether it went well or not, provide the status code and object from Wistia
