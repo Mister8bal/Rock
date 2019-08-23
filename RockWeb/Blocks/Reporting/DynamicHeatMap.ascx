@@ -70,6 +70,33 @@
         </asp:Panel>
 
         <script>
+            /**
+             * Utility for modifying hex color values
+             */
+            const pSBC=(p,c0,c1,l)=>{
+                let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
+                if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
+                if(!this.pSBCr)this.pSBCr=(d)=>{
+                    let n=d.length,x={};
+                    if(n>9){
+                        [r,g,b,a]=d=d.split(","),n=d.length;
+                        if(n<3||n>4)return null;
+                        x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
+                    }else{
+                        if(n==8||n==6||n<4)return null;
+                        if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
+                        d=i(d.slice(1),16);
+                        if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
+                        else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
+                    }return x};
+                h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=pSBCr(c0),P=p<0,t=c1&&c1!="c"?pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
+                if(!f||!t)return null;
+                if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
+                else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
+                a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
+                if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
+                else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
+            }
 
             function toggleOptions() {
                 $('.js-options').slideToggle();
@@ -81,10 +108,10 @@
             * must be google.maps.OverlayView
             * 
             */
-            const HeatMapShapeControls = function(bounds, content, map){
+            const HeatMapShapeControls = function(shape, content, map){
 
-                this.bounds_ = bounds;
-                this.image_ = image;
+                this.shape_ = shape;
+                this.content_ = content;
                 this.map_ = map;
 
                 // Define a property to hold the container div. We'll
@@ -121,23 +148,56 @@
 
                 var overlayProjection = this.getProjection();
         
-                let cntr = overlayProjection.fromLatLngToDivPixel(this.bounds_.getCenter());
+                let cntr = overlayProjection.fromLatLngToDivPixel(this.shape_.getCenter());
         
                 // center the main element.
                 var div = this.div_;
-                div.appendChild(this.createDeleteElement());
-                div.style.left = cntr.x - div.offsetWidth + 'px';
-            
-              };
+                div.innerHTML = '<span>'+this.content_.toString()+'</span>';
+                let delEl = this.createDeleteElement();
+                div.appendChild(this.createSaveElement());
+                div.appendChild(delEl);
+                div.style.left = cntr.x - (div.offsetWidth/2) + 'px';
+                div.style.top = cntr.y - (div.offsetHeight/2) + 'px';
+                div.style.backgroundColor = "rgba(255,255,255,.5)";
+                div.style.padding = '4px 7px';
+                div.style.border = '1px solid #333';
+                div.style.borderRadius = '20px';
+                div.style.fillOpacity = '.5';
 
-              HeatMapShapeControls.prototype.onRemove = function() {
+            };
+
+            HeatMapShapeControls.prototype.onRemove = function() {
                 this.div_.parentNode.removeChild(this.div_);
-              };
+            };
 
-              HeatMapShapeControls.prototype.createDeleteElement = function() {
-                  let out = document.createElement('a');
-                  out.text = "X";
-              }
+            HeatMapShapeControls.prototype.update = function(content) {
+                this.content_ = content;
+                this.draw();
+            };
+
+            HeatMapShapeControls.prototype.createDeleteElement = function() {
+                let out = document.createElement('a');
+                out.innerHTML = '<i class="fa fa-times-circle-o" aria-hidden="true"></i>'
+                out.style.color = 'red';
+                out.style.marginLeft = '1rem';
+                out.style.fontSize = '1.4rem';
+                out.style.verticalAlign = "middle"
+                google.maps.event.addDomListener(out,"click", event => {
+                    console.log("CLICKED:", this);
+                    google.maps.event.trigger(this,'delete-region');
+                });
+                return out;
+            }
+
+            HeatMapShapeControls.prototype.createSaveElement = function() {
+                let out = document.createElement('a');
+                out.innerHTML = '<i class="fa fa-floppy-o" title="Save selected shape to a named location"></i>'
+                out.style.marginLeft = '1rem';
+                out.style.fontSize = '1.4rem';
+                out.style.verticalAlign = "middle"
+                out.style.borderRadius = '10px';
+                return out;
+            }
         
         
 
@@ -268,7 +328,9 @@
                 rangeSlider.on("change", handleRangeSliderChange);
 
 
-                const HeatMapShape = function(gmapShape = null, gmapOptions = null){
+                const HeatMapShape = function(parentObj, gmapShape = null, gmapOptions = null){
+
+                    console.log("GMAP SHAPE:",gmapShape.constructor.name);
 
                     /**
                      * Private variables
@@ -279,6 +341,12 @@
                     let shapeControls = null;
                     let name = "";
                     let overlayType = null;
+                    let heatMap = null;
+                    let bounds;
+                    let pointCount = 0;
+                    let shapeCenter = null;
+                    let isSelected = false;
+                    let parentHeatMap = parentObj;
 
                     if(gmapShape){
                         mapShapeObj = gmapShape
@@ -289,11 +357,7 @@
                     }
 
                     // NOTE: bounds is the rectangle bounds of the shape (not the actual shape)
-                    let bounds = mapShapeObj.getBounds();
-
-                    let pointCount = 0;
-
-                    let shapeCenter = null;
+                    bounds = mapShapeObj.getBounds();
 
                     if (mapShapeObj.getCenter)
                     {
@@ -306,9 +370,7 @@
 
 
                     let handleBoundsChange = function(){
-                        console.log('Hanle shape bounds change', event);
-                        var resizedShape = that.mapShapObj;
-                        //that.AddUpdateShape(resizedShape, true);
+                        var resizedShape = that.mapShapeObj;
                     }
 
                     let that = {
@@ -330,7 +392,13 @@
                             mapCountLabel.changed('text');
                         },
                         getGMShapeObject:()=>this.mapShapObj,
-                        processHeatMapData:function(data){
+                        processHeatMap:function(hm = null){
+
+                            heatMap = hm || heatMap;
+
+                            pointCount = 0;
+
+                            let data = heatMap.data.getArray();
 
                             for (let i = 0; i<data.length; i++) {
 
@@ -344,17 +412,17 @@
                                     point = latLng.location;
                                     pointWeight = latLng.weight;
                                 }
-        
+
                                 // first check if within bounds to narrow down (for performance)
                                 if(!bounds.contains(point)){
-                                    return;
+                                    continue;
                                 }
-        
-                                if ('polygon' == overlayType) {
+
+                                if ('polygon' == this.overlayType) {
                                     if (google.maps.geometry.poly.containsLocation(point, mapShapeObj)) {
                                         pointCount += pointWeight;
                                     }
-                                } else if ('circle' == shape.overlayType) {
+                                } else if ('circle' == this.overlayType) {
                                     if (google.maps.geometry.spherical.computeDistanceBetween(shapeCenter, point) < mapShapeObj.radius) {
                                         pointCount += pointWeight;
                                     }
@@ -364,26 +432,59 @@
                                 
                             }
 
+                        }, 
+                        getCenter:function(){
+                            return shapeCenter;
+                        },
+                        isSelectedShape:function(){
+                            return isSelected;
+                        },
+                        update:function(){
+                            console.log("UPDATE");
+                            that.processHeatMap(heatMap);
+                            that.render();
+                        },
+                        setSelected:function(){
+                            parentHeatMap.triggerShapeSelected();
+                            isSelected = true;
+                        },
+                        setUnselected:function(){
+                            isSelected = false;
+                        },
+                        render:function(){
+
+                            bounds = mapShapeObj.getBounds();
+            
+                            if (mapShapeObj.getCenter)
+                            {
+                                shapeCenter = mapShapeObj.getCenter();
+                            }
+                            else
+                            {
+                                shapeCenter = bounds.getCenter();
+                            }
+
                             totalCount = pointCount;
-                            mapCountLabel = totalCount.toString();
+                            mapLabel = totalCount.toString();
 
                             if (SelectedShape.name){
-                                mapShapeLabel = name + ': ' + mapLabel;
+                                mapShapeLabel = name + ': <span class="badge">' + mapLabel + '</span>';
+                            }else{
+                                mapShapeLabel = '<span class="badge">'+mapLabel+'</span>';
                             }
-        
+                            
                             if (!mapCountLabel) {
-                                mapCountLabel = new MapLabel({
-                                    map:map,
-                                    fontSize: <%=this.LabelFontSize%>,
-                                    text:'x',
-                                    position: shapeCenter
-                                });
+                                mapCountLabel = new HeatMapShapeControls(that, mapShapeLabel, map);
+                            }else{
+                                mapCountLabel.update(mapShapeLabel);
+                                mapCountLabel.draw();
                             }
-                            mapCountLabel.position = shapeCenter;
-                            mapCountLabel.changed('position');
-                            mapCountLabel.text = mapLabel;
-                            mapCountLabel.changed('text');
 
+                            mapCountLabel.addListener("delete-region", ()=>{
+                                alert("CLICKED");
+                            })
+
+                            mapShapeObj.setMap(mapShapeObj.getMap());
                         }
                     }
                     
@@ -415,8 +516,16 @@
                     
                 }
 
+                that.triggerShapeSelected = function(){
+                    AllShapes.forEach(function(s){
+                        s.setUnselected();
+                        s.update();
+                    });
+                },
+
                 // if a GroupId was specified, show geofences
                 that.addGroupGeoFence = function (mapItem){
+
                     if (typeof mapItem.PolygonPoints !== 'undefined' && mapItem.PolygonPoints.length > 0) {
 
                         let geoFencePath = Array();
@@ -425,16 +534,20 @@
                             geoFencePath.push(new google.maps.LatLng(point.Latitude, point.Longitude));
                         });
 
-                        let geoFencePoly = new HeatMapShape({
-                            path: geoFencePath,
-                            map: map,
-                            fillColor: that.GetNextColor(),
-                            fillOpacity: 0.6,
-                            draggable: false,
-                            editable: false,
-                        });
+                        let geoFencePoly = new HeatMapShape(
+                            that,
+                            null,
+                            {
+                                path: geoFencePath,
+                                map: map,
+                                fillColor: that.GetNextColor(),
+                                fillOpacity: 0.6,
+                                draggable: false,
+                                editable: false,
+                            }
+                        );
 
-                        geoFencePoly.Name = mapItem.Name;
+                        geoFencePoly.name = mapItem.name;
                         geoFencePoly.overlayType = 'polygon';
 
                         that.AddUpdateShape(geoFencePoly);
@@ -442,8 +555,6 @@
                 }
 
                 that.DeleteShape = function(shape) {
-
-                    console.log("SHAPE:",shape)
 
                     let allShapesIndex = AllShapes.indexOf(shape);
                                 
@@ -458,8 +569,7 @@
 
                     }
                                 
-                    shape.setMap(null);
-                    shape.mapCountLabel.setMap(null);
+                    shape.delete();
 
                     if (shape == SelectedShape)
                     {
@@ -493,8 +603,7 @@
 
                 that.AddUpdateShape = function (shape, justUpdate) {
 
-                    
-
+                
                     SelectedShape = shape;
 
                     let gmShape = shape.getGMShapeObject();
@@ -519,17 +628,15 @@
                         $('.js-deleteshape').show();
                     }
 
-                    SelectedShape.processHeatMapData(heatmap.data.getArray());
-
-                    
+                    SelectedShape.processHeatMap(heatmap);
+                    SelectedShape.render();
 
                   
                 }
 
                 that.initMap = ()=>{
 
-                    console.log("INIT MAP:",this);
-
+                    const _this = this;
                     centerLatLng = new google.maps.LatLng(lat,long );
                     initialColor = that.GetNextColor();
 
@@ -576,26 +683,26 @@
                     drawingManager.setMap(map);
 
                     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
-                        var shape = new HeatMapShape(event.overlay);
-                        console.log("NEW SHAPE: ", shape);
+                        var shape = new HeatMapShape(that,event.overlay);
                         shape.overlayType = event.type;
+                        shape.setSelected();
                         that.AddUpdateShape(shape, false);
                     });
 
                     google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
                         google.maps.event.addListener(polygon, 'dragend', function (a,b,c) {
                             AllShapes.forEach( function(s) {
-                                that.AddUpdateShape(s, true);
+                                s.update();
                             });
                         });
                         google.maps.event.addListener(polygon.getPath(), 'insert_at', function (a,b,c) {
                             AllShapes.forEach( function(s) {
-                                that.AddUpdateShape(s, true);
+                                s.update()
                             });
                         });
                         google.maps.event.addListener(polygon.getPath(), 'set_at', function (a,b,c) {
                             AllShapes.forEach( function(s) {
-                                that.AddUpdateShape(s, true);
+                                s.update();
                             });
                         });
                     });
@@ -791,16 +898,12 @@
 
             }
 
-            const hm = new HeatMap('map_canvas')
-            
-            console.log(hm);
-            
+            const hm = new HeatMap('map_canvas');
+
             Sys.Application.add_load(function () {
                 
-
                 hm.initMap();
 
-                
             });
 
             // extend polygon to getBounds
