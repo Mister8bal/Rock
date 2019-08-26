@@ -93,7 +93,9 @@
 
         if ( eventDate ) {
             // we have an event date, include in title
-            titleText += " - " + eventDate.getMonth() + "/" + eventDate.getDate();
+            var eventMonth = eventDate.getMonth() + 1;
+
+            titleText += " - " + eventMonth + "/" + eventDate.getDate();
         }
 
         hTitle.innerHTML = titleText;
