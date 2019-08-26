@@ -70,35 +70,7 @@
         </asp:Panel>
 
         <script>
-            /**
-             * Utility for modifying hex color values
-             */
-            const pSBC=(p,c0,c1,l)=>{
-                let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
-                if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
-                if(!this.pSBCr)this.pSBCr=(d)=>{
-                    let n=d.length,x={};
-                    if(n>9){
-                        [r,g,b,a]=d=d.split(","),n=d.length;
-                        if(n<3||n>4)return null;
-                        x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
-                    }else{
-                        if(n==8||n==6||n<4)return null;
-                        if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
-                        d=i(d.slice(1),16);
-                        if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
-                        else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
-                    }return x};
-                h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=pSBCr(c0),P=p<0,t=c1&&c1!="c"?pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
-                if(!f||!t)return null;
-                if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
-                else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
-                a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
-                if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
-                else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
-            }
-
-            function toggleOptions() {
+           function toggleOptions() {
                 $('.js-options').slideToggle();
             }
 
@@ -166,7 +138,6 @@
                 div.style.border = '1px solid #333';
                 div.style.borderRadius = '20px';
                 div.style.fillOpacity = '.5';
-
 
             };
 
@@ -239,20 +210,7 @@
                 let isSelected = false;
                 let parentHeatMap = parentObj;
                 let map = null;
-                let slicerHandler = {
-                    centerPt: null,
-                    radius: null,
-                    sliceCuts: [],
-                    currentSlices: []
-                }
-
-                const pieSlicerState = {
-                    SelectedCenterPt: null,
-                    SelectedRadius: null,
-                    SelectedPieCuts: [],
-                    CurrentPieSlices: []
-                };
-
+                
                 if(gmapShape){
                     mapShapeObj = gmapShape
                 }else if(gmapOptions){
@@ -275,131 +233,131 @@
                     shapeCenter = bounds.getCenter();
                 }
 
-                const getArchPath = (startAngle, endAngle)=>{
-                    var point, previous,
-                    atEnd = false,
-                    points = Array(),
-                    a = startAngle;
-                    while (true) {
-                        point = google.maps.geometry.spherical.computeOffset(that.getCenter(), mapShapeObj.radius, a);
-                        points.push(point);
-                        if (a == endAngle){
-                            break;
-                        }
-                        a++;
-                        if (a > 360) {
-                            a = 1;
-                        }
-                    }
-                    if (direction == 'counterclockwise') {
-                        points = points.reverse();
-                    }
-                    return points;
-                }
+                // const getArchPath = (startAngle, endAngle)=>{
+                //     var point, previous,
+                //     atEnd = false,
+                //     points = Array(),
+                //     a = startAngle;
+                //     while (true) {
+                //         point = google.maps.geometry.spherical.computeOffset(that.getCenter(), mapShapeObj.radius, a);
+                //         points.push(point);
+                //         if (a == endAngle){
+                //             break;
+                //         }
+                //         a++;
+                //         if (a > 360) {
+                //             a = 1;
+                //         }
+                //     }
+                //     if (direction == 'counterclockwise') {
+                //         points = points.reverse();
+                //     }
+                //     return points;
+                // }
 
-                const handleSliceMove = function(event){
+                // const handleSliceMove = function(event){
 
-                    let heading = google.maps.geometry.spherical.computeHeading(
-                        that.getCenter(),
-                        event.latLng
-                    );
+                //     let heading = google.maps.geometry.spherical.computeHeading(
+                //         that.getCenter(),
+                //         event.latLng
+                //     );
 
-                    if(!slicerHandler.centerPt){
-                        slicerHandler.centerPt = that.getCenter();
-                    }
+                //     if(!slicerHandler.centerPt){
+                //         slicerHandler.centerPt = that.getCenter();
+                //     }
 
-                    if(!slicerHandler.radius && that.overlayType == 'circle'){
-                        slicerHandler.radius = mapShapeObj.getRadius();
-                    }
+                //     if(!slicerHandler.radius && that.overlayType == 'circle'){
+                //         slicerHandler.radius = mapShapeObj.getRadius();
+                //     }
 
-                    if (heading < 0)
-                    {
-                        heading += 360;
-                    }
+                //     if (heading < 0)
+                //     {
+                //         heading += 360;
+                //     }
 
-                    let sliceCuts = [];
-                    sliceCuts.push(heading);
-                    slicerHandler.sliceCuts.forEach(function(sc){
-                        sliceCuts.push(sc);
-                    });
+                //     let sliceCuts = [];
+                //     sliceCuts.push(heading);
+                //     slicerHandler.sliceCuts.forEach(function(sc){
+                //         sliceCuts.push(sc);
+                //     });
 
-                    sliceCuts.sort(function(a,b){
-                        return a-b;
-                    });
+                //     sliceCuts.sort(function(a,b){
+                //         return a-b;
+                //     });
 
-                    slicerHandler.currentSlices.forEach(function(cs){
-                        cs.delete();
-                    });
+                //     slicerHandler.currentSlices.forEach(function(cs){
+                //         cs.delete();
+                //     });
 
-                    slicerHandler.currentSlices = [];
+                //     slicerHandler.currentSlices = [];
 
 
-                    sliceCuts.forEach(function(sc,i){
+                //     sliceCuts.forEach(function(sc,i){
 
-                        var centerPt = slicerHandler.centerPt;
-                        var radiusMeters = slicerHandler.radius;
+                //         var centerPt = slicerHandler.centerPt;
+                //         var radiusMeters = slicerHandler.radius;
                                         
-                        var pieSlicePath = Array();
+                //         var pieSlicePath = Array();
 
-                        var nextRadialPoint = sc;
-                        lastRadialPoint = sc;
+                //         var nextRadialPoint = sc;
+                //         lastRadialPoint = sc;
 
-                        if (i < sliceCuts.length-1){
-                            // find the next arc starting point
-                            lastRadialPoint = sliceCuts[i+1];
-                        }else{
-                            // use the first arc of our currentPieCuts
-                            lastRadialPoint = sliceCuts[0];
+                //         if (i < sliceCuts.length-1){
+                //             // find the next arc starting point
+                //             lastRadialPoint = sliceCuts[i+1];
+                //         }else{
+                //             // use the first arc of our currentPieCuts
+                //             lastRadialPoint = sliceCuts[0];
 
-                            // make sure the pieshape colors don't flash to random colors as it is resized
-                            polygonColorIndex = 0;
-                        }
+                //             // make sure the pieshape colors don't flash to random colors as it is resized
+                //             polygonColorIndex = 0;
+                //         }
 
-                        // if the start of the arc is counterclockwise from the current, move it back 360 degrees (because it is probably the last missing piece of the circle)
-                        if (nextRadialPoint >= lastRadialPoint){
-                            nextRadialPoint -= 360;
-                        }
+                //         // if the start of the arc is counterclockwise from the current, move it back 360 degrees (because it is probably the last missing piece of the circle)
+                //         if (nextRadialPoint >= lastRadialPoint){
+                //             nextRadialPoint -= 360;
+                //         }
                                     
-                        // create a Google Map Path as an array of all the lines from the center to the outer radius for every full degree to make it look like a pie slice
-                        while (nextRadialPoint < lastRadialPoint) {
-                            pieSlicePath.push(google.maps.geometry.spherical.computeOffset(centerPt, radiusMeters, nextRadialPoint));
-                            nextRadialPoint += 1;
-                        }
+                //         // create a Google Map Path as an array of all the lines from the center to the outer radius for every full degree to make it look like a pie slice
+                //         while (nextRadialPoint < lastRadialPoint) {
+                //             pieSlicePath.push(google.maps.geometry.spherical.computeOffset(centerPt, radiusMeters, nextRadialPoint));
+                //             nextRadialPoint += 1;
+                //         }
                             
-                        // ensure that the last path of the pieslice is there for the last line of the path
-                        var endArc = lastRadialPoint;
+                //         // ensure that the last path of the pieslice is there for the last line of the path
+                //         var endArc = lastRadialPoint;
 
-                        pieSlicePath.push(google.maps.geometry.spherical.computeOffset(centerPt, radiusMeters, endArc));
+                //         pieSlicePath.push(google.maps.geometry.spherical.computeOffset(centerPt, radiusMeters, endArc));
                             
-                        // put the center point to the start and end of the pieSlicePath
-                        pieSlicePath.unshift(centerPt);
-                        pieSlicePath.push(centerPt);
+                //         // put the center point to the start and end of the pieSlicePath
+                //         pieSlicePath.unshift(centerPt);
+                //         pieSlicePath.push(centerPt);
 
-                        var pieSlicePoly = new HeatMapShape(parentHeatMap,
-                            new google.maps.Polygon({
-                                path: pieSlicePath,
-                                map: map,
-                                fillColor: that.parentHeatMap.GetNextColor(),
-                                fillOpacity: 0.6,
-                                draggable: false,
-                                editable: false,
-                            })
-                        );
+                //         var pieSlicePoly = new HeatMapShape(parentHeatMap,
+                //             new google.maps.Polygon({
+                //                 path: pieSlicePath,
+                //                 map: map,
+                //                 fillColor: that.parentHeatMap.GetNextColor(),
+                //                 fillOpacity: 0.6,
+                //                 draggable: false,
+                //                 editable: false,
+                //             })
+                //         );
 
-                        pieSlicePoly.isPieDrawing = true;
-                        pieSlicePoly.startArc = sc;
-                        pieSlicePoly.overlayType = 'polygon';
-                        pieSlicePoly.isPieSlice = true;
-                        while (pieSlicePoly.startArc < 0){
-                            pieSlicePoly.startArc += 360;
-                        }
+                //         pieSlicePoly.isPieDrawing = true;
+                //         pieSlicePoly.startArc = sc;
+                //         pieSlicePoly.overlayType = 'polygon';
+                //         pieSlicePoly.isPieSlice = true;
+                //         while (pieSlicePoly.startArc < 0){
+                //             pieSlicePoly.startArc += 360;
+                //         }
 
-                        //that.parentHeatMap.AddUpdateShape(pieSlicePoly, false );
-                    });
+                //         //that.parentHeatMap.AddUpdateShape(pieSlicePoly, false );
+                //     });
 
-                }
+                // }
 
-                const pieMouseMoveListener = google.maps.event.addListener(map, 'mousemove', handleSliceMove);
+                //const pieMouseMoveListener = google.maps.event.addListener(map, 'mousemove', handleSliceMove);
 
                 let that = {
                     name:"",
@@ -408,18 +366,6 @@
                     mapCountLabel:mapCountLabel,
                     parentHeatMap:parentHeatMap,
                     radius:null,
-                    handleShapeClick:function(){
-                        AllShapes.forEach(function (s) {
-                            if (s.mapCountLabel && s.mapCountLabel.text.startsWith("*"))
-                            {
-                                s.mapCountLabel.text = s.mapCountLabel.text.slice(1);
-                                s.mapCountLabel.changed('text');
-                            }
-                        });
-                        
-                        mapCountLabel.text = '*' + mapCountLabel.text;
-                        mapCountLabel.changed('text');
-                    },
                     handleBoundsChange:function(){
                         this.update();
                     },
@@ -464,27 +410,87 @@
                             
                         }
 
-                    }, 
-                    handlePieSliceClick:function () {
-
-                        
-                        
                     },
                     getCenter:function(){
                         return shapeCenter;
                     },
-                    isSelectedShape:function(){
-                        return isSelected;
+                    save:function(){
+
+                        var geoFencePath;
+
+                        // Assume this is a polygon
+                        if (typeof(mapShapeObj.getPaths) != 'undefined') {
+                                
+                            var coordinates = new Array();
+                            var vertices = mapShapeObj.getPaths().getAt(0);
+                            // Iterate over the vertices of the shape's path
+                            for (var i = 0; i < vertices.length; i++) {
+                                var xy = vertices.getAt(i);
+                                coordinates[i] = xy.toUrlValue();
+                            }
+    
+                            // if the last coor is not already the first, then
+                            // add the first vertex to the end of the path.
+                            if (coordinates[coordinates.length - 1] != coordinates[0]) {
+                                coordinates.push(coordinates[0]);
+                            }
+    
+                            geoFencePath = coordinates.join('|');
+                            } else if (mapShapeObj.overlayType == 'rectangle'){
+                                var ne = mapShapeObj.getBounds().getNorthEast();
+                                var sw = mapShapeObj.getBounds().getSouthWest();
+                                geoFencePath = ne.toUrlValue() + 
+                                '|' + sw.lat() + ',' + ne.lng() + 
+                                '|' + sw.toUrlValue() + 
+                                '|' + ne.lat() + ',' + sw.lng() + 
+                                ' | ' + ne.toUrlValue();
+                            } 
+                            // else if ('circle' == SelectedShape.overlayType)
+                            // {
+                            //     var center = SelectedShape.getCenter();
+                            //     var radius = SelectedShape.radius;
+                            //     geoFencePath = 'CIRCLE|' + center.lng() + ' ' + center.lat() + '|' + radius;
+                            // }
+    
+                            $('#<%=hfLocationSavePath.ClientID%>').val(geoFencePath);
+                            
+                            Rock
+                            .controls
+                            .modal
+                            .showModalDialog(
+                                $('#<%=mdSaveLocation.ClientID%>').find('.rock-modal'), 
+                                '#<%=upSaveLocation.ClientID%>'
+                            );
+                    },
+                    
+                    /**
+                     * Registers a function on the labels
+                     * save-region event.  Value of this is assigned
+                     * to the shape object.
+                     *
+                     * @param Function f: the function to be called when event is triggered
+                     */
+                    onSaveClick:function(f){
+                        console.log("SHAPE OBJ THIS", this);
+                        let func = f.bind(this);
+                        mapCountLabel.addListener('save-region',func);
+                    },
+                    /**
+                     * Registers a function on the labels
+                     * delete-region event.  Value of this is assigned
+                     * to the shape object.
+                     *
+                     * @param Function f: the function to be called when event is triggered
+                     */
+                    onDeleteClick:function(f){
+                        let func = f.bind(this);
+                        mapCountLabel.addListener('delete-region',(ev)=>{
+                            func(ev);
+                        });
                     },
                     update:function(){
                         that.processHeatMap(heatMap);
                         that.render();
-                    },
-                    setSelected:function(){
-                        isSelected = true;
-                    },
-                    setUnselected:function(){
-                        isSelected = false;
                     },
                     delete:function(){
                         mapCountLabel.remove();
@@ -519,15 +525,10 @@
                             mapCountLabel.draw();
                         }
 
-                        mapCountLabel.addListener("delete-region", ()=>{
-                            parentHeatMap.DeleteShape(this);
-                        });
-
-                        mapCountLabel.addListener('create-slice', ()=>{
-                            this.handlePieSliceClick();
-                        });
+                        mapCountLabel
 
                         mapShapeObj.setMap(mapShapeObj.getMap());
+
                     }
                 }
                 
@@ -632,17 +633,17 @@
                         drawingControlOptions: {
                             position: google.maps.ControlPosition.TOP_CENTER,
                             drawingModes: [
-                                google.maps.drawing.OverlayType.CIRCLE,
+                                //google.maps.drawing.OverlayType.CIRCLE,
                                 google.maps.drawing.OverlayType.POLYGON,
                                 google.maps.drawing.OverlayType.RECTANGLE
                             ]
                         },
-                        circleOptions: {
-                            draggable: true,
-                            editable: true,
-                            fillColor: initialColor,
-                            strokeColor: initialColor
-                        },
+                        // circleOptions: {
+                        //     draggable: true,
+                        //     editable: true,
+                        //     fillColor: initialColor,
+                        //     strokeColor: initialColor
+                        // },
                         polygonOptions: {
                             draggable: true,
                             editable: true,
@@ -740,26 +741,25 @@
 
                 that.GetNextColor = () => {
 
-                    if (polygonColors && polygonColors.length) {
-
-                        if (polygonColorIndex >= polygonColors.length) {
-                            polygonColorIndex = 0;
-                        }
-
-                        return polygonColors[polygonColorIndex++];
+                    if(!polygonColors && !polygonColors.length){
+                        return null;
                     }
 
-                    return null;
+
+                    if (polygonColorIndex >= polygonColors.length) {
+                        polygonColorIndex = 0;
+                    }
+
+                    return polygonColors[polygonColorIndex++];
+                   
                 }
 
-                
-                that.AddShape = function(shape){
-                    if(!(shape instanceof HeatMapShape)){
-                        throw new TypeError('Invalid Object Type:  Shape must be if type HeatMapShape.');
-                    }
-                }
 
                 that.AddUpdateShape = function (shape, justUpdate) {
+
+                    if(!shape){
+                        return;
+                    }
 
                     SelectedShape = shape;
 
@@ -774,20 +774,40 @@
 
                             this.drawingManager.polygonOptions.fillColor = color;
                             this.drawingManager.polygonOptions.strokeColor = color;
-                            this.drawingManager.circleOptions.fillColor = color;
-                            this.drawingManager.circleOptions.strokeColor = color;
+                            //this.drawingManager.circleOptions.fillColor = color;
+                            //this.drawingManager.circleOptions.strokeColor = color;
                             this.drawingManager.rectangleOptions.fillColor = color;
                             this.drawingManager.rectangleOptions.strokeColor = color;
                         }
 
                         AllShapes.push(shape);
-                        $('.js-deleteshape').show();
+
                     }
 
                     SelectedShape.processHeatMap(heatmap);
                     SelectedShape.render();
 
+                    //Now that we've rendered a new shape, 
+                    //lets reset the drawing type controls.
+                    this.drawingManager.setDrawingMode(null);
                   
+                }
+
+                that.handleOverlayComplete = function(event){
+
+                    var shape = new HeatMapShape(that,event.overlay);
+                    shape.overlayType = event.type;
+
+                    that.AddUpdateShape(shape, false);
+
+                    shape.onDeleteClick(()=>{
+                        that.DeleteShape(shape);
+                    });
+
+                    shape.onSaveClick(function(ev){
+                        this.save();
+                    });
+
                 }
 
                 that.initMap = ()=>{
@@ -808,7 +828,7 @@
                     map.setTilt(45);
                     map.setCenter(centerLatLng);
 
-                    campusMarkersData.forEach( function (c) {
+                    campusMarkersData.forEach( c => {
                         campusMarkers.push(
                             new google.maps.Marker({
                                 position: c.location,
@@ -837,12 +857,7 @@
                     
                     that.drawingManager.setMap(map);
 
-                    google.maps.event.addListener(that.drawingManager, 'overlaycomplete', function (event) {
-                        var shape = new HeatMapShape(that,event.overlay);
-                        shape.overlayType = event.type;
-                        shape.setSelected();
-                        that.AddUpdateShape(shape, false);
-                    });
+                    google.maps.event.addListener(that.drawingManager, 'overlaycomplete', that.handleOverlayComplete);
 
                     google.maps.event.addListener(that.drawingManager, 'polygoncomplete', function (polygon) {
                         google.maps.event.addListener(polygon, 'dragend', function (a,b,c) {
@@ -854,47 +869,6 @@
                         google.maps.event.addListener(polygon.getPath(), 'set_at', function (a,b,c) {
                             handleShapeChange(polygon);
                         });
-                    });
-
-                    $('.js-saveshape').click(function () {
-
-                        if (SelectedShape) {
-                            
-                            var geoFencePath;
-                            if (typeof(SelectedShape.getPaths) != 'undefined') {
-                                
-                                var coordinates = new Array();
-                                var vertices = SelectedShape.getPaths().getAt(0);
-                                // Iterate over the vertices of the shape's path
-                                for (var i = 0; i < vertices.length; i++) {
-                                    var xy = vertices.getAt(i);
-                                    coordinates[i] = xy.toUrlValue();
-                                }
-    
-                                // if the last coor is not already the first, then
-                                // add the first vertex to the end of the path.
-                                if (coordinates[coordinates.length - 1] != coordinates[0]) {
-                                    coordinates.push(coordinates[0]);
-                                }
-    
-                                geoFencePath = coordinates.join('|');
-                            } else if ('rectangle' == SelectedShape.overlayType)
-                            {
-                                var ne = SelectedShape.getBounds().getNorthEast();
-                                var sw = SelectedShape.getBounds().getSouthWest();
-    
-                                geoFencePath = ne.toUrlValue() + '|' + sw.lat() + ',' + ne.lng() + '|' + sw.toUrlValue() + '|' + ne.lat() + ',' + sw.lng() + ' | ' + ne.toUrlValue();
-                            } else if ('circle' == SelectedShape.overlayType)
-                            {
-                                var center = SelectedShape.getCenter();
-                                var radius = SelectedShape.radius;
-                                geoFencePath = 'CIRCLE|' + center.lng() + ' ' + center.lat() + '|' + radius;
-                            }
-    
-                            $('#<%=hfLocationSavePath.ClientID%>').val(geoFencePath);
-                            
-                            Rock.controls.modal.showModalDialog($('#<%=mdSaveLocation.ClientID%>').find('.rock-modal'), '#<%=upSaveLocation.ClientID%>');
-                        }
                     });
 
                     $('.js-createpieshape').click();
