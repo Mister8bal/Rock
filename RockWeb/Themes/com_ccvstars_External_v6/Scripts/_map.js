@@ -56,8 +56,13 @@
     CCV.mapType = new google.maps.StyledMapType(CCV.mapStyles);
 
     // Marker Styles
-    CCV.markerFile = (window.devicePixelRatio > 1.5) ? '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg' : '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg';
-    CCV.marker = new google.maps.MarkerImage(CCV.markerFile, null, null, null, new google.maps.Size(200,64));
+    CCV.marker = {
+        url: '/Themes/com_ccvstars_External_v6/Assets/Images/icon/star-red.svg',
+        size: new google.maps.Size(200,64),
+        origin: new google.maps.Point(0,0),
+        anchor: new google.maps.Point(100,30),
+        scaledSize: new google.maps.Size(200,64)
+    }
 
 
 
@@ -328,7 +333,6 @@
 
 }
     // Load google maps api dynamically to avoid double loading
-
     if (typeof google == 'object' && typeof google.maps == 'object')
        loadMap()
     else {

@@ -877,15 +877,21 @@ a:focus {
 }
 
 .sports-offered img {
-    width: 33px;
-    height: 33px;
-    margin-right: 10px;
+    width: 37px;
+    height: 37px;
+    margin-right: 6px;
+    padding: 3px;
 }
 
 .exceptional-stars img {
     width: 45px;
     height: 45px;
     margin-left: -3px;
+}
+
+.sports-offered img:hover {
+    background-color: #E3E3E3;
+    border-radius: 4px;
 }
 
 .campus-contact {
