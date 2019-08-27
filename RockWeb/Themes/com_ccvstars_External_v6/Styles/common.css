@@ -1110,6 +1110,13 @@ a:focus {
     align-items: center;
     height: 200px;
 }
+
+.button-loading {
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 50px;
+}
+
 .lds-spinner {
     display: inline-block;
     position: relative;
@@ -1117,9 +1124,18 @@ a:focus {
     height: 64px;
 }
 
+.button-lds-spinner {
+    width: 32px;
+    height: 32px;
+}
+
 .lds-spinner div {
     transform-origin: 32px 32px;
     animation: lds-spinner 1.2s linear infinite;
+}
+
+.button-lds-spinner div {
+    transform-origin: 16px 16px;
 }
 
 .lds-spinner div:after {
@@ -1130,6 +1146,18 @@ a:focus {
     left: 29px;
     width: 5px;
     height: 14px;
+    border-radius: 20%;
+    background: #E73D30;
+}
+
+.button-lds-spinner div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 1.5px;
+    left: 14.5px;
+    width: 2.5px;
+    height: 7px;
     border-radius: 20%;
     background: #E73D30;
 }

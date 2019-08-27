@@ -1,0 +1,127 @@
+{% comment %}
+    {% assign sport = "Sport goes here" %}
+
+    {% include '~~/Assets/Lava/home/sports/campus-sports-dropdown.lava' %}
+{% endcomment %}
+
+{% comment %} ensure sport is not null {% endcomment %}
+{% unless sport %}
+    {% assign sport = "undefined" %}
+{% endunless %}
+
+<div class="loading button-loading">
+    <div class="lds-spinner button-lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+<div id="registerButton" class="btn-row hidden">
+</div>
+<div id="registerDropdown" class="select-dropdown hidden">
+    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>CHOOSE A CAMPUS</h6><b class="fa fa-caret-down"></b></button>
+    <ul class="dropdown-menu">
+    </ul>
+</div>
+<div id="registerNone" class="hidden">
+    <p>Registration currently closed.</p>
+</div>
+
+<script>
+    var availableCampuses = [];
+
+    // only proceed if we have a sport
+    {% if sport != "undefined" %}       
+        // setup getUrl
+        var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+
+        getUrl += `&sport={{ sport }}`;
+
+        {% if PageParameter.Campus %}
+            getUrl += "&campusName={{ PageParameter.Campus }}";
+        {% endif %}
+
+        getUrl += '&returnRegistrationData=true';
+
+        // make api call
+        $.get(getUrl, function(data, status) {
+            if ( data.Message === 'Success') {
+                // active registrations found
+
+                // hydrate available campuses
+                for (let i = 0; i < data.Data.length; i++) {
+                    if ( !availableCampuses.includes( data.Data[i].Campus ) ) {
+                        availableCampuses.push(data.Data[i].Campus);
+                    }                    
+                }
+
+                $(document).ready(function(){
+                    if ( availableCampuses.length > 1 ) {
+                        // multiple campuses, add each campus to dropdown
+                        for (let i = 0; i < availableCampuses.length; i++) {
+                            const element = availableCampuses[i];
+
+                            var liItem = createDropdownItem(data.Data[i].Campus,'{{ sport }}');
+
+                            $('#registerDropdown ul').append(liItem);                            
+                        }
+
+                        // hide loading, show dropdown
+                        $('.loading').addClass('hidden');
+                        $('#registerDropdown').removeClass('hidden');
+                    } else if ( availableCampuses.length == 1 ) {
+                        // single campus
+                        var button = createButton(availableCampuses[0],'{{ sport }}');
+
+                        $('#registerButton').append(button);
+
+                        // hide loading, show button
+                        $('.loading').addClass('hidden');
+                        $('#registerButton').removeClass('hidden');
+                    } else {
+                        // hide loading, show registration closed message
+                        $('.loading').addClass('hidden');
+                        $('#registerNone').removeClass('hidden');
+                    }
+                });            
+            } else {
+                // no active registrations
+                $(document).ready(function(){
+                    // hide loading, show registration closed message
+                    $('.loading').addClass('hidden');
+                    $('#registerNone').removeClass('hidden');
+                });
+            }
+        });    
+    {% endif %}
+
+    // return a button
+    function createButton(campusName,sport){
+        var a = document.createElement('a');
+
+        var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
+        hrefUrl += "?Campus=" + campusName.replace(/\s/g,'-').toLowerCase();
+        hrefUrl += "&Sport=" + sport;
+
+        a.setAttribute('href', hrefUrl);
+        a.setAttribute('class','btn btn-primary');
+
+        a.text = 'More Info';
+
+        return a;
+    }
+
+    // return a li
+    function createDropdownItem(campusName,sport) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+
+        var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
+        hrefUrl += "?Campus=" + campusName.replace(/\s/g,'-').toLowerCase();
+        hrefUrl += "&Sport=" + sport;
+
+        a.setAttribute('href', hrefUrl);
+
+        a.text = campusName;
+
+        li.append(a);
+
+        return li;
+    }
+</script>
