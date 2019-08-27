@@ -534,8 +534,8 @@ a:focus {
 }
 
 .title p {
-    font-size: 23px;
-    line-height: 27px;
+    font-size: 18px;
+    line-height: 22px;
     width: 850px;
     margin: 0 auto;
 }
@@ -1320,12 +1320,6 @@ a:focus {
     }
 
     /* Feature & Sections */
-    .title p {
-        font-size: 20px;
-        line-height: 24px;
-        width: 595px;
-    }
-
     .infoSection {
         min-height: 364px;
     }
