@@ -59,9 +59,17 @@ namespace church.ccv.CCVRest.MobileApp
             Dictionary<int, string> gradeToFamilyMap = new Dictionary<int, string>();
             gradeToFamilyMap.Add( 0, "Infants" );
             gradeToFamilyMap.Add( 1, "Early Kids" );
+            gradeToFamilyMap.Add( 2, "Early Kids" );
+            gradeToFamilyMap.Add( 3, "Early Kids" );
+            gradeToFamilyMap.Add( 4, "Early Kids" );
             gradeToFamilyMap.Add( 5, "Later Kids" );
+            gradeToFamilyMap.Add( 6, "Later Kids" );
             gradeToFamilyMap.Add( 7, "Junior High" );
+            gradeToFamilyMap.Add( 8, "Junior High" );
             gradeToFamilyMap.Add( 9, "High School" );
+            gradeToFamilyMap.Add( 10, "High School" );
+            gradeToFamilyMap.Add( 11, "High School" );
+            gradeToFamilyMap.Add( 12, "High School" );
 
             // see if the person has an override that sets their 
             // content level (Common among people with Special Needs)

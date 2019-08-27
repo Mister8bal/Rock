@@ -201,8 +201,8 @@ namespace church.ccv.CCVRest.MobileApp
                 // worship - always eligible
                 personModel.IsWorshipping = Actions_Student.ERA.IsERA( person.Id );
 
-                // baptism is 9+ / 4th grade
-                if ( person.Age >= 9 )
+                // baptism is 7+ / 2nd grade
+                if ( person.Age >= 7 )
                 {
                     personModel.IsBaptised = Actions_Student.Baptised.IsBaptised( person.Id, out personModel.BaptismDate );
                 }
@@ -260,32 +260,8 @@ namespace church.ccv.CCVRest.MobileApp
                 personModel.IsCoaching = null;
             }
 
-            // JHM 5-15-2019 HACK - Turn on all steps for test user
-            if ( person.Id == 680078 )
-            {
-                personModel.BaptismDate = new DateTime( 2018, 1, 5 );
-                personModel.IsBaptised = true;
-                personModel.IsWorshipping = true;
-                personModel.IsGiving = true;
-                personModel.IsServing = true;
-                personModel.IsConnected = true;
-                personModel.IsCoaching = true;
-                personModel.SharedStory = true;
-            }
-            else if ( person.Id == 680080 ) //baby
-            {
-                personModel.IsWorshipping = true;
-            }
-            else if ( person.Id == 680081 ) // 9 year old
-            {
-                personModel.IsBaptised = true;
-                personModel.BaptismDate = new DateTime( 2018, 1, 5 );
-                personModel.IsWorshipping = true;
-                personModel.IsGiving = true;
-                personModel.IsServing = true;
-                personModel.IsConnected = true;
-            }
-            else if ( person.Id == 680082 ) //14 year old
+            // hack for Teenager Spratt - Turn all her steps on
+            if ( person.Id == 695389 )
             {
                 personModel.IsBaptised = true;
                 personModel.BaptismDate = new DateTime( 2018, 1, 5 );
