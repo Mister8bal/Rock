@@ -134,6 +134,25 @@ hr {
     padding: 0 55px;
     margin-bottom: 3px;
     border-radius: 6px;
+    height: 45px;
+}
+
+.btn-waitlist {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+    color: #E73D30;
+    border: 1px solid #E73D30;
+    font-family: akrobat;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 18px;
+    text-transform: uppercase;
+    padding: 0 55px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+    height: 45px;
 }
 
 .btn-live {
@@ -149,12 +168,14 @@ hr {
     border: solid 1px #E73D30;
     text-decoration: none;
     color: #E73D30;
+    outline: none;
 }
 
-.btn-secondary:hover, .btn-secondary:active {
+.btn-secondary:hover, .btn-secondary:active,.btn-secondary:focus, .btn-waitlist:hover, .btn-waitlist:active, .btn-waitlist:focus {
     background-color: #E73D30;
     text-decoration: none;
     color: #FFFFFF;
+    outline: none;
 }
 
 a:focus {

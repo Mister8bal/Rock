@@ -48,7 +48,7 @@
                     <div id="game-button" class="btn tab" onClick="linkClicked(this, 'game')">Game <span class="responsive-hide">Map & Schedule</span></div>
                     <div id="rules-button" class="btn tab" onClick="linkClicked(this, 'rules')">Rules</div>
                 </div>
-                <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
+                <div id="desktopRegister"></div>
             </div>
 
             {% comment %} variables needed for sport-details-tabs.lava {% endcomment %}
@@ -79,9 +79,7 @@
                 {% endif %}
             </div>
 
-            <div class="mobile-register">
-                <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
-            </div>
+            <div id="mobileRegister" class="mobile-register"></div>
             <div class="dropdowns-mobile-view">
                 {% assign selectButtonText = "Select a different sport" %}
                 {% include '~~/Assets/Lava/home/sports/sports-dropdown.lava' %}
@@ -150,7 +148,6 @@
 </div>
 
 <script>
-
     var practiceWhereToGo = "{{ practiceWhereToGo }}";
     var gameWhereToGo = "{{ gameWhereToGo }}";
 
@@ -177,4 +174,73 @@
             $('#map-description').text("");
         }
     });
+
+    var test;
+
+    // check for active registrations for sport / campus
+    {% if sport != "" and campus != "" %}       
+        // setup getUrl
+        var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+        getUrl += `&sport={{ sport }}`;
+        getUrl += "&campusName={{ campus }}";
+        getUrl += '&returnRegistrationData=true';
+
+        // make api call
+        $.get(getUrl, function(data, status) {
+            if ( data.Message === 'Success') {
+                // determine button text and css class
+                // default to join wait list
+                var buttonText = 'Join Wait List';
+                var buttonCssClass = 'btn btn-waitlist';
+
+                test = data.Data
+
+                // loop through returned registrations
+                // if any have availabe spots, change button text and class to Register -1 equals unlimited spots
+                for (let i = 0; i < data.Data.length; i++) {
+                    if ( data.Data[i].SlotsAvailable > 0 || data.Data[i].SlotsAvailable == -1 ) {
+                        buttonText = 'Register';
+                        buttonCssClass = 'btn btn-register';
+                    }                    
+                }
+
+                // registrations found, create register buttons and add to page
+                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
+                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
+
+                $(document).ready(function(){
+                    $('#desktopRegister').append(registerButtonDesktop);
+                    $('#mobileRegister').append(registerButtonMobile);
+
+                    $('#desktopRegister').attr("style", "opacity: 1");
+                    $('#mobileRegister').attr("style", "opacity: 1");
+                });
+            }
+        });
+    {% endif %}
+
+    // return a link button
+    function createRegisterButton(sport,campus,season,text,cssClass) {
+        var a = document.createElement('a');
+
+        var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
+        hrefUrl += "?Campus=" + campus.replace(/\s/g,'-').toLowerCase();
+        hrefUrl += "&Sport=" + sport;
+        hrefUrl += "&Season=" + season;
+
+        a.setAttribute('href',hrefUrl);
+        a.setAttribute('class',cssClass);
+
+        a.text = text;
+
+        return a;
+    }
+
+
+
+
+
+
+//    <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
+
 </script>

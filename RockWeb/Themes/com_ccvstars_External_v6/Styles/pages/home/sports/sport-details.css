@@ -104,6 +104,11 @@
     border-radius: 5px;
 }
 
+#desktopRegister, #mobileRegister {
+    opacity: 0;
+    transition: 1s;
+}
+
 /* End Zones & Sections */
 
 /* Overrides */
