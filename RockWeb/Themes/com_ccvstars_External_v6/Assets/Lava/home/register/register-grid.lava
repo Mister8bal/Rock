@@ -1014,6 +1014,10 @@
             sport = 'exceptional-stars';
         }
 
+        if (program.includes('exceptional')) {
+            sport = 'exceptional-stars';
+        }
+
         return sport;
     }
 
