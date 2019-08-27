@@ -1682,6 +1682,7 @@ a:focus {
 
     .right .btn-row {
         padding-top: 10px;
+        width: 100%;
     }
 
     .select-dropdown-button b {
@@ -1820,6 +1821,13 @@ a:focus {
 
     .server-name {
         margin-left: 0;
+    }
+
+    /* loading indicator */
+    .button-loading {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
     }
 }
 

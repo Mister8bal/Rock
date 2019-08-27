@@ -353,53 +353,49 @@
 
     // initialize mobile view
     function initializeMobile() {
-        // for now navigating to query parameter specified sport is disabled
-        // need to figure out how determine season without having it specified
-        // coming back to this later
+        // check for season parameter and refilter
+        if ( pageParameterSeason.length > 0 ) {
+            // convert parmeters to title case and replace - with spaces
+            var requestedSeason = toTitleCase(pageParameterSeason[0].replace(/\s|\-/g,' '));
 
-        // // check for campus paramter and refilter registrations
-        // if ( pageParameterCampus.length > 0 ) {
-        //     // convert parmeters to title case and replace - with spaces
-        //     var requestedCampus = toTitleCase(pageParameterCampus[0].replace(/\s|\-/g,' '));
+            if ( availableMobileSeasons.includes(requestedSeason) ) {
+                // valid season specified, update selectedMobileSeason and mobileState
+                selectedMobileSeason = requestedSeason;
 
-        //     if ( availableMobileCampuses.includes(requestedCampus) ) {
-        //         // valid campus specified, update selectedMobileCampus and mobileState
-        //         selectedMobileCampus = requestedCampus;
+                // update filtered registrations and rehydrate the available arrays
+                filteredMobileRegistrations = applyMobileFilter();
+                hydrateAvailableMobileArrays(filteredMobileRegistrations);
+            }
+        }
 
-        //         // update filtered registrations and rehydrate the available arrays
-        //         filteredMobileRegistrations = applyMobileFilter();
-        //         hydrateAvailableMobileArrays(filteredMobileRegistrations);
-        //     }
-        // }
+        // if we have season parameter check for campus paramter and refilter registrations
+        if ( selectedMobileSeason != '' && pageParameterCampus.length > 0 ) {
+            // convert parmeters to title case and replace - with spaces
+            var requestedCampus = toTitleCase(pageParameterCampus[0].replace(/\s|\-/g,' '));
 
-        // // check for sport parameter and refilter registrations
-        // if ( pageParameterSport.length > 0 ) {
-        //     var requestedSport = pageParameterSport[0];
+            if ( availableMobileCampuses.includes(requestedCampus) ) {
+                // valid campus specified, update selectedMobileCampus and mobileState
+                selectedMobileCampus = requestedCampus;
 
-        //     if ( availableMobileSports.includes(requestedSport) ) {
-        //         // valid sport specified, update selectedMobileSport and mobileState
-        //         selectedMobileSport = requestedSport;
+                // update filtered registrations and rehydrate the available arrays
+                filteredMobileRegistrations = applyMobileFilter();
+                hydrateAvailableMobileArrays(filteredMobileRegistrations);
+            }
+        }
+
+        // if we have season and campus parameters check for sport parameter and refilter registrations
+        if ( selectedMobileSeason != '' && selectedMobileCampus != '' && pageParameterSport.length > 0 ) {
+            var requestedSport = pageParameterSport[0];
+
+            if ( availableMobileSports.includes(requestedSport) ) {
+                // valid sport specified, update selectedMobileSport and mobileState
+                selectedMobileSport = requestedSport;
                 
-        //         // update filtered registrations and rehydrate the available arrays
-        //         filteredMobileRegistrations = applyMobileFilter();
-        //         hydrateAvailableMobileArrays(filteredMobileRegistrations);
-        //     }
-        // }     
-
-        // // check for season parameter and refilter
-        // if ( pageParameterSeason.length > 0 ) {
-        //     // convert parmeters to title case and replace - with spaces
-        //     var requestedSeason = toTitleCase(pageParameterSeason[0].replace(/\s|\-/g,' '));
-
-        //     if ( availableMobileSeasons.includes(requestedSeason) ) {
-        //         // valid season specified, update selectedMobileSeason and mobileState
-        //         selectedMobileSeason = requestedSeason;
-
-        //         // update filtered registrations and rehydrate the available arrays
-        //         filteredMobileRegistrations = applyMobileFilter();
-        //         hydrateAvailableMobileArrays(filteredMobileRegistrations);
-        //     }
-        // } 
+                // update filtered registrations and rehydrate the available arrays
+                filteredMobileRegistrations = applyMobileFilter();
+                hydrateAvailableMobileArrays(filteredMobileRegistrations);
+            }
+        }      
 
         // set current state
         if ( selectedMobileSeason != '' && selectedMobileCampus != '' && selectedMobileSport != '') {

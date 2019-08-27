@@ -1,25 +1,30 @@
 {% comment %}
     {% assign sport = "Sport goes here" %}
+    {% assign season = "Season goes here" %}
 
     {% include '~~/Assets/Lava/home/sports/campus-sports-dropdown.lava' %}
 {% endcomment %}
 
-{% comment %} ensure sport is not null {% endcomment %}
+{% comment %} ensure sport and season are not null {% endcomment %}
 {% unless sport %}
     {% assign sport = "undefined" %}
 {% endunless %}
 
-<div class="loading button-loading">
+{% unless season %}
+    {% assign season = "undefined" %}
+{% endunless %}
+
+<div id="loading{{ sport }}" class="loading button-loading">
     <div class="lds-spinner button-lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
-<div id="registerButton" class="btn-row hidden">
+<div id="registerButton{{ sport }}" class="btn-row hidden">
 </div>
-<div id="registerDropdown" class="select-dropdown hidden">
+<div id="registerDropdown{{ sport }}" class="select-dropdown hidden">
     <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>CHOOSE A CAMPUS</h6><b class="fa fa-caret-down"></b></button>
     <ul class="dropdown-menu">
     </ul>
 </div>
-<div id="registerNone" class="hidden">
+<div id="registerNone{{ sport }}" class="hidden">
     <p>Registration currently closed.</p>
 </div>
 
@@ -27,7 +32,7 @@
     var availableCampuses = [];
 
     // only proceed if we have a sport
-    {% if sport != "undefined" %}       
+    {% if sport != "undefined" and season != "undefined" %}       
         // setup getUrl
         var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
 
@@ -57,47 +62,48 @@
                         for (let i = 0; i < availableCampuses.length; i++) {
                             const element = availableCampuses[i];
 
-                            var liItem = createDropdownItem(data.Data[i].Campus,'{{ sport }}');
+                            var liItem = createDropdownItem(data.Data[i].Campus,'{{ sport }}','{{ season }}');
 
                             $('#registerDropdown ul').append(liItem);                            
                         }
 
                         // hide loading, show dropdown
-                        $('.loading').addClass('hidden');
-                        $('#registerDropdown').removeClass('hidden');
+                        $('#loading{{ sport }}').addClass('hidden');
+                        $('#registerDropdown{{ sport }}').removeClass('hidden');
                     } else if ( availableCampuses.length == 1 ) {
                         // single campus
-                        var button = createButton(availableCampuses[0],'{{ sport }}');
+                        var button = createButton(availableCampuses[0],'{{ sport }}','{{ season }}');
 
-                        $('#registerButton').append(button);
+                        $('#registerButton{{ sport }}').append(button);
 
                         // hide loading, show button
-                        $('.loading').addClass('hidden');
-                        $('#registerButton').removeClass('hidden');
+                        $('#loading{{ sport }}').addClass('hidden');
+                        $('#registerButton{{ sport }}').removeClass('hidden');
                     } else {
                         // hide loading, show registration closed message
-                        $('.loading').addClass('hidden');
-                        $('#registerNone').removeClass('hidden');
+                        $('#loading{{ sport }}').addClass('hidden');
+                        $('#registerNone{{ sport }}').removeClass('hidden');
                     }
                 });            
             } else {
                 // no active registrations
                 $(document).ready(function(){
                     // hide loading, show registration closed message
-                    $('.loading').addClass('hidden');
-                    $('#registerNone').removeClass('hidden');
+                    $('#loading{{ sport }}').addClass('hidden');
+                    $('#registerNone{{ sport }}').removeClass('hidden');
                 });
             }
         });    
     {% endif %}
 
     // return a button
-    function createButton(campusName,sport){
+    function createButton(campusName,sport,season){
         var a = document.createElement('a');
 
         var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
         hrefUrl += "?Campus=" + campusName.replace(/\s/g,'-').toLowerCase();
         hrefUrl += "&Sport=" + sport;
+        hrefUrl += "&Season=" + season;
 
         a.setAttribute('href', hrefUrl);
         a.setAttribute('class','btn btn-primary');
@@ -108,13 +114,14 @@
     }
 
     // return a li
-    function createDropdownItem(campusName,sport) {
+    function createDropdownItem(campusName,sport,season) {
         var li = document.createElement('li');
         var a = document.createElement('a');
 
         var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
         hrefUrl += "?Campus=" + campusName.replace(/\s/g,'-').toLowerCase();
         hrefUrl += "&Sport=" + sport;
+        hrefUrl += "&Season=" + season;
 
         a.setAttribute('href', hrefUrl);
 
