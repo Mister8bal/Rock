@@ -224,8 +224,8 @@
                         <hr />
                     </asp:Panel>
 
-                    <h3>Contact Info</h3>
-                    <div>
+                    <div class="contact-information">
+                        <h3>Contact Info</h3>
                         <asp:Repeater ID="rContactInfo" runat="server">
                             <ItemTemplate>
                                 <div>
