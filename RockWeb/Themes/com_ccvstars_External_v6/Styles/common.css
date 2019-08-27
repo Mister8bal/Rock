@@ -445,8 +445,8 @@ a:focus {
 /* Hamburger Menu (Full Menu) */
 .fa.fa-bars {
     color: #FFFFFF;
-    font-size: 30px;
-    line-height: 32px;
+    font-size: 40px;
+    line-height: 42px;
 }
 
 .masthead-fullmenu {
@@ -1393,6 +1393,22 @@ a:focus {
 }
 /**** End Small Desktop ****/
 
+/* Due to large menu, change to hamburger bars at non standard query  */
+@media screen and  (max-width: 1075px ) {
+    .header-navigation {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: block;
+        margin-top: 25px;
+    }
+
+    .masthead-fullmenu {
+        width: 30%;
+    }
+}
+
 /**** Tablet Sytling  ****/
 /* Reduce by 40% */
 @media screen and (max-width: 1023.98px) {
@@ -1606,6 +1622,11 @@ a:focus {
 
     .navbar-toggle {
         display: block;
+    }
+
+    .fa.fa-bars {
+        font-size: 30px;
+        line-height: 32px;
     }
 
     .masthead-upper {
@@ -1857,7 +1878,7 @@ a:focus {
 /* ===================================================================
       Non standard media queries
    =================================================================== */
- @media screen and (max-width: 860px) {
+@media screen and (max-width: 860px) {
     .loginstatus .dropdown .profile-photo {
         display: none;
     }
