@@ -267,7 +267,7 @@ namespace church.ccv.CCVRest.MobileApp
             ContentChannel lifeTrainingTopics  = contentChannelService.Get( ContentChannelId_LifeTrainingTopics );
 
             // sort by priority
-            var ltTopicItems = lifeTrainingTopics.Items.OrderByDescending( i => i.Priority);
+            var ltTopicItems = lifeTrainingTopics.Items;
 
 
             // next, get the Life Training Resources
@@ -286,8 +286,10 @@ namespace church.ccv.CCVRest.MobileApp
                 ltTopic.LoadAttributes();
 
                 LifeTrainingTopicModel ltTopicModel = new LifeTrainingTopicModel();
-                ltTopicModel.Title = ltTopic.Title;
-                ltTopicModel.Content = ltTopic.Content;
+                ltTopicModel.Title = ltTopic.AttributeValues["LTTitle"].ToString();
+                ltTopicModel.Content = ltTopic.AttributeValues["LTContent"].ToString();
+
+                int.TryParse( ltTopic.AttributeValues["LTOrder"].Value, out ltTopicModel.SortPriority );
 
                 // try getting the image
                 string ltItemImageGuid = ltTopic.AttributeValues["Image"].Value.ToString();
@@ -323,8 +325,8 @@ namespace church.ccv.CCVRest.MobileApp
                     {
                         // then add it
                         LifeTrainingResourceModel resourceModel = new LifeTrainingResourceModel();
-                        resourceModel.Title = resource.Title;
-                        resourceModel.Content = resource.Content;
+                        resourceModel.Title = resource.AttributeValues["LTResourceTitle"].Value.ToString();
+                        resourceModel.Content = resource.AttributeValues["LTResourceContent"].Value.ToString();
                         resourceModel.Author = resource.AttributeValues["Author"].Value.ToString();
                         resourceModel.URL = resource.AttributeValues["URL"].Value.ToString();
 
@@ -356,6 +358,9 @@ namespace church.ccv.CCVRest.MobileApp
 
                 ltTopicModels.Add( ltTopicModel );
             }
+
+            // finally, sort the topics
+            ltTopicModels = ltTopicModels.OrderByDescending( lt => lt.SortPriority ).ToList();
 
             return ltTopicModels;
         }
