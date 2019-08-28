@@ -6,6 +6,7 @@
         <asp:Panel ID="pnlDetails" CssClass="panel panel-block" runat="server" >
 
             <asp:HiddenField ID="hfId" runat="server" />
+            <asp:HiddenField ID="hfChannelId" runat="server" />
 
             <div class="panel-heading">
                 <h1 class="panel-title">

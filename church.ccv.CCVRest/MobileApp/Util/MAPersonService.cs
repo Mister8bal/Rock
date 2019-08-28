@@ -261,7 +261,7 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // hack for Teenager Spratt - Turn all her steps on
-            if ( person.Id == 695389 )
+            if ( person.Id == 695355 )
             {
                 personModel.IsBaptised = true;
                 personModel.BaptismDate = new DateTime( 2018, 1, 5 );

@@ -65,7 +65,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
 
             if ( !Page.IsPostBack )
             {
-                ShowDetail(PageParameter("contentItemId").AsInteger());
+                ShowDetail(PageParameter("contentItemId").AsInteger(), PageParameter( "contentChannelId" ).AsInteger() );
             }
             else
             {
@@ -100,7 +100,14 @@ namespace RockWeb.Plugins.church_ccv.Cms
             foreach ( var contentItemId in itemIds )
             { 
                 ContentChannelItem contentItem = new ContentChannelItemService( new RockContext() ).Get( contentItemId );
-                breadCrumbs.Add( new BreadCrumb( contentItem.Title, pageReference ) );
+                if ( contentItem != null )
+                {
+                    breadCrumbs.Add( new BreadCrumb( contentItem.Title, pageReference ) );
+                }
+                else
+                {
+                    breadCrumbs.Add( new BreadCrumb( "New Content Item", pageReference ) );
+                }
             }
 
             return breadCrumbs;
@@ -159,7 +166,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void Block_BlockUpdated( object sender, EventArgs e )
         {
-            ShowDetail( hfId.ValueAsInt() );
+            ShowDetail( hfId.ValueAsInt(), null );
         }
 
         #endregion
@@ -186,17 +193,53 @@ namespace RockWeb.Plugins.church_ccv.Cms
                     .FirstOrDefault( t => t.Id == contentItemId );
             }
 
+            if ( contentItem == null )
+            {
+                var contentChannel = new ContentChannelService( rockContext ).Get( hfChannelId.Value.AsInteger() );
+                if ( contentChannel != null )
+                {
+                    contentItem = new ContentChannelItem
+                    {
+                        Title = contentChannel.Name, // content channel items must have a title, so use the name of the channel
+                        ContentChannel = contentChannel,
+                        ContentChannelId = contentChannel.Id,
+                        ContentChannelType = contentChannel.ContentChannelType,
+                        ContentChannelTypeId = contentChannel.ContentChannelType.Id,
+                        StartDateTime = RockDateTime.Now
+                    };
+
+                    if ( contentChannel.RequiresApproval )
+                    {
+                        contentItem.Status = ContentChannelItemStatus.PendingApproval;
+                    }
+                    else
+                    {
+                        contentItem.Status = ContentChannelItemStatus.Approved;
+                        contentItem.ApprovedDateTime = RockDateTime.Now;
+                        contentItem.ApprovedByPersonAliasId = CurrentPersonAliasId;
+                    }
+
+                    contentItemService.Add( contentItem );
+                }
+            }
+
             return contentItem;
+        }
+
+        public void ShowDetail( int contentItemId )
+        {
+            ShowDetail( contentItemId, null );
         }
 
         /// <summary>
         /// Shows the detail.
         /// </summary>
         /// <param name="contentItemId">The marketing campaign ad type identifier.</param>
-        public void ShowDetail( int contentItemId )
+        public void ShowDetail( int contentItemId, int? contentChannelId )
         {
             bool canEdit = IsUserAuthorized( Authorization.EDIT );
             hfId.Value = contentItemId.ToString();
+            hfChannelId.Value = contentChannelId.HasValue ? contentChannelId.Value.ToString() : string.Empty;
 
             ContentChannelItem contentItem = GetContentItem();
 
@@ -219,6 +262,7 @@ namespace RockWeb.Plugins.church_ccv.Cms
                 pnlEditDetails.Visible = true;
 
                 hfId.Value = contentItem.Id.ToString();
+                hfChannelId.Value = contentItem.ContentChannelId.ToString();
 
                 string cssIcon = contentItem.ContentChannel.IconCssClass;
                 if ( string.IsNullOrWhiteSpace( cssIcon ) )

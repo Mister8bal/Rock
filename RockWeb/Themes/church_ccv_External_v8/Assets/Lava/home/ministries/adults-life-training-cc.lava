@@ -6,10 +6,11 @@
             </div>
             <div class="life-training-section-desc">
                 <div class="life-training-header">
-                    <h2>{{item.Title}}</h2>
+					{% assign ltTitle = item | Attribute:'LTTitle', 'RawValue' %}
+                    <h2>{{ltTitle}}</h2>
                 </div>
-                <p>{{item.Content}}
-                </p>
+				{% assign ltContent = item | Attribute:'LTContent', 'RawValue' %}
+                <p>{{ltContent}}</p>
                 <div class="btn-row">
                     {% assign learnMoreResourceVal = item | Attribute:'LearnMoreResource', 'RawValue' %}
                     {% assign learnMoreUrlVal = item | Attribute:'LearnMoreURL' %}
