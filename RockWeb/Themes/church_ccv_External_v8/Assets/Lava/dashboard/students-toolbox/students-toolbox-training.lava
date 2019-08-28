@@ -3,6 +3,12 @@
 
 {% assign currentCategory = '' %}
 {% assign Currentforloopindex = 0 %}
+<div class="item-row">
+    <h3 class="page-header">Podcast</h3>
+    <div class="resource-links">
+        <a class="btn btn-primary" href="https://anchor.fm/ccvstudents" target="_blank"><i class="fa fa-microphone" aria-hidden="true"></i>&nbsp;&nbsp;CCV Students Podcast</a>
+    </div>
+</div>
 
 {% for item in Items %}
     {% assign itemCategory = item | Attribute:'Category' %}

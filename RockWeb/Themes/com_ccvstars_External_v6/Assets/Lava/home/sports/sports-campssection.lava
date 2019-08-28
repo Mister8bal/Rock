@@ -62,7 +62,7 @@
                         var li = document.createElement('li');
                         var a = document.createElement('a');
 
-                        a.setAttribute('href', `/summer-camps/{{ sport }}/` + availableCampuses[i]);
+                        a.setAttribute('href', `/summer-camps/{{ sport }}/` + availableCampuses[i].toLowerCase().replace(/\s/g,'-'));
                         a.text = availableCampuses[i];
 
                         li.append(a);

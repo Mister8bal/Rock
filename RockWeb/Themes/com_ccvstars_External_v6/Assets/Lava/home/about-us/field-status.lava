@@ -1,0 +1,70 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/home/about-us/field-status.lava' %}
+{% endcomment %}
+
+{% include '~~/Assets/Lava/home/locations/script-campus-locations.lava' %}
+
+<h2 class="field-status-title">Field Status</h2>
+<div class="campus-cards-row">
+    {% for item in Items %}
+        <div class="campus-card">
+            <div class="card-content">
+                <h4>{{ item.Campus }}</h4>
+                <p id="summary">{{ item.Summary | Default:'All fields are open. Please refer to your Team Toolbox or the campus sports page for map and schedule.' }} </p>
+                <p>{{ item.ModifiedDateTime | Date:'M/d/yyyy' }}</p>
+            </div>
+            {% if item.FieldStatus == "Open" %}
+                <div class="card-footer field-open"><p>Fields are open for scheduled activities.</p></div>
+            {% else %}
+                <div class="card-footer field-closed"><p>Fields are closed for scheduled activities.</p></div>
+            {% endif %}
+        </div>
+    {% endfor %}    
+</div>
+
+<div class="campus-cards-row-mobile">
+    <div class="campus-dropdown">
+        <button id="btnCampusSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Select Campus<b class="fa fa-caret-down"></b></button>
+        <ul class="dropdown-menu">
+            {% for campusItem in Campuses %}
+                {% if campusItem.IsActive == 'True' and campusItem.Name != 'Anthem' and campusItem.Name != 'Midtown Phoenix' and campusItem.Name != 'Scottsdale' %}
+                    <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
+                {% endif %}
+            {% endfor %} 
+        </ul>
+    </div> 
+    
+    {% for item in Items %}
+        <div class="campus-card hidden" id="{{item.Campus | Replace:' ', '-' | Downcase }}">
+            <div class="card-content">
+                <h4>{{ item.Campus }}</h4>
+                <p id="summary">{{ item.Summary | Default:'All fields are open. Please refer to your Team Toolbox or the campus sports page for map and schedule.' }} </p>
+                <p>{{ item.ModifiedDateTime | Date:'M/d/yyyy' }}</p>
+            </div>
+            {% if item.FieldStatus == "Open" %}
+                <div class="card-footer field-open"><p>Fields are open for scheduled activities.</p></div>
+            {% else %}
+                <div class="card-footer field-closed"><p>Fields are closed for scheduled activities.</p></div>
+            {% endif %}
+        </div>
+    {% endfor %}     
+</div>
+
+
+
+<script type="text/javascript">
+
+    function changeCampus(campusId) {
+        for (var i = 0; i < CCV.locations.length; i++) {
+            var campus = CCV.locations[i].name.replace(' ','-').toLowerCase();
+            if (campusId == CCV.locations[i].id) {
+                $('#btnCampusSelect').text( CCV.locations[i].name + " Campus");
+                $('#'+campus).removeClass("hidden");
+            }  
+            else {
+                $('#'+campus).addClass("hidden");
+            }
+        }
+    }
+            
+</script>

@@ -1,6 +1,6 @@
 
 #section-feature-bg {
-    height: 846px;
+    height: 777px;
     background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-home.jpg");
     position: relative;
 }
@@ -20,14 +20,10 @@
     padding-bottom: 15px;
 }
 
-.title p {
-    width: 700px;
-}
-
 .top-and-bottom-container {
     position: relative;
     z-index: 900;
-    margin-top: -425px;
+    margin-top: -475px;
 }
 
 .top {
@@ -140,7 +136,7 @@ a.anchor {
 /**** Responsive Styling ****/
 @media screen and (max-width: 1439.98px) {
     #section-feature-bg {
-        height: 630px;
+        height: 615px;
     }
 
     #zone-sectionc {
@@ -187,6 +183,10 @@ a.anchor {
 
     #zone-feature {
         margin: 0 auto;
+    }
+
+    .title p {
+        width: unset;
     }
      
     .service-times-title {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Web.UI.WebControls;
@@ -232,18 +233,19 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         private void BindGrid()
         {
             var rockContext = new RockContext();
+            rockContext.Database.CommandTimeout = 120;
 
             var groupTypeFamilyId = GroupTypeCache.GetFamilyGroupType().Id;
-            var qryPerson = new PersonService( rockContext ).Queryable( true, false );
-            var qryGroupLocations = new GroupLocationService( rockContext ).Queryable();
+            var qryPerson = new PersonService( rockContext ).Queryable( true, false ).AsNoTracking();
+            var qryGroupLocations = new GroupLocationService( rockContext ).Queryable().AsNoTracking();
             var groupLocationTypeValueHomeId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() ).Id;
             var familyGroupType = GroupTypeCache.GetFamilyGroupType();
             var groupTypeIdFamily = familyGroupType.Id;
             var groupRoleIdAdult = familyGroupType.Roles.Where( a => a.Guid == Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT.AsGuid() ).First().Id;
 
-            var qryGroupMembers = new GroupMemberService( rockContext ).Queryable();
+            var qryGroupMembers = new GroupMemberService( rockContext ).Queryable().AsNoTracking();
 
-            var qryHomeAddress = new GroupLocationService( rockContext ).Queryable()
+            var qryHomeAddress = new GroupLocationService( rockContext ).Queryable().AsNoTracking()
                 .Where( a => a.GroupLocationTypeValueId.HasValue && a.GroupLocationTypeValueId.Value == groupLocationTypeValueHomeId && a.Group.GroupTypeId == groupTypeIdFamily );
 
             bool matchZip = cbMatchZip.Checked;
@@ -251,7 +253,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
             DateTime today = RockDateTime.Today;
 
-            var qryDpsOffender = new DPSOffenderService( rockContext ).Queryable()
+            var qryDpsOffender = new DPSOffenderService( rockContext ).Queryable().AsNoTracking()
                 .Select( a => new
             {
                 a.Id,

@@ -1,70 +1,82 @@
-
 /* Campus Card Section */
 .field-status-title {
     color: #E73D30;
     font-family: Akrobat;
-    font-weight: bold;
     text-align: center;
+    font-size: 55px;
+    line-height: 57px;
+    padding-bottom: 45px;
+    padding-top: 40px;
 }
 
 .campus-cards-row {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    margin: 0 5%;
 }
 
 .campus-card {
     display: flex;
     flex-direction: column;
     margin: 0 10px 20px 10px;
+    background-color: #ededed;
     width: 345px;
-    min-width: 345px;
-    max-width: 345px;
-    height: 375px;
+    height: 350px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
     border-radius: 5px;
     border: unset;
     border-width: unset;
-    background-color: #FFFFFF;
     z-index: 1;
     overflow: hidden;
 }
- 
-.card-header h4 {
-    color: #E73D30;
-}
 
 .card-content {
+    padding: 60px 30px 20px 30px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     flex-grow: 1;
-    padding: 10px 16px;
+    justify-content: space-between;
 }
- 
-.content p {
+
+.card-content h4 {
+    color: #000000;
+    font-family: Akrobat;
+    font-size: 38px;
+    line-height: 20px;
+}
+
+.card-content p {
     color: #000000;
 }
 
-.campus-card .header {
-    display: flex;
-    flex-direction: column;
+#summary {
+    color: #6d6d6d;
+    padding-bottom: 25px;
+    padding-top: 5px;
+    flex-grow: 1;
 }
- 
-.campus-card .link {
+
+.card-footer {
+    height: 50px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-}
- 
-.contact-phone {
-    color: #E73D30;
+    justify-content: center;
 }
 
+.card-footer p {
+    margin: 0;
+    font-weight: bold;
+}
 
+.field-open {
+    background-color: #68c019;
+}
 
+.field-closed {
+    background-color: #e73d30;
+}
 
-/* Mobile */
 .campus-cards-row-mobile {
     display: none;
 }
@@ -104,55 +116,46 @@
     color: #FFFFFF;
     width: 100%;
     background-color: #E73D30;
-    border-color: #b2bdc5;
+    border-color: #E73D30;
     border-radius: 10px;
     height: 30px;
     min-width: 200px;
     margin-bottom: 5%;
 }
 
-/* End Mobile */
-
-
-/* Campus Card Responsive Styling */
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1439.98px) {
     .campus-cards-row {
-        flex-direction: column;
-        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 0 -5%;
     }
+}
 
-    .campus-card {
-        height: 400px;
-        margin: 0 auto;
-    }
-
-    .campus-cards-row-mobile {
-        display: block;
-        padding-bottom: 30px;
-    }
-
+@media screen and (max-width: 760px) {
     .campus-cards-row {
         display: none; 
     }
-
-    .campus-card .link {
-        flex-direction: column;
-        justify-content: center;
+    
+    .campus-cards-row-mobile {
+        display: block;
+        padding-bottom: 5%;
     }
 
-    .contact-phone {
-        margin-bottom: 10px !important;
+    select {
+        -webkit-appearance: button-bevel;
+        -moz-appearance: none;
+        text-overflow: '';
     }
-
-    .btn-primary {
-        min-width: 100%;
-    }
-}
-
-@media screen and (max-width: 320px) {
+    
     .campus-card {
-        width: 300px;
-        min-width: 300px;
-        max-width: 300px;
+        margin: 0 15px;
+        width: unset;
+    }
+    
+    .card-content h4 {
+        font-size: 35px;
     }
 }
+
+/* End Campus Card Section */

@@ -140,6 +140,10 @@ h3 {
     display: none;
 }
 
+.contact-information h3 {
+    margin: 20px 0;
+}
+
 /* End Person Info */
 
 

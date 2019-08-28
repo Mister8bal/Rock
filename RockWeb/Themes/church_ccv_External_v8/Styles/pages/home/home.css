@@ -21,24 +21,29 @@
     height: 720px;
 }
 
+.title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .title h1 {
     color: #FFFFFF;
     text-align: center;
     padding-top: 50px;
+    font-size: 60px;
 }
 
 .title-buttons {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 155px;
-    margin-top: 25px;
+    padding-top: 35px;
 }
 
-@media screen and (max-width: 500px) {
-    .title-buttons {
-        flex-direction: column;
-    }
+.title-buttons a {
+    margin: 0 10px;
 }
 
 .btn-register, .btn-login {
@@ -94,13 +99,22 @@
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .main-feature {
-        height: 470px;
+        height: 450px;
         padding-top: 50px;
     }
     
     .title h1 {
-        padding-top: 0;
-        font-size: 32px;
+        font-size: 40px;
+    }
+
+    .title-buttons {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 0px;
+    }
+
+    .title-buttons .btn-primary {
+        margin: 10px 0;
     }
 
     #loggedinspacer {
@@ -109,6 +123,17 @@
 
     #desktopspacer {
         display: none;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .main-feature {
+        padding-top: 70px;
+    }
+
+    .title h1 {
+        padding-top: 0;
+        margin-top: -10px;
     }
 }
 
@@ -271,6 +296,7 @@
 
 .service-times {
     color: #FFFFFF;
+    min-height: 125px;
 }
 
 .service-times li {
@@ -290,7 +316,6 @@
 @media screen and (max-width: 500px) {
     .campuses-cards {
         padding: 0;
-        margin-top: -70px;
     }
 
     .btn-campus {
@@ -317,19 +342,14 @@
     width: 100%;
 }
 
-.about-church .content h1 {
+.about-church .content h2 {
     font-size: 44px;
     line-height: 48px;
     color: #000;
-    font-family: akrobat;
-    font-weight: 700;
-    margin-top: 0;
 }
 
 .about-church .content p {
     color: #707270;
-    font-family: Heebo;
-    font-weight: 400;
     font-size: 16px;
     line-height: 36px;
     width: 80%;
@@ -347,6 +367,20 @@
 }
 
 /* Mobile Styling */
+@media screen and (max-width: 768px) { 
+    .about-church {
+        flex-direction: column-reverse;
+    }
+
+    .about-church .content {
+        padding: 20px 40px;
+    }
+
+    .about-church .content p {
+        width: 100%;
+    }
+}
+
 @media screen and (max-width: 500px) { 
     .about-church {
         flex-direction: column-reverse;
@@ -359,13 +393,16 @@
         margin-bottom: 10px;
     }
 
-    .about-church .content h1 {
-        font-size: 24px;
-        line-height: 28px;
+    .about-church .content {
+        padding: 20px 0;
+    }
+
+    .about-church .content h2 {
+        font-size: 34px;
+        line-height: 38px;
     }
 
     .about-church .content p {
-        width: 100%;
         font-size: 14px;
         line-height: 28px;
         padding: 10px;
@@ -453,7 +490,11 @@
     }
 
     .kids-students .btn {
-        width: 95%;
+        max-width: 250px;
+    }
+
+    .events-row .btn {
+        max-width: 250px;
     }
 }
 
@@ -472,7 +513,8 @@
     }
 
     .kids-students .btn {
-        width: 85%
+        width: 85%;
+        max-width: unset;
     }
 }
 

@@ -2,6 +2,10 @@
   {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/resources.lava' %}
 {% endcomment %}
 
+<div class="resource-links">
+    <a class="btn btn-primary" href="https://anchor.fm/ccvkids" target="_blank"><i class="fa fa-microphone" aria-hidden="true"></i>&nbsp;&nbsp; CCV Kids Podcast</a>
+</div>
+
 <div class="header">
     <h4 data-toggle="collapse" data-target="#c-connect">C-Connect <i class="mdi mdi-chevron-down toggle-video"></i></h4>
 </div>

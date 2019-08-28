@@ -134,6 +134,25 @@ hr {
     padding: 0 55px;
     margin-bottom: 3px;
     border-radius: 6px;
+    height: 45px;
+}
+
+.btn-waitlist {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+    color: #E73D30;
+    border: 1px solid #E73D30;
+    font-family: akrobat;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 18px;
+    text-transform: uppercase;
+    padding: 0 55px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+    height: 45px;
 }
 
 .btn-live {
@@ -149,12 +168,14 @@ hr {
     border: solid 1px #E73D30;
     text-decoration: none;
     color: #E73D30;
+    outline: none;
 }
 
-.btn-secondary:hover, .btn-secondary:active {
+.btn-secondary:hover, .btn-secondary:active,.btn-secondary:focus, .btn-waitlist:hover, .btn-waitlist:active, .btn-waitlist:focus {
     background-color: #E73D30;
     text-decoration: none;
     color: #FFFFFF;
+    outline: none;
 }
 
 a:focus {
@@ -424,8 +445,8 @@ a:focus {
 /* Hamburger Menu (Full Menu) */
 .fa.fa-bars {
     color: #FFFFFF;
-    font-size: 30px;
-    line-height: 32px;
+    font-size: 40px;
+    line-height: 42px;
 }
 
 .masthead-fullmenu {
@@ -513,8 +534,8 @@ a:focus {
 }
 
 .title p {
-    font-size: 23px;
-    line-height: 27px;
+    font-size: 18px;
+    line-height: 22px;
     width: 850px;
     margin: 0 auto;
 }
@@ -856,15 +877,21 @@ a:focus {
 }
 
 .sports-offered img {
-    width: 33px;
-    height: 33px;
-    margin-right: 10px;
+    width: 37px;
+    height: 37px;
+    margin-right: 6px;
+    padding: 3px;
 }
 
 .exceptional-stars img {
     width: 45px;
     height: 45px;
     margin-left: -3px;
+}
+
+.sports-offered img:hover {
+    background-color: #E3E3E3;
+    border-radius: 4px;
 }
 
 .campus-contact {
@@ -1110,6 +1137,13 @@ a:focus {
     align-items: center;
     height: 200px;
 }
+
+.button-loading {
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 50px;
+}
+
 .lds-spinner {
     display: inline-block;
     position: relative;
@@ -1117,9 +1151,18 @@ a:focus {
     height: 64px;
 }
 
+.button-lds-spinner {
+    width: 32px;
+    height: 32px;
+}
+
 .lds-spinner div {
     transform-origin: 32px 32px;
     animation: lds-spinner 1.2s linear infinite;
+}
+
+.button-lds-spinner div {
+    transform-origin: 16px 16px;
 }
 
 .lds-spinner div:after {
@@ -1130,6 +1173,18 @@ a:focus {
     left: 29px;
     width: 5px;
     height: 14px;
+    border-radius: 20%;
+    background: #E73D30;
+}
+
+.button-lds-spinner div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 1.5px;
+    left: 14.5px;
+    width: 2.5px;
+    height: 7px;
     border-radius: 20%;
     background: #E73D30;
 }
@@ -1271,12 +1326,6 @@ a:focus {
     }
 
     /* Feature & Sections */
-    .title p {
-        font-size: 20px;
-        line-height: 24px;
-        width: 595px;
-    }
-
     .infoSection {
         min-height: 364px;
     }
@@ -1343,6 +1392,22 @@ a:focus {
     }
 }
 /**** End Small Desktop ****/
+
+/* Due to large menu, change to hamburger bars at non standard query  */
+@media screen and  (max-width: 1075px ) {
+    .header-navigation {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: block;
+        margin-top: 25px;
+    }
+
+    .masthead-fullmenu {
+        width: 30%;
+    }
+}
 
 /**** Tablet Sytling  ****/
 /* Reduce by 40% */
@@ -1559,6 +1624,11 @@ a:focus {
         display: block;
     }
 
+    .fa.fa-bars {
+        font-size: 30px;
+        line-height: 32px;
+    }
+
     .masthead-upper {
         padding: 0 15px 0 25px;
     }
@@ -1654,6 +1724,7 @@ a:focus {
 
     .right .btn-row {
         padding-top: 10px;
+        width: 100%;
     }
 
     .select-dropdown-button b {
@@ -1793,6 +1864,13 @@ a:focus {
     .server-name {
         margin-left: 0;
     }
+
+    /* loading indicator */
+    .button-loading {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 /**** End Phone Styling ****/
@@ -1800,7 +1878,7 @@ a:focus {
 /* ===================================================================
       Non standard media queries
    =================================================================== */
- @media screen and (max-width: 860px) {
+@media screen and (max-width: 860px) {
     .loginstatus .dropdown .profile-photo {
         display: none;
     }

@@ -1,34 +1,21 @@
-﻿// <copyright>
-// Copyright 2013 by the Spark Development Network
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//
-using church.ccv.SafetySecurity.Model;
-using Rock;
-using Rock.Attribute;
-using Rock.Data;
-using Rock.Model;
-using Rock.Security;
-using Rock.Web.Cache;
-using Rock.Web.UI;
-using Rock.Web.UI.Controls;
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.UI;
+
+using Rock;
+using Rock.Attribute;
+using Rock.Data;
+using Rock.Model;
+using Rock.Web.Cache;
+using Rock.Web.UI;
+using Rock.Web.UI.Controls;
+
+using church.ccv.SafetySecurity.Model;
+using System.Web.UI.WebControls;
 
 namespace RockWeb.Plugins.church_ccv.SafetySecurity
 {
@@ -48,6 +35,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         const string sApplicationType_SafetySecurity = "Safety & Security";
         const string sApplicationType_STARS = "STARS";
         const string sApplicationType_Renewal = "Renewal";
+
+        // 2019 types
+        const string sApplicationType_Adult2019 = "Adult";
+        const string sApplicationType_Student2019 = "Student";
+
+        const int sCharacterReference_WorkflowId = 203;
 
         #region Control Methods
         
@@ -104,8 +97,10 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             rFilter.SaveUserPreference( "Status", ddlStatus.SelectedValue );
             rFilter.SaveUserPreference( "Application Type", ddlApplicationType.SelectedValue );
             rFilter.SaveUserPreference( "Applicant Name", tbApplicantName.Text );
-            rFilter.SaveUserPreference( "Ministry Leader", tbMinistryLeader.Text );
+            rFilter.SaveUserPreference( "Ministry Serving With", dvpMinistryServingWith.SelectedValueAsGuid().ToString() );
+            rFilter.SaveUserPreference( "Requester", ppRequester.PersonAliasId.ToString() );
             rFilter.SaveUserPreference( "Application Completed", cblApplicationCompleted.SelectedValues.AsDelimited( ";" ) );
+            rFilter.SaveUserPreference( "Application Sent Date", drpApplicationSentDate.DelimitedValues );
 
             BindFilter( );
             BindGrid( );
@@ -148,9 +143,15 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     break;
                 }
 
-                case "Ministry Leader":
+                case "Ministry Serving With":
                 {
-                    e.Value = rFilter.GetUserPreference( "Ministry Leader" );
+                    e.Value = rFilter.GetUserPreference( "Ministry Serving With" ).AsNumeric();
+                    break;
+                }
+
+                case "Requester":
+                {
+                    e.Value = rFilter.GetUserPreference( "Requster" ).AsNumeric();
                     break;
                 }
 
@@ -166,6 +167,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         }
                     }
                     e.Value = values.AsDelimited( ", " );
+                    break;
+                }
+
+                case "Application Sent Date":
+                {
+                    e.Value = DateRangePicker.FormatDelimitedValues( e.Value );
                     break;
                 }
 
@@ -227,6 +234,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             // setup the application types
             ddlApplicationType.Items.Clear( );
             ddlApplicationType.Items.Add( string.Empty );
+            ddlApplicationType.Items.Add( sApplicationType_Adult2019 );
+            ddlApplicationType.Items.Add( sApplicationType_Student2019 );
             ddlApplicationType.Items.Add( sApplicationType_Standard );
             ddlApplicationType.Items.Add( sApplicationType_KidsStudents );
             ddlApplicationType.Items.Add( sApplicationType_SafetySecurity );
@@ -237,14 +246,52 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             // setup the Applicant Name
             tbApplicantName.Text = rFilter.GetUserPreference( "Applicant Name" );
 
-            // setup the Ministry Leader
-            tbMinistryLeader.Text = rFilter.GetUserPreference( "Ministry Leader" );
+            // setup the Ministry Serving With
+            var definedTypeCache = DefinedTypeCache.Read( 558 );
+
+            //dvpMinistryServingWith.BindToDefinedType( definedTypeCache, true );
+
+            var ds = definedTypeCache.DefinedValues
+                .Select( v => new
+                {
+                    Name = v.Value,
+                    v.Description,
+                    v.Guid
+                } );
+
+            dvpMinistryServingWith.SelectedIndex = -1;
+            dvpMinistryServingWith.DataSource = ds;
+            dvpMinistryServingWith.DataTextField = "Name";
+            dvpMinistryServingWith.DataValueField = "Guid";
+            dvpMinistryServingWith.DataBind();
+            dvpMinistryServingWith.Items.Insert( 0, new ListItem() );
+
+            Guid? definedValueGuid = rFilter.GetUserPreference( "Ministry Serving With" ).AsGuidOrNull();
+            if ( definedValueGuid.HasValue )
+            {
+                dvpMinistryServingWith.SetValue( definedValueGuid.Value );
+            }
+
+            // setup the Requester
+            int? personAliasId = rFilter.GetUserPreference( "Requester" ).AsIntegerOrNull();
+            if ( personAliasId.HasValue )
+            {
+                var requester = new PersonAliasService( new RockContext() ).Get( personAliasId.Value ).Person;
+                ppRequester.SetValue( requester );
+            }
 
             // setup Application Completed
             string applicationCompletedValue = rFilter.GetUserPreference( "Application Completed" );
             if ( !string.IsNullOrWhiteSpace( applicationCompletedValue ) )
             {
                 cblApplicationCompleted.SetValues( applicationCompletedValue.Split( ';' ).ToList() );
+            }
+
+            // setup Application Date
+            string applicationSentDate = rFilter.GetUserPreference( "Application Sent Date" );
+            if ( applicationSentDate.IsNotNullOrWhiteSpace() )
+            {
+                drpApplicationSentDate.DelimitedValues = applicationSentDate;
             }
 
         }
@@ -255,11 +302,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         void InitGrid( )
         {
             gGrid.DataKeyNames = new string[] { "Id" };
-            
+            gGrid.CommunicationRecipientPersonIdFields.Add( "PersonId" );
+
             gGrid.Actions.Visible = true;
             gGrid.Actions.Enabled = true;
             gGrid.Actions.ShowBulkUpdate = false;
-            gGrid.Actions.ShowCommunicate = false;
+            gGrid.Actions.ShowCommunicate = true;
             gGrid.Actions.ShowExcelExport = false;
             gGrid.Actions.ShowMergePerson = false;
             gGrid.Actions.ShowMergeTemplate = false;
@@ -275,17 +323,90 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
         protected void gGrid_Edit( object sender, RowEventArgs e )
         {
-            var qryParams = new Dictionary<string, string>();
-            qryParams.Add( "VolunteerScreeningInstanceId", e.RowKeyId.ToString() );
+            if ( e.RowKeyId > 0 )
+            {
+                var rockContext = new RockContext();
+                var volunteerScreening = new Service<VolunteerScreening>( rockContext ).Get( e.RowKeyId );
+                if ( volunteerScreening != null && volunteerScreening.PersonAliasId > 0 )
+                {
+                    var person = new PersonAliasService( rockContext ).Get( volunteerScreening.PersonAliasId ).Person;
 
-            NavigateToLinkedPage( "DetailPage", qryParams );
+                    var qryParams = new Dictionary<string, string>();
+                    qryParams.Add( "VolunteerScreeningInstanceId", e.RowKeyId.ToString() );
+                    qryParams.Add( "PersonId", person.Id.ToString() );
+
+                    NavigateToLinkedPage( "DetailPage", qryParams );  
+                }
+            }
         }
-        
+
+        /// <summary>
+        /// Handles the Delete event of the gGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
+        protected void gGrid_Delete( object sender, RowEventArgs e )
+        {
+            if ( e.RowKeyId.ToString().AsInteger() > 0 )
+            {
+                using ( RockContext rockContext = new RockContext() )
+                {
+                    var vsService = new Service<VolunteerScreening>( rockContext );
+                    VolunteerScreening screening = vsService.Get( e.RowKeyId.ToString().AsInteger() );
+
+                    rockContext.WrapTransaction( () =>
+                    {
+                        // remove attached workflows
+                        if ( screening != null && screening.Application_WorkflowId.HasValue )
+                        {
+                            var workflowService = new WorkflowService( rockContext );
+                            Workflow wf = workflowService.Get( screening.Application_WorkflowId.Value );
+
+                            // get character references
+                            List<int?> attribIds = new AttributeValueService( rockContext ).Queryable()
+                                .AsNoTracking()
+                                .Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == screening.Id )
+                                .Select( av => av.EntityId )
+                                .ToList();
+
+                            List<Workflow> charRefWorkflows = new List<Workflow>();
+                            if ( attribIds.Count > 0 )
+                            {
+                                charRefWorkflows = workflowService.Queryable()
+                                    .Where( w => w.WorkflowTypeId == sCharacterReference_WorkflowId && attribIds.Contains( w.Id ) )
+                                    .ToList();
+
+                                // remove character workflows
+                                if ( charRefWorkflows.Any() )
+                                {
+                                    workflowService.DeleteRange( charRefWorkflows );
+                                }
+                            }
+
+                            // remove attached workflow
+                            workflowService.Delete( wf );
+                        }
+
+                        // remove volunteer screening
+                        vsService.Delete( screening );
+
+                        rockContext.SaveChanges();
+                    } );
+
+                    BindGrid( );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Binds the grid.
+        /// </summary>
         private void BindGrid( )
         {
             using ( RockContext rockContext = new RockContext( ) )
             {
                 List<CampusCache> campusCache = CampusCache.All( );
+                DefinedValueService dvService = new DefinedValueService( rockContext );
                 PersonAliasService paService = new PersonAliasService( rockContext );
 
                 // get all volunteer screening instances. This is complicated, so I'll explain:
@@ -298,7 +419,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 var vsQuery = new Service<VolunteerScreening>( rockContext ).Queryable( ).AsNoTracking( );
                 var paQuery = new Service<PersonAlias>( rockContext ).Queryable( ).AsNoTracking( );
                 var wfQuery = new Service<Workflow>( rockContext ).Queryable( ).AsNoTracking( );
-                var coreQuery = vsQuery.Join( paQuery, vs => vs.PersonAliasId, pa => pa.Id, ( vs, pa ) => new { VolunteerScreening = vs, PersonName = pa.Person.FirstName + " " + pa.Person.LastName } )
+                var coreQuery = vsQuery.Join( paQuery, vs => vs.PersonAliasId, pa => pa.Id, ( vs, pa ) => new { VolunteerScreening = vs, PersonName = pa.Person.FirstName + " " + pa.Person.LastName, PersonId = pa.PersonId } )
                                        .Join( wfQuery, vs => vs.VolunteerScreening.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreeningWithPerson = vs, Workflow = wf } );
 
 
@@ -314,6 +435,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                              .Select( a => new { Id = a.VS.VolunteerScreeningWithPerson.VolunteerScreening.Id,
                                                                  SentDate = a.VS.VolunteerScreeningWithPerson.VolunteerScreening.CreatedDateTime.Value,
                                                                  CompletedDate = a.VS.VolunteerScreeningWithPerson.VolunteerScreening.ModifiedDateTime.Value,
+                                                                 PersonId = a.VS.VolunteerScreeningWithPerson.PersonId,
                                                                  PersonName = a.VS.VolunteerScreeningWithPerson.PersonName,
                                                                  Workflow = a.VS.Workflow,
                                                                  CampusGuid = a.AV.AttribValue.Value } )
@@ -328,11 +450,20 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 // Its Person (Taken from the PersonAlias table)
                 // Its Campus (Taken from the AttributeValue table)
 
-                // get a list of all "MinistryLead" attribute values, which we'll match up with each Application when binding the rows
-                var ministryLeadResult = attribWithValue.Where( a => a.Attribute.Key == "MinistryLead" )
-                                                        .Select( a => new MinistryLeadResult {  EntityId = a.AttribValue.EntityId,
-                                                                                                MinistryLead = a.AttribValue.Value }  )
+                // get a list of all "Requester" attribute values, which we'll match up with each Application when binding the rows
+                var requesterResult = attribWithValue.Where( a => a.Attribute.Key == "Requester" )
+                                                        .Select( a => new RequesterResult {  EntityId = a.AttribValue.EntityId,
+                                                                                                RequesterPersonAliasGuidString = a.AttribValue.Value } )
                                                         .ToList( );
+
+                // get a list of all "Ministry Serving With" attribute values, which we'll match up with each Application when binding the rows
+                var ministryServingWithResult = attribWithValue.Where( a => a.Attribute.Key == "MinistryServingWith" )
+                                                        .Select( a => new MinistryServingWithResult
+                                                        {
+                                                            EntityId = a.AttribValue.EntityId,
+                                                            DefinedValueGuidString = a.AttribValue.Value
+                                                        } )
+                                                        .ToList();
 
                 // JHM 7-10-17
                 // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
@@ -389,27 +520,48 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 }
 
 
-                // Build Query so that Ministry Leader and Completed Date are populated for filtering / sorting
+                // Build Query so that requester and Completed Date are populated for filtering / sorting
                 // If application is not completed, null emptyDate is used to display correct empty text
                 DateTime? emptyDate = null;
 
-                var filteredQueryWithMinistryLeader = filteredQuery.OrderByDescending( vs => vs.SentDate ).OrderByDescending( vs => vs.CompletedDate ).Select( vs =>
+                var filteredQueryWithRequester = filteredQuery.OrderByDescending( vs => vs.SentDate ).OrderByDescending( vs => vs.CompletedDate ).Select( vs =>
                                                 new {
                                                     Name = vs.PersonName,
                                                     Id = vs.Id,
+                                                    PersonId = vs.PersonId,
                                                     SentDate = vs.SentDate,
                                                     CompletedDate = (vs.SentDate == vs.CompletedDate) ? emptyDate : vs.CompletedDate,
                                                     State = VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.Workflow.Status ),
                                                     Campus = TryGetCampus( campusCache, vs.CampusGuid ),
-                                                    MinistryLeader = TryGetMinistryLead( vs.Workflow, ministryLeadResult, paService ),
+                                                    MinistryServingWith = TryGetCampusMinistryServingWith( vs.Workflow, ministryServingWithResult, dvService ),
+                                                    Requester = TryGetRequester( vs.Workflow, requesterResult, paService ),
                                                     ApplicationType = ParseApplicationType( vs.Workflow, starsQueryResult )
                                                 } ).ToList();
-                
-                // Ministry Leader
-                string ministryLeader = rFilter.GetUserPreference( "Ministry Leader" );
-                if( string.IsNullOrWhiteSpace( ministryLeader ) == false )
+
+                // Ministry Serving With
+                string ministryServingWith = "";
+                Guid? ministryServingWithGuid = rFilter.GetUserPreference( "Ministry Serving With" ).AsGuidOrNull();
+                if ( ministryServingWithGuid.HasValue )
                 {
-                    filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.Where( vs => vs.MinistryLeader.ToLower( ).Contains( ministryLeader.ToLower( ).Trim( ) ) ).ToList();
+                    ministryServingWith = new DefinedValueService( new RockContext() ).Get( ministryServingWithGuid.Value ).Value;
+                }
+
+                if ( ministryServingWith.IsNotNullOrWhiteSpace() )
+                {
+                    filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.MinistryServingWith.ToLower().Contains( ministryServingWith.ToLower().Trim() ) ).ToList();
+                }
+
+                // Requester
+                string requesterName = "";
+                int? personAliasId = rFilter.GetUserPreference( "Requester" ).AsIntegerOrNull();
+                if ( personAliasId.HasValue )
+                {
+                    requesterName = new PersonAliasService( new RockContext() ).Get( personAliasId.Value ).Person.FullName;
+                }
+
+                if( string.IsNullOrWhiteSpace( requesterName ) == false )
+                {
+                    filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.Requester.ToLower( ).Contains( requesterName.ToLower( ).Trim( ) ) ).ToList();
                 }
 
                 // Application Completed
@@ -418,12 +570,23 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 {
                     if ( applicationCompleted == "Completed" )
                     {
-                        filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.Where( vs => vs.CompletedDate != null ).ToList();
+                        filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.CompletedDate != null ).ToList();
                     }
                     else if ( applicationCompleted == "Not Completed" )
                     {
-                        filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.Where( vs => vs.CompletedDate == emptyDate ).ToList();
+                        filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.CompletedDate == emptyDate ).ToList();
                     }
+                }
+
+                // Application Sent Date
+                if ( drpApplicationSentDate.LowerValue.HasValue )
+                {
+                    filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.SentDate >= drpApplicationSentDate.LowerValue.Value ).ToList();
+                }
+
+                if ( drpApplicationSentDate.UpperValue.HasValue )
+                {
+                    filteredQueryWithRequester = filteredQueryWithRequester.Where( vs => vs.SentDate <= drpApplicationSentDate.UpperValue.Value ).ToList();
                 }
 
                 // ---- End Filters ----
@@ -438,25 +601,28 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         switch ( sortProperty.Property )
                         {
                             case "Name":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.Name ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.Name ).ToList();
                                 break;
                             case "State":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.State ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.State ).ToList();
                                 break;
                             case "SentDate":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.SentDate ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.SentDate ).ToList();
                                 break;
                             case "CompletedDate":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.CompletedDate ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.CompletedDate ).ToList();
                                 break;
                             case "Campus":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.Campus ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.Campus ).ToList();
                                 break;
                             case "ApplicationType":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.ApplicationType ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.ApplicationType ).ToList();
                                 break;
-                            case "MinistryLeader":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderBy( o => o.MinistryLeader ).ToList();
+                            case "Requester":
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.Requester ).ToList();
+                                break;
+                            case "MinistyServingWith":
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderBy( o => o.MinistryServingWith ).ToList();
                                 break;
                         }
                     }
@@ -465,38 +631,41 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         switch ( sortProperty.Property )
                         {
                             case "Name":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.Name ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.Name ).ToList();
                                 break;
                             case "State":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.State ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.State ).ToList();
                                 break;
                             case "SentDate":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.SentDate ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.SentDate ).ToList();
                                 break;
                             case "CompletedDate":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.CompletedDate ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.CompletedDate ).ToList();
                                 break;
                             case "Campus":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.Campus ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.Campus ).ToList();
                                 break;
                             case "ApplicationType":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.ApplicationType ).ToList();
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.ApplicationType ).ToList();
                                 break;
-                            case "MinistryLeader":
-                                filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.MinistryLeader ).ToList();
+                            case "Requester":
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.Requester ).ToList();
+                                break;
+                            case "MinistyServingWith":
+                                filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.MinistryServingWith ).ToList();
                                 break;
                         }
                     }                  
                 }
                 else
                 {
-                    filteredQueryWithMinistryLeader = filteredQueryWithMinistryLeader.OrderByDescending( o => o.SentDate ).ToList();
+                    filteredQueryWithRequester = filteredQueryWithRequester.OrderByDescending( o => o.SentDate ).ToList();
                 }
 
                 // Bind filter to grid
-                if ( filteredQueryWithMinistryLeader.Count( ) > 0 )
+                if ( filteredQueryWithRequester.Count( ) > 0 )
                 {
-                    gGrid.DataSource = filteredQueryWithMinistryLeader;
+                    gGrid.DataSource = filteredQueryWithRequester;
                 }
 
                 gGrid.DataBind( );
@@ -560,20 +729,65 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             return "No Campus";
         }
 
-        public class MinistryLeadResult
+        /// <summary>
+        /// The Ministry Serving With result.
+        /// </summary>
+        public class MinistryServingWithResult
         {
             public int? EntityId { get; set; }
-            public string MinistryLead { get; set; }
+            public string DefinedValueGuidString { get; set; }
         }
 
-        string TryGetMinistryLead( Workflow workflow, List<MinistryLeadResult> ministryLeadQueryResult, PersonAliasService paService )
+        /// <summary>
+        /// Tries the get campus ministry serving with.
+        /// </summary>
+        /// <param name="workflow">The workflow.</param>
+        /// <param name="ministryServingWithResult">The ministry serving with result.</param>
+        /// <param name="dvService">The dv service.</param>
+        /// <returns></returns>
+        string TryGetCampusMinistryServingWith( Workflow workflow, List<MinistryServingWithResult> ministryServingWithResult, DefinedValueService dvService )
         {
             // it's possible that no ministry lead has been assigned yet. In that case, we'll return an empty string
-            MinistryLeadResult ministryLead = ministryLeadQueryResult.Where( ml => ml.EntityId == workflow.Id ).SingleOrDefault( );
-            if ( ministryLead != null && string.IsNullOrWhiteSpace( ministryLead.MinistryLead ) == false )
+            MinistryServingWithResult ministryServingWith = ministryServingWithResult.Where( ml => ml.EntityId == workflow.Id ).SingleOrDefault();
+            if ( ministryServingWith != null && ministryServingWith.DefinedValueGuidString.IsNotNullOrWhiteSpace() )
             {
                 // make sure the person exists
-                Person person = paService.Get( ministryLead.MinistryLead.AsGuid( ) ).Person;
+                Guid? definedValueGuid = ministryServingWith.DefinedValueGuidString.AsGuidOrNull();
+                if ( !definedValueGuid.HasValue )
+                {
+                    return string.Empty;
+                }
+
+                string value = dvService.Get( definedValueGuid.Value ).Value;
+                if ( value.IsNotNullOrWhiteSpace() )
+                {
+                    return value;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public class RequesterResult
+        {
+            public int? EntityId { get; set; }
+            public string RequesterPersonAliasGuidString { get; set; }
+        }
+
+        string TryGetRequester( Workflow workflow, List<RequesterResult> requesterQueryResult, PersonAliasService paService )
+        {
+            // it's possible that no ministry lead has been assigned yet. In that case, we'll return an empty string
+            RequesterResult requester = requesterQueryResult.Where( ml => ml.EntityId == workflow.Id ).SingleOrDefault( );
+            if ( requester != null && requester.RequesterPersonAliasGuidString.IsNotNullOrWhiteSpace() )
+            {
+                // make sure the person exists
+                Guid? requesterAliasGuid = requester.RequesterPersonAliasGuidString.AsGuidOrNull();
+                if ( !requesterAliasGuid.HasValue )
+                {
+                    return string.Empty;
+                }
+
+                Person person = paService.Get( requesterAliasGuid.Value ).Person;
                 if ( person != null )
                 {
                     return person.FullName;

@@ -108,7 +108,7 @@ namespace church.ccv.CCVRest.STARS
                                 // and if campus name matches the requestedCampus or all campuses requested
                                 if ( campusSports.Contains( sport.ToLower() ) &&
                                      ( sport.Contains( requestedSport.ToLower() ) || requestedSport == "" ) &&
-                                     ( requestedCampus == campus.Name.RemoveSpaces() || requestedCampus == "" ) )
+                                     ( requestedCampus == campus.Name || requestedCampus == "" ) )
                                 {
                                     // add registration to activeRegistrations
                                     var registration = CreateSTARSRegistration( occurrence.Id,
@@ -153,7 +153,7 @@ namespace church.ccv.CCVRest.STARS
                         // sport matches requestedSport or all sports requested
                         // and occurrence campus matches requestedCampus or all campuses requested
                         else if ( ( sport.Contains( requestedSport.ToLower() ) || requestedSport == "" ) &&
-                                  ( requestedCampus == occurrence.Campus.Name.RemoveSpaces() || requestedCampus == "" ) )
+                                  ( requestedCampus == occurrence.Campus.Name || requestedCampus == "" ) )
                         {
                             // add registration to active registrations
                             var registration = CreateSTARSRegistration( occurrence.Id,
@@ -285,7 +285,7 @@ namespace church.ccv.CCVRest.STARS
                                 // and if requested campus matches campus or requestedCampus = ""
                                 if ( campusSports.Contains( sport.ToLower() ) &&
                                      ( sport.Contains( requestedSport.ToLower() ) || requestedSport == "" ) &&
-                                     ( requestedCampus == campus.Name.RemoveSpaces() || requestedCampus == "" ) )
+                                     ( requestedCampus == campus.Name || requestedCampus == "" ) )
 
                                 {
                                     // create a camp registration
@@ -311,7 +311,7 @@ namespace church.ccv.CCVRest.STARS
                         // we only want the sport requested unless requestesSport = ""
                         // and we only want the requested campus unless requestCampus = ""
                         else if ( ( sport.Contains( requestedSport.ToLower() ) || requestedSport == "" ) &&
-                                  ( requestedCampus == occurrence.Campus.Name.RemoveSpaces() || requestedCampus == "" ) )
+                                  ( requestedCampus == occurrence.Campus.Name || requestedCampus == "" ) )
                         {
                             // create camp registration
                             var campRegistration = CreateSTARSRegistration( occurrence.Id,

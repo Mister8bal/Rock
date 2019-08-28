@@ -1,7 +1,7 @@
 {% comment %}
     {% assign sport = "Sport goes here" %}
 
-    {% include '~~/Assets/Lava/home/sports/campus-sports-dropdown.lava' %}
+    {% include '~~/Assets/Lava/home/sports/campuses-dropdown.lava' %}
 {% endcomment %}
 
 {% comment %} ensure sport is not null {% endcomment %}

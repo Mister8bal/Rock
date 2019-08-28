@@ -47,7 +47,7 @@
                         <asp:BoundField DataField="LastName" HeaderText="Last Name" SortExpression="LastName" />
                         <asp:BoundField DataField="Age" HeaderText="Age" SortExpression="Age" />
                         <asp:BoundField DataField="DpsLocation" HeaderText="DPS Location" />
-                        <asp:BoundField DataField="FamiliesAtAddress" HeaderText="FamiliesAtAddress" SortExpression="FamiliesAtAddress" />
+                        <asp:BoundField DataField="FamiliesAtAddress" HeaderText="Families At Address" SortExpression="FamiliesAtAddress" />
                         <Rock:RockLiteralField ID="lPersonMatches" HeaderText="Potential Matches" SortExpression="PotentialMatches" ItemStyle-Wrap="false" />
                     </Columns>
                 </Rock:Grid>

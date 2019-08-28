@@ -37,7 +37,7 @@
         
         {% assign newPlayerEventOccurrenceId = Event | Attribute:'NewPlayerEventOccurrenceId' %}
 
-        {% if newPlayerEventOccurrenceId != "" and onWaitList == false %}
+        {% if newPlayerEventOccurrenceId != "" %}
             actionHtml += '<div class="new-player">{{ newPlayerContent }} <a href="/register/details?EventOccurrenceId={{ newPlayerEventOccurrenceId }}" class="new-player-registration">Click here for New Player Discount.</a></div>'
         {% endif %}
         $('.action').html(actionHtml);
