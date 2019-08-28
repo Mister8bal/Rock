@@ -176,14 +176,6 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 return null;
             }
-
-            // make sure the leader has a datamart entry, or again, we need to simply fail
-            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
-            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == leader.Person.Id ).SingleOrDefault();
-            if ( datamartPerson == null )
-            {
-                return null;
-            }
             
             // build the mobile app model
             MAGroupModel groupResult = new MAGroupModel()
@@ -217,7 +209,10 @@ namespace church.ccv.CCVRest.MobileApp
 
             // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
             Person associatePastor = null;
-            if ( datamartPerson.NeighborhoodPastorId.HasValue )
+
+            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == leader.Person.Id ).SingleOrDefault();
+            if ( datamartPerson!= null && datamartPerson.NeighborhoodPastorId.HasValue )
             {
                 // get the AP, but guard against a null value (could happen if the current ID is merged and the datamart hasn't re-run)
                 associatePastor = new PersonService( rockContext ).Queryable().AsNoTracking()
