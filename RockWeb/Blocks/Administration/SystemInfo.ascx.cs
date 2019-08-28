@@ -32,6 +32,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Transactions;
 using Rock.VersionInfo;
+using Rock.Web.Cache;
 
 namespace RockWeb.Blocks.Administration
 {
@@ -157,6 +158,24 @@ namespace RockWeb.Blocks.Administration
             nbMessage.Visible = true;
             nbMessage.Title = "Clear Cache";
             nbMessage.Text = string.Format( "<p>{0}</p>", msgs.AsDelimited( "<br />" ) );
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnRefreshRoutes control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void btnRefreshRoutes_Click( object sender, EventArgs e )
+        {
+            if ( RockMemoryCache.Default.IsRedisClusterEnabled && RockMemoryCache.Default.IsRedisConnected )
+            {
+                // tell all servers listening to redis to reregister the routes (including us)
+                RockMemoryCache.Default.SendRedisCommand( "REREGISTER_ROUTES" );
+            }
+            else
+            {
+                Rock.Web.RockRouteHandler.ReregisterRoutes();
+            }
         }
 
         protected void btnRestart_Click( object sender, EventArgs e )
