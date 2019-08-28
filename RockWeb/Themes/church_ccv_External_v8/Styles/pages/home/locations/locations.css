@@ -106,6 +106,52 @@
     margin: 0;
 }
 
+.campus-cards-row-mobile {
+    display: none;
+}
+
+.campus-dropdown li {
+    margin: 0%;
+}
+
+.campus-dropdown ul {
+    width: 100%;
+}
+
+.campus-dropdown button {
+    width: 100%;
+    padding: 5px 15px 5px 25px;
+    border: none;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.campus-dropdown button:hover {
+    background-color: #7a1315;
+    color: white;
+}
+
+.dropdown-menu {
+    top: unset;
+    width: 100%;
+    position: absolute;
+    float: left;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: none;
+}
+
+#btnCampusSelect {
+    color: #FFFFFF;
+    width: 100%;
+    background-color: #7a1315;
+    border-color: #7a1315;
+    border-radius: 10px;
+    height: 35px;
+    min-width: 200px;
+    margin-bottom: 5%;
+}
+
 /* Laptops */
 @media screen and (max-width: 1024px) {
     .campus-card {
@@ -141,6 +187,21 @@
         width: unset;
         margin-left: unset;
         flex-direction: column;
+    }
+    
+    .campus-cards-row {
+        display: none; 
+    }
+    
+    .campus-cards-row-mobile {
+        display: block;
+        padding-bottom: 5%;
+    }
+
+    select {
+        -webkit-appearance: button-bevel;
+        -moz-appearance: none;
+        text-overflow: '';
     }
 }
 
