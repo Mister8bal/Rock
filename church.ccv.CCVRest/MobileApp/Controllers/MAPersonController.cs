@@ -222,6 +222,7 @@ namespace church.ccv.CCVRest.MobileApp
             NotSet = -1,
             Success,
             PersonNotFound,
+            PersonNotEligible,
             InvalidModel
         }
 
@@ -245,6 +246,11 @@ namespace church.ccv.CCVRest.MobileApp
                 case Common.Util.UpdatePersonPhotoResult.PersonNotFound:
                 {
                     return Common.Util.GenerateResponse( false, PersonPhotoResponse.PersonNotFound.ToString(), null );
+                }
+
+                case Common.Util.UpdatePersonPhotoResult.PersonNotEligible:
+                {
+                    return Common.Util.GenerateResponse( false, PersonPhotoResponse.PersonNotEligible.ToString(), null );
                 }
 
                 default:

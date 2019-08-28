@@ -13,6 +13,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
 using RestSharp;
+using church.ccv.Datamart.Model;
 
 namespace church.ccv.CCVRest.Common
 {
@@ -112,6 +113,7 @@ namespace church.ccv.CCVRest.Common
         {
             Success,
             PersonNotFound,
+            PersonNotEligible,
             InvalidImage
         }
 
@@ -133,6 +135,14 @@ namespace church.ccv.CCVRest.Common
             if ( personAlias == null )
             {
                 return UpdatePersonPhotoResult.PersonNotFound;
+            }
+
+            // find them in the datamart (if they're there) to see if they're staff, and therefore not eligible
+            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == personAlias.PersonId ).SingleOrDefault();
+            if ( datamartPerson != null && datamartPerson.IsStaff == true  )
+            {
+                return UpdatePersonPhotoResult.PersonNotEligible;
             }
 
             // validate the image
@@ -241,6 +251,9 @@ namespace church.ccv.CCVRest.Common
                     // parse the response appropriately
                     media = JsonConvert.DeserializeObject<WistiaMedia>( restResponse.Content );
                 }
+            }
+            catch
+            {
             }
             finally
             {
