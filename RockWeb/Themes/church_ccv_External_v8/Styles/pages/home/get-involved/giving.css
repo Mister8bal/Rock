@@ -557,8 +557,6 @@
 
 .comment-wrapper {
     width: 100%;
-    margin-bottom: 40px;
-    margin-top: -40px;
 }
 
 /* Give */
@@ -982,6 +980,12 @@
 
     #confirmGiftAmount {
         margin-bottom: 5px;
+    }
+
+    .confirm-card-gift {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .confirm-paymenttype-card {
