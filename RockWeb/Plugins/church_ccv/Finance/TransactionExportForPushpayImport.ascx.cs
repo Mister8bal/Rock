@@ -7,6 +7,7 @@ using System.Data.Entity.SqlServer;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using church.ccv.Datamart.Model;
@@ -83,18 +84,26 @@ namespace RockWeb.Plugins.church_ccv.Finance
             var locationTable = new LocationService( rockContext ).Queryable().AsNoTracking();
 
             // date range filter 
-            // date range is required input, but just in case default to past 1 month
-            DateTime startDate = drpDateRange.LowerValue.HasValue ? ( DateTime ) drpDateRange.LowerValue : DateTime.Now.AddMonths( -1 );
+            // date range is required input, but just in case default to past 1 day
+            DateTime startDate = drpDateRange.LowerValue.HasValue ? ( DateTime ) drpDateRange.LowerValue : DateTime.Now.AddDays( -1 );
             DateTime endDate = drpDateRange.UpperValue.HasValue ? ( DateTime ) drpDateRange.UpperValue : DateTime.MaxValue;
 
             // get the financial transactions filtered by fund, source type, and date
-            // dont include Pushpay - SourceTYpeValueId: 11308
+            // dont include Pushpay - SourceTypeValueId: 11308
             var qry = new FinancialTransactionDetailService( rockContext ).Queryable().AsNoTracking()
                     .Where( a => apAccount.SelectedValues.Contains( a.AccountId.ToString() ) )
                     .Where( a => a.Transaction.TransactionDateTime.HasValue )
                     .Where( a => a.Transaction.TransactionDateTime.Value >= startDate )
                     .Where( a => a.Transaction.TransactionDateTime.Value <= endDate )
                     .Where( a => a.Transaction.SourceTypeValueId != 11308 );
+
+            // filter Anonymous users
+            // Anonymous Anonymous: 351648
+            // Anonymous Giver: 197390
+            // Name Unlocated: 114093
+            qry = qry.Where( a => a.Transaction.AuthorizedPersonAlias.PersonId != 351648 && 
+                                  a.Transaction.AuthorizedPersonAlias.PersonId != 197390 &&
+                                  a.Transaction.AuthorizedPersonAlias.PersonId != 114093 );
 
             // filter by person
             if ( ppPerson.PersonId.HasValue )
@@ -126,9 +135,9 @@ namespace RockWeb.Plugins.church_ccv.Finance
                 from alias in aliases.DefaultIfEmpty()
                 join datamartPerson in datamartPersonTable on alias.PersonId equals datamartPerson.PersonId into dpPeople
                 from people in dpPeople.DefaultIfEmpty()
-                // get mailing address
+                // get mailing address - Exclude Previous Address locations Type 137
                 join groupLocation in groupLocationTable on people.FamilyId equals groupLocation.GroupId into groupLocations
-                from locations in groupLocations.Where(l => l.IsMailingLocation == true).DefaultIfEmpty()
+                from locations in groupLocations.Where(l => l.IsMailingLocation == true && l.GroupLocationTypeValueId != 137 ).DefaultIfEmpty()
                 join location in locationTable on locations.LocationId equals location.Id into familyLocations
                 from familyLocation in familyLocations.DefaultIfEmpty()
                 select new
@@ -141,7 +150,8 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     Source = transaction.Transaction.SourceTypeValue.Value,
                     FundCode = transaction.Account.Id.ToString(),
                     FundName = transaction.Account.Name,
-                    PersonAliasId = transaction.Transaction.AuthorizedPersonAliasId,
+                    GLCode = transaction.Account.GlCode,
+                    Memo = transaction.Transaction.Summary,
                     MobileNumber = people.CellPhone,
                     Person = alias.Person,
                     Street1 = familyLocation.Street1,
@@ -152,65 +162,86 @@ namespace RockWeb.Plugins.church_ccv.Finance
                     Country = familyLocation.Country
                 };
 
-            // setup transactions list
+            // setup transactions list object
             List<Transaction> transactions = new List<Transaction>();
 
             // create a transaction object for each item in export query and add to transactions list
             foreach (var item in exportQry )
             {
-                Transaction transaction = new Transaction();
-
-                transaction.PaymentID = item.TransactionId.ToString();
-                transaction.Date = item.Date;
-                transaction.Time = item.Time;
-                transaction.Amount = item.Amount;
-
-                transaction.Method = item.Method;
-
-                transaction.Source = item.Source;
-                transaction.FundCode = item.FundCode;
-                transaction.FundName = item.FundName;
-
-                transaction.YourID = item.PersonAliasId.ToString();
-                transaction.PersonID = item.PersonAliasId.ToString();
-
-                // making assumption if first name is blank its a business
-                if (item.Person.FirstName.IsNotNullOrWhitespace())
+                // check if transaction already exists in transactions list and skip if it does
+                if ( !transactions.Exists( a => a.PaymentID == item.TransactionId.ToString() ) )
                 {
-                    transaction.FirstName = item.Person.FirstName;
-                }
-                else
-                {
-                    transaction.FirstName = "Business";
-                }
-                transaction.LastName = item.Person.LastName;
-                transaction.Email = item.Person.Email;
+                    Transaction transaction = new Transaction();
 
-                if (item.MobileNumber.IsNotNullOrWhitespace())
-                {
-                    if (item.MobileNumber.Length == 14)
+                    transaction.PaymentID = item.TransactionId.ToString();
+                    transaction.Date = item.Date;
+                    transaction.Time = item.Time;
+                    transaction.Amount = item.Amount;
+
+                    transaction.Method = item.Method;
+
+                    transaction.Source = item.Source;
+                    transaction.FundCode = item.FundCode;
+                    transaction.FundName = item.FundName;
+
+                    // if mission fund, assign trip name and person name to memo field
+                    if ( item.GLCode.IsNotNullOrWhitespace() && item.GLCode.StartsWith( "8" ) )
                     {
-                        transaction.MobileNumber = item.MobileNumber;
+                        //Note: Im sure i could combine the next few lines into one regex, but quicker for me not to
+                        // Remove everything between () 
+                        var missionName = Regex.Replace( item.FundName, "\\([^)]*\\)", "" );
+                        // Remove everything between []
+                        missionName = Regex.Replace( missionName, "\\[[^)]*\\]", "" );
+                        // Remove all non alpha characters
+                        missionName = Regex.Replace( missionName, "[^a-zA-Z ]", "" );
 
+                        // check for person name in memo field and build name string if found
+                        var nameString = "";
+                        if ( item.Memo.IsNotNullOrWhitespace() && item.Memo.Contains( "CCV Online Contribution" ) )
+                        {
+                            // remove everything from memo that is before the : - effectively leaving the person name
+                            nameString = " - " + Regex.Replace( item.Memo, "^[^:]*:", "" ).Trim();
+                        }
+
+                        // build the memo string
+                        transaction.Memo = missionName.Trim() + nameString;
                     }
+
+                    transaction.YourID = item.Person.PrimaryAliasId.ToString();
+                    transaction.PersonID = item.Person.PrimaryAliasId.ToString();
+
+                    // making assumption if first name is blank its a business
+                    if ( item.Person.FirstName.IsNotNullOrWhitespace() )
+                    {
+                        transaction.FirstName = item.Person.FirstName;
+                    }
+                    else
+                    {
+                        transaction.FirstName = "Business";
+                    }
+                    transaction.LastName = item.Person.LastName;
+                    transaction.Email = item.Person.Email;
+
+                    if ( item.MobileNumber.IsNotNullOrWhitespace() )
+                    {
+                        if ( item.MobileNumber.Length == 14 )
+                        {
+                            transaction.MobileNumber = item.MobileNumber;
+
+                        }
+                    }
+
+                    transaction.AddressOne = item.Street1;
+                    transaction.AddressTwo = item.Street2;
+                    transaction.City = item.City;
+                    transaction.State = item.State;
+                    transaction.Zip = item.PostalCode;
+                    transaction.Country = item.Country;
+                    transaction.DOB = item.Person.BirthDate.ToString();
+                    transaction.Gender = item.Person.Gender.ToString();
+
+                    transactions.Add( transaction );
                 }
-
-                //Location mailingAddress = item.Person.GetMailingLocation();
-
-    //            if ( mailingAddress != null )
-  //              {
-                transaction.AddressOne = item.Street1;
-                transaction.AddressTwo = item.Street2;
-                transaction.City = item.City;
-                transaction.State = item.State;
-                transaction.Zip = item.PostalCode;
-                transaction.Country = item.Country;
-//                }
-
-                transaction.DOB = item.Person.BirthDate.ToString();
-                transaction.Gender = item.Person.Gender.ToString();
-
-                transactions.Add(transaction);
             }
 
             // convert transactions List to dataTable
