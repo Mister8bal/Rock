@@ -36,7 +36,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
     {
         AssociatePastor,
         Coach,
-        Member
+        Member,
+        AssistantCoach //todo: after a full rollout, move this underneath coach
     }
 
     [Serializable]
