@@ -16,6 +16,8 @@ namespace church.ccv.CCVRest.MobileApp
     class MAGroupService
     {
         const int GroupRoleId_NeighborhoodGroupCoach = 50;
+        const int GroupRoleId_NeighborhoodGroupAssistantCoach = 51;
+        const int GroupRoleId_NeighborhoodGroupAttendee = 49;
         const int GroupTypeId_NeighborhoodGroup = 49;
 
         const string GroupDescription_Key = "GroupDescription";
@@ -37,28 +39,38 @@ namespace church.ccv.CCVRest.MobileApp
 
         public static MAGroupMemberView GetViewForMember( GroupMember groupMember )
         {
-            // simply use the status and role of the group member to determine
-            // which MemberView they should get access to
-            if ( groupMember.GroupRoleId == GroupRoleId_NeighborhoodGroupCoach )
+            // IF they're an active member, let their role define what view they get
+            if( groupMember.GroupMemberStatus == GroupMemberStatus.Active )
             {
-                return MAGroupMemberView.CoachView;
+                switch ( groupMember.GroupRoleId )
+                {
+                    case GroupRoleId_NeighborhoodGroupCoach:
+                    {
+                        return MAGroupMemberView.CoachView;
+                    }
+
+                    case GroupRoleId_NeighborhoodGroupAssistantCoach:
+                    {
+                        return MAGroupMemberView.AssistantCoachView;
+                    }
+
+                    case GroupRoleId_NeighborhoodGroupAttendee:
+                    {
+                        return MAGroupMemberView.MemberView;
+                    }
+                }
             }
-            else if ( groupMember.GroupMemberStatus == GroupMemberStatus.Active )
-            {
-                return MAGroupMemberView.MemberView;
-            }
-            else
-            {
-                return MAGroupMemberView.NonMemberView;
-            }
+
+            // any other status or role gets the non member view.
+            return MAGroupMemberView.NonMemberView;
         }
 
         public static List<MAGroupModel> GetMobileAppGroups( string nameKeyword,
-                                                                    string descriptionKeyword,
-                                                                    Location locationForDistance,
-                                                                    bool? requiresChildcare,
-                                                                    int? skip,
-                                                                    int top )
+                                                             string descriptionKeyword,
+                                                             Location locationForDistance,
+                                                             bool? requiresChildcare,
+                                                             int? skip,
+                                                             int top )
         {
             // Gets Neighborhood Groups, searches by the provided arguments, and returns matching values as MobileAppGroupModels
 
@@ -162,6 +174,7 @@ namespace church.ccv.CCVRest.MobileApp
         {
             NonMemberView,
             MemberView,
+            AssistantCoachView,
             CoachView
         }
         
@@ -170,17 +183,14 @@ namespace church.ccv.CCVRest.MobileApp
             RockContext rockContext = new RockContext();
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
-            // now get the group leader. If there isn't one, we'll fail, because we don't want a group with no leader
-            GroupMember leader = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach == gm.GroupRole.Id ).FirstOrDefault();
-            if ( leader == null )
-            {
-                return null;
-            }
+            // first, filter out group members that are inactive -- we only care about active/pending members
+            var workingGroupMembersList = group.Members.Where( gm => gm.GroupMemberStatus != GroupMemberStatus.Inactive )
+                                                       .Select( gm => new { gm.GroupMemberStatus, gm.GroupRoleId, gm.Person } )
+                                                       .ToList( );
 
-            // make sure the leader has a datamart entry, or again, we need to simply fail
-            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
-            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == leader.Person.Id ).SingleOrDefault();
-            if ( datamartPerson == null )
+            // now get the group coach. If there isn't one, we'll fail, because we don't want a group with no coach
+            var coach = workingGroupMembersList.Where( gm => GroupRoleId_NeighborhoodGroupCoach == gm.GroupRoleId ).FirstOrDefault();
+            if ( coach == null )
             {
                 return null;
             }
@@ -189,9 +199,7 @@ namespace church.ccv.CCVRest.MobileApp
             MAGroupModel groupResult = new MAGroupModel()
             {
                 Id = group.Id,
-
                 Name = group.Name,
-
                 MeetingTime = group.Schedule != null ? group.Schedule.FriendlyScheduleText : ""
             };
 
@@ -210,33 +218,28 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // Check Group Capacity
-            if( GroupHasCapacity(group) )
-            {
-                groupResult.HasCapacity = true;
-            }
+            groupResult.HasCapacity = GroupHasCapacity( group );
 
-            // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
-            Person associatePastor = null;
-            if ( datamartPerson.NeighborhoodPastorId.HasValue )
-            {
-                // get the AP, but guard against a null value (could happen if the current ID is merged and the datamart hasn't re-run)
-                associatePastor = new PersonService( rockContext ).Queryable().AsNoTracking()
-                                                                  .Where( p => p.Id == datamartPerson.NeighborhoodPastorId.Value )
-                                                                  .SingleOrDefault();
-            }
+            // if the coach has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
+            Person associatePastor = GetAssociatePastorOverGroupCoach( coach.Person.Id );
 
-            // take the person object and status for all active & pending non-coach members of the group
-            var nonCoachGroupMembers = group.Members.Where( gm => GroupRoleId_NeighborhoodGroupCoach != gm.GroupRole.Id && gm.GroupMemberStatus != GroupMemberStatus.Inactive )
-                                                    .Select( gm => new { gm.GroupMemberStatus, gm.Person }  )
-                                                    .ToList();
+            // get all the assistant coaches
+            var assistantCoaches = workingGroupMembersList.Where( gm => gm.GroupRoleId == GroupRoleId_NeighborhoodGroupAssistantCoach ).ToList();
+
+            // get anyone that's a "regular" (non coach or assistant coach) member
+            var regularMembers = workingGroupMembersList.Where( gm => GroupRoleId_NeighborhoodGroupCoach != gm.GroupRoleId &&
+                                                                      GroupRoleId_NeighborhoodGroupAssistantCoach != gm.GroupRoleId )
+                                                        .Select( gm => new { gm.GroupMemberStatus, gm.Person }  )
+                                                        .ToList();
 
             // Now setup the group members. The role passed in to this function determines the level of info we grab for each member
             groupResult.Members = new List<MAGroupMemberModel>();
 
             switch ( groupMemberView )
             {
-                // a coach should see everything about everyone
+                // a coach (and assistant coach) should see everything about everyone
                 case MAGroupMemberView.CoachView:
+                case MAGroupMemberView.AssistantCoachView:
                 {
                     // AP
                     if ( associatePastor != null )
@@ -244,18 +247,24 @@ namespace church.ccv.CCVRest.MobileApp
                         MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Guid.Empty );
 
                         // for the AP, get their forwarding number, and if there are more than one, just use the first we find
-                        List<string> phoneNumbers = CCVRest.Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid );
-                        maAssociatePastor.PhoneNumberDigits = phoneNumbers.FirstOrDefault();
-
+                        maAssociatePastor.PhoneNumberDigits = Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid ).FirstOrDefault();
+                        
                         groupResult.Members.Add( maAssociatePastor );
                     }
 
-                    // Coach (could be themself)
-                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                    // Coach
+                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( coach.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                     groupResult.Members.Add( coachGroupMember );
 
-                    // And all members (pending AND active)
-                    foreach ( var groupMember in nonCoachGroupMembers )
+                    // Assistant Coaches
+                    foreach ( var assistantCoach in assistantCoaches )
+                    {
+                        MAGroupMemberModel maAssistantCoach = GetMAGroupMemberModel( assistantCoach.Person, MAGroupRole.AssistantCoach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                        groupResult.Members.Add( maAssistantCoach );
+                    }
+
+                    // And all "regular" members
+                    foreach ( var groupMember in regularMembers )
                     {
                         MAGroupMemberModel maGroupMember = GetMAGroupMemberModel( groupMember.Person, MAGroupRole.Member, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                         
@@ -267,7 +276,7 @@ namespace church.ccv.CCVRest.MobileApp
                     break;
                 }
 
-                // a member should see everything about the AP and Coach, and only names for the other members
+                // a member should see everything about the AP, Coach, and Assistant Coaches, only names for Active Members, and nothing about pending members.
                 case MAGroupMemberView.MemberView:
                 {
                     // AP
@@ -276,18 +285,24 @@ namespace church.ccv.CCVRest.MobileApp
                         MAGroupMemberModel maAssociatePastor = GetMAGroupMemberModel( associatePastor, MAGroupRole.AssociatePastor, true, Guid.Empty );
 
                         // for the AP, get their forwarding number, and if there are more than one, just use the first we find
-                        List<string> phoneNumbers = CCVRest.Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid );
-                        maAssociatePastor.PhoneNumberDigits = phoneNumbers.FirstOrDefault();
+                        maAssociatePastor.PhoneNumberDigits = Common.Util.GetAPForwardingNumber( associatePastor.PrimaryAlias?.Guid ).FirstOrDefault();
 
                         groupResult.Members.Add( maAssociatePastor );
                     }
 
                     // Coach
-                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( coach.Person, MAGroupRole.Coach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                     groupResult.Members.Add( coachGroupMember );
 
+                    // Assistant Coaches
+                    foreach ( var assistantCoach in assistantCoaches )
+                    {
+                        MAGroupMemberModel maAssistantCoach = GetMAGroupMemberModel( assistantCoach.Person, MAGroupRole.AssistantCoach, true, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                        groupResult.Members.Add( maAssistantCoach );
+                    }
+
                     // And all ACTIVE members, without their contact info
-                    foreach ( var groupMember in nonCoachGroupMembers )
+                    foreach ( var groupMember in regularMembers )
                     {
                         if ( groupMember.GroupMemberStatus == GroupMemberStatus.Active )
                         {
@@ -309,7 +324,7 @@ namespace church.ccv.CCVRest.MobileApp
                     }
 
                     // Coach
-                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( leader.Person, MAGroupRole.Coach, false, Guid.Empty );
+                    MAGroupMemberModel coachGroupMember = GetMAGroupMemberModel( coach.Person, MAGroupRole.Coach, false, Guid.Empty );
                     groupResult.Members.Add( coachGroupMember );
                     break;
                 }
@@ -356,6 +371,25 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             return groupResult;
+        }
+
+        private static Person GetAssociatePastorOverGroupCoach( int coachPersonId )
+        {
+            Person associatePastor = null;
+
+            RockContext rockContext  = new RockContext();
+            var datamartPersonService = new DatamartPersonService( rockContext ).Queryable().AsNoTracking();
+            var datamartPerson = datamartPersonService.Where( dp => dp.PersonId == coachPersonId ).SingleOrDefault();
+
+            if ( datamartPerson != null && datamartPerson.NeighborhoodPastorId.HasValue )
+            {
+                // get the AP, but guard against a null value (could happen if the current ID is merged and the datamart hasn't re-run)
+                associatePastor = new PersonService( rockContext ).Queryable().AsNoTracking()
+                                                                  .Where( p => p.Id == datamartPerson.NeighborhoodPastorId.Value )
+                                                                  .SingleOrDefault();
+            }
+
+            return associatePastor;
         }
 
         private static bool GroupHasCapacity(Group g)
