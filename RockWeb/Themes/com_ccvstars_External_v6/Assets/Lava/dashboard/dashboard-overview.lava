@@ -6,9 +6,9 @@
     <div class="person-photo">
         {% if CurrentPerson.PhotoId != null %}
             <a href="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}"><img src="/GetImage.ashx?id={{ CurrentPerson.PhotoId }}&width=600"></a>
-        {% else if CurrentPerson.Person.Gender == 1 %}
+        {% elseif CurrentPerson.Person.Gender == 1 %}
             <img src="/Assets/Images/person-no-photo-male.svg?" />
-        {% else if CurrentPerson.Person.Gender == 2 %}
+        {% elseif CurrentPerson.Person.Gender == 2 %}
             <img src="/Assets/Images/person-no-photo-female.svg?" />
         {% endif %}
     </div>

@@ -31,9 +31,9 @@
                     <div class="player-image">
                         {% if groupmemberItem.Person.PhotoId != null %}
                             <img src="/GetImage.ashx?Id={{ groupmemberItem.Person.PhotoId }}&width=100&height=100" />
-                        {% else if groupmemberItem.Person.Gender == 1 %}
+                        {% elseif groupmemberItem.Person.Gender == 1 %}
                             <img src="~~/Assets/Images/icon/person-no-photo-child-male.svg?&width=100&height=100" />
-                        {% else if groupmemberItem.Person.Gender == 2 %}
+                        {% elseif groupmemberItem.Person.Gender == 2 %}
                             <img src="~~/Assets/Images/icon/person-no-photo-child-female.svg" />
                         {% endif %}
                     </div>

@@ -70,11 +70,11 @@
 
                     {% if sportName contains 'soccer' %}
                         {% assign sportIcon = 'soccer' %}
-                    {% else if sportName contains 'basketball' %} 
+                    {% elseif sportName contains 'basketball' %} 
                         {% assign sportIcon = 'basketball' %}
-                    {% else if sportName contains 'football' %} 
+                    {% elseif sportName contains 'football' %} 
                         {% assign sportIcon = 'football' %}
-                    {% else if sportName contains 'baseball' %}  
+                    {% elseif sportName contains 'baseball' %}  
                         {% assign sportIcon = 'baseball' %}
                     {% endif %}
 
@@ -145,11 +145,11 @@
 
                 {% if sportName contains 'soccer' %}
                     {% assign sportIcon = 'soccer' %}
-                {% else if sportName contains 'basketball' %} 
+                {% elseif sportName contains 'basketball' %} 
                     {% assign sportIcon = 'basketball' %}
-                {% else if sportName contains 'football' %} 
+                {% elseif sportName contains 'football' %} 
                     {% assign sportIcon = 'football' %}
-                {% else if sportName contains 'baseball' %}  
+                {% elseif sportName contains 'baseball' %}  
                     {% assign sportIcon = 'baseball' %}
                 {% endif %}
 
