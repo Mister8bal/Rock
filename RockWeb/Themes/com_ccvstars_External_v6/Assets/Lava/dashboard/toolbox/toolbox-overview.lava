@@ -194,16 +194,14 @@
 
                         {% comment %} drop down list of other players  {% endcomment %}
                         {% for childGroup in childGroups %}
-                            {% unless personChild.Id == child.Id %}
-                                {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
-                                {% assign campus = "" %}   
-                                {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
-                                
-                                {% comment %} Check to see if group is active and currentperson is not the leader (coach) of group  {% endcomment %}
-                                {% if childGroup.Group.IsPublic %}
-                                    <li><a href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">{{ child.FullName }}</a></li>
-                                {% endif %}
-                            {% endunless %}
+                            {% comment %} Try to get campus that sport is hosted at by looking at child groups campus Id {% endcomment %}
+                            {% assign campus = "" %}   
+                            {% assign campus = childGroup.Group.CampusId | FromCache:'Campus' %}
+
+                            {% comment %} Check to see if group is active and not the current group being displayed  {% endcomment %}
+                            {% if childGroup.Group.IsPublic and childGroup.Group.Id != PageParameter.GroupId  %}
+                                <li><a href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">{{ childGroup.Group.Name }} ({{ child.FullName }})</a></li>
+                            {% endif %}    
                         {% endfor %}
                     {% endfor %}
                 </ul>
