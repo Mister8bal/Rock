@@ -56,6 +56,7 @@
 
         <div class="actions margin-t-xl">
             <Rock:BootstrapButton runat="server" ID="btnFlushCache" CssClass="btn btn-primary" Text="Clear Cache" OnClick="btnClearCache_Click" DataLoadingText="Clearing..." ToolTip="Flushes all cached items from the Rock cache (e.g. Pages, BlockTypes, Blocks, Attributes, etc." />
+            <Rock:BootstrapButton runat="server" ID="btnRefreshRoutes" CssClass="btn btn-info" Text="Refresh Routes" OnClick="btnRefreshRoutes_Click" DataLoadingText="Refreshing..." ToolTip="Flushes all routes from the server(s) and then reloads them." />
             <asp:Button runat="server" ID="btnRestart" CssClass="btn btn-link js-restart" Text="Restart Rock" OnClick="btnRestart_Click" ToolTip="Restarts the Application." />
         </div>
     </div>

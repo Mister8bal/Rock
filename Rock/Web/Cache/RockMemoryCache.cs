@@ -271,6 +271,12 @@ namespace Rock.Web.Cache
                             Rock.Web.Cache.AttributeCache.RemoveEntityAttributes();
                             break;
                         }
+                    // ccv specific
+                    case "REREGISTER_ROUTES":
+                        {
+                            Rock.Web.RockRouteHandler.ReregisterRoutes();
+                            break;
+                        }
                     case "PING":
                         {
                             var response = string.Format( "PONG: From {0}: {1}", System.Environment.MachineName, System.AppDomain.CurrentDomain.FriendlyName );
