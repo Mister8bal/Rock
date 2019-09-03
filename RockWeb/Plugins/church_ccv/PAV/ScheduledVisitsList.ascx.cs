@@ -280,12 +280,29 @@ namespace RockWeb.Plugins.church_ccv.PAV
         /// <param name="e"></param>
         protected void mdManageVisit_SaveClick( object sender, EventArgs e )
         {
+
             RockContext rockContext = new RockContext();
 
             PlanAVisit visit = new Service<PlanAVisit>( rockContext ).Get( int.Parse( hfModalVisitId.Value ) );
 
+            PersonAliasService personAliasService = new PersonAliasService( rockContext );
+
+            PersonService personService = new PersonService( rockContext );
+
+            CampusService campusService = new CampusService( rockContext );
+
+            
+
+            Person adultOne; 
+            
+           
+
             if ( visit.IsNotNull() )
             {
+                PersonAlias adultOneAlias = personAliasService.GetByAliasId( visit.AdultOnePersonAliasId );
+                
+                adultOne = personService.Get( adultOneAlias.PersonId );
+            
                 // update attended campus if it doesnt match existing value
                 if ( cpCampusAttended.SelectedValue.AsInteger() != visit.AttendedCampusId)
                 {
@@ -303,6 +320,23 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 {
                     visit.AttendedServiceScheduleId = ddlServiceAttended.SelectedValue.AsInteger() > 0 ? ddlServiceAttended.SelectedValue.AsInteger() : null as int?;
                 }
+
+                // If Attended Date and Campus are set, update the families campus.
+                if ( visit.AttendedDate.HasValue && adultOne.IsNotNull() && visit.AttendedCampusId.HasValue )
+                {
+
+                    var family = adultOne.GetFamily(rockContext);
+
+                    Campus familyCampus = campusService.Get( visit.AttendedCampusId.GetValueOrDefault() );
+
+                    if ( familyCampus.IsNotNull() )
+                    {
+                        family.Campus = familyCampus;
+                        family.CampusId = familyCampus.Id;
+                    }
+
+                }
+             
 
                 rockContext.SaveChanges();
 
