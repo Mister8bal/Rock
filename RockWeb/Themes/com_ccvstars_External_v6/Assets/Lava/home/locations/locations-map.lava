@@ -6,8 +6,8 @@
 
 {% include '~~/Assets/Lava/home/locations/script-campus-locations.lava' %}
 
-<script src="~~/Scripts/_map.js?ver=0"></script>
-<script src="~~/Scripts/our-campuses-map.js"></script>  
+<script src="~~/Scripts/_map.js?ver=2"></script>
+<script src="~~/Scripts/our-campuses-map.js?ver=2"></script>  
 
 {% comment %}	
 
