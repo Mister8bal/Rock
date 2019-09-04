@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVTransactionEntry.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVTransactionEntry" %>
-
+<%@ Register TagPrefix="recaptcha" Namespace="Recaptcha" Assembly="Recaptcha" %>
 <link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/home/get-involved/giving.css">
 
 <asp:UpdatePanel ID="upPayment" runat="server">
@@ -105,7 +105,15 @@
 
                             <Rock:RockTextBox ID="tbCommentEntry" runat="server" Label="Comment" Visible="false" ClientIDMode="Static" />
 
-                        </div>            
+                        </div>
+
+                        <recaptcha:RecaptchaControl
+                        ID="recaptcha"
+                        runat="server"
+                        PublicKey="6LfksbYUAAAAAIrvh0qRq2G8dWtNEjFDn3biimT0"
+                        PrivateKey="6LfksbYUAAAAABHWzRnWjVHivNzZ9BiQxdOKh8yR"
+                        />
+                        
                         <div class="navigation">
                             <%-- Empty div is used to put Next button into correct position --%>
                             <div class="navitation-left">
