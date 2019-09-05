@@ -1,7 +1,13 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVTransactionEntry.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVTransactionEntry" %>
-<%@ Register TagPrefix="recaptcha" Namespace="Recaptcha" Assembly="Recaptcha" %>
 <link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/home/get-involved/giving.css">
-
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfwt7YUAAAAAM9GjCSQ2dpImcXuqHNfTDyveZDA"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6Lfwt7YUAAAAAM9GjCSQ2dpImcXuqHNfTDyveZDA', {action: 'trip_donation'}).then(function(token) {
+            $("#GoogleCaptchaToken").val(token);
+        });
+    });
+</script>
 <asp:UpdatePanel ID="upPayment" runat="server">
     <ContentTemplate>
 
@@ -107,12 +113,7 @@
 
                         </div>
 
-                        <recaptcha:RecaptchaControl
-                        ID="recaptcha"
-                        runat="server"
-                        PublicKey="6LfksbYUAAAAAIrvh0qRq2G8dWtNEjFDn3biimT0"
-                        PrivateKey="6LfksbYUAAAAABHWzRnWjVHivNzZ9BiQxdOKh8yR"
-                        />
+                        <asp:HiddenField ID="hfGoogleCaptchaToken" runat="server" ClientIDMode="Static" />
                         
                         <div class="navigation">
                             <%-- Empty div is used to put Next button into correct position --%>

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -17,6 +19,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Rock.Transactions;
 using Rock.Communication;
+using Newtonsoft.Json;
 
 namespace RockWeb.Plugins.church_ccv.Finance
 {
@@ -279,10 +282,17 @@ TransactionAcountDetails: [
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void btnConfirmNext_Click( object sender, EventArgs e )
+        protected async void btnConfirmNext_Click( object sender, EventArgs e )
         {
 
             string errorMessage = string.Empty;
+
+            var isCaptchaValid = await IsCaptchaValid( hfGoogleCaptchaToken.Value );
+
+            if ( !isCaptchaValid )
+            {
+                HandleErrorDisplay( NotificationBoxType.Danger, "Validation Error", "We cannot validate your data.  Please try again." );
+            }
 
             if ( ValidateDecepticon( out errorMessage ) && ProcessTransaction( out errorMessage ) )
             {
@@ -293,65 +303,7 @@ TransactionAcountDetails: [
             }
             else
             {
-                // Failed - show error message
-                ShowMessage( NotificationBoxType.Danger, "Payment Error", errorMessage );
-
-                // Reenable submit button on confirmation page
-                btnConfirmNext.Enabled = true;
-
-                // set view to payment panel
-                TogglePanel( "pnlPayment", true );
-                TogglePanel( "pnlAmount", false );
-
-                // set progress indicators
-                ToggleProgressIndicator( "btnProgressAmount", true, true );
-                ToggleProgressIndicator( "btnProgressPerson", true, true );
-                ToggleProgressIndicator( "btnProgressPayment", true, false );
-
-                // set amount panel view
-                if (hfIsScheduledTransaction.Value == "true")
-                {
-                    tglScheduledTransaction.Checked = true;
-                } else
-                {
-                    tglScheduledTransaction.Checked = false;
-                }
-
-                // set payment type form panel view
-                if (hfPaymentType.Value == "REF")
-                {
-                    // Show Saved Payment Form
-                    TogglePanel( "pnlSavedPayment", true );
-                    TogglePanel( "pnlCreditCard", false );
-                    TogglePanel( "pnlBankAccount", false );
-                    
-                    // Set Saved Payment Button
-                    ToggleButtonSelectedState( "btnSavedPayment", true );
-                    ToggleButtonSelectedState( "btnCreditCard", false );
-                    ToggleButtonSelectedState( "btnBankAccount", false );
-                } else if (hfPaymentType.Value == "ACH")
-                {
-                    // Show Bank Account Form
-                    TogglePanel( "pnlBankAccount", true );
-                    TogglePanel( "pnlSavedPayment", false );
-                    TogglePanel( "pnlCreditCard", false );
-
-                    // Set Bank Account Button
-                    ToggleButtonSelectedState( "btnBankAccount", true );
-                    ToggleButtonSelectedState( "btnSavedPayment", false );
-                    ToggleButtonSelectedState( "btnCreditCard", false );
-                } else
-                {
-                    // Show Credit Card Form
-                    TogglePanel( "pnlCreditCard", true );
-                    TogglePanel( "pnlBankAccount", false );
-                    TogglePanel( "pnlSavedPayment", false );
-
-                    // Set Credit Card Button
-                    ToggleButtonSelectedState( "btnCreditCard", true );
-                    ToggleButtonSelectedState( "btnBankAccount", false );
-                    ToggleButtonSelectedState( "btnSavedPayment", false );
-                }
+                HandleErrorDisplay(NotificationBoxType.Danger,"Payment Error", errorMessage );
             }
         }
 
@@ -2202,9 +2154,121 @@ TransactionAcountDetails: [
             }
         }
 
+        public void HandleErrorDisplay(NotificationBoxType notificationType, string errorName, string errorMessage )
+        {
+            // Failed - show error message
+            ShowMessage( notificationType, errorName, errorMessage );
+
+            // Reenable submit button on confirmation page
+            btnConfirmNext.Enabled = true;
+
+            // set view to payment panel
+            TogglePanel( "pnlPayment", true );
+            TogglePanel( "pnlAmount", false );
+
+            // set progress indicators
+            ToggleProgressIndicator( "btnProgressAmount", true, true );
+            ToggleProgressIndicator( "btnProgressPerson", true, true );
+            ToggleProgressIndicator( "btnProgressPayment", true, false );
+
+            // set amount panel view
+            if ( hfIsScheduledTransaction.Value == "true" )
+            {
+                tglScheduledTransaction.Checked = true;
+            }
+            else
+            {
+                tglScheduledTransaction.Checked = false;
+            }
+
+            // set payment type form panel view
+            if ( hfPaymentType.Value == "REF" )
+            {
+                // Show Saved Payment Form
+                TogglePanel( "pnlSavedPayment", true );
+                TogglePanel( "pnlCreditCard", false );
+                TogglePanel( "pnlBankAccount", false );
+
+                // Set Saved Payment Button
+                ToggleButtonSelectedState( "btnSavedPayment", true );
+                ToggleButtonSelectedState( "btnCreditCard", false );
+                ToggleButtonSelectedState( "btnBankAccount", false );
+            }
+            else if ( hfPaymentType.Value == "ACH" )
+            {
+                // Show Bank Account Form
+                TogglePanel( "pnlBankAccount", true );
+                TogglePanel( "pnlSavedPayment", false );
+                TogglePanel( "pnlCreditCard", false );
+
+                // Set Bank Account Button
+                ToggleButtonSelectedState( "btnBankAccount", true );
+                ToggleButtonSelectedState( "btnSavedPayment", false );
+                ToggleButtonSelectedState( "btnCreditCard", false );
+            }
+            else
+            {
+                // Show Credit Card Form
+                TogglePanel( "pnlCreditCard", true );
+                TogglePanel( "pnlBankAccount", false );
+                TogglePanel( "pnlSavedPayment", false );
+
+                // Set Credit Card Button
+                ToggleButtonSelectedState( "btnCreditCard", true );
+                ToggleButtonSelectedState( "btnBankAccount", false );
+                ToggleButtonSelectedState( "btnSavedPayment", false );
+            }
+        }
+
+        private async Task<bool> IsCaptchaValid( string response )
+        {
+            try
+            {
+                var secret = "6Lfwt7YUAAAAAOk9UE0aX64G4pFuoX3HG2l-T6NN";
+                using ( var client = new HttpClient() )
+                {
+                    var values = new Dictionary<string, string>
+                    {
+                        {"secret", secret},
+                        {"response", response},
+                        {"remoteip", Request.UserHostAddress}
+                    };
+
+                    var content = new FormUrlEncodedContent( values );
+                    var verify = await client.PostAsync( "https://www.google.com/recaptcha/api/siteverify", content );
+                    var captchaResponseJson = await verify.Content.ReadAsStringAsync();
+                    var captchaResult = JsonConvert.DeserializeObject<CaptchaResponseModel>( captchaResponseJson );
+                    return captchaResult.Success
+                           && captchaResult.Action == "trip_donation"
+                           && captchaResult.Score > 0.5;
+                }
+            }
+            catch ( Exception ex )
+            {
+                return false;
+            }
+
+        }
         #endregion
 
         #endregion
+
+        public class CaptchaResponseModel
+        {
+            public bool Success { get; set; }
+
+            [JsonProperty( PropertyName = "error-codes" )]
+            public IEnumerable<string> ErrorCodes { get; set; }
+
+            [JsonProperty( PropertyName = "challenge_ts" )]
+            public DateTime ChallengeTime { get; set; }
+
+            public string HostName { get; set; }
+            public double Score { get; set; }
+            public string Action { get; set; }
+        }
     }
+
+
 }
 
