@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Podcast;
@@ -177,7 +178,7 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/ToolboxContent" )]
         [Authenticate, Secured]
-        public HttpResponseMessage ToolboxContent( int primaryAliasId )
+        public async Task<HttpResponseMessage> ToolboxContent( int primaryAliasId )
         {
             try
             {
@@ -204,8 +205,10 @@ namespace church.ccv.CCVRest.MobileApp
                     PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
 
                     // use the resourcesRemaining int to track when we've hit our total number
-                    List<ToolboxResourceModel> resourceList = MAPodcastService.PodcastSeriesToToolboxResources( series, ref resourcesRemaining );
+                    List<ToolboxResourceModel> resourceList = await MAPodcastService.PodcastSeriesToToolboxResources( series, resourcesRemaining );
                     toolboxContent.ResourceList.AddRange( resourceList );
+
+                    resourcesRemaining -= resourceList.Count;
 
                     // if parsing this latest series caused us to hit our goal, break.
                     if ( resourcesRemaining == 0 )
