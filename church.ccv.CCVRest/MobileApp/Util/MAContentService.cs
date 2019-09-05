@@ -50,26 +50,8 @@ namespace church.ccv.CCVRest.MobileApp
 
         public static KidsContentModel BuildKidsContent( Person person )
         {
-            // define our constants (for gradeToFamilyMap, there's nothing in Rock
-            // that actually maps a Grade to Content. It's just done based on the room
-            //  a kid checks in to, so define that mapping here)
             const string MAMyFamilyContentOverrideKey = "MobileAppKidContentOverride";
             const string MAMyFamilyContentLevelKey = "MobileAppKidContentLevel";
-
-            Dictionary<int, string> gradeToFamilyMap = new Dictionary<int, string>();
-            gradeToFamilyMap.Add( 0, "Infants" );
-            gradeToFamilyMap.Add( 1, "Early Kids" );
-            gradeToFamilyMap.Add( 2, "Early Kids" );
-            gradeToFamilyMap.Add( 3, "Early Kids" );
-            gradeToFamilyMap.Add( 4, "Early Kids" );
-            gradeToFamilyMap.Add( 5, "Later Kids" );
-            gradeToFamilyMap.Add( 6, "Later Kids" );
-            gradeToFamilyMap.Add( 7, "Junior High" );
-            gradeToFamilyMap.Add( 8, "Junior High" );
-            gradeToFamilyMap.Add( 9, "High School" );
-            gradeToFamilyMap.Add( 10, "High School" );
-            gradeToFamilyMap.Add( 11, "High School" );
-            gradeToFamilyMap.Add( 12, "High School" );
 
             // see if the person has an override that sets their 
             // content level (Common among people with Special Needs)
@@ -81,7 +63,7 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 // this is technically cheating, but Rock abstracts grade and doesn't natively
                 // know about the US standard. To simplify things, let's do the conversion here
-                int realGrade = 0; //(assume infant / pre-k)
+                int realGrade = -1; //(assume infant / pre-k)
                 if ( person.GradeOffset.HasValue )
                 {
                     realGrade = 12 - person.GradeOffset.Value;
@@ -91,32 +73,55 @@ namespace church.ccv.CCVRest.MobileApp
                     // no grade, so try using their age
                     if ( person.Age.HasValue )
                     {
+                        // Kids 14+ get High School
                         if ( person.Age >= 14 )
                         {
                             realGrade = 9;
                         }
+                        // Kids 12+ get Junior High
                         else if ( person.Age >= 12 )
                         {
                             realGrade = 7;
                         }
-                        else if ( person.Age >= 10 )
+                        // Kids 7+ get Later Kids
+                        else if ( person.Age >= 7 )
                         {
-                            realGrade = 5;
+                            realGrade = 2;
                         }
-                        else if ( person.Age >= 6 )
-                        {
-                            realGrade = 1;
-                        }
-                        else
+                        // Kids 3+ get early Kids
+                        else if ( person.Age >= 3 )
                         {
                             realGrade = 0;
+                        }
+                        // Kids < 3 get Infants
+                        else
+                        {
+                            realGrade = -1;
                         }
                     }
                 }
 
-                // now whether from their actual grade, or inferred by age, get
-                // the content
-                targetContent = gradeToFamilyMap[realGrade];
+                // Now that we've resolved a grade, pick the content
+                if ( realGrade >= 9 )
+                {
+                    targetContent = "High School";
+                }
+                else if ( realGrade >= 7 )
+                {
+                    targetContent = "Junior High";
+                }
+                else if ( realGrade >= 2 )
+                {
+                    targetContent = "Later Kids";
+                }
+                else if ( realGrade >= 0 )
+                {
+                    targetContent = "Early Kids";
+                }
+                else
+                {
+                    targetContent = "Infants";
+                }
             }
 
             // now that we know the range, build the content channel queries
