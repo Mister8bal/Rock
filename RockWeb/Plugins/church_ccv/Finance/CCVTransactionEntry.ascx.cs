@@ -2274,7 +2274,7 @@ TransactionAcountDetails: [
                 {
                     respBlob = JObject.Parse( resp.Content );
 
-                    return respBlob.Value<bool>("success") && respBlob["action"].ToString() == "trip_donation" && respBlob.Value<double>("score") > 0.7;
+                    return respBlob.Value<bool>("success") && respBlob["action"].ToString() == "ccv_transaction_entry" && respBlob.Value<double>("score") > 0.7;
                 }
                 else
                 {

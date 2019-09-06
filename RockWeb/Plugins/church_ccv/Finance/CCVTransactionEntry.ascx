@@ -15,7 +15,7 @@
         //Wait until the user starts filling out the form so we don't have to worry
         //about the token timing out too early.
         $('#tbName').on("change", function (e) {
-            grecaptcha.execute(siteKey, {action: 'trip_donation'}).then(function(token) {
+            grecaptcha.execute(siteKey, {action: 'ccv_transaction_entry'}).then(function(token) {
                 $("#hfGoogleCaptchaToken").val(token);
             });
         });
