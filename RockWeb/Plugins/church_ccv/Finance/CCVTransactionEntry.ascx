@@ -1,12 +1,28 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVTransactionEntry.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVTransactionEntry" %>
 <link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/home/get-involved/giving.css">
-<script src="https://www.google.com/recaptcha/api.js?render=6Lfwt7YUAAAAAM9GjCSQ2dpImcXuqHNfTDyveZDA"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=<%=hfGoogleCaptchaSiteKey.Value%>"></script>
 <script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('6Lfwt7YUAAAAAM9GjCSQ2dpImcXuqHNfTDyveZDA', {action: 'trip_donation'}).then(function(token) {
-            $("#hfGoogleCaptchaToken").val(token);
+    grecaptcha.ready(function () {
+
+        let siteKey = null;
+
+        siteKey = $('#hfGoogleCaptchaSiteKey').val();
+
+        if (!siteKey) {
+            return;
+        }
+
+        //Wait until the user starts filling out the form so we don't have to worry
+        //about the token timing out too early.
+        $('#tbName').on("change", function (e) {
+            grecaptcha.execute(siteKey, {action: 'trip_donation'}).then(function(token) {
+                $("#hfGoogleCaptchaToken").val(token);
+            });
         });
+         
     });
+    
+   
 </script>
 <asp:UpdatePanel ID="upPayment" runat="server">
     <ContentTemplate>
@@ -20,6 +36,9 @@
         <asp:HiddenField ID="hfSavedPaymentAccountName" runat="server" Value="" />
         <asp:HiddenField ID="hfIsScheduledTransaction" runat="server" Value="false" ClientIDMode="Static" />
         <asp:HiddenField ID="hfSuccessScheduleStartDate" runat="server" Value="" ClientIDMode="Static" />
+
+        <%-- Hidden field to store the google captcha site key.  This is the public key. --%>
+        <asp:HiddenField ID="hfGoogleCaptchaSiteKey" runat="server" Value="" ClientIDMode="Static" />
 
         <div id="divTransactionCard" class="transaction-card">
         

@@ -94,6 +94,8 @@ TransactionAcountDetails: [
     [BooleanField( "Enable Comment Entry", "Allows the guest to enter the the value that's put into the comment field (will be appended to the 'Payment Comment' setting)", false, "", 29 )]
     [TextField( "Comment Entry Label", "The label to use on the comment edit field (e.g. Trip Name to give to a specific trip).", false, "Comment", "", 30 )]
     [TextField( "Fund / Account Dropdown Placeholder", "The placeholder text to use in the account/fund dropdown (e.g. --Select a Fund-- or --Select a Trip--).", false, "--Select A Fund--", "", 31, "FundDropdownPlaceholder" )]
+    [TextField( "Google Captcha Secret Key", "Secret Key for using hidden Google Captcha", false, "", "", 32, "CaptchaSecret" )]
+    [TextField( "Google Captcha Site Key", "Site Key for using hidden Google Captcha", false, "", "", 33, "CaptchaSiteKey" )]
     #endregion
 
     public partial class CCVTransactionEntry : Rock.Web.UI.RockBlock
@@ -210,7 +212,10 @@ TransactionAcountDetails: [
         /// <param name="e">The <see cref="T:System.EventArgs" /> object that contains the event data.</param>
         protected override void OnLoad( EventArgs e )
         {
+
             base.OnLoad( e );
+
+            var siteKey = GetAttributeValue( "CaptchaSiteKey" );
 
             // Check for required block settings
             if ( _ccGateway == null && _achGateway == null )
@@ -226,6 +231,12 @@ TransactionAcountDetails: [
 
                 // Set the min donation amount.
                 hfMinDonation.Value = minDonation.ToString();
+
+                //Set the Captcha site key if it exists.
+                if ( !siteKey.IsNullOrWhiteSpace() )
+                {
+                    hfGoogleCaptchaSiteKey.Value = siteKey;
+                }
                 
                 // Bind dropdown lists
                 BindFundAccounts();
@@ -2228,10 +2239,27 @@ TransactionAcountDetails: [
 
         private bool IsCaptchaValid( string response )
         {
+            var secret = GetAttributeValue( "CaptchaSecret" );
+            var siteKey = GetAttributeValue( "CaptchaSiteKey" );
+
+            // If no secret was entered we assume that captcha is not being used.
+            if ( secret.IsNullOrWhiteSpace() )
+            {
+                // If we have a site key, but no secret key, somethings wrong
+                // and we should flag the captcha as invalid.
+                if ( siteKey.IsNotNullOrWhiteSpace() )
+                {
+                    return false;
+                }
+
+                return true;
+
+            }
+
             try
             {
+          
                 
-                var secret = "6Lfwt7YUAAAAAOk9UE0aX64G4pFuoX3HG2l-T6NN";
                 var client = new RestClient("https://www.google.com/recaptcha/api/siteverify");
                 var req = new RestRequest( Method.POST );
 
