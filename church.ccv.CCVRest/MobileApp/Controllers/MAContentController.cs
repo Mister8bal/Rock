@@ -342,8 +342,13 @@ namespace church.ccv.CCVRest.MobileApp
                         serviceTime.HearingImpaired = true;
                     }
 
+                    if ( campusCacheServiceTime.Time.Contains( '#' ) )
+                    {
+                        serviceTime.SpanishTranslation = true;
+                    }
+
                     // now cut out those symbols and trailing whitespace
-                    serviceTime.Time = campusCacheServiceTime.Time.Trim( new char[] { '%', '*' } ).Trim();
+                    serviceTime.Time = campusCacheServiceTime.Time.Trim( new char[] { '%', '*', '#' } ).Trim();
 
                     serviceTime.Day = campusCacheServiceTime.Day;
 
