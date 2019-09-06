@@ -19,7 +19,9 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Rock.Transactions;
 using Rock.Communication;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using RestSharp;
 
 namespace RockWeb.Plugins.church_ccv.Finance
 {
@@ -105,7 +107,7 @@ TransactionAcountDetails: [
         private GatewayComponent _achGatewayComponent = null;
 
         //Set the required minimum donation.
-        const decimal minDonation = 10;
+        const decimal minDonation = 1;
 
         #endregion
 
@@ -282,16 +284,18 @@ TransactionAcountDetails: [
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected async void btnConfirmNext_Click( object sender, EventArgs e )
+        protected void btnConfirmNext_Click( object sender, EventArgs e )
         {
 
             string errorMessage = string.Empty;
 
-            var isCaptchaValid = await IsCaptchaValid( hfGoogleCaptchaToken.Value );
-
+            var isCaptchaValid = IsCaptchaValid( hfGoogleCaptchaToken.Value );
+            
             if ( !isCaptchaValid )
             {
-                HandleErrorDisplay( NotificationBoxType.Danger, "Validation Error", "We cannot validate your data.  Please try again." );
+               HandleErrorDisplay( NotificationBoxType.Danger, "Validation Error", "We cannot validate your data.  Please try again." );
+                return;
+        
             }
 
             if ( ValidateDecepticon( out errorMessage ) && ProcessTransaction( out errorMessage ) )
@@ -303,8 +307,10 @@ TransactionAcountDetails: [
             }
             else
             {
-                HandleErrorDisplay(NotificationBoxType.Danger,"Payment Error", errorMessage );
+                HandleErrorDisplay( NotificationBoxType.Danger, "Payment Error", errorMessage );
             }
+           
+
         }
 
         /// <summary>
@@ -2220,28 +2226,33 @@ TransactionAcountDetails: [
             }
         }
 
-        private async Task<bool> IsCaptchaValid( string response )
+        private bool IsCaptchaValid( string response )
         {
             try
             {
+                
                 var secret = "6Lfwt7YUAAAAAOk9UE0aX64G4pFuoX3HG2l-T6NN";
-                using ( var client = new HttpClient() )
-                {
-                    var values = new Dictionary<string, string>
-                    {
-                        {"secret", secret},
-                        {"response", response},
-                        {"remoteip", Request.UserHostAddress}
-                    };
+                var client = new RestClient("https://www.google.com/recaptcha/api/siteverify");
+                var req = new RestRequest( Method.POST );
 
-                    var content = new FormUrlEncodedContent( values );
-                    var verify = await client.PostAsync( "https://www.google.com/recaptcha/api/siteverify", content );
-                    var captchaResponseJson = await verify.Content.ReadAsStringAsync();
-                    var captchaResult = JsonConvert.DeserializeObject<CaptchaResponseModel>( captchaResponseJson );
-                    return captchaResult.Success
-                           && captchaResult.Action == "trip_donation"
-                           && captchaResult.Score > 0.5;
+                req.AddParameter( "secret", secret );
+                req.AddParameter( "response", response );
+                req.AddParameter( "remoteip", Request.UserHostAddress );
+
+                var resp = client.Execute( req );
+                var respBlob = new JObject();
+
+                if ( resp.StatusCode == System.Net.HttpStatusCode.OK )
+                {
+                    respBlob = JObject.Parse( resp.Content );
+
+                    return respBlob.Value<bool>("success") && respBlob["action"].ToString() == "trip_donation" && respBlob.Value<double>("score") > 0.7;
                 }
+                else
+                {
+                    return false;
+                }
+                
             }
             catch ( Exception ex )
             {
@@ -2252,21 +2263,6 @@ TransactionAcountDetails: [
         #endregion
 
         #endregion
-
-        public class CaptchaResponseModel
-        {
-            public bool Success { get; set; }
-
-            [JsonProperty( PropertyName = "error-codes" )]
-            public IEnumerable<string> ErrorCodes { get; set; }
-
-            [JsonProperty( PropertyName = "challenge_ts" )]
-            public DateTime ChallengeTime { get; set; }
-
-            public string HostName { get; set; }
-            public double Score { get; set; }
-            public string Action { get; set; }
-        }
     }
 
 

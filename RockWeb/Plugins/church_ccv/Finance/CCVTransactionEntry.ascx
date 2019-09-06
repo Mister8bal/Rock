@@ -4,7 +4,7 @@
 <script>
     grecaptcha.ready(function() {
         grecaptcha.execute('6Lfwt7YUAAAAAM9GjCSQ2dpImcXuqHNfTDyveZDA', {action: 'trip_donation'}).then(function(token) {
-            $("#GoogleCaptchaToken").val(token);
+            $("#hfGoogleCaptchaToken").val(token);
         });
     });
 </script>
