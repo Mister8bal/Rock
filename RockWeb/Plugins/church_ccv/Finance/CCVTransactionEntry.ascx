@@ -1,29 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="CCVTransactionEntry.ascx.cs" Inherits="RockWeb.Plugins.church_ccv.Finance.CCVTransactionEntry" %>
 <link rel="stylesheet" href="/Themes/church_ccv_External_v8/Styles/pages/home/get-involved/giving.css">
 <script src="https://www.google.com/recaptcha/api.js?render=<%=hfGoogleCaptchaSiteKey.Value%>"></script>
-<script>
-    grecaptcha.ready(function () {
 
-        let siteKey = null;
-
-        siteKey = $('#hfGoogleCaptchaSiteKey').val();
-
-        if (!siteKey) {
-            return;
-        }
-
-        //Wait until the user starts filling out the form so we don't have to worry
-        //about the token timing out too early.
-        $('#tbName').on("change", function (e) {
-            grecaptcha.execute(siteKey, {action: 'ccv_transaction_entry'}).then(function(token) {
-                $("#hfGoogleCaptchaToken").val(token);
-            });
-        });
-         
-    });
-    
-   
-</script>
 <asp:UpdatePanel ID="upPayment" runat="server">
     <ContentTemplate>
 

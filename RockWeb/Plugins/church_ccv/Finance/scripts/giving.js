@@ -29,13 +29,15 @@ const decepticon = function () {
 
 let megatron = new decepticon;
 
-const handleSubmit = function (e) {
+const handleSubmit = async function (e) {
 
     // Disable processing submit button after its clicked to prevent duplicate submits
     $('#btnConfirmNext').attr('disabled', 'disabled');
 
     //Attack the Autobots! 
     megatron.attack();
+
+
     return true;
 }
 
@@ -410,6 +412,17 @@ btnNext_OnClick = function (targetPanel) {
             $('#btnProgressPerson').removeAttr('disabled');
         }
     } else if (targetPanel === 'pnlConfirm') {
+
+        let siteKey = null;
+
+        siteKey = $('#hfGoogleCaptchaSiteKey').val();
+
+        if (siteKey) {
+            grecaptcha.execute(siteKey, { action: 'ccv_transaction_entry' }).then(function (token) {
+                $('#hfGoogleCaptchaToken').val(token);
+            });
+        }
+        
         // check if payment fields are populated
         if (validatePaymentFormFields()) {
             populateConfirmFields();
