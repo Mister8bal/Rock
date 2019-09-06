@@ -218,7 +218,7 @@ namespace church.ccv.CCVRest.MobileApp
                 }
 
                 // Grab the content for the Associate Pastor board (if there was an error and null was returned, that's fine)
-                toolboxContent.APBoardContent = MAGroupService.GetAPBoardContent( primaryAliasId );
+                toolboxContent.APBoardContent = await MAGroupService.GetAPBoardContent( primaryAliasId );
 
                 return Common.Util.GenerateResponse( true, ToolboxContentResponse.Success.ToString(), toolboxContent );
             }

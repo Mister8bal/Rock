@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Datamart.Model;
@@ -558,7 +559,7 @@ namespace church.ccv.CCVRest.MobileApp
             return false;
         }
 
-        internal static APBoardModel GetAPBoardContent( int primaryAliasId )
+        internal static async Task<APBoardModel> GetAPBoardContent( int primaryAliasId )
         {
             // this will find the Content Channel associated with the coach's Associate Pastor
             // and package it into an APBoardModel
@@ -650,7 +651,7 @@ namespace church.ccv.CCVRest.MobileApp
                 string wistiaId = apBoardItem.AttributeValues["WistiaId"].ToString();
                 if ( string.IsNullOrWhiteSpace( wistiaId ) == false )
                 {
-                    Common.Util.GetWistiaMedia( wistiaId,
+                    await Common.Util.GetWistiaMedia( wistiaId,
                         delegate ( HttpStatusCode statusCode, WistiaMedia media )
                         {
                             if ( statusCode == HttpStatusCode.OK )
