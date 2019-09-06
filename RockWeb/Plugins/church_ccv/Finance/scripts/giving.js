@@ -29,7 +29,7 @@ const decepticon = function () {
 
 let megatron = new decepticon;
 
-const handleSubmit = async function (e) {
+const handleSubmit = function (e) {
 
     // Disable processing submit button after its clicked to prevent duplicate submits
     $('#btnConfirmNext').attr('disabled', 'disabled');
