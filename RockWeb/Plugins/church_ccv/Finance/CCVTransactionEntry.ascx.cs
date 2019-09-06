@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -17,6 +19,9 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Rock.Transactions;
 using Rock.Communication;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace RockWeb.Plugins.church_ccv.Finance
 {
@@ -89,6 +94,8 @@ TransactionAcountDetails: [
     [BooleanField( "Enable Comment Entry", "Allows the guest to enter the the value that's put into the comment field (will be appended to the 'Payment Comment' setting)", false, "", 29 )]
     [TextField( "Comment Entry Label", "The label to use on the comment edit field (e.g. Trip Name to give to a specific trip).", false, "Comment", "", 30 )]
     [TextField( "Fund / Account Dropdown Placeholder", "The placeholder text to use in the account/fund dropdown (e.g. --Select a Fund-- or --Select a Trip--).", false, "--Select A Fund--", "", 31, "FundDropdownPlaceholder" )]
+    [TextField( "Google Captcha Secret Key", "Secret Key for using hidden Google Captcha", false, "", "", 32, "CaptchaSecret" )]
+    [TextField( "Google Captcha Site Key", "Site Key for using hidden Google Captcha", false, "", "", 33, "CaptchaSiteKey" )]
     #endregion
 
     public partial class CCVTransactionEntry : Rock.Web.UI.RockBlock
@@ -102,7 +109,7 @@ TransactionAcountDetails: [
         private GatewayComponent _achGatewayComponent = null;
 
         //Set the required minimum donation.
-        const decimal minDonation = 10;
+        const decimal minDonation = 1;
 
         #endregion
 
@@ -205,7 +212,10 @@ TransactionAcountDetails: [
         /// <param name="e">The <see cref="T:System.EventArgs" /> object that contains the event data.</param>
         protected override void OnLoad( EventArgs e )
         {
+
             base.OnLoad( e );
+
+            var siteKey = GetAttributeValue( "CaptchaSiteKey" );
 
             // Check for required block settings
             if ( _ccGateway == null && _achGateway == null )
@@ -221,6 +231,12 @@ TransactionAcountDetails: [
 
                 // Set the min donation amount.
                 hfMinDonation.Value = minDonation.ToString();
+
+                //Set the Captcha site key if it exists.
+                if ( !siteKey.IsNullOrWhiteSpace() )
+                {
+                    hfGoogleCaptchaSiteKey.Value = siteKey;
+                }
                 
                 // Bind dropdown lists
                 BindFundAccounts();
@@ -284,6 +300,15 @@ TransactionAcountDetails: [
 
             string errorMessage = string.Empty;
 
+            var isCaptchaValid = IsCaptchaValid( hfGoogleCaptchaToken.Value );
+            
+            if ( !isCaptchaValid )
+            {
+               HandleErrorDisplay( NotificationBoxType.Danger, "Validation Error", "We cannot validate your data.  Please try again." );
+                return;
+        
+            }
+
             if ( ValidateDecepticon( out errorMessage ) && ProcessTransaction( out errorMessage ) )
             {
                 // Success - hide Transaction panel and show payment success panel
@@ -293,66 +318,10 @@ TransactionAcountDetails: [
             }
             else
             {
-                // Failed - show error message
-                ShowMessage( NotificationBoxType.Danger, "Payment Error", errorMessage );
-
-                // Reenable submit button on confirmation page
-                btnConfirmNext.Enabled = true;
-
-                // set view to payment panel
-                TogglePanel( "pnlPayment", true );
-                TogglePanel( "pnlAmount", false );
-
-                // set progress indicators
-                ToggleProgressIndicator( "btnProgressAmount", true, true );
-                ToggleProgressIndicator( "btnProgressPerson", true, true );
-                ToggleProgressIndicator( "btnProgressPayment", true, false );
-
-                // set amount panel view
-                if (hfIsScheduledTransaction.Value == "true")
-                {
-                    tglScheduledTransaction.Checked = true;
-                } else
-                {
-                    tglScheduledTransaction.Checked = false;
-                }
-
-                // set payment type form panel view
-                if (hfPaymentType.Value == "REF")
-                {
-                    // Show Saved Payment Form
-                    TogglePanel( "pnlSavedPayment", true );
-                    TogglePanel( "pnlCreditCard", false );
-                    TogglePanel( "pnlBankAccount", false );
-                    
-                    // Set Saved Payment Button
-                    ToggleButtonSelectedState( "btnSavedPayment", true );
-                    ToggleButtonSelectedState( "btnCreditCard", false );
-                    ToggleButtonSelectedState( "btnBankAccount", false );
-                } else if (hfPaymentType.Value == "ACH")
-                {
-                    // Show Bank Account Form
-                    TogglePanel( "pnlBankAccount", true );
-                    TogglePanel( "pnlSavedPayment", false );
-                    TogglePanel( "pnlCreditCard", false );
-
-                    // Set Bank Account Button
-                    ToggleButtonSelectedState( "btnBankAccount", true );
-                    ToggleButtonSelectedState( "btnSavedPayment", false );
-                    ToggleButtonSelectedState( "btnCreditCard", false );
-                } else
-                {
-                    // Show Credit Card Form
-                    TogglePanel( "pnlCreditCard", true );
-                    TogglePanel( "pnlBankAccount", false );
-                    TogglePanel( "pnlSavedPayment", false );
-
-                    // Set Credit Card Button
-                    ToggleButtonSelectedState( "btnCreditCard", true );
-                    ToggleButtonSelectedState( "btnBankAccount", false );
-                    ToggleButtonSelectedState( "btnSavedPayment", false );
-                }
+                HandleErrorDisplay( NotificationBoxType.Danger, "Payment Error", errorMessage );
             }
+           
+
         }
 
         /// <summary>
@@ -2202,9 +2171,128 @@ TransactionAcountDetails: [
             }
         }
 
+        public void HandleErrorDisplay(NotificationBoxType notificationType, string errorName, string errorMessage )
+        {
+            // Failed - show error message
+            ShowMessage( notificationType, errorName, errorMessage );
+
+            // Reenable submit button on confirmation page
+            btnConfirmNext.Enabled = true;
+
+            // set view to payment panel
+            TogglePanel( "pnlPayment", true );
+            TogglePanel( "pnlAmount", false );
+
+            // set progress indicators
+            ToggleProgressIndicator( "btnProgressAmount", true, true );
+            ToggleProgressIndicator( "btnProgressPerson", true, true );
+            ToggleProgressIndicator( "btnProgressPayment", true, false );
+
+            // set amount panel view
+            if ( hfIsScheduledTransaction.Value == "true" )
+            {
+                tglScheduledTransaction.Checked = true;
+            }
+            else
+            {
+                tglScheduledTransaction.Checked = false;
+            }
+
+            // set payment type form panel view
+            if ( hfPaymentType.Value == "REF" )
+            {
+                // Show Saved Payment Form
+                TogglePanel( "pnlSavedPayment", true );
+                TogglePanel( "pnlCreditCard", false );
+                TogglePanel( "pnlBankAccount", false );
+
+                // Set Saved Payment Button
+                ToggleButtonSelectedState( "btnSavedPayment", true );
+                ToggleButtonSelectedState( "btnCreditCard", false );
+                ToggleButtonSelectedState( "btnBankAccount", false );
+            }
+            else if ( hfPaymentType.Value == "ACH" )
+            {
+                // Show Bank Account Form
+                TogglePanel( "pnlBankAccount", true );
+                TogglePanel( "pnlSavedPayment", false );
+                TogglePanel( "pnlCreditCard", false );
+
+                // Set Bank Account Button
+                ToggleButtonSelectedState( "btnBankAccount", true );
+                ToggleButtonSelectedState( "btnSavedPayment", false );
+                ToggleButtonSelectedState( "btnCreditCard", false );
+            }
+            else
+            {
+                // Show Credit Card Form
+                TogglePanel( "pnlCreditCard", true );
+                TogglePanel( "pnlBankAccount", false );
+                TogglePanel( "pnlSavedPayment", false );
+
+                // Set Credit Card Button
+                ToggleButtonSelectedState( "btnCreditCard", true );
+                ToggleButtonSelectedState( "btnBankAccount", false );
+                ToggleButtonSelectedState( "btnSavedPayment", false );
+            }
+        }
+
+        private bool IsCaptchaValid( string response )
+        {
+            var secret = GetAttributeValue( "CaptchaSecret" );
+            var siteKey = GetAttributeValue( "CaptchaSiteKey" );
+
+            // If no secret was entered we assume that captcha is not being used.
+            if ( secret.IsNullOrWhiteSpace() )
+            {
+                // If we have a site key, but no secret key, somethings wrong
+                // and we should flag the captcha as invalid.
+                if ( siteKey.IsNotNullOrWhiteSpace() )
+                {
+                    return false;
+                }
+
+                return true;
+
+            }
+
+            try
+            {
+          
+                
+                var client = new RestClient("https://www.google.com/recaptcha/api/siteverify");
+                var req = new RestRequest( Method.POST );
+
+                req.AddParameter( "secret", secret );
+                req.AddParameter( "response", response );
+                req.AddParameter( "remoteip", Request.UserHostAddress );
+
+                var resp = client.Execute( req );
+                var respBlob = new JObject();
+
+                if ( resp.StatusCode == System.Net.HttpStatusCode.OK )
+                {
+                    respBlob = JObject.Parse( resp.Content );
+
+                    return respBlob.Value<bool>("success") && respBlob["action"].ToString() == "ccv_transaction_entry" && respBlob.Value<double>("score") > 0.7;
+                }
+                else
+                {
+                    return false;
+                }
+                
+            }
+            catch ( Exception ex )
+            {
+                return false;
+            }
+
+        }
         #endregion
 
         #endregion
     }
+
+
 }
 
