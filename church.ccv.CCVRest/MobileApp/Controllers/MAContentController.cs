@@ -233,7 +233,7 @@ namespace church.ccv.CCVRest.MobileApp
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/Campus" )]
         [Authenticate, Secured]
-        public HttpResponseMessage GetCampus( int? campusId = null )
+        public async Task<HttpResponseMessage> GetCampus( int? campusId = null )
         {
             // get one or all campuses, depending on what they ask for
             List<CampusCache> campusCacheList = new List<CampusCache>();
@@ -308,9 +308,7 @@ namespace church.ccv.CCVRest.MobileApp
                 var wistiaIdAV = campusCache.AttributeValues["CampusTourWistiaId"];
                 if ( wistiaIdAV != null )
                 {
-                    //todo: figure out how we'll link to this video
-                    //jhm 7-29-19: like this:
-                    Common.Util.GetWistiaMedia( wistiaIdAV.ToString(),
+                    await Common.Util.GetWistiaMedia( wistiaIdAV.ToString(),
                             delegate ( HttpStatusCode statusCode, WistiaMedia media )
                             {
                                 if ( statusCode == HttpStatusCode.OK )

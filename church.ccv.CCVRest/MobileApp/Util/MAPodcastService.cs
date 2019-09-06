@@ -118,7 +118,9 @@ namespace church.ccv.CCVRest.MobileApp
                         await Common.Util.GetWistiaMedia( wistiaId,
                             delegate ( HttpStatusCode statusCode, WistiaMedia media )
                             {
-                                //todo jhm: after we ship, look into why Coach Night is returning a null media obj.
+                                // we check for null media in case something changed on the WistiaMedia json object.
+                                // Since we can't control what they send, it's better for this one video to fail
+                                // rather than the whole endpoint.
                                 if ( statusCode == HttpStatusCode.OK && media != null )
                                 {
                                     resource.VideoURL = Common.Util.GetWistiaAssetMpeg4URL( media, WistiaAsset.IPhoneVideoFile );

@@ -45,7 +45,7 @@ namespace church.ccv.CCVRest.Common.Model
         public string URL;
         public int Width;
         public int Height;
-        public int FileSize;
+        public UInt64 FileSize;
         public string ContentType;
         public string Type;
     }

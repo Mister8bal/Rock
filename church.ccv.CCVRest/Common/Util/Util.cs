@@ -254,8 +254,9 @@ namespace church.ccv.CCVRest.Common
                     media = JsonConvert.DeserializeObject<WistiaMedia>( wistiaBlob.ToString() );
                 }
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine( e.Message );
             }
             finally
             {
@@ -266,13 +267,18 @@ namespace church.ccv.CCVRest.Common
 
         public static string GetWistiaAssetMpeg4URL( WistiaMedia media, string platformType )
         {
-            // Wistia provides direct URLs as .bin files. Some devices need a recognizable
-            // type, so Wistia's documentation says to drop the .bin, put a /, and then a file name and extension.
             var videoAsset = media.Assets.Where( a => a.Type.ToLower() == platformType ).SingleOrDefault();
 
             if ( videoAsset != null )
             {
-                string videoURL = videoAsset.URL.Replace( ".bin", "" );
+                // Per Wistia documentation: https://wistia.com/support/developers/asset-urls#ssl
+                // Videos are served over http by default. For https, we must switch out the sub-domain.
+                string videoURL_SSL = videoAsset.URL.Replace( "http://embed.wistia.com", "https://embed-ssl.wistia.com" );
+
+                // per Wistia documentation: https://wistia.com/support/developers/asset-urls#modifying_file_extensions
+                // Direct URLs are provided as .bin files. Some devices need a recognizable we drop the .bin, put a /, 
+                // and then ANY file name and extension.
+                string videoURL = videoURL_SSL.Replace( ".bin", "" );
 
                 // make sure this platform type has mpeg 4 as its type
                 if ( videoAsset.ContentType == "video/mp4" )
