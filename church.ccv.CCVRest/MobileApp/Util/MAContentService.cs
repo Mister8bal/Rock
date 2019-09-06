@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity.Spatial;
 using System.Linq;
 using church.ccv.CCVRest.MobileApp.Model;
+using church.ccv.PersonalizationEngine.Data;
+using church.ccv.PersonalizationEngine.Model;
+using Newtonsoft.Json.Linq;
 using Rock;
 using Rock.Data;
 using Rock.Model;
@@ -12,6 +15,95 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MAContentService
     {
+        public static List<PersonalizedItem> GetPreGatePersonalizedContent()
+        {
+            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+            {
+                Title = "Sign In",
+                Description = "Get personalized content by signing in!",
+                DetailsURL = "ccv://login",
+                ImageURL = publicAppRoot + "Content/ccv.church/pe/mobile-app/PE_social-male.jpg",
+                SkipDetailsPage = true,
+
+                // For future compatibility
+                LaunchExternalBrowser = false,
+                IncludeAccessToken = true
+            };
+
+            itemsList.Add( psItem );
+
+            return itemsList;
+        }
+
+        public static List<PersonalizedItem> GetPersonalizedItems( int numCampaigns, int personId, bool includeAllOverride = false )
+        {
+            const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
+            List<Campaign> campaignResults = new List<Campaign>();
+
+            // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
+            if ( includeAllOverride )
+            {
+                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
+
+                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
+                campaignResults.AddRange( defaultcampaigns );
+            }
+            else
+            {
+                // try getting campaigns for this person
+                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personId, numCampaigns );
+
+                // if no results came back, then provide "ever green" default campaigns for the user, because we have nothing
+                // relevant / personal to show them
+                if ( campaignResults.Count == 0 )
+                {
+                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
+                }
+            }
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            // now parse the campaigns and extract the relevant stuff out of the MobileAppNewsFeed section
+            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
+            foreach ( Campaign campaign in campaignResults )
+            {
+                JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
+                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
+
+                // try getting values for each piece of the campaign
+                Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+                {
+                    Title = mobileAppNewsFeedBlob["title"].ToString(),
+                    Description = mobileAppNewsFeedBlob["body"].ToString(),
+                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
+                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
+                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
+
+                    // For future compatibility
+                    LaunchExternalBrowser = false,
+                    IncludeAccessToken = true
+                };
+
+                // if either the details or image URL are relative, make them absolute
+                if ( psItem.DetailsURL.StartsWith( "/" ) )
+                {
+                    psItem.DetailsURL = publicAppRoot + psItem.DetailsURL;
+                }
+
+                if ( psItem.ImageURL.StartsWith( "/" ) )
+                {
+                    psItem.ImageURL = publicAppRoot + psItem.ImageURL;
+                }
+
+                itemsList.Add( psItem );
+            }
+
+            return itemsList;
+        }
+
         public static int? GetNearestCampus( double longitude, double latitude, double maxDistanceMeters )
         {
             List<CampusCache> campusCacheList = CampusCache.All( false );

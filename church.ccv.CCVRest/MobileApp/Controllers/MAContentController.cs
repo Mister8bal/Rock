@@ -116,85 +116,33 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage GetPersonalizedContent( int numCampaigns = 1, int? primaryAliasId = null, bool includeAllOverride = false )
         {
-            const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
-
-            List<Campaign> campaignResults = new List<Campaign>();
-
-            // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
-            if ( includeAllOverride )
+            // The PersonalizationEngine only works when given a specific person. So, begin by tring to get their Id
+            int personId = 0;
+            if ( primaryAliasId.HasValue && primaryAliasId != 0 )
             {
-                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
+                // get the personId
+                PersonAliasService paService = new PersonAliasService( new RockContext() );
+                PersonAlias personAlias = paService.Get( primaryAliasId.Value );
 
-                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
-                campaignResults.AddRange( defaultcampaigns );
+                if ( personAlias != null )
+                {
+                    personId = personAlias.PersonId;
+                }
             }
+
+            List<PersonalizedItem> itemsList = null;
+
+            // we have a person, so get personalized items
+            if ( personId > 0 )
+            {
+                itemsList = MAContentService.GetPersonalizedItems( numCampaigns, personId, includeAllOverride );
+            }
+            // there's no person, so get preGate content
             else
             {
-                // assume we'll need default campaigns
-                bool useDefaultCampaigns = true;
-
-                if ( primaryAliasId.HasValue )
-                {
-                    // get the personId
-                    PersonAliasService paService = new PersonAliasService( new RockContext() );
-                    PersonAlias personAlias = paService.Get( primaryAliasId.Value );
-
-                    if ( personAlias != null )
-                    {
-                        // try getting campaigns for his person
-                        campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personAlias.PersonId, numCampaigns );
-
-                        // and if we found at least 1, then we won't need default
-                        if ( campaignResults.Count > 0 )
-                        {
-                            useDefaultCampaigns = false;
-                        }
-                    }
-                }
-
-                // if we got down here, either they want default campaigns, or there weren't any relevant campaigns for the user
-                if ( useDefaultCampaigns )
-                {
-                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
-                }
+                itemsList = MAContentService.GetPreGatePersonalizedContent( );
             }
 
-            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
-
-            // now parse the campaigns and extract the relevant stuff out of the MobileAppNewsFeed section
-            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
-            foreach ( Campaign campaign in campaignResults )
-            {
-                JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
-                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
-
-                // try getting values for each piece of the campaign
-                Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
-                {
-                    Title = mobileAppNewsFeedBlob["title"].ToString(),
-                    Description = mobileAppNewsFeedBlob["body"].ToString(),
-                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
-                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
-                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
-
-                    // For future compatibility
-                    LaunchExternalBrowser = false,
-                    IncludeAccessToken = true
-                };
-
-                // if either the details or image URL are relative, make them absolute
-                if ( psItem.DetailsURL.StartsWith( "/" ) )
-                {
-                    psItem.DetailsURL = publicAppRoot + psItem.DetailsURL;
-                }
-
-                if ( psItem.ImageURL.StartsWith( "/" ) )
-                {
-                    psItem.ImageURL = publicAppRoot + psItem.ImageURL;
-                }
-
-                itemsList.Add( psItem );
-            }
 
             // if there's at least 1 campaign to return, respond 
             if ( itemsList.Count > 0 )
