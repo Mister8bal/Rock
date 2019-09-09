@@ -90,43 +90,63 @@
         </div>
 
         <script>
-            var gCurrentLink;
-            var gCurrentPanel;
+
+            let gCurrentLink;
+            let gCurrentPanel;
 
             $(document).ready(function() {
                 // default to the first panel
-                gCurrentLink = $("#practice-button")[0];
-                gCurrentPanel = $("#practice-panel")[0];
+                gCurrentLink = $("#practice-button");
+                gCurrentPanel = $("#practice-panel");
 
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             });
-        
+            
             function togglePanel(panelLink, panelObj, enabled) {
                 if( enabled ) {
-                    panelLink.classList.add('tab-selected');
-                    panelObj.style.display="block";
-                }
-                else {
-                    panelLink.classList.remove('tab-selected');
-                    panelObj.style.display="none";
+                    panelLink.addClass('tab-selected');
+                    panelObj.show();
+
+                    //Create a namespaced custom event
+                    panelObj.trigger('ccv.panel.shown');
+                } else {
+                    panelLink.removeClass('tab-selected');
+                    panelObj.hide();
+
+                    //Create a namespaced custom event
+                    panelObj.trigger('ccv.panel.hidden');
                 }
             }
-                    
+                        
             function linkClicked(linkElement, sectionName, mobileView = false) {
                 // turn off existing panel
                 togglePanel( gCurrentLink, gCurrentPanel, false );
-                
-                var targetPanel = $("#" + sectionName + "-panel")[0];
+                    
+                let targetPanel = $("#" + sectionName + "-panel");
                 gCurrentPanel = targetPanel;
-                gCurrentLink = linkElement;
+                gCurrentLink = $(linkElement);
 
                 // update button text with selection
                 if ( mobileView === true ) {
                     $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
                 }
-                
+                    
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             }
+
+            //Use custom events to show or hide 
+            //the practice and game map container
+            //depending on which panel is being shown.
+            $('body').on('ccv.panel.shown',function(e){
+                let $panel = $(e.target);
+                let $hideTarget = $('.practice-and-game-map');
+                if($panel.attr('id') == 'rules-panel'){
+                    $hideTarget.hide();
+                }else{
+                    $hideTarget.show();
+                }
+            });
+
         </script>
 
     {% else %}
