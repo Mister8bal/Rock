@@ -219,7 +219,7 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             // Check Group Capacity
-            groupResult.HasCapacity = GroupHasCapacity( group );
+            groupResult.IsFull = IsGroupFull( group );
 
             // if the coach has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
             Person associatePastor = GetAssociatePastorOverGroupCoach( coach.Person.Id );
@@ -393,19 +393,14 @@ namespace church.ccv.CCVRest.MobileApp
             return associatePastor;
         }
 
-        private static bool GroupHasCapacity(Group g)
+        private static bool IsGroupFull(Group g)
         {
-            if(g.GroupCapacity == null )
+            if(g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity )
             {
-                return true;
+                return false;
             }
 
-            if( g.GroupCapacity < g.Members.Count() )
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
         private static MAGroupMemberModel GetMAGroupMemberModel( Person person, MAGroupRole maGroupRole, bool includeContactInfo, Guid phoneType )

@@ -29,7 +29,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public List<MAGroupMemberModel> Members;
 
-        public bool HasCapacity;
+        public bool IsFull;
     }
 
     public enum MAGroupRole
