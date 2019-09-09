@@ -43,6 +43,13 @@ legend {
     padding: 5% 0;
 }
 
+@supports (-ms-ime-align:auto) {
+    .stars-wrapper {
+        justify-content: space-around;
+        padding: 5% 7%;
+    }
+}
+
 .row-wrapper .row {
     display: flex;
     flex-direction: column-reverse;
