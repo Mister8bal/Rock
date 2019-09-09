@@ -57,5 +57,6 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public bool SpecialNeeds;
         public bool HearingImpaired;
+        public bool SpanishTranslation;
     }
 }

@@ -27,6 +27,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public MACourseMemberModel AssociatePastor;
         public MACourseMemberModel CourseLeader;
+
+        public bool IsFull;
     }
 
     [Serializable]
