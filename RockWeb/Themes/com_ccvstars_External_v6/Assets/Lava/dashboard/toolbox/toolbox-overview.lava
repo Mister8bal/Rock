@@ -79,11 +79,7 @@
 {% endfor %}
 
 <div class="person-summary">
-    {% if showCoachTools %}
-        <h2>{{ group.Name }}</h2>
-    {% else %}
-        <h2>{{ personChild.FullName }}</h2>
-    {% endif %}
+    <h2>{{ group.Name }}</h2>
     <div class="person-details">
         <div class="person-details-row">
             <div class="person-details-item">   
