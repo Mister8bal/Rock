@@ -439,7 +439,8 @@ namespace church.ccv.CCVRest.MobileApp
             Success,
             GroupNotFound,
             SecurityIssue,
-            AlreadyInGroup
+            AlreadyInGroup,
+            UnknownError
         }
 
         public static RegisterPersonResult RegisterPersonInGroup( JoinGroupModel regModel )
@@ -489,6 +490,12 @@ namespace church.ccv.CCVRest.MobileApp
                 // Save all changes
                 rockContext.SaveChanges();
 
+                // Make sure they're not alread in this group
+                if ( IsPersonInGroup( person.Id, requestedGroup ) )
+                {
+                    return RegisterPersonResult.AlreadyInGroup;
+                }
+
                 // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
                 // (Or nothing if there's no problem but they're already in the group)
                 GroupMember primaryGroupMember = PersonToGroupMember( rockContext, person, requestedGroup );
@@ -509,14 +516,14 @@ namespace church.ccv.CCVRest.MobileApp
                 // if above, we didn't flag that they should not join the group, let's add them
                 else
                 {
-                    // try to add them to the group (would only fail if the're already in it)
+                    // try to add them to the group (would only fail if the're already in it, which we checked above)
                     if ( TryAddGroupMemberToGroup( rockContext, primaryGroupMember, requestedGroup ) )
                     {
                         return RegisterPersonResult.Success;
                     }
                     else
                     {
-                        return RegisterPersonResult.AlreadyInGroup;
+                        return RegisterPersonResult.UnknownError;
                     }
                 }
             }
@@ -537,13 +544,27 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         /// <summary>
+        /// Returns true if the person is a member of the given group
+        /// </summary>
+        private static bool IsPersonInGroup( int personId, Group group )
+        {
+            if ( group.Members.Any( m =>
+                                    m.PersonId == personId &&
+                                    m.GroupRoleId == group.GroupType.DefaultGroupRole.Id ) )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Adds the group member to the group if they aren't already in it
         /// </summary>
         private static bool TryAddGroupMemberToGroup( RockContext rockContext, GroupMember newGroupMember, Group group )
         {
-            if ( !group.Members.Any( m =>
-                                      m.PersonId == newGroupMember.PersonId &&
-                                      m.GroupRoleId == group.GroupType.DefaultGroupRole.Id ) )
+            // if they're not already in the group
+            if ( IsPersonInGroup( newGroupMember.PersonId, group ) == false )
             {
                 var groupMemberService = new GroupMemberService( rockContext );
                 groupMemberService.Add( newGroupMember );
