@@ -47,7 +47,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( person.PhotoId.HasValue )
             {
-                personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId;
+                personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId + "&width=1200";
             }
             else
             {
@@ -95,11 +95,11 @@ namespace church.ccv.CCVRest.MobileApp
 
                     if ( groupMember.Person.PhotoId.HasValue )
                     {
-                        familyMember.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + groupMember.Person.PhotoId;
+                        familyMember.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + groupMember.Person.PhotoId + "&width=180";
                     }
                     else
                     {
-                        familyMember.PhotoURL = string.Empty;
+                        familyMember.ThumbnailPhotoURL = string.Empty;
                     }
 
                     // if they're a child, set that, and also flag that this person HAS children

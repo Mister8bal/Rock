@@ -195,7 +195,9 @@ namespace church.ccv.CCVRest.MobileApp
                 {
                     SortPriority = item.Priority,
 
-                    ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ),
+                    ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ) + "&width=1200",
+
+                    ThumbnailImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ) + "&width=825",
 
                     Title = item.Title,
                     Description = item.Content,
@@ -296,7 +298,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                     if ( campusPastor.Person.PhotoId.HasValue )
                     {
-                        campusModel.CampusPastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + campusPastor.Person.PhotoId.Value;
+                        campusModel.CampusPastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + campusPastor.Person.PhotoId.Value + "&width=180";
                     }
                     else
                     {
@@ -322,7 +324,7 @@ namespace church.ccv.CCVRest.MobileApp
                 var photoAV = campusCache.AttributeValues["MarketingSiteCoverPhoto"];
                 if ( photoAV != null )
                 {
-                    campusModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + photoAV.Value;
+                    campusModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + photoAV.Value + "&width=1200";
                 }
 
                 // Service Times

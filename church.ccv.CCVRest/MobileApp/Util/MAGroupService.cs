@@ -346,11 +346,13 @@ namespace church.ccv.CCVRest.MobileApp
                 Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
                 if ( photoGuid.IsEmpty() == false )
                 {
-                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid + "&width=1200";
+                    groupResult.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid + "&width=400";
                 }
                 else
                 {
                     groupResult.PhotoURL = publicAppRoot + "Themes/church_ccv_External_v8/Assets/Images/support/mobile-app-no-group-photo.jpg";
+                    groupResult.ThumbnailPhotoURL = publicAppRoot + "Themes/church_ccv_External_v8/Assets/Images/support/mobile-app-no-group-photo.jpg";
                 }
             }
 
@@ -414,7 +416,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( person.PhotoId.HasValue )
             {
-                maGroupMember.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId.Value;
+                maGroupMember.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId.Value + "&width=180";
             }
 
             // if we should include contact info, put it
@@ -625,7 +627,7 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 apBoardModel = new APBoardModel();
                 apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
-                apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
+                apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId + "&width=180";
                 apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
 
                 // For the Summary, we'll need its value AND its ModifiedDateTime

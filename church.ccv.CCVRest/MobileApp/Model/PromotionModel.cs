@@ -12,6 +12,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string ImageURL;
 
+        public string ThumbnailImageURL;
+
         public string Title;
 
         public string Description;

@@ -87,6 +87,6 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public bool IsChild;
 
-        public string PhotoURL;
+        public string ThumbnailPhotoURL;
     }
 }

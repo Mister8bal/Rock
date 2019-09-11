@@ -190,7 +190,7 @@ namespace church.ccv.CCVRest.MobileApp
             courseResult.CourseLeader = new MACourseMemberModel
             {
                 Name = leader.Person.NickName + " " + leader.Person.LastName,
-                PhotoURL = leader.Person.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + leader.Person.PhotoId.Value : ""
+                ThumbnailPhotoURL = leader.Person.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + leader.Person.PhotoId.Value + "&width=180" : ""
             };
 
             // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
@@ -205,7 +205,7 @@ namespace church.ccv.CCVRest.MobileApp
                 courseResult.AssociatePastor = new MACourseMemberModel
                 {
                     Name = associatePastor.NickName + " " + associatePastor.LastName,
-                    PhotoURL = associatePastor.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value : ""
+                    ThumbnailPhotoURL = associatePastor.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value + "&width=180" : ""
                 };
             };
             
@@ -275,7 +275,8 @@ namespace church.ccv.CCVRest.MobileApp
                         break;
                 }
 
-                courseResult.PhotoURL = publicAppRoot + topicImageURL;
+                courseResult.PhotoURL = publicAppRoot + topicImageURL + "&width=1200";
+                courseResult.ThumbnailPhotoURL = publicAppRoot + topicImageURL + "&width=400";
             }
 
             return courseResult;

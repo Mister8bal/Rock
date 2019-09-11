@@ -320,7 +320,7 @@ namespace church.ccv.CCVRest.MobileApp
                 string seriesImageGuid = atCCVItem.AttributeValues["SeriesImage"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( seriesImageGuid ) == false )
                 {
-                    contentModel.AtCCV_ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + seriesImageGuid;
+                    contentModel.AtCCV_ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + seriesImageGuid + "&width=1200";
                 }
                 else
                 {
@@ -392,7 +392,7 @@ namespace church.ccv.CCVRest.MobileApp
                 string ltItemImageGuid = ltTopic.AttributeValues["Image"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( ltItemImageGuid ) == false )
                 {
-                    ltTopicModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid;
+                    ltTopicModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid + "&width=1200";
                 }
                 else
                 {
@@ -439,7 +439,7 @@ namespace church.ccv.CCVRest.MobileApp
                         string resourceImageGuid = resource.AttributeValues["Image"].Value.ToString();
                         if ( string.IsNullOrWhiteSpace( resourceImageGuid ) == false )
                         {
-                            resourceModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + resourceImageGuid;
+                            resourceModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + resourceImageGuid + "&width=400";
                         }
                         else
                         {
