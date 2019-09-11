@@ -15,25 +15,62 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MAContentService
     {
-        public static List<PersonalizedItem> GetPreGatePersonalizedContent()
+        public static List<PersonalizedItem> GetPreGatePersonalizedContent( int numCampaigns, bool includeAllOverride = false )
         {
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
+            //const int ContentChannelId_PreGate = 317; //MA3 VALUE
+            ContentChannel pregateContent = contentChannelService.Get( ContentChannelId_PreGate );
+
             List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
-
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
-            Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+
+            foreach ( var item in pregateContent.Items )
             {
-                Title = "Sign In",
-                Description = "Get personalized content by signing in!",
-                DetailsURL = "ccv://login",
-                ImageURL = publicAppRoot + "Content/ccv.church/pe/mobile-app/PE_social-male.jpg",
-                SkipDetailsPage = true,
+                item.LoadAttributes();
 
-                // For future compatibility
-                LaunchExternalBrowser = false,
-                IncludeAccessToken = true
-            };
+                string activeVal = item.AttributeValues["Active"].ToString();
+                if ( bool.Parse( activeVal ) == true )
+                {
+                    Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem();
 
-            itemsList.Add( psItem );
+                    psItem.Title = item.AttributeValues["PreGate_Title"].ToString();
+                    psItem.Description = item.AttributeValues["SubTitle"].ToString();
+                    psItem.DetailsBody = item.AttributeValues["DetailsBody"].ToString();
+                    psItem.DetailsURL = item.AttributeValues["Link"].ToString();
+                    psItem.SortPriority = int.Parse( item.AttributeValues["SortPriority"].ToString() );
+                    psItem.SkipDetailsPage = bool.Parse( item.AttributeValues["SkipDetailsPage"].ToString() );
+
+                    string imageGuid = item.AttributeValues["Image"].Value.ToString();
+                    if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
+                    {
+                        psItem.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=1200";
+                    }
+                    else
+                    {
+                        psItem.ImageURL = string.Empty;
+                    }
+
+                    // For future compatibility
+                    psItem.LaunchExternalBrowser = false;
+                    psItem.IncludeAccessToken = true;
+
+                    itemsList.Add( psItem );
+                }
+            }
+
+            //sort them
+            itemsList = itemsList.OrderByDescending( i => i.SortPriority ).ToList();
+
+            // now take only the number they asked for
+            // this is not the most efficient--loading and building everything just to throw things out, but i'm tired
+            // and we need to ship this.
+            if ( includeAllOverride == false )
+            {
+                itemsList = itemsList.Take( numCampaigns ).ToList();
+            }
 
             return itemsList;
         }

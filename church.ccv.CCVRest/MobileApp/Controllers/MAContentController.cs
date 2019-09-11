@@ -140,7 +140,7 @@ namespace church.ccv.CCVRest.MobileApp
             // there's no person, so get preGate content
             else
             {
-                itemsList = MAContentService.GetPreGatePersonalizedContent( );
+                itemsList = MAContentService.GetPreGatePersonalizedContent( numCampaigns, includeAllOverride );
             }
 
 
