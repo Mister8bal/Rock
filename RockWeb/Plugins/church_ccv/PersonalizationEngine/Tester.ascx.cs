@@ -40,7 +40,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
             PersonasGrid_Init( );
             CampaignsGrid_Init( );
-            DefaultCampaignsGrid_Init( );
         }
 
         /// <summary>
@@ -103,20 +102,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 gCampaigns.DataSource = campaigns;
                 gCampaigns.DataBind();
 
-
-                // Finally show the default campaigns
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( commaDelimitedTypes, int.MaxValue );
-                gDefaultCampaigns.Visible = true;
-                gDefaultCampaigns.DataSource = defaultCampaigns;
-                gDefaultCampaigns.DataBind();
-
             }
             // if a person isn't selected, hide the persona / campaign panels
             else
             {
                 gPersonas.Visible = false;
                 gCampaigns.Visible = false;
-                gDefaultCampaigns.Visible = false;
             }
         }
 
@@ -133,14 +124,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         {
             gCampaigns.Visible = true;
             gCampaigns.DataKeyNames = new string[] { "Id" };
-        }
-        #endregion
-
-        #region Default Campaigns Grid
-        protected void DefaultCampaignsGrid_Init()
-        {
-            gDefaultCampaigns.Visible = true;
-            gDefaultCampaigns.DataKeyNames = new string[] { "Id" };
         }
         #endregion
 

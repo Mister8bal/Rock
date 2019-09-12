@@ -20,8 +20,8 @@ namespace church.ccv.CCVRest.MobileApp
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
 
-            const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
-            //const int ContentChannelId_PreGate = 317; //MA3 VALUE
+            //const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
+            const int ContentChannelId_PreGate = 317; //MA3 VALUE
             ContentChannel pregateContent = contentChannelService.Get( ContentChannelId_PreGate );
 
             List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
@@ -31,17 +31,19 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 item.LoadAttributes();
 
-                string activeVal = item.AttributeValues["Active"].ToString();
-                if ( bool.Parse( activeVal ) == true )
+                bool isActive = item.AttributeValues["Active"].ToString().AsBoolean();
+                if ( isActive == true )
                 {
                     Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem();
 
                     psItem.Title = item.AttributeValues["PreGate_Title"].ToString();
-                    psItem.Description = item.AttributeValues["SubTitle"].ToString();
+                    psItem.Description = item.AttributeValues["SubTitle"].ToString(); //TODO: Remove after the next app update
+                    psItem.SubTitle = item.AttributeValues["SubTitle"].ToString();
                     psItem.DetailsBody = item.AttributeValues["DetailsBody"].ToString();
                     psItem.DetailsURL = item.AttributeValues["Link"].ToString();
-                    psItem.SortPriority = int.Parse( item.AttributeValues["SortPriority"].ToString() );
-                    psItem.SkipDetailsPage = bool.Parse( item.AttributeValues["SkipDetailsPage"].ToString() );
+                    psItem.SortPriority = item.AttributeValues["SortPriority"].ToString().AsInteger();
+                    psItem.SkipDetailsPage = item.AttributeValues["SkipDetailsPage"].ToString().AsBoolean();
+                    psItem.LaunchExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
 
                     string imageGuid = item.AttributeValues["Image"].Value.ToString();
                     if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
@@ -53,8 +55,7 @@ namespace church.ccv.CCVRest.MobileApp
                         psItem.ImageURL = string.Empty;
                     }
 
-                    // For future compatibility
-                    psItem.LaunchExternalBrowser = false;
+                    // we always want access tokens for personalization engine stuff
                     psItem.IncludeAccessToken = true;
 
                     itemsList.Add( psItem );
@@ -62,7 +63,7 @@ namespace church.ccv.CCVRest.MobileApp
             }
 
             //sort them
-            itemsList = itemsList.OrderByDescending( i => i.SortPriority ).ToList();
+            itemsList = itemsList.OrderBy( i => i.SortPriority ).ToList();
 
             // now take only the number they asked for
             // this is not the most efficient--loading and building everything just to throw things out, but i'm tired
@@ -77,28 +78,18 @@ namespace church.ccv.CCVRest.MobileApp
 
         public static List<PersonalizedItem> GetPersonalizedItems( int numCampaigns, int personId, bool includeAllOverride = false )
         {
-            const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
+            const string PersonalizationEngine_MobileAppJustForYou_Key = "MobileApp_JustForYou";
             List<Campaign> campaignResults = new List<Campaign>();
 
             // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
             if ( includeAllOverride )
             {
-                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
-
-                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
-                campaignResults.AddRange( defaultcampaigns );
+                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppJustForYou_Key, DateTime.Now, DateTime.Now );
             }
             else
             {
                 // try getting campaigns for this person
-                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personId, numCampaigns );
-
-                // if no results came back, then provide "ever green" default campaigns for the user, because we have nothing
-                // relevant / personal to show them
-                if ( campaignResults.Count == 0 )
-                {
-                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
-                }
+                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppJustForYou_Key, personId, numCampaigns );
             }
 
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
@@ -108,19 +99,21 @@ namespace church.ccv.CCVRest.MobileApp
             foreach ( Campaign campaign in campaignResults )
             {
                 JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
-                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
+                JObject mobileAppBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppJustForYou_Key].ToString() );
 
                 // try getting values for each piece of the campaign
                 Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
                 {
-                    Title = mobileAppNewsFeedBlob["title"].ToString(),
-                    Description = mobileAppNewsFeedBlob["body"].ToString(),
-                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
-                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
-                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
+                    Title = mobileAppBlob["title"].ToString(),
+                    Description = mobileAppBlob["subtitle"].ToString(), //TODO: Remove after the next app update
+                    SubTitle = mobileAppBlob["subtitle"].ToString(),
+                    DetailsBody = mobileAppBlob["detailsbody"].ToString(),
+                    DetailsURL = mobileAppBlob["link"].ToString(),
+                    ImageURL = mobileAppBlob["img"].ToString(),
+                    SkipDetailsPage = mobileAppBlob["skip-details-page"].ToString().AsBoolean(),
+                    LaunchExternalBrowser = mobileAppBlob["launches-external-browser"].ToString().AsBoolean(),
 
-                    // For future compatibility
-                    LaunchExternalBrowser = false,
+                    // we always want access tokens for personalization engine stuff
                     IncludeAccessToken = true
                 };
 

@@ -17,8 +17,9 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string Title;
 
-        //todo - rename this "SubTitle", but this will effect the Mobile App
-        public string Description;
+        public string SubTitle;
+
+        public string Description; //todo: remove this after the next app update
 
         public string DetailsBody;
 

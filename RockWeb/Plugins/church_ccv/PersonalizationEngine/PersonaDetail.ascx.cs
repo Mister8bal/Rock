@@ -215,8 +215,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 var linkedCampaigns = new Service<Linkage>( rockContext ).Queryable( ).Where( l => l.PersonaId == personaId.Value )
                                                                                       .Select( l => l.CampaignId );
 
-                // and now take any campaign that is not in that list. (Except Default campaigns, which we don't allow linking with)
-                var campaigns = new Service<Campaign>( rockContext ).Queryable( ).Where( c => linkedCampaigns.Contains( c.Id ) == false && c.IsDefault == false )
+                // and now take any campaign that is not in that list.
+                var campaigns = new Service<Campaign>( rockContext ).Queryable( ).Where( c => linkedCampaigns.Contains( c.Id ) == false )
                                                                                  .Select( c => new { c.Id, c.Name }  )
                                                                                  .ToList( );
 

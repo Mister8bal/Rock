@@ -73,12 +73,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                     {
                         campaignForCard = campaignList [ 0 ];
                     }
-                    else
-                    {
-                        // if there's no relevant campaign, get all the "default" campaigns, and take the first one.
-                        var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( "WebsiteCard" );
-                        campaignForCard = defaultCampaigns [ 0 ];
-                    }
                 }
 
                 JObject jsonBlob = JObject.Parse( campaignForCard.ContentJson );

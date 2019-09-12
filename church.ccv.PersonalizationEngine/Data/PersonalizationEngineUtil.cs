@@ -121,7 +121,7 @@ namespace church.ccv.PersonalizationEngine.Data
             }
         }
 
-        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null, bool isDefault = false )
+        public static List<Campaign> GetCampaigns( string campaignTypeList, DateTime? startDate = null, DateTime? endDate = null )
         {
             // get all campaigns of the provided types, that fall within the requested date range
 
@@ -138,10 +138,6 @@ namespace church.ccv.PersonalizationEngine.Data
             // NOTE: Start Dates are inclusive; End Dates are EXCLUSIVE.
             // Example: If a campaign is: 6-1-19 thru 6-7-19, it will BEGIN display on 6-1, and the LAST DAY it will display is 6-6.
             
-            // Default campaigns are those that are NOT tied to a persona.
-            // if isDefault is FALSE, then we get campaigns that ARE tied to personas
-            // if isDefault is TRUE, then we get campaigns that are NOT tied to personas
-
             using ( RockContext rockContext = new RockContext( ) )
             {
                 PersonalizationEngineService<Campaign> peService = new PersonalizationEngineService<Campaign>( rockContext );
@@ -165,11 +161,8 @@ namespace church.ccv.PersonalizationEngine.Data
 
                                          // for each Campaign, see if any element of campaignTypeIds is contained in c.Type (the CSV)
                                          .Where( c => campaignTypes.Any( t => c.Type.Contains( t ) ) )
-                                         
-                                         // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
-                                         .Where( c => c.IsDefault == isDefault ) 
 
-                                         .OrderByDescending( c => c.Priority )
+                                         .OrderBy( c => c.Priority )
                                          .ToList( ); //take those
                 return campaigns;
             }
@@ -300,7 +293,7 @@ namespace church.ccv.PersonalizationEngine.Data
             numCampaigns = Math.Max( numCampaigns, 1 );
 
             // get all the campaigns that match
-            var campaignList = GetCampaigns( campaignTypeList, targetDate, targetDate, false );
+            var campaignList = GetCampaigns( campaignTypeList, targetDate, targetDate );
 
             // now go thru their personas, and take the first campaign with a persona that fits
             List<Campaign> relevantCampaigns = new List<Campaign>( );
@@ -336,27 +329,6 @@ namespace church.ccv.PersonalizationEngine.Data
             }
 
             return relevantCampaigns;
-        }
-
-        public static List<Campaign> GetDefaultCampaign( string campaignTypeList, int numCampaigns = 1 )
-        {
-            // guard against passing in <= 0 numbers
-            numCampaigns = Math.Max( numCampaigns, 1 );
-
-            // default campaigns are campaigns appropriate for anyone, and that are not tied to a persona
-            using ( RockContext rockContext = new RockContext( ) )
-            {
-                // get all the default campaigns (default campaigns shouldn't care about start / end date)
-                var defaultCampaigns = GetCampaigns( campaignTypeList, null, null, true );
-
-                // now take only what they asked for (a little less efficient than doing this at the database level, but results in simpler code)
-                
-                // clamp the count to what's actually available
-                numCampaigns = Math.Min( defaultCampaigns.Count, numCampaigns );
-                defaultCampaigns = defaultCampaigns.GetRange( 0, numCampaigns );
-
-                return defaultCampaigns;
-            }
         }
         #endregion
     }

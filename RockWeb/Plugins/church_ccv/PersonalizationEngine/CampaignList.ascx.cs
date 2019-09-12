@@ -48,8 +48,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             {
                 CampaignFilter_Bind( );
                 CampaignGrid_Bind( );
-
-                EnsureDefaultCampaigns();
             }
         }
 
@@ -267,10 +265,9 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                         Id = c.Id,
                         Name = c.Name,
                         Type = c.Type,
-                        StartDate = c.IsDefault ? new DateTime?() : c.StartDate, //Force the grid's StartDate to be a nullable, and use null when it's a default campaign.
+                        StartDate = c.StartDate,
                         EndDate = c.EndDate,
-                        Priority = c.Priority,
-                        IsSystem = c.IsDefault //The delete field reads the IsSystem property on objects to determine whether deleting is allowed or not.
+                        Priority = c.Priority
                     });
 
                 // --- Sorting ---
@@ -286,39 +283,6 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
         #endregion
 
         #region Utility
-        protected void EnsureDefaultCampaigns()
-        {
-            // ensure that each campaign platform has at least one default campaign, otherwise
-            // we'll show a warning
-            var campaignTypes = new Service<CampaignType>( new RockContext() ).Queryable().AsNoTracking().Select( ct => ct.Name ).ToList();
-
-            List<string> campaignTypesMissingDefault = new List<string>();
-
-            foreach ( var campaignType in campaignTypes )
-            {
-                var campaignsForType = PersonalizationEngineUtil.GetDefaultCampaign( campaignType );
-                if ( campaignsForType.Count == 0 )
-                {
-                    // track the types that don't have a default campaign
-                    campaignTypesMissingDefault.Add( campaignType );
-                }
-            }
-
-            if ( campaignTypesMissingDefault.Count > 0 )
-            {
-                lMissingDefaultCampaign.Visible = true;
-                lMissingDefaultCampaign.Text = "<div style=\"margin-top: 25px;\" class=\"alert alert-danger\">" +
-                                                "<span>The following Campaign Types are missing a Default Campaign:</span>" +
-                                                "<ul>";
-
-                foreach ( var campaignType in campaignTypesMissingDefault )
-                {
-                    lMissingDefaultCampaign.Text += "<li>" + campaignType + "</li>";
-                }
-                lMissingDefaultCampaign.Text += "</ul>";
-            }
-        }
-
         protected void NavigateToDetailPage( int? campaignId )
         {
             var qryParams = new Dictionary<string, string>();

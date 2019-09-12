@@ -51,7 +51,6 @@ namespace church.ccv.PersonalizationEngine.Migrations
 
                     CREATE TABLE [dbo].[_church_ccv_PersonalizationEngine_Campaign] (
                         [Id] [int] NOT NULL IDENTITY,
-                        [IsDefault] [bit] NOT NULL,
                         [Name] [nvarchar](MAX) NOT NULL,
                         [Description] [nvarchar](MAX) NOT NULL,
                         [StartDate] [datetime] NOT NULL,

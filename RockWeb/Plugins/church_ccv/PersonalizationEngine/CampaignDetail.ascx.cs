@@ -66,25 +66,12 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
             {
                 Campaign campaign = PersonalizationEngineUtil.GetCampaign( campaignId.Value );
 
-                hfDefaultCampaign.Value = campaign.IsDefault.ToString();
-
                 tbCampaignName.Text = campaign.Name;
                 tbCampaignDesc.Text = campaign.Description;
                 tbPriorty.Text = campaign.Priority.ToString( );
 
-                // start / end dates aren't supported for default campaigns
-                if ( campaign.IsDefault == false )
-                {
-                    lNoDates.Visible = false;
-                    dtpStartDate.SelectedDate = campaign.StartDate;
-                    dtpEndDate.SelectedDate = campaign.EndDate;
-                }
-                else
-                {
-                    lNoDates.Visible = true;
-                    dtpStartDate.Enabled = false;
-                    dtpEndDate.Enabled = false;
-                }
+                dtpStartDate.SelectedDate = campaign.StartDate;
+                dtpEndDate.SelectedDate = campaign.EndDate;
 
                 // it's possible that if this campaign is a work in progress, it might not have types setup yet.
                 if ( string.IsNullOrWhiteSpace( campaign.ContentJson ) == false )
@@ -137,29 +124,13 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
 
                 //setup the personas area
                 upnlPersonas.Visible = true;
-
-                // if its not a default campaign, personas are allowed
-                if( campaign.IsDefault == false )
-                {
-                    // hide the "no personas" literal
-                    lNoPersonaReason.Visible = false;
-
-                    // show the personas grid
-                    var personas = PersonalizationEngineUtil.GetPersonasForCampaign( campaignId.Value );
+                
+                // show the personas grid
+                var personas = PersonalizationEngineUtil.GetPersonasForCampaign( campaignId.Value );
                     
-                    gPersonas.Visible = true;
-                    gPersonas.DataSource = personas;
-                    gPersonas.DataBind( );
-                }
-                // since it IS a default campaign, we don't allow personas to be attached
-                else
-                {
-                    // show the "no personas" literal
-                    lNoPersonaReason.Visible = true;
-
-                    // hide the personas grid
-                    gPersonas.Visible = false;
-                }
+                gPersonas.Visible = true;
+                gPersonas.DataSource = personas;
+                gPersonas.DataBind( );
             }
             // for new campaigns, hide the persona panel entirely so they can't edit them before putting the campaign into the db
             else
@@ -192,17 +163,8 @@ namespace RockWeb.Plugins.church_ccv.PersonalizationEngine
                 campaign.Description = tbCampaignDesc.Text;
                 campaign.Priority = int.Parse( tbPriorty.Text );
 
-                // for default campaigns (which don't acknowledge start/end dates) use generic values
-                if ( campaign.IsDefault )
-                {
-                    campaign.StartDate = new DateTime( 1982, 9, 28 );
-                    campaign.EndDate = null;
-                }
-                else
-                {
-                    campaign.StartDate = dtpStartDate.SelectedDate.Value.Date;
-                    campaign.EndDate = dtpEndDate.SelectedDate.HasValue ? dtpEndDate.SelectedDate.Value.Date : new DateTime?( );
-                }
+                campaign.StartDate = dtpStartDate.SelectedDate.Value.Date;
+                campaign.EndDate = dtpEndDate.SelectedDate.HasValue ? dtpEndDate.SelectedDate.Value.Date : new DateTime?( );
 
                 // now get the types this campaign is using, along with the actual values for each type
                 string campaignTypes = string.Empty;

@@ -10,9 +10,6 @@ namespace church.ccv.PersonalizationEngine.Model
     public class Campaign : Model<Campaign>, IRockEntity
     {
         [DataMember]
-        public bool IsDefault { get; set; }
-
-        [DataMember]
         public string Name { get; set; }
 
         [DataMember]
