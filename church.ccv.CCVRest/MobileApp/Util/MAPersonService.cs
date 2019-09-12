@@ -351,6 +351,19 @@ namespace church.ccv.CCVRest.MobileApp
                         familyAddress.Location.State = mobileAppPerson.State;
                         familyAddress.Location.PostalCode = mobileAppPerson.Zip;
                     }
+                    else
+                    {
+                        GroupService.AddNewGroupAddress( rockContext, 
+                                                         personFamily, 
+                                                         homeAddressDv.Guid.ToString(), 
+                                                         mobileAppPerson.Street1, 
+                                                         mobileAppPerson.Street2, 
+                                                         mobileAppPerson.City, 
+                                                         mobileAppPerson.State, 
+                                                         mobileAppPerson.Zip, 
+                                                         "US", 
+                                                         true );
+                    }
                 }
 
                 // verify they're setting a valid campus
