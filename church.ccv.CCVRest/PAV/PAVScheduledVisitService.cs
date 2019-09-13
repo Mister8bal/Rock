@@ -244,6 +244,9 @@ namespace church.ccv.CCVRest.PAV
             Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
             AttributeValueService avService = new AttributeValueService( rockContext );
+            PersonService pService = new PersonService( rockContext );
+            IQueryable<GroupMember> familyMembers;
+            bool success = false;
 
             PlanAVisit visit = pavService.Get( visitId );
 
@@ -254,6 +257,13 @@ namespace church.ccv.CCVRest.PAV
                     // we have a valid visit with no attended date
                     // get adult one as a person
                     PersonAlias adultOne = personAliasService.Get( visit.AdultOnePersonAliasId );
+
+                    familyMembers = pService.GetFamilyMembers( adultOne.PersonId );
+
+                    foreach(GroupMember familyMember in familyMembers)
+                    {
+
+                    }
 
                     try
                     {
