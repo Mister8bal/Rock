@@ -63,7 +63,20 @@
                     {% endunless %}
                 {% endunless %}
             {% endfor %}
-        
+
+             <div class="group-picture-missing">
+                {% comment %} If the group has no image, display placeholder image to encourage groups to upload an image {% endcomment %}   
+                {% if familyPicture == empty and AllowedActions.Edit == true %}
+                    <a href="#" onclick="{{ Group.Id | Postback:'EditGroup' }}"></i>
+                        <img src="/Assets/Images/image-placeholder.jpg" alt="Missing Picture" />
+                    </a>   
+
+                    <a class="btn btn-primary margin-left" href="#" onclick="{{ Group.Id | Postback:'EditGroup' }}"></i> Edit</a>
+                {% elseif familyPicture != empty and AllowedActions.Edit == true %}
+                    <a class="btn btn-primary" href="#" onclick="{{ Group.Id | Postback:'EditGroup' }}"></i> Edit</a>
+                {% endif %}       
+             </div>  
+
             {% if LinkedPages.CommunicationPage != '' and AllowedActions.Edit == true %}
                 {% if customEmailButtons %}
                     {{ customEmailButtons }}
@@ -72,10 +85,7 @@
                         <i class="fa fa-envelope-o"></i> Email Roster
                     </a>
                 {% endif %}
-            {% endif %}
-            {% if AllowedActions.Edit == true %}
-                <a class="btn btn-primary" href="#" onclick="{{ Group.Id | Postback:'EditGroup' }}"></i> Edit</a>
-            {% endif %}        
+            {% endif %} 
         </div>
     </div>
 </div>
