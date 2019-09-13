@@ -63,10 +63,7 @@ namespace church.ccv.CCVRest.MobileApp
                 // see if the GroupDescription attribute value has the description keyword in it
                 groupList = joinedQuery.Where( g => g.GroupDesc.ToLower().Contains( descriptionKeyword.ToLower() ) ).Select( g => g.Group );
             }
-
-            // exclude any groups that are at or over capacity
-            groupList = groupList.Where( g => g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity );
-
+            
             // now we need to keep only those with open registration. Unfortunately we have to pull to memory for that.
             List<Group> filteredGroupList = new List<Group>();
 
@@ -211,11 +208,12 @@ namespace church.ccv.CCVRest.MobileApp
                     PhotoURL = associatePastor.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value : ""
                 };
             };
-
-
-
+            
             // Finally, load attributes so we can set additional group info
             group.LoadAttributes();
+
+            // Check Group Capacity
+            courseResult.IsFull = IsCourseFull( group );
 
             if ( group.AttributeValues.ContainsKey( Course_Description_Key ) )
             {
@@ -282,5 +280,15 @@ namespace church.ccv.CCVRest.MobileApp
 
             return courseResult;
         }
+
+        private static bool IsCourseFull( Group g )
+    {
+        if ( g.GroupCapacity == null || g.Members.Count() < g.GroupCapacity )
+        {
+            return false;
+        }
+
+        return true;
+    }
     }
 }

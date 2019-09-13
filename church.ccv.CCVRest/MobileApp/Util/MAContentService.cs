@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity.Spatial;
 using System.Linq;
 using church.ccv.CCVRest.MobileApp.Model;
+using church.ccv.PersonalizationEngine.Data;
+using church.ccv.PersonalizationEngine.Model;
+using Newtonsoft.Json.Linq;
 using Rock;
 using Rock.Data;
 using Rock.Model;
@@ -12,6 +15,95 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MAContentService
     {
+        public static List<PersonalizedItem> GetPreGatePersonalizedContent()
+        {
+            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+            Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+            {
+                Title = "Sign In",
+                Description = "Get personalized content by signing in!",
+                DetailsURL = "ccv://login",
+                ImageURL = publicAppRoot + "Content/ccv.church/pe/mobile-app/PE_social-male.jpg",
+                SkipDetailsPage = true,
+
+                // For future compatibility
+                LaunchExternalBrowser = false,
+                IncludeAccessToken = true
+            };
+
+            itemsList.Add( psItem );
+
+            return itemsList;
+        }
+
+        public static List<PersonalizedItem> GetPersonalizedItems( int numCampaigns, int personId, bool includeAllOverride = false )
+        {
+            const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
+            List<Campaign> campaignResults = new List<Campaign>();
+
+            // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
+            if ( includeAllOverride )
+            {
+                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
+
+                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
+                campaignResults.AddRange( defaultcampaigns );
+            }
+            else
+            {
+                // try getting campaigns for this person
+                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personId, numCampaigns );
+
+                // if no results came back, then provide "ever green" default campaigns for the user, because we have nothing
+                // relevant / personal to show them
+                if ( campaignResults.Count == 0 )
+                {
+                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
+                }
+            }
+
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            // now parse the campaigns and extract the relevant stuff out of the MobileAppNewsFeed section
+            List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
+            foreach ( Campaign campaign in campaignResults )
+            {
+                JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
+                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
+
+                // try getting values for each piece of the campaign
+                Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+                {
+                    Title = mobileAppNewsFeedBlob["title"].ToString(),
+                    Description = mobileAppNewsFeedBlob["body"].ToString(),
+                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
+                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
+                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
+
+                    // For future compatibility
+                    LaunchExternalBrowser = false,
+                    IncludeAccessToken = true
+                };
+
+                // if either the details or image URL are relative, make them absolute
+                if ( psItem.DetailsURL.StartsWith( "/" ) )
+                {
+                    psItem.DetailsURL = publicAppRoot + psItem.DetailsURL;
+                }
+
+                if ( psItem.ImageURL.StartsWith( "/" ) )
+                {
+                    psItem.ImageURL = publicAppRoot + psItem.ImageURL;
+                }
+
+                itemsList.Add( psItem );
+            }
+
+            return itemsList;
+        }
+
         public static int? GetNearestCampus( double longitude, double latitude, double maxDistanceMeters )
         {
             List<CampusCache> campusCacheList = CampusCache.All( false );
@@ -50,26 +142,8 @@ namespace church.ccv.CCVRest.MobileApp
 
         public static KidsContentModel BuildKidsContent( Person person )
         {
-            // define our constants (for gradeToFamilyMap, there's nothing in Rock
-            // that actually maps a Grade to Content. It's just done based on the room
-            //  a kid checks in to, so define that mapping here)
             const string MAMyFamilyContentOverrideKey = "MobileAppKidContentOverride";
             const string MAMyFamilyContentLevelKey = "MobileAppKidContentLevel";
-
-            Dictionary<int, string> gradeToFamilyMap = new Dictionary<int, string>();
-            gradeToFamilyMap.Add( 0, "Infants" );
-            gradeToFamilyMap.Add( 1, "Early Kids" );
-            gradeToFamilyMap.Add( 2, "Early Kids" );
-            gradeToFamilyMap.Add( 3, "Early Kids" );
-            gradeToFamilyMap.Add( 4, "Early Kids" );
-            gradeToFamilyMap.Add( 5, "Later Kids" );
-            gradeToFamilyMap.Add( 6, "Later Kids" );
-            gradeToFamilyMap.Add( 7, "Junior High" );
-            gradeToFamilyMap.Add( 8, "Junior High" );
-            gradeToFamilyMap.Add( 9, "High School" );
-            gradeToFamilyMap.Add( 10, "High School" );
-            gradeToFamilyMap.Add( 11, "High School" );
-            gradeToFamilyMap.Add( 12, "High School" );
 
             // see if the person has an override that sets their 
             // content level (Common among people with Special Needs)
@@ -81,7 +155,7 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 // this is technically cheating, but Rock abstracts grade and doesn't natively
                 // know about the US standard. To simplify things, let's do the conversion here
-                int realGrade = 0; //(assume infant / pre-k)
+                int realGrade = -1; //(assume infant / pre-k)
                 if ( person.GradeOffset.HasValue )
                 {
                     realGrade = 12 - person.GradeOffset.Value;
@@ -91,32 +165,55 @@ namespace church.ccv.CCVRest.MobileApp
                     // no grade, so try using their age
                     if ( person.Age.HasValue )
                     {
+                        // Kids 14+ get High School
                         if ( person.Age >= 14 )
                         {
                             realGrade = 9;
                         }
+                        // Kids 12+ get Junior High
                         else if ( person.Age >= 12 )
                         {
                             realGrade = 7;
                         }
-                        else if ( person.Age >= 10 )
+                        // Kids 7+ get Later Kids
+                        else if ( person.Age >= 7 )
                         {
-                            realGrade = 5;
+                            realGrade = 2;
                         }
-                        else if ( person.Age >= 6 )
-                        {
-                            realGrade = 1;
-                        }
-                        else
+                        // Kids 3+ get early Kids
+                        else if ( person.Age >= 3 )
                         {
                             realGrade = 0;
+                        }
+                        // Kids < 3 get Infants
+                        else
+                        {
+                            realGrade = -1;
                         }
                     }
                 }
 
-                // now whether from their actual grade, or inferred by age, get
-                // the content
-                targetContent = gradeToFamilyMap[realGrade];
+                // Now that we've resolved a grade, pick the content
+                if ( realGrade >= 9 )
+                {
+                    targetContent = "High School";
+                }
+                else if ( realGrade >= 7 )
+                {
+                    targetContent = "Junior High";
+                }
+                else if ( realGrade >= 2 )
+                {
+                    targetContent = "Later Kids";
+                }
+                else if ( realGrade >= 0 )
+                {
+                    targetContent = "Early Kids";
+                }
+                else
+                {
+                    targetContent = "Infants";
+                }
             }
 
             // now that we know the range, build the content channel queries

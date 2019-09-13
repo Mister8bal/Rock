@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using church.ccv.CCVRest.Common.Model;
 using church.ccv.CCVRest.MobileApp.Model;
 using church.ccv.Podcast;
@@ -66,7 +67,7 @@ namespace church.ccv.CCVRest.MobileApp
             return maSeriesModel;
         }
 
-        public static List<ToolboxResourceModel> PodcastSeriesToToolboxResources( PodcastUtil.PodcastSeries series, ref int resourcesRemaining )
+        public static async Task<List<ToolboxResourceModel>> PodcastSeriesToToolboxResources( PodcastUtil.PodcastSeries series, int resourcesRemaining )
         {
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
@@ -114,10 +115,12 @@ namespace church.ccv.CCVRest.MobileApp
                     if ( string.IsNullOrWhiteSpace( wistiaId ) == false )
                     {
                         // fetch the actual media for this asset, and get a direct URL to its video
-                        Common.Util.GetWistiaMedia( wistiaId,
+                        await Common.Util.GetWistiaMedia( wistiaId,
                             delegate ( HttpStatusCode statusCode, WistiaMedia media )
                             {
-                                //todo jhm: after we ship, look into why Coach Night is returning a null media obj.
+                                // we check for null media in case something changed on the WistiaMedia json object.
+                                // Since we can't control what they send, it's better for this one video to fail
+                                // rather than the whole endpoint.
                                 if ( statusCode == HttpStatusCode.OK && media != null )
                                 {
                                     resource.VideoURL = Common.Util.GetWistiaAssetMpeg4URL( media, WistiaAsset.IPhoneVideoFile );

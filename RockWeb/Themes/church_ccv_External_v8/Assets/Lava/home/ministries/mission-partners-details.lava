@@ -1,0 +1,22 @@
+{% comment %}
+   {% include '~~/Assets/Lava/home/ministries/mission-partners-details.lava' %}
+{% endcomment %}
+
+{% for item in Items %}
+   {% capture pageTitle %}{{ item.Title }} | CCV{% endcapture %}
+   {{ pageTitle | SetPageTitle }}
+
+   {% assign leftImage = item | Attribute: 'Image', 'Url' %}
+
+   <div class="infoSection background-card">
+      <div class="left-and-right-container">
+            <div class="left">
+               <img class="rounded-edge-img img-responsive" src="{{ leftImage }}" alt="{{ item.Title }}"> 
+            </div>
+            <div class="right">
+               <h3> {{ item.Title }} </h3> 
+               <p> {{ item.Content }} </p> 
+            </div>
+      </div>
+   </div>   
+{% endfor %}

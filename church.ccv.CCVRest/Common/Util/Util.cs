@@ -14,6 +14,8 @@ using Rock.Model;
 using Rock.Web.Cache;
 using RestSharp;
 using church.ccv.Datamart.Model;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace church.ccv.CCVRest.Common
 {
@@ -228,7 +230,7 @@ namespace church.ccv.CCVRest.Common
             return phoneNumbers;
         }
 
-        public static void GetWistiaMedia( string mediaHashedId, Action<HttpStatusCode, WistiaMedia> response )
+        public static async Task GetWistiaMedia( string mediaHashedId, Action<HttpStatusCode, WistiaMedia> response )
         {
             const string Wistia_MediaURL = "https://api.wistia.com/v1/medias/{0}.json?api_password={1}";
             string wistiaAPIKey = GlobalAttributesCache.Value( "WistiaMobileAppKey" );
@@ -236,24 +238,25 @@ namespace church.ccv.CCVRest.Common
             // do a simple request to wistia for the media id 
             string requestUrl = string.Format( Wistia_MediaURL, mediaHashedId, wistiaAPIKey );
 
-            RestClient restClient = new RestClient( requestUrl );
-            RestRequest restRequest = new RestRequest( Method.GET );
-
             WistiaMedia media = null;
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
+
             try
             {
-                var restResponse = restClient.Execute( restRequest );
+                HttpClient client = new HttpClient();
+                HttpResponseMessage wistiaResponse = await client.GetAsync( requestUrl );
+                statusCode = wistiaResponse.StatusCode;
 
-                statusCode = restResponse.StatusCode;
-                if ( restResponse.StatusCode == HttpStatusCode.OK )
+                if ( statusCode == HttpStatusCode.OK )
                 {
                     // parse the response appropriately
-                    media = JsonConvert.DeserializeObject<WistiaMedia>( restResponse.Content );
+                    var wistiaBlob = await wistiaResponse.Content.ReadAsAsync<JObject>();
+                    media = JsonConvert.DeserializeObject<WistiaMedia>( wistiaBlob.ToString() );
                 }
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine( e.Message );
             }
             finally
             {
@@ -264,13 +267,18 @@ namespace church.ccv.CCVRest.Common
 
         public static string GetWistiaAssetMpeg4URL( WistiaMedia media, string platformType )
         {
-            // Wistia provides direct URLs as .bin files. Some devices need a recognizable
-            // type, so Wistia's documentation says to drop the .bin, put a /, and then a file name and extension.
             var videoAsset = media.Assets.Where( a => a.Type.ToLower() == platformType ).SingleOrDefault();
 
             if ( videoAsset != null )
             {
-                string videoURL = videoAsset.URL.Replace( ".bin", "" );
+                // Per Wistia documentation: https://wistia.com/support/developers/asset-urls#ssl
+                // Videos are served over http by default. For https, we must switch out the sub-domain.
+                string videoURL_SSL = videoAsset.URL.Replace( "http://embed.wistia.com", "https://embed-ssl.wistia.com" );
+
+                // per Wistia documentation: https://wistia.com/support/developers/asset-urls#modifying_file_extensions
+                // Direct URLs are provided as .bin files. Some devices need a recognizable we drop the .bin, put a /, 
+                // and then ANY file name and extension.
+                string videoURL = videoURL_SSL.Replace( ".bin", "" );
 
                 // make sure this platform type has mpeg 4 as its type
                 if ( videoAsset.ContentType == "video/mp4" )
