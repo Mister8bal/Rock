@@ -265,6 +265,7 @@ namespace church.ccv.CCVRest.PAV
 
                     }
 
+
                     try
                     {
                         // update attended info for visit
