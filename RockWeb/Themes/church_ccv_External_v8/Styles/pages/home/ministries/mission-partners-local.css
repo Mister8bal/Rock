@@ -1,0 +1,47 @@
+.page-background {
+	background-color: #EBEBEB;
+	background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mission-partners-local.jpg");
+ }
+
+#ternavbar-bg {
+    display: none;
+}
+ 
+#section-a-bg {
+    background-color: #FFFFFF;
+}
+
+#section-b-bg {
+    background-color: #F3F3F3;
+}
+
+#section-c-bg {
+    background-color: #FFFFFF; 
+}
+
+#section-d-bg {
+    background-color: #F3F3F3;
+}
+
+#section-e-bg {
+    background-color: #FFFFFF; 
+}
+
+#section-f-bg {
+    background-color: #F3F3F3;
+}
+
+#section-g-bg {
+    background-color: #FFFFFF; 
+}
+
+#section-h-bg {
+    display: none;
+}
+
+/* Mobile Styling */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-mission-partners-local.jpg");
+    }
+}
