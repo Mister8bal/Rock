@@ -21,6 +21,8 @@ namespace RockWeb.Plugins.church_ccv.PAV
     [Description( "Form used to preregister families for a weekend service" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
+    [GroupLocationTypeField( Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY, "Address Type",
+        "The type of address to be displayed / edited.", false, Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME, "", order: 2 )]
     [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
     [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 5 )]
@@ -31,6 +33,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         const int AttributeId_Allergies = 676;
         const int AttributeId_HowDidYouHearAboutCCV = 719;
         const int DefinedTypeId_SourceofVisit = 33;
+        const string DefaultCountry = "US";
 
         private Visit _visit;
 
@@ -68,6 +71,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 // bind dropdowns
                 BindCampuses();
                 BindBDayYearDropDown();
+                BindStatesDropDown(DefaultCountry);
 
                 ViewState["Visit"] = _visit;
             }
@@ -894,6 +898,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             Person adultOne = null;
             Person adultTwo = null;
             string visitNoteText = "";
+            string defaultCountry = "US";
 
             // use existing person if exists
             if ( _visit.AdultOnePersonId > 0 )
@@ -1000,6 +1005,100 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 phoneNumber.IsMessagingEnabled = true;
 
                 rockContext.SaveChanges();
+            }
+
+            if ( tbStreet1.IsNotNull() )
+            {
+                
+                if ( family != null )
+                {
+                    Guid? addressTypeGuid = GetAttributeValue( "AddressType" ).AsGuidOrNull();
+                    if ( addressTypeGuid.HasValue )
+                        {
+                            var groupLocationService = new GroupLocationService( rockContext );
+
+                            var dvHomeAddressType = DefinedValueCache.Read( addressTypeGuid.Value );
+                            var familyAddress = groupLocationService.Queryable().Where( l => l.GroupId == family.Id && l.GroupLocationTypeValueId == dvHomeAddressType.Id ).FirstOrDefault();
+                            var street1String = tbStreet1.ToString();
+                            if ( familyAddress != null && string.IsNullOrWhiteSpace( tbStreet1.ToString() ) ) 
+                            {
+                                // delete the current address
+                                groupLocationService.Delete( familyAddress );
+                                rockContext.SaveChanges();
+                            }
+                            else
+                            {
+                                if ( !string.IsNullOrWhiteSpace( tbStreet1.Text ) )
+                                {
+                                    if ( familyAddress == null )
+                                    {
+                                        familyAddress = new GroupLocation();
+                                        groupLocationService.Add( familyAddress );
+                                        familyAddress.GroupLocationTypeValueId = dvHomeAddressType.Id;
+                                        familyAddress.GroupId = family.Id;
+                                        familyAddress.IsMailingLocation = true;
+                                        familyAddress.IsMappedLocation = true;
+                                    }
+                                    else if ( tbStreet1.Text != string.Empty )
+                                    {
+                                        // user clicked move so create a previous address
+                                        var previousAddress = new GroupLocation();
+                                        groupLocationService.Add( previousAddress );
+
+                                        var previousAddressValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_PREVIOUS.AsGuid() );
+                                        if ( previousAddressValue != null )
+                                        {
+                                            previousAddress.GroupLocationTypeValueId = previousAddressValue.Id;
+                                            previousAddress.GroupId = family.Id;
+
+                                            Location previousAddressLocation = new Location();
+                                            previousAddressLocation.Street1 = tbStreet1.Text;
+                                            previousAddressLocation.City = tbCity.Text;
+                                        previousAddressLocation.State = ddlState.Text;
+                                            previousAddressLocation.PostalCode = tbPostalCode.Text;
+                                        previousAddressLocation.Country = defaultCountry;
+                                        ;
+
+                                            previousAddress.Location = previousAddressLocation;
+                                        }
+                                    }
+
+                                    //familyAddress.IsMailingLocation = cbIsMailingAddress.Checked;
+                                    //familyAddress.IsMappedLocation = cbIsPhysicalAddress.Checked;
+
+                                    var loc = new Location();
+                                    loc.Street1 = tbStreet1.Text;
+                                    loc.City = tbCity.Text;
+                                    loc.State = ddlState.Text;
+                                    loc.PostalCode = tbPostalCode.Text;
+                                    loc.Country = defaultCountry;
+
+
+                                    familyAddress.Location = new LocationService( rockContext ).Get(
+                                        loc.Street1, loc.Street2, loc.City, loc.State, loc.PostalCode, loc.Country, family, true );
+
+                                    // since there can only be one mapped location, set the other locations to not mapped
+                                    if ( familyAddress.IsMappedLocation )
+                                    {
+                                        var groupLocations = groupLocationService.Queryable()
+                                            .Where( l => l.GroupId == family.Id && l.Id != familyAddress.Id ).ToList();
+
+                                        foreach ( var grouplocation in groupLocations )
+                                        {
+                                            grouplocation.IsMappedLocation = false;
+                                        }
+                                    }
+
+                                   //rockContext.SaveChanges();
+                                }
+                            }
+                        }
+
+                        //family.LoadAttributes();
+                        //Rock.Attribute.Helper.GetEditValues( phFamilyAttributes, family );
+                        //family.SaveAttributeValues();
+                    }
+                
             }
 
             // if not a new family, check if adult two already in family
@@ -1390,6 +1489,63 @@ namespace RockWeb.Plugins.church_ccv.PAV
             for ( int i = 1; i <= daysInMonth; i++ )
             {
                 ddlChildBdayDay.Items.Add( new ListItem( i.ToString() ) );
+            }
+        }
+
+        private void BindStatesDropDown(string country)
+        {
+            string countryGuid = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_COUNTRIES ) )
+                .DefinedValues
+                .Where( v => v.Value.Equals( country, StringComparison.OrdinalIgnoreCase ) )
+                .Select( v => v.Guid )
+                .FirstOrDefault()
+                .ToString();
+
+            var definedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
+            var stateList = definedType
+                .DefinedValues
+                .Where( v =>
+                    (
+                        v.AttributeValues.ContainsKey( "Country" ) &&
+                        v.AttributeValues["Country"] != null &&
+                        v.AttributeValues["Country"].Value.Equals( countryGuid, StringComparison.OrdinalIgnoreCase )
+                    ) ||
+                    (
+                        ( !v.AttributeValues.ContainsKey( "Country" ) || v.AttributeValues["Country"] == null ) &&
+                        v.Attributes.ContainsKey( "Country" ) &&
+                        v.Attributes["Country"].DefaultValue.Equals( countryGuid, StringComparison.OrdinalIgnoreCase )
+                    ) )
+                .OrderBy( v => v.Order )
+                .ThenBy( v => v.Value )
+                .Select( v => new { Id = v.Value, Value = v.Description } )
+                .ToList();
+
+            if ( stateList.Any() )
+            {
+                //ddlState.Visible = true;
+                //_tbState.Visible = false;
+
+                string currentValue = ddlState.SelectedValue;
+
+                ddlState.Items.Clear();
+                ddlState.SelectedIndex = -1;
+                ddlState.SelectedValue = null;
+                ddlState.ClearSelection();
+
+                //ddlState.DataTextField = UseStateAbbreviation ? "Id" : "Value";
+                ddlState.DataTextField = "Id";
+                ddlState.DataSource = stateList;
+                ddlState.DataBind();
+
+                if ( !string.IsNullOrWhiteSpace( currentValue ) )
+                {
+                    ddlState.SetValue( currentValue, "AZ" );
+                }
+            }
+            else
+            {
+                //_ddlState.Visible = false;
+                //_tbState.Visible = true;
             }
         }
 

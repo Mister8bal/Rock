@@ -465,7 +465,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbState" runat="server" Label="State" />
+                                    <Rock:RockDropDownList ID="ddlState" runat="server" Label="State" />
                                 </div>
                                 <div class="form-field">
                                     <Rock:RockTextBox ID="tbPostalCode" runat="server" Label="Zip" />
