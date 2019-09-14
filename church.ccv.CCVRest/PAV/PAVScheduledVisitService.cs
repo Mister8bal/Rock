@@ -229,6 +229,49 @@ namespace church.ccv.CCVRest.PAV
         }
 
         /// <summary>
+        /// Update a family members First Visit Date attribute if not already set. 
+        /// </summary>
+        /// <param name="visit"></param>
+        /// <param name="avService"></param>
+        /// <param name="familyMember"></param>
+        /// <returns></returns>
+        public static bool UpdateFamilyMemberVisitDate(PlanAVisit visit, AttributeValueService avService, GroupMember familyMember)
+        {
+            try
+            {
+                
+                // get the first campus visit person attribute for adult one
+                int firstCampusVisit_AttributeId = 717;
+
+                AttributeValue avFirstCampusVisit = avService.Queryable().Where( av => av.EntityId == familyMember.PersonId && av.AttributeId == firstCampusVisit_AttributeId ).SingleOrDefault();
+
+                if ( avFirstCampusVisit == null )
+                {
+                    // attribute does not yet exist, create before proceeding
+                    avFirstCampusVisit = new AttributeValue
+                    {
+                        EntityId = familyMember.PersonId,
+                        AttributeId = firstCampusVisit_AttributeId
+                    };
+                    avService.Add( avFirstCampusVisit );
+                }
+
+                // only update value if current value does not exist so we dont lose previous first visit
+                if ( avFirstCampusVisit.Value.IsNullOrWhiteSpace() )
+                {
+                    avFirstCampusVisit.Value = visit.AttendedDate.ToString();
+                }
+
+            }
+            catch ( Exception )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Record attended information to a visit
         /// </summary>
         /// <param name="visitId"></param>
@@ -245,8 +288,8 @@ namespace church.ccv.CCVRest.PAV
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
             AttributeValueService avService = new AttributeValueService( rockContext );
             PersonService pService = new PersonService( rockContext );
-            IQueryable<GroupMember> familyMembers;
-            bool success = false;
+            IEnumerable<GroupMember> familyMembers;
+            bool success = true;
 
             PlanAVisit visit = pavService.Get( visitId );
 
@@ -258,55 +301,37 @@ namespace church.ccv.CCVRest.PAV
                     // get adult one as a person
                     PersonAlias adultOne = personAliasService.Get( visit.AdultOnePersonAliasId );
 
-                    familyMembers = pService.GetFamilyMembers( adultOne.PersonId );
+                    Group family = pService.GetFamilies( adultOne.PersonId ).FirstOrDefault();
 
-                    foreach(GroupMember familyMember in familyMembers)
+                    familyMembers = family.ActiveMembers();
+
+                    // update attended info for visit
+                    visit.AttendedDate = attendedDate;
+                    visit.AttendedServiceScheduleId = attendedScheduleId;
+                    visit.AttendedCampusId = attendedCampusId;
+
+                    foreach (GroupMember familyMember in familyMembers)
                     {
+
+                        if(!UpdateFamilyMemberVisitDate(visit, avService, familyMember ) )
+                        {
+                            success = false;
+                        }
 
                     }
 
-
-                    try
+                    
+                    if ( success )
                     {
-                        // update attended info for visit
-                        visit.AttendedDate = attendedDate;
-                        visit.AttendedServiceScheduleId = attendedScheduleId;
-                        visit.AttendedCampusId = attendedCampusId;
-
-                        // get the first campus visit person attribute for adult one
-                        int firstCampusVisit_AttributeId = 717;
-
-                        AttributeValue avFirstCampusVisit = avService.Queryable().Where( av => av.EntityId == adultOne.PersonId && av.AttributeId == firstCampusVisit_AttributeId ).SingleOrDefault();
-
-                        if ( avFirstCampusVisit == null )
-                        {
-                            // attribute does not yet exist, create before proceeding
-                            avFirstCampusVisit = new AttributeValue
-                            {
-                                EntityId = adultOne.PersonId,
-                                AttributeId = firstCampusVisit_AttributeId
-                            };
-                            avService.Add( avFirstCampusVisit );
-                        }
-
-                        // only update value if current value does not exist so we dont lose previous first visit
-                        if ( avFirstCampusVisit.Value.IsNullOrWhiteSpace() )
-                        {
-                            avFirstCampusVisit.Value = visit.AttendedDate.ToString();
-                        }
-
-                        rockContext.SaveChanges();
-
                         message = "Visit updated successfully";
-
                         return RecordAttendedResponse.Success;
                     }
-                    catch ( Exception )
+                    else
                     {
-                        message = "Failed to update visit.";
-
+                        message = "Failed to update visit. One or more family members failed to update successfully.";
                         return RecordAttendedResponse.Failed;
                     }
+
                 }
                 else
                 {
