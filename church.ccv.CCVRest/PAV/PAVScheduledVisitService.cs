@@ -232,11 +232,16 @@ namespace church.ccv.CCVRest.PAV
         /// Update a family members First Visit Date attribute if not already set. 
         /// </summary>
         /// <param name="visit"></param>
-        /// <param name="avService"></param>
         /// <param name="familyMember"></param>
-        /// <returns></returns>
-        public static bool UpdateFamilyMemberVisitDate(PlanAVisit visit, AttributeValueService avService, GroupMember familyMember)
+        /// <returns type="bool">Whether or not the update succeeded.  If any family member update fails,
+        /// will return false, however will not halt the process.  All other family member updates may still
+        /// succeed
+        /// </returns>
+        public static bool UpdateFamilyMemberVisitDate(PlanAVisit visit, GroupMember familyMember)
         {
+            RockContext rockContext = new RockContext();
+            AttributeValueService avService = new AttributeValueService( rockContext );
+
             try
             {
                 
@@ -262,6 +267,8 @@ namespace church.ccv.CCVRest.PAV
                     avFirstCampusVisit.Value = visit.AttendedDate.ToString();
                 }
 
+                rockContext.SaveChanges();
+
             }
             catch ( Exception )
             {
@@ -271,20 +278,46 @@ namespace church.ccv.CCVRest.PAV
             return true;
         }
 
-        public static void AddAttendedNote( int personId, RockContext rockContext, PlanAVisit visit )
+        /// <summary>
+        /// Update a family members First Visit Date attribute if not already set. 
+        /// </summary>
+        /// <param name="personId">The person id to add the note for</param>
+        /// <param name="visit">The visit object related to the note.</param>
+        /// <param name="visit">The person alias id of the logged in user who marked the visit as attened</param>
+        /// <returns></returns>
+        public static void AddAttendedNote( int personId, PlanAVisit visit, int? personAliasId = null )
         {
+
+            RockContext rockContext = new RockContext();
+
             var noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
-            var service = new NoteService( rockContext );
+            var noteService = new NoteService( rockContext );
+            PersonService personService = new PersonService(rockContext);
 
-            var note = new Note();
-            note.IsSystem = false;
-            note.IsAlert = false;
-            note.IsPrivateNote = false;
-            note.NoteTypeId = noteType.Id;
-            note.EntityId = visit.Id;
-            note.Text = "Attended";
+            Person notePerson = personService.Get( personId );
 
-            service.Add( note );
+            // Ensure that person id provided is a valid person record.
+            // This check is mainly to ensure we don't end up
+            // with orphaned db records in scenarios where the person id
+            // is invalid, or no longer exists.
+            if ( notePerson.IsNotNull() )
+            {
+                var note = new Note();
+                note.IsSystem = false;
+                note.IsAlert = false;
+                note.IsPrivateNote = false;
+                note.NoteTypeId = noteType.Id;
+                note.EntityId = notePerson.Id;
+                note.Text = "Attended";
+                if ( personAliasId.HasValue )
+                {
+                    note.CreatedByPersonAliasId = personAliasId;
+                }
+                noteService.Add( note );
+
+                rockContext.SaveChanges();
+            }
+
         }
 
         /// <summary>
@@ -296,13 +329,13 @@ namespace church.ccv.CCVRest.PAV
         /// <param name="attendedDate"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message )
+        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message, int? personAliasId = null )
         {
             RockContext rockContext = new RockContext();
 
             Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
-            AttributeValueService avService = new AttributeValueService( rockContext );
+            
             PersonService pService = new PersonService( rockContext );
             IEnumerable<GroupMember> familyMembers;
             bool success = true;
@@ -316,7 +349,6 @@ namespace church.ccv.CCVRest.PAV
                     // we have a valid visit with no attended date
                     // get adult one as a person
                     PersonAlias adultOne = personAliasService.Get( visit.AdultOnePersonAliasId );
-
                     Group family = pService.GetFamilies( adultOne.PersonId ).FirstOrDefault();
 
                     familyMembers = family.ActiveMembers();
@@ -326,22 +358,21 @@ namespace church.ccv.CCVRest.PAV
                     visit.AttendedServiceScheduleId = attendedScheduleId;
                     visit.AttendedCampusId = attendedCampusId;
 
-
-
                     foreach (GroupMember familyMember in familyMembers)
                     {
 
-                        if(!UpdateFamilyMemberVisitDate(visit, avService, familyMember ) )
+                        if(!UpdateFamilyMemberVisitDate( visit, familyMember ) )
                         {
                             success = false;
                         }
                         else
                         {
-                            AddAttendedNote( familyMember.PersonId, rockContext, visit );
+                            AddAttendedNote( familyMember.PersonId, visit, personAliasId );
                         }
 
                     }
 
+                    rockContext.SaveChanges();
                     
                     if ( success )
                     {
