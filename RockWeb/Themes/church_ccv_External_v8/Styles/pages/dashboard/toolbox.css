@@ -253,6 +253,14 @@
     flex: 1;
 }
 
+.group-picture-missing {
+    padding-bottom: 30px;
+}
+
+.group-picture-missing img {
+    width: 50%;
+}
+
 .group-leaders {
     padding: 20px; 
     background-color: #EEEEEE;
@@ -265,7 +273,11 @@
 }
 
 .group-schedule .btn {
-    float: right;
+    vertical-align: bottom;
+}
+
+.margin-left {
+    margin-left: 30px;
 }
 
 /* Mobile Styling */
@@ -280,6 +292,21 @@
         margin-bottom: 20px;
     }
 
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 769px) {
+    .group-schedule .btn {
+        margin-top: 30px;
+    }
+
+    .margin-left {
+        margin-left: 0;
+    }
+
+    .group-picture-missing img {
+        width: 100%;
+    }
 }
 
 /* Phone */
