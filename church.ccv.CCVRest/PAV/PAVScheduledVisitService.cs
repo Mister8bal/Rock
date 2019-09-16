@@ -271,6 +271,22 @@ namespace church.ccv.CCVRest.PAV
             return true;
         }
 
+        public static void AddAttendedNote( int personId, RockContext rockContext, PlanAVisit visit )
+        {
+            var noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
+            var service = new NoteService( rockContext );
+
+            var note = new Note();
+            note.IsSystem = false;
+            note.IsAlert = false;
+            note.IsPrivateNote = false;
+            note.NoteTypeId = noteType.Id;
+            note.EntityId = visit.Id;
+            note.Text = "Attended";
+
+            service.Add( note );
+        }
+
         /// <summary>
         /// Record attended information to a visit
         /// </summary>
@@ -310,6 +326,8 @@ namespace church.ccv.CCVRest.PAV
                     visit.AttendedServiceScheduleId = attendedScheduleId;
                     visit.AttendedCampusId = attendedCampusId;
 
+
+
                     foreach (GroupMember familyMember in familyMembers)
                     {
 
@@ -317,12 +335,17 @@ namespace church.ccv.CCVRest.PAV
                         {
                             success = false;
                         }
+                        else
+                        {
+                            AddAttendedNote( familyMember.PersonId, rockContext, visit );
+                        }
 
                     }
 
                     
                     if ( success )
                     {
+                        
                         message = "Visit updated successfully";
                         return RecordAttendedResponse.Success;
                     }
