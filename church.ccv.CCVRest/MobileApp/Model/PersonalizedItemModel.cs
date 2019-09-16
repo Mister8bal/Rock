@@ -19,15 +19,13 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string SubTitle;
 
-        public string Description; //todo: remove this after the next app update
-
         public string DetailsBody;
 
         public string DetailsURL;
 
         public bool SkipDetailsPage;
 
-        public bool LaunchExternalBrowser;
+        public bool LaunchesExternalBrowser;
 
         public bool IncludeAccessToken;
     }

@@ -17,11 +17,12 @@ namespace church.ccv.CCVRest.MobileApp
     {
         public static List<PersonalizedItem> GetPreGatePersonalizedContent( int numCampaigns, bool includeAllOverride = false )
         {
+            const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
+            //const int ContentChannelId_PreGate = 317; //MA3 VALUE
+
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
 
-            //const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
-            const int ContentChannelId_PreGate = 317; //MA3 VALUE
             ContentChannel pregateContent = contentChannelService.Get( ContentChannelId_PreGate );
 
             List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
@@ -37,13 +38,12 @@ namespace church.ccv.CCVRest.MobileApp
                     Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem();
 
                     psItem.Title = item.AttributeValues["PreGate_Title"].ToString();
-                    psItem.Description = item.AttributeValues["SubTitle"].ToString(); //TODO: Remove after the next app update
                     psItem.SubTitle = item.AttributeValues["SubTitle"].ToString();
                     psItem.DetailsBody = item.AttributeValues["DetailsBody"].ToString();
                     psItem.DetailsURL = item.AttributeValues["Link"].ToString();
                     psItem.SortPriority = item.AttributeValues["SortPriority"].ToString().AsInteger();
                     psItem.SkipDetailsPage = item.AttributeValues["SkipDetailsPage"].ToString().AsBoolean();
-                    psItem.LaunchExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
+                    psItem.LaunchesExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
 
                     string imageGuid = item.AttributeValues["Image"].Value.ToString();
                     if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
@@ -105,13 +105,12 @@ namespace church.ccv.CCVRest.MobileApp
                 Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
                 {
                     Title = mobileAppBlob["title"].ToString(),
-                    Description = mobileAppBlob["subtitle"].ToString(), //TODO: Remove after the next app update
                     SubTitle = mobileAppBlob["subtitle"].ToString(),
                     DetailsBody = mobileAppBlob["detailsbody"].ToString(),
                     DetailsURL = mobileAppBlob["link"].ToString(),
                     ImageURL = mobileAppBlob["img"].ToString(),
                     SkipDetailsPage = mobileAppBlob["skip-details-page"].ToString().AsBoolean(),
-                    LaunchExternalBrowser = mobileAppBlob["launches-external-browser"].ToString().AsBoolean(),
+                    LaunchesExternalBrowser = mobileAppBlob["launches-external-browser"].ToString().AsBoolean(),
 
                     // we always want access tokens for personalization engine stuff
                     IncludeAccessToken = true
@@ -130,6 +129,66 @@ namespace church.ccv.CCVRest.MobileApp
 
                 itemsList.Add( psItem );
             }
+
+            return itemsList;
+        }
+
+        public static List<Promotion> GetPromotions( bool includeUnpublished = false )
+        {
+            const int ContentChannelId_Promotions = 319; //PRODUCTION VALUE
+            //const int ContentChannelId_Promotions = 318; //MA3 VALUE
+
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            ContentChannel promotionContent = contentChannelService.Get( ContentChannelId_Promotions );
+
+            List<Model.Promotion> itemsList = new List<MobileApp.Model.Promotion>();
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            foreach ( var item in promotionContent.Items )
+            {
+                item.LoadAttributes();
+
+                // if it's active
+                bool isActive = item.AttributeValues["Active"].ToString().AsBoolean();
+                if ( isActive == true )
+                {
+                    // if it's not expired
+                    DateTime? startDate = item.AttributeValues["Start"].ToString().AsDateTime();
+                    DateTime? endDate = item.AttributeValues["End"].ToString().AsDateTime();
+                    if ( ( (startDate == null || startDate < DateTime.Now) && ( endDate == null || endDate >= DateTime.Now) ) 
+                        || includeUnpublished == true )
+                    {
+                        Model.Promotion promoItem = new MobileApp.Model.Promotion();
+
+                        promoItem.Title = item.AttributeValues["NE_Title"].ToString();
+                        promoItem.Description = item.AttributeValues["DetailsBody"].ToString();
+                        promoItem.DetailsURL = item.AttributeValues["Link"].ToString();
+                        promoItem.SortPriority = item.AttributeValues["SortPriority"].ToString().AsInteger();
+                        promoItem.SkipDetailsPage = item.AttributeValues["SkipDetailsPage"].ToString().AsBoolean();
+                        promoItem.LaunchesExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
+
+                        string imageGuid = item.AttributeValues["Image"].Value.ToString();
+                        if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
+                        {
+                            promoItem.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=1200";
+                            promoItem.ThumbnailImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=825";
+                        }
+                        else
+                        {
+                            promoItem.ImageURL = string.Empty;
+                        }
+
+                        promoItem.IncludeAccessToken = item.AttributeValues["ForwardUserIdentity"].ToString().AsBoolean();
+
+                        itemsList.Add( promoItem );
+                    }
+                }
+            }
+
+            //sort them
+            itemsList = itemsList.OrderBy( i => i.SortPriority ).ToList();
 
             return itemsList;
         }

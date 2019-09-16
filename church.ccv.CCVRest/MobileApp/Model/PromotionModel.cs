@@ -22,7 +22,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public bool SkipDetailsPage;
 
-        public bool LaunchExternalBrowser;
+        public bool LaunchesExternalBrowser;
 
         public bool IncludeAccessToken;
     }

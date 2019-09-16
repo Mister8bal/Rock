@@ -17,15 +17,10 @@ namespace church.ccv.CCVRest.MobileApp
         const int GroupTypeId_LifeTrainingGroup = 117;
         const int GroupRoleId_LifeTrainingCourseLeader = 170;
 
-        // TODO JHM 5-24-19: - depending on mobile app design needs, we may be able to get rid of the commented out keys.
-        //const string Course_Title_Key = "CourseTitle";
         const string Course_Description_Key = "CourseDescription";
-        //const string Course_StartDate_Key = "CourseStartDate";
-        //const string Course_EndDate_Key = "CourseEndDate";
         const string Course_RegStartDate_Key = "RegistrationStartDate";
         const string Course_RegEndDate_Key = "RegistrationEndDate";
         const string Course_Topic_Key = "CourseTopic";
-        //const string Course_Confidential_Key = "Confidential";
        
         public static List<MACourseModel> GetMobileAppCourses( string nameKeyword,
                                                               string descriptionKeyword,

@@ -168,55 +168,7 @@ namespace church.ccv.CCVRest.MobileApp
         [Authenticate, Secured]
         public HttpResponseMessage GetPromotions( bool includeUnpublished = false )
         {
-            const int MobileApp_ContentChannelId = 5;
-
-            RockContext rockContext = new RockContext();
-            var ccItemQuery = new ContentChannelItemService( rockContext ).Queryable().AsNoTracking();
-
-            var ccItems = ccItemQuery.Where( cci =>
-                cci.ContentChannelId == MobileApp_ContentChannelId && //Get all mobile app ads
-              ( cci.Status == ContentChannelItemStatus.Approved || ( cci.Status == ContentChannelItemStatus.PendingApproval && includeUnpublished == true ) ) && //That are approved (or Pending AND includeUnpublished is on)
-              ( cci.StartDateTime < DateTime.Now || includeUnpublished == true ) && //That have started running (or includeUnpublished is on)
-              ( cci.ExpireDateTime == null || cci.ExpireDateTime >= DateTime.Now || includeUnpublished == true ) ) //That have not expired, or have no expiration date (or includeUnpublished is on)
-
-            .ToList();
-
-            List<Model.Promotion> promotions = new List<MobileApp.Model.Promotion>();
-
-            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
-
-            // load all the extended attributes for the item
-            foreach ( ContentChannelItem item in ccItems )
-            {
-                item.LoadAttributes();
-
-                // now package up just what the mobile app needs to reduce data sent
-                Model.Promotion promotion = new MobileApp.Model.Promotion
-                {
-                    SortPriority = item.Priority,
-
-                    ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ) + "&width=1200",
-
-                    ThumbnailImageURL = publicAppRoot + "GetImage.ashx?Guid=" + item.GetAttributeValue( "FeatureImage" ) + "&width=825",
-
-                    Title = item.Title,
-                    Description = item.Content,
-
-                    SkipDetailsPage = item.GetAttributeValue( "MobileAppSkipDetailsPage" ).AsBoolean(),
-
-                    DetailsURL = item.GetAttributeValue( "DetailsURL" ),
-                    LaunchExternalBrowser = item.GetAttributeValue( "DetailsURLLaunchesBrowser" ).AsBoolean(),
-                    IncludeAccessToken = item.GetAttributeValue( "IncludeImpersonationToken" ).AsBoolean()
-                };
-
-                promotions.Add( promotion );
-            }
-
-            //sort them
-            promotions.Sort( delegate ( Model.Promotion a, Model.Promotion b )
-            {
-                return a.SortPriority < b.SortPriority ? -1 : 1;
-            } );
+            List<Model.Promotion> promotions = MAContentService.GetPromotions( includeUnpublished );
 
             // return it!
             return Common.Util.GenerateResponse( true, PromotionsResponse.Success.ToString(), promotions );
