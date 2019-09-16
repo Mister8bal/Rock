@@ -1,4 +1,5 @@
 ﻿using church.ccv.PersonalizationEngine.Data;
+using church.ccv.PersonalizationEngine.Model;
 using Newtonsoft.Json;
 using Rock.Rest.Filters;
 using System;
@@ -21,18 +22,6 @@ namespace church.ccv.PersonalizationEngine.Rest
             // now request the relevant campaign for the person
             List<Model.Campaign> campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( campaignTypeList, personId, numCampaigns );
 
-            // and if nothing was found, take a default
-            if ( campaignResults.Count == 0 )
-            {
-                var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeList );
-
-                if ( defaultCampaigns.Count > 0 )
-                {
-                    campaignResults.Add( defaultCampaigns [ 0 ] );
-                }
-            }
-
-
             // now, if we've got a result, return it. Otherwise throw an error
             HttpStatusCode statusCode = HttpStatusCode.OK;
             StringContent responseContent = null;
@@ -54,6 +43,7 @@ namespace church.ccv.PersonalizationEngine.Rest
             };
         }
 
+        // JHM TODO: The day after we go live, remove this crappy hack that only exists to support the old Mobile App
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/PersonalizationEngine/Campaign" )]
         [System.Web.Http.Route( "api/PersonalizationEngine/DefaultCampaign" )]
@@ -61,14 +51,36 @@ namespace church.ccv.PersonalizationEngine.Rest
         public HttpResponseMessage GetDefaultCampaign( string campaignTypeList, int numCampaigns = 1 )
         {
             // now grab a default campaign
-            var defaultCampaigns = PersonalizationEngineUtil.GetDefaultCampaign( campaignTypeList, numCampaigns );
-
+            var defaultCampaigns = new List<Campaign>();
+            var defaultCampaign = new Campaign
+            {
+                Name = "CTA Missions Trip",
+                Description = "Marketed to people who simply have a login and don't fit other campaigns.",
+                StartDate = DateTime.Parse( "1982-09-28T00:00:00" ),
+                EndDate = null,
+                Type = "WebsiteCard,MobileAppNewsFeed",
+                Priority = 0,
+                ContentJson = "{\"WebsiteCard\":{\"title\":\"Missions\",\"sub-title\":\"Go on a Trip\",\"body\":\"Get involved in God’s global mission! Sign-up for a short-term trip and make an impact in the lives of others around the world.\",\"img\":\"/Content/ccv.church/pe/dashboard-card/mission-trip-2.jpg\",\"link\":\"/ministries/missions/trips?promo_name=mission-trips&promo_id=12&promo_creative=next-step-go-on-a-trip&promo_position=dashboard-card\",\"link-text\":\"Go on a trip\"},\"MobileAppNewsFeed\":{\"title\":\"Missions\",\"body\":\"\",\"img\":\"/Content/ccv.church/pe/mobile-app/Missions3_1242x801_Newsfeed.jpg\",\"link\":\"/ministries/missions/trips?promo_name=mission-trips&promo_id=12&promo_creative=next-step-go-on-a-trip&promo_position=mobile-app\",\"skip-details-page\":\"true\"}}",
+                CreatedDateTime = null,
+                ModifiedDateTime = DateTime.Parse( "2019-09-11T15:33:39.347" ),
+                CreatedByPersonAliasId = null,
+                ModifiedByPersonAliasId = 514673,
+                ModifiedAuditValuesAlreadyUpdated = false,
+                Attributes = null,
+                AttributeValues = null,
+                Id = 12,
+                Guid = Guid.Parse( "1214592d-4e49-4f61-a607-2d307184973a" ),
+                ForeignId = null,
+                ForeignGuid = null,
+                ForeignKey = null
+            };
+            defaultCampaigns.Add( defaultCampaign );
 
             // now, if we've got a result, return it. Otherwise throw an error
             HttpStatusCode statusCode = HttpStatusCode.OK;
             StringContent responseContent = null;
 
-            if( defaultCampaigns.Count > 0 )
+            if ( defaultCampaigns.Count > 0 )
             {
                 responseContent = new StringContent( JsonConvert.SerializeObject( defaultCampaigns ), Encoding.UTF8, "application/json" );
             }
