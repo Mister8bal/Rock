@@ -6,53 +6,39 @@
 
 <asp:Repeater ID="rptvideostreams" runat="server" >
     <ItemTemplate>
-        <div class="<%# Eval("[3]") %>">
+        <div class="<%# Eval("BoostrapColumn") %>">
             <div class="panel panel-default">                
                 <div class="panel-body">   
-                    <h3><%# Eval("[1]") %></h3>
-                    <div class="videocontent">
-                        <a id='<%# Eval("[0]") %>' data-flashfit="true" class="video-player"></a>
-                    </div>                                                         
+                    <h3><%# Eval("Campus") %></h3>
+                    <video id='<%# Eval("VideoId") %>' class="video-js vjs-default-skin videocontent" data-setup='{ "controls": true, "autoplay": true }'>
+                        <source src='<%# Eval("Url") %>' type="application/x-mpegURL">
+                    </video>
                     <br />
                     <div style="text-align: center;">
-                        <a id='<%# Eval("[0]") %>' class="btn btn-default audio-toggle muted" >
+                        <a id='<%# Eval("VideoId") %>' class="btn btn-default audio-toggle muted" >
                             <i class="fa fa-volume-off"></i>
                             <span></span>
                         </a>   
-                    </div>                 
+                    </div>
+                    
+                    <script>
+                        // this will mute each video as soon as the player is ready.  This ensures
+                        //  that we are compliant with html5 video autoplay rules.
+                        videojs("<%# Eval("VideoId") %>").ready(function () {
+                            var myPlayer = this;
+                            myPlayer.muted(true);
+
+                            <%--if ( <%# Eval("Order") %> === 1) {
+                                myPlayer.muted(false);
+                            }
+                            else {
+                                myPlayer.muted(true);
+                            }--%>
+                        });
+                    </script>
                 </div>
             </div>
         </div>
-
-        <script type="text/javascript">
-            // setup player
-
-            // Intentionally not using the latest version of flowplayer.  There are some issues with using version
-            // 3.2.18. The issues are not being able to toggle mute when a live stream in unavailable.  Also, 
-            // the newest version of the httpstreaming plugin is unreliable when passing clip duration parameters.
-            flowplayer('<%# Eval("[0]") %>', "/Plugins/church_ccv/CommandCenter/Assets/flowplayer.commercial-3.2.9.swf",
-                {
-                    key: '#$84e16c60f53faa547a5',
-                    plugins: {
-                        controls: {
-                            time: false,
-                            scrubber: false
-                        },
-                        rtmp: {
-                            url: '/Plugins/church_ccv/CommandCenter/Assets/flowplayer.rtmp-3.2.9.swf',
-                        }
-                    },
-                    clip: {
-                        url: '<%# Eval("[2]") %>',
-                        live: true,
-                        provider: 'rtmp',
-                        scaling: 'scale',
-                        onStart: function () { SetupPlayers(); }
-                    },
-                    showErrors: false
-			    });
-        </script>
-
     </ItemTemplate>
 </asp:Repeater>
 
@@ -60,31 +46,13 @@
 <script type="text/javascript">   
 
     function pageLoad() {
-
         // untoggle first button
-        $('.audio-toggle').first().each(function () {
-            $(this).addClass('enabled');
-            $(this).removeClass('muted');
-            $(this).addClass('btn-primary');
-            $(this).removeClass('btn-default');
-        });
-
-        //MutePlayers();    
-    }
-
-    // mute all videos on load except the first one.  This logic
-    // is used instead of .First() because flow player does not 
-    // support it.
-    function SetupPlayers() {
-        var counter = 0;
-        $f('*').each(function () {
-            counter++;
-            if (counter === 1) {
-                this.unmute();
-            } else {
-                this.mute();
-            }
-        });
+        //$('.audio-toggle').first().each(function () {
+        //    $(this).addClass('enabled');
+        //    $(this).removeClass('muted');
+        //    $(this).addClass('btn-primary');
+        //    $(this).removeClass('btn-default');
+        //});
     }
 
     $('.audio-toggle').click(function (event) {
@@ -94,7 +62,7 @@
             currentItem = true;
         }
 
-        // toggle button status
+        // set all buttons to mute
         $('.audio-toggle').each(function (index) {
             $(this).removeClass('enabled');
             $(this).addClass('muted');
@@ -103,21 +71,24 @@
         });
 
         // mute all videos
-        $f('*').each(function () {
-            this.mute();
+        $('video').each(function () {
+            var videoId = $(this).attr('id');
+            videojs(videoId).muted(true);
         });
 
-        // get id of video player from button id
+        // get id of video player from button id (need to append _html5_api because videojs changes the video id)
         var playerId = $(this).attr('id');
+        videoPlayerId = playerId.concat("_html5_api");
+        console.log( videoPlayerId );
 
         // enabled selected video unless it is the active one, then mute
         if (currentItem) {
-            $f(playerId).mute();
+            videojs(videoPlayerId).muted(true);
         } else {
             $(this).addClass('enabled');
             $(this).addClass('btn-primary');
             $(this).removeClass('btn-default');
-            $f(playerId).unmute();
+            videojs(videoPlayerId).muted(false);
         }
     });
 </script>

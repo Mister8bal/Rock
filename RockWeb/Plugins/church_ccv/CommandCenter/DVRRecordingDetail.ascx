@@ -22,9 +22,8 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="videocontent">
-                                <a id="player" class="video-player"></a>
-                            </div>
+                            <video id='videoplayer' class="video-js vjs-default-skin videocontent" data-setup='{ "controls": true, "autoplay": true }'>
+                            </video>
                         </div>
                     </div>
                     <div class="row">
@@ -122,21 +121,10 @@
         }
 
         // setup player
-        flowplayer('player', '/Plugins/church_ccv/CommandCenter/Assets/flowplayer.commercial-3.2.18.swf',
-		{
-		    key: '#$84e16c60f53faa547a5',
-			plugins: {
-			    f4m: { url: '/Plugins/church_ccv/CommandCenter/Assets/flowplayer.f4m-3.2.9.swf' },
-			    httpstreaming: { url: '/Plugins/church_ccv/CommandCenter/Assets/flowplayer.httpstreaming-3.2.9.swf' },
-			},
-			clip: {
-			    url: recordingurl + '/manifest.f4m?DVR&wowzadvrplayliststart=' + clipStartEndUrl,
-			    urlResolvers: ['f4m'],
-			    provider: 'httpstreaming',
-			    baseUrl: 'http://ccvwowza-out.ccvonline.com:1935/commandcenter/',
-			    autoPlay: true
-			}
-		});
+        var videoplayer = videojs('videoplayer');
+        videoplayer.src([
+            { type: 'application/x-mpegURL', src: 'https://5d7fadd1a0183.streamlock.net/commandcenter/' + recordingurl + '/playlist.m3u8?DVR&wowzadvrplayliststart=' + clipStartEndUrl }
+        ]);
 
         // Setup recording buttons
         $('.servicebutton').first().addClass('active');
@@ -162,13 +150,16 @@
         $("[recordingname=" + recordingurl + "]").addClass('active');
 
         // Play recording
-        $f("player").play(recordingurl + '/manifest.f4m?DVR&wowzadvrplayliststart=0');
-   
+        var player = videojs('videoplayer');
+        player.src({ src: 'https://5d7fadd1a0183.streamlock.net/commandcenter/' + recordingurl + '/manifest.m3u8?DVR&wowzadvrplayliststart=0', type: 'application/x-mpegURL' });
+        //player.load();
+        player.play();   
     }
 
     // Get start time
     function GetVideoStartTime() {
-        recordingstarttime = $f("player").getTime().toString();
+        var player = videojs("videoplayer");
+        recordingstarttime = player.currentTime().toString();
 
         var time = FormatSecondsToTime(recordingstarttime);
         $('#starttime').val(time.toString());
@@ -178,7 +169,8 @@
 
     // Get end time
     function GetVideoEndTime() {
-        recordingduration = $f("player").getTime().toString();
+        var player = videojs("videoplayer");
+        recordingduration = player.currentTime().toString();
 
         var time = FormatSecondsToTime(recordingduration);
 
