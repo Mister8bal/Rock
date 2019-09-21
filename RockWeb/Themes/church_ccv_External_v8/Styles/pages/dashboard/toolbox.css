@@ -371,7 +371,7 @@
         margin: 0 0 20px 0;
     }
 
-    .toolbox-card-content.baptisms-panel, .toolbox-card-content.group-details-panel {
+    .toolbox-card-content.baptisms-panel, .toolbox-card-content.group-details-panel, .toolbox-card-content.hosted-event-panel {
         margin: 0 20px 20px 20px;
     }
 
