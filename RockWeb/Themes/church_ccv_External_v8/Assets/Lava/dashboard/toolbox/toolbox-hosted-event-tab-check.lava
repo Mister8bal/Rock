@@ -1,0 +1,52 @@
+{% assign showHostedEventsTab = 'False' %}
+{% assign isHostingOpen = 'False' %}
+
+{% comment %}
+This works with the business process of CCV Hosted Events.
+A hosted event is a date set in the future. It's either set to a specific date,
+or a Sunday Date, and it's assumed that groups will use their scheduled date
+that week. This date goes on the "HostedEventDate" of the NH GroupType.
+
+When an event is "Opened", all groups (or all NON FULL groups) are given an EventHostingDate attribute value
+of either the event specific date, or the day of the week after the Sunday Date for the event.
+(Example for Specific Date: A Marriage Event is on 10/10/2019, so all groups get that date.)
+(Example for Scheduled: A Parent Event runs according to group schedules the week of 10/13/2019.
+    So each group gets an EventHostingDate value of 10/13/2019 + their day of week.)
+
+Next, If the group's day is in the future, their tab should be active.
+
+If it's in the past or blank, we look to the Global Date set on the NHGroupType to know
+whether they should still see the tab or not. (Their date could be in the past or blank because
+their group was full when the event was setup)
+{% endcomment %}
+
+{% comment %}First, if the group has the upcoming date planned, show it. {% endcomment %}
+{% assign nhHostedEventDate = group | Attribute:'EventHostingDate' %}
+{% assign nowDate = 'Now' | Date:'M/d/yyyy' %}
+{% assign daysUntilEvent = nowDate | DateDiff: nhHostedEventDate,'d' %}
+{% if daysUntilEvent > 0 %}
+    {% assign showHostedEventsTab = 'True' %}
+    {% assign isHostingOpen = 'True' %}
+{% else %}
+{% comment %} There're still two more ways {% endcomment %}
+    {% assign groupType = group.GroupType %}
+    {% assign isSingleDate = groupType | Attribute:'HostedEventIsSingleDate'%}
+    {% assign globalHostedEventDate = groupType | Attribute:'HostedEventDate'%}
+
+    {% comment %}Second, If it's a single date event, and that date hasn't occurred yet, show it.{% endcomment %}
+    {% assign daysUntilGlobal = nowDate | DateDiff: globalHostedEventDate, 'd' %}
+    {% if isSingleDate == 'True' %}
+        {% comment %} Go into this branch if its a single date so dont end up showing the tab because
+        of the projected date being in ahead of the single date {% endcomment %}
+        {% if daysUntilGlobal > 0 %}
+            {% assign showHostedEventsTab = 'True' %}
+        {% endif %}
+    {% else %}
+        {% assign dayOfWeek = group.Schedule.WeeklyDayOfWeek %}
+        {% assign projectedGroupHostDate = globalHostedEventDate | DateAdd:dayOfWeek,'d' %}
+        {% assign daysUntilProjected = nowDate | DateDiff: projectedGroupHostDate, 'd' %}
+        {% if daysUntilProjected > 0 %}
+            {% assign showHostedEventsTab = 'True' %}
+        {% endif %}
+    {% endif %}
+{% endif %}

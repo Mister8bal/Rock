@@ -66,12 +66,17 @@
     {% endfor %}
 {% endgroup %}
 
+    {% include '~~/Assets/Lava/dashboard/toolbox/toolbox-hosted-event-tab-check.lava' %}
+    
     <div class="header">
         <h4>{{ group.Name }}</h4>
     </div>
 
     <div class="toolbox-subnav-desktop">
         <div id="dashboard-button" onClick="linkClicked(this, 'dashboard')">Toolbox</div>
+		{% if showHostedEventsTab == 'True' %}
+            <div style="color: #ff0000;" id="hosted-event-button" onClick="linkClicked(this, 'hosted-event', false)">Hosted Event</div>
+        {% endif %}
         <div id="curriculum-button" onClick="linkClicked(this, 'curriculum')">Curriculum</div>
         <div id="training-center-button" onClick="linkClicked(this, 'training-center')">Training Center</div>
         <div id="baptisms-button" onClick="linkClicked(this, 'baptisms')">Baptisms</div>
@@ -82,6 +87,9 @@
     <div class="toolbox-subnav-mobile">
         <div class="toolbox-subnav-mobile-items">
             <div id="dashboard-mobile-button" onClick="linkClicked(this, 'dashboard')" class="subnav-item toolbox-subnav-div-selected">Dashboard</div>
+			{% if showHostedEventsTab == 'True' %}
+                <div style="color: #ff0000;" id="hosted-event-button" onClick="linkClicked(this, 'hosted-event', false)" class="subnav-item">Hosted Event</div>
+            {% endif %}
             <div id="curriculum-mobile-button" onClick="linkClicked(this, 'curriculum')" class="subnav-item">Curriculum</div>
             <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
             <div id="baptisms-mobile-button" onClick="linkClicked(this, 'baptisms')" class="subnav-item">Baptisms</div>
