@@ -1,44 +1,12 @@
-﻿.main-feature {
-    background-color: black;
+﻿.page-background {
+    background-color :#000 !important;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/support/hero-email-preference.jpg");
+    background-size: unset;
 }
 
-#subnavbar-bg { 
-    display: none;
-}
-
-.grid {
-    display: block;
-}
-    
-.grid-mobile {
-    display: none;
-}
-
-@media screen and (max-width: 1024px) {
-    .grid {
-        display: none;
-    }
-    
-    .grid-mobile {
-        display: block;
-        margin-bottom: 25px;
-    }
-    
-    .mobile-duplicates-item {
-        display: flex;
-    }
-    
-    .mobile-duplicates-item .person-info {
-        margin-left: 15px;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .mobile-duplicates-item .person-info .bday {
-        margin-left: 15px;
-    }
-    
-    .not-me {
-        margin-left: 0;
+/* Mobile Background Image */
+@media screen and (max-width: 500px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/support/hero-mobile-email-preference.jpg");
     }
 }
