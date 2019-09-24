@@ -387,7 +387,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                             "<input type=\"radio\" name=\"DuplicatePerson\" value=\"" + match.Id + "\">" + 
                             "<div class=\"person-info\">" + 
                                 "<span class=\"name\">" + match.FullName + "</span>" +
-                                "<span class=\"bday\">Born on " + string.Format( "{0:MMMM d}", match.BirthDate ) + "</span>" +
+                                "<span class=\"bday\"> born on " + string.Format( "{0:MMMM d}", match.BirthDate ) + "</span>" +
                             "</div>" +
                         "</div>";
                     }
