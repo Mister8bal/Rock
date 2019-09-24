@@ -226,6 +226,10 @@ a:focus {
     align-items: center;
 }
 
+.announcement-bar p {
+    color: #000000;
+}
+
 /* spacer for when announcement bar is active */
 .announcement-bar-showing {
     padding-top: 175px;

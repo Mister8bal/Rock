@@ -24,23 +24,26 @@
     {% assign announcementBarShowing = true %}
 
     <div class="announcement-bar">
+        
         {% if closedCampuses contains "," %}
-            {% comment %} muliple campuses have closures {% endcomment %}
-            {% assign campusesArray = closedCampuses | Split:',' %}
-            {% assign campusesArraySize = campusesArray | Size %}
+            <p>
+                {% comment %} muliple campuses have closures {% endcomment %}
+                {% assign campusesArray = closedCampuses | Split:',' %}
+                {% assign campusesArraySize = campusesArray | Size %}
 
-            {% if campusesArraySize == 2 %}
-                {{ campusesArray[0] }} and {{ campusesArray[1] }}
-            {% else %}
-                {% for campusArrayItem in campusesArray %}
-                    {% if forloop.last %} and {% endif %}{{ campusArrayItem }}{% unless forloop.last %},{% endunless %}
-                {% endfor %}
-            {% endif %}
+                {% if campusesArraySize == 2 %}
+                    {{ campusesArray[0] }} and {{ campusesArray[1] }}
+                {% else %}
+                    {% for campusArrayItem in campusesArray %}
+                        {% if forloop.last %} and {% endif %}{{ campusArrayItem }}{% unless forloop.last %},{% endunless %}
+                    {% endfor %}
+                {% endif %}
 
-            have field closures. Click&nbsp<a href="/field-status">here</a>&nbspfor details.
+                have field closures. Click&nbsp<a href="/field-status">here</a>&nbspfor details.
+            </p>
         {% else %}
             {% comment %} single campus has closure {% endcomment %}
-            {{ closedCampuses }}'s fields are closed. Click&nbsp<a href="/field-status">here</a>&nbspfor details.
+            <p>{{ closedCampuses }}'s fields are closed. Click&nbsp<a href="/field-status">here</a>&nbspfor details.<p>
         {% endif%}
     </div>
 {% else %}
