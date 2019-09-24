@@ -1613,9 +1613,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
                 // if we dont already have a preference, check if person has opted out of marketing category
                 if ( preferenceMessage == "" && _templateCategory != null )
                 {
-                    var avService = new AttributeValueService( new RockContext() ).Queryable().AsNoTracking();
-
-                    var marketingOptOut = avService.Where( a => a.AttributeId == _attributeId_MarketingOptOut && a.EntityId == recipient.PersonId ).FirstOrDefault();
+                    var marketingOptOut = new AttributeValueService( new RockContext() ).GetByAttributeIdAndEntityId( _attributeId_MarketingOptOut, recipient.PersonId );
 
                     if ( marketingOptOut != null && marketingOptOut.Value.IsNotNullOrWhitespace() && marketingOptOut.Value.Contains( _templateCategory.ToString() ) )
                     {

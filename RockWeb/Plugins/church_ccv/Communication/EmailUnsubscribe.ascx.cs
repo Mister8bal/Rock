@@ -110,9 +110,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
                 if ( _person != null )
                 {
                     // check for any categories the person has already opted out of
-                    var avService = new AttributeValueService( new RockContext() ).Queryable().AsNoTracking();
-
-                    var marketingOptOut = avService.Where( a => a.AttributeId == _attributeId_MarketingOptOut && a.EntityId == _person.Id ).SingleOrDefault();
+                    var marketingOptOut = new AttributeValueService( new RockContext() ).GetByAttributeIdAndEntityId( _attributeId_MarketingOptOut, _person.Id );
 
                     if ( marketingOptOut != null && marketingOptOut.Value.IsNotNullOrWhitespace() )
                     {
@@ -184,7 +182,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
                     // i think its beneficial to always update the selections regardless of the radio button option selected
                     string newOptOutPreference = GetOptOutSelections();
 
-                    AttributeValue marketingOptOut = avService.Queryable().Where( a => a.EntityId == person.Id && a.AttributeId == _attributeId_MarketingOptOut ).SingleOrDefault();
+                    AttributeValue marketingOptOut = avService.GetByAttributeIdAndEntityId(_attributeId_MarketingOptOut, person.Id);
 
                     if ( marketingOptOut == null )
                     {

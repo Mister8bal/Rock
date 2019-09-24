@@ -562,10 +562,8 @@ namespace church.ccv.Utility.Communication
 
                 if ( person != null )
                 {
-                    var avService = new AttributeValueService( new RockContext() ).Queryable().AsNoTracking();
+                    var marketingOptOut = new AttributeValueService( new RockContext() ).GetByAttributeIdAndEntityId( _attributeId_MarketingOptOut, person.Id );
                     
-                    var marketingOptOut = avService.Where( a => a.AttributeId == _attributeId_MarketingOptOut && a.EntityId == person.Id ).FirstOrDefault();
-
                     if ( marketingOptOut != null && marketingOptOut.Value.Contains(category.ToString() ) )
                     {
                         recipient.Status = CommunicationRecipientStatus.Failed;
