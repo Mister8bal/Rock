@@ -42,7 +42,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
     {
         #region Fields
 
-        private const int _attributeId_MarketingOptOut = 95748;
+        private const int _attributeId_MarketingOptOut = 96313;
         private Person _person = null;
 
         #endregion

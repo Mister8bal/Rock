@@ -37,7 +37,7 @@ namespace church.ccv.Utility.Communication
     {
         #region Fields
 
-        private int _attributeId_MarketingOptOut = 95748;
+        private int _attributeId_MarketingOptOut = 96313;
             
         #endregion
 

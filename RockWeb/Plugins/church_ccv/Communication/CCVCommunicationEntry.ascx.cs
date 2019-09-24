@@ -44,7 +44,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
 
         #region Fields
 
-        private static int _attributeId_MarketingOptOut = 95748;
+        private static int _attributeId_MarketingOptOut = 96313;
         private static Category _templateCategory = null;
         private bool _fullMode = true;
         private bool _editingApproved = false;
