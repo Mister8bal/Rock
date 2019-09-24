@@ -270,8 +270,8 @@ namespace church.ccv.CCVRest.MobileApp
                         break;
                 }
 
-                courseResult.PhotoURL = publicAppRoot + topicImageURL + "&width=1200";
-                courseResult.ThumbnailPhotoURL = publicAppRoot + topicImageURL + "&width=400";
+                courseResult.PhotoURL = publicAppRoot + topicImageURL;
+                courseResult.ThumbnailPhotoURL = publicAppRoot + topicImageURL;
             }
 
             return courseResult;
