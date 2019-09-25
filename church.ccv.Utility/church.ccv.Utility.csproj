@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\CCVSendGridSmtp.cs" />
     <Compile Include="Communication\CCVSMTP.cs" />
     <Compile Include="Communication\CCVSMTPComponent.cs" />
     <Compile Include="Group\ToolboxGroupMemberDetail.ascx.cs">

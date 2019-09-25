@@ -1,4 +1,4 @@
-﻿// <copyright>
+﻿// <Copyright>
 // Copyright by the Spark Development Network
 //
 // Licensed under the Rock Community License (the "License");
@@ -381,9 +381,12 @@ namespace church.ccv.Utility.Communication
                         // make a new rockContext per recipient
                         var recipientRockContext = new RockContext();
                         var recipient = Rock.Model.Communication.GetNextPending( communication.Id, mediumEntityTypeId, recipientRockContext );
+
+                        var communicationCategory = communication.CommunicationTemplate?.Category;
+
                         if ( recipient != null )
                         {
-                            if ( ValidRecipient( recipient, communication.IsBulkCommunication, communication.CommunicationTemplate.Category ) )
+                            if ( ValidRecipient( recipient, communication.IsBulkCommunication, communicationCategory ) )
                             {
                                 try
                                 {
