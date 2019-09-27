@@ -1007,7 +1007,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 rockContext.SaveChanges();
             }
 
-            if ( tbStreet1.IsNotNull() )
+            if ( tbStreet1.Text.IsNotNullOrWhitespace() )
             {
 
                 if ( family != null )
