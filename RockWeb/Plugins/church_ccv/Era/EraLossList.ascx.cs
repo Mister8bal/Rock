@@ -287,7 +287,7 @@ namespace RockWeb.Plugins.church_ccv.Era
             // do outer join in case they aren't in a neighboorhood
             var joinFamilyNeighboorHood =
                 from f in datamartFamilyQry
-                join p in datamartPersonQry on f.FamilyId equals p.PersonId into fp
+                join p in datamartPersonQry on f.FamilyId equals p.FamilyId into fp
                 from p in fp
                 select new
                 {
