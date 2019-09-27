@@ -292,10 +292,13 @@ namespace church.ccv.CCVRest.PAV
 
             var noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
             var noteService = new NoteService( rockContext );
+            var campusService = new CampusService( rockContext );
             PersonService personService = new PersonService(rockContext);
+            ScheduleService scheduleService = new ScheduleService( rockContext );
 
             Person notePerson = personService.Get( personId );
-
+            Campus visitCampus = campusService.Get( visit.AttendedCampusId.Value );
+            Schedule visitSchedule = scheduleService.Get( visit.ScheduledServiceScheduleId );
             // Ensure that person id provided is a valid person record.
             // This check is mainly to ensure we don't end up
             // with orphaned db records in scenarios where the person id
@@ -308,7 +311,7 @@ namespace church.ccv.CCVRest.PAV
                 note.IsPrivateNote = false;
                 note.NoteTypeId = noteType.Id;
                 note.EntityId = notePerson.Id;
-                note.Text = "Attended";
+                note.Text = string.Format("Plan A Visit Attended [{0}] [{1}] [{2}]", visit.AttendedDate.Value.ToString( "MM/dd/yyyy" ), visitSchedule.Name, visitCampus.Name ); 
                 if ( personAliasId.HasValue )
                 {
                     note.CreatedByPersonAliasId = personAliasId;
