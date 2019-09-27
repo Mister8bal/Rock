@@ -1515,8 +1515,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             if ( stateList.Any() )
             {
-                //ddlState.Visible = true;
-                //_tbState.Visible = false;
 
                 string currentValue = ddlState.SelectedValue;
 
@@ -1524,8 +1522,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 ddlState.SelectedIndex = -1;
                 ddlState.SelectedValue = null;
                 ddlState.ClearSelection();
-
-                //ddlState.DataTextField = UseStateAbbreviation ? "Id" : "Value";
+                
                 ddlState.DataTextField = "Id";
                 ddlState.DataSource = stateList;
                 ddlState.DataBind();
@@ -1535,11 +1532,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     ddlState.SetValue( currentValue, "AZ" );
                 }
             }
-            else
-            {
-                //_ddlState.Visible = false;
-                //_tbState.Visible = true;
-            }
+            
         }
 
         #endregion
