@@ -337,7 +337,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
                 }
              
-
                 rockContext.SaveChanges();
 
                 // reset date picker to empty
