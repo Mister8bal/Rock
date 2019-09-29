@@ -205,7 +205,7 @@ namespace church.ccv.CCVRest.MobileApp
             };
 
             // try to set the location into
-            var groupLoc = group.GroupLocations.First();
+            var groupLoc = group.GroupLocations.FirstOrDefault();
             if ( groupLoc != null )
             {
                 groupResult.Longitude = groupLoc.Location.Longitude.Value;
