@@ -455,7 +455,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
-                                    <Rock:RockTextBox ID="tbStreet1" runat="server" Label="Address" />
+                                    <Rock:RockTextBox ID="tbStreet1" runat="server" Label="Street Address" />
                                 </div>
                             </div>
                             <div class="form-row">

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Data.Entity;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Rock;
@@ -1007,18 +1008,22 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 rockContext.SaveChanges();
             }
 
-            if ( tbStreet1.Text.IsNotNullOrWhitespace() )
+            // Handle address.  If address is entered, replace
+            // existing address with the one entered and
+            // set the old one as a previous address.
+            if ( !string.IsNullOrWhiteSpace(tbStreet1.Text) )
             {
-
                 if ( family != null )
                 {
                     Guid? addressTypeGuid = GetAttributeValue( "AddressType" ).AsGuidOrNull();
                     if ( addressTypeGuid.HasValue )
                     {
                         var groupLocationService = new GroupLocationService( rockContext );
-
                         var dvHomeAddressType = DefinedValueCache.Read( addressTypeGuid.Value );
-                        var familyAddress = groupLocationService.Queryable().Where( l => l.GroupId == family.Id && l.GroupLocationTypeValueId == dvHomeAddressType.Id ).FirstOrDefault();
+
+                        var familyAddress = groupLocationService.Queryable().AsNoTracking()
+                            .Where( l => l.GroupId == family.Id && l.GroupLocationTypeValueId == dvHomeAddressType.Id )
+                            .FirstOrDefault();
                         var street1String = tbStreet1.ToString();
 
                         if ( !string.IsNullOrWhiteSpace( tbStreet1.Text ) )
@@ -1031,7 +1036,8 @@ namespace RockWeb.Plugins.church_ccv.PAV
                             newLoc.PostalCode = tbPostalCode.Text;
                             newLoc.Country = defaultCountry;
 
-                            var newLocation = new LocationService( rockContext ).Get( newLoc.Street1, newLoc.Street2, newLoc.City, newLoc.State, newLoc.PostalCode, newLoc.Country, family, true );
+                            var newLocation = new LocationService( rockContext )
+                                .Get( newLoc.Street1, newLoc.Street2, newLoc.City, newLoc.State, newLoc.PostalCode, newLoc.Country, family, true );
 
                             if ( familyAddress == null )
                             {
@@ -1046,9 +1052,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                             {
 
                                 //Check to see if the new address matches the existing address.
-
                                 var existingLocation = familyAddress.Location;
-
                                 if ( existingLocation.Guid != newLocation.Guid )
                                 {
 
@@ -1058,17 +1062,13 @@ namespace RockWeb.Plugins.church_ccv.PAV
                                     groupLocationService.Add( previousAddress );
 
                                     var previousAddressValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_PREVIOUS.AsGuid() );
-
                                     if ( previousAddressValue != null )
                                     {
                                         previousAddress.GroupLocationTypeValueId = previousAddressValue.Id;
                                         previousAddress.GroupId = family.Id;
                                         previousAddress.Location = existingLocation;
                                     }
-
-
                                 }
-
                             }
 
                             familyAddress.Location = newLocation;
@@ -1085,13 +1085,9 @@ namespace RockWeb.Plugins.church_ccv.PAV
                                     grouplocation.IsMailingLocation = false;
                                 }
                             }
-                            
                         }
-
                     }
-                    
                 }
-
             }
 
             // if not a new family, check if adult two already in family
