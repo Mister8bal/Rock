@@ -1021,7 +1021,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                         var groupLocationService = new GroupLocationService( rockContext );
                         var dvHomeAddressType = DefinedValueCache.Read( addressTypeGuid.Value );
 
-                        var familyAddress = groupLocationService.Queryable().AsNoTracking()
+                        var familyAddress = groupLocationService.Queryable()
                             .Where( l => l.GroupId == family.Id && l.GroupLocationTypeValueId == dvHomeAddressType.Id )
                             .FirstOrDefault();
                         var street1String = tbStreet1.ToString();
