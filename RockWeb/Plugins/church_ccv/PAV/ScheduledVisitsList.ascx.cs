@@ -291,15 +291,11 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             CampusService campusService = new CampusService( rockContext );
 
-            
-
             Person adultOne; 
-            
-           
 
             if ( visit.IsNotNull() )
             {
-                PersonAlias adultOneAlias = personAliasService.GetByAliasId( visit.AdultOnePersonAliasId );
+                PersonAlias adultOneAlias = personAliasService.Get( visit.AdultOnePersonAliasId );
                 
                 adultOne = personService.Get( adultOneAlias.PersonId );
             
