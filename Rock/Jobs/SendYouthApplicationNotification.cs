@@ -105,7 +105,21 @@ namespace Rock.Jobs
                 {
                     gmList = gmList.Concat( groupMemberServiceQry.Where( gm => gm.GroupId == group.Id && dvQry.Any( p => p.Id == gm.PersonId ) ).ToList() );
                 }
-               
+
+                //var minorAndGroupLeaderList = groups.Where( g => g.Members.Select( gm => gm.PersonId ).Contains( 409668 ) )
+                //    .Select(a=>new
+                //    {
+                //        Leader = a.Members.Where( x => x.GroupRole.IsLeader ).FirstOrDefault(),
+                //        GroupMinor = a.Members.Where( z => z.PersonId == 409668 ).FirstOrDefault()
+                //    } );
+                var minorAndGroupLeaderList = groups
+                    //.Where( g => g.Members.Select( gm => gm.PersonId ).Contains( 409668 ) )
+                    .Select( a => new
+                    {
+                        Leader = a.Members.Where( x => x.GroupRole.IsLeader ).FirstOrDefault(),
+                        GroupMinors = a.Members.Where( z => dvQry.Any( p => p.Id == z.PersonId ) )
+                    } );
+
             }
 
             context.Result = "Warning: No NotificationEmailTemplate found";
