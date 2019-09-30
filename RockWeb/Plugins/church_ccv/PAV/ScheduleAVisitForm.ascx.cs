@@ -22,8 +22,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
     [Description( "Form used to preregister families for a weekend service" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Connection Status", "The connection status to use for new individuals (default: 'Web Prospect'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 0 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
-    //[GroupLocationTypeField( Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY, "Address Type",
-        //"The type of address to be displayed / edited.", false, Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME, "", order: 2 )]
     [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
     [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 5 )]
