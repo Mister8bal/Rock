@@ -287,8 +287,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
 
-            PersonService personService = new PersonService( rockContext );
-
             CampusService campusService = new CampusService( rockContext );
 
             Person adultOne; 
@@ -296,8 +294,8 @@ namespace RockWeb.Plugins.church_ccv.PAV
             if ( visit.IsNotNull() )
             {
                 PersonAlias adultOneAlias = personAliasService.Get( visit.AdultOnePersonAliasId );
-                
-                adultOne = personService.Get( adultOneAlias.PersonId );
+
+                adultOne = adultOneAlias.Person;
             
                 // update attended campus if it doesnt match existing value
                 if ( cpCampusAttended.SelectedValue.AsInteger() != visit.AttendedCampusId)
@@ -323,12 +321,12 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
                     var family = adultOne.GetFamily(rockContext);
 
-                    Campus familyCampus = campusService.Get( visit.AttendedCampusId.GetValueOrDefault() );
+                    Campus attendedCampus = campusService.Get( visit.AttendedCampusId.GetValueOrDefault() );
 
-                    if ( familyCampus.IsNotNull() )
+                    if ( attendedCampus.IsNotNull() )
                     {
-                        family.Campus = familyCampus;
-                        family.CampusId = familyCampus.Id;
+                        family.Campus = attendedCampus;
+                        family.CampusId = attendedCampus.Id;
                     }
 
                 }
