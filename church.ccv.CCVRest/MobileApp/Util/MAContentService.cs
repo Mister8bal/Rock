@@ -17,8 +17,7 @@ namespace church.ccv.CCVRest.MobileApp
     {
         public static List<PersonalizedItem> GetPreGatePersonalizedContent( int numCampaigns, bool includeAllOverride = false )
         {
-            const int ContentChannelId_PreGate = 318; //PRODUCTION VALUE
-            //const int ContentChannelId_PreGate = 317; //MA3 VALUE
+            const int ContentChannelId_PreGate = 318;
 
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
@@ -135,8 +134,7 @@ namespace church.ccv.CCVRest.MobileApp
 
         public static List<Promotion> GetPromotions( bool includeUnpublished = false )
         {
-            const int ContentChannelId_Promotions = 319; //PRODUCTION VALUE
-            //const int ContentChannelId_Promotions = 318; //MA3 VALUE
+            const int ContentChannelId_Promotions = 319;
 
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
