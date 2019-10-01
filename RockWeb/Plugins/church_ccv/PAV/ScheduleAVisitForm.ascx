@@ -455,6 +455,24 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-field">
+                                    <Rock:RockTextBox ID="tbStreet1" runat="server" Label="Street Address" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbCity" runat="server" Label="City" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <Rock:RockDropDownList ID="ddlState" runat="server" Label="State" />
+                                </div>
+                                <div class="form-field">
+                                    <Rock:RockTextBox ID="tbPostalCode" runat="server" Label="Zip" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-field">
 
                                     <Rock:RockTextBox ID="tbAdultFormMobile" runat="server" ClientIDMode="Static" Label="Mobile" Required="false" CssClass="mobile-number" />
 
