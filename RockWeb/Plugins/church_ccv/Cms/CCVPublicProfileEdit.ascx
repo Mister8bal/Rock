@@ -174,6 +174,7 @@
 
                         <div>
                             <Rock:ImageEditor ID="imgPhoto" runat="server" Label="Photo" BinaryFileTypeGuid="03BD8476-8A9F-4078-B628-5B538F967AFC" />
+                            <Rock:NotificationBox ID="nbPhotoWarning" runat="server" NotificationBoxType="Warning" Visible="false" />
                         </div>
 
                         <div>
