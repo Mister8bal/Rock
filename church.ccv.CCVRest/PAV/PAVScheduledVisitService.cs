@@ -332,7 +332,7 @@ namespace church.ccv.CCVRest.PAV
         /// <param name="attendedDate"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message, int? personAliasId = null )
+        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message, int? submitterAliasId = null )
         {
             RockContext rockContext = new RockContext();
 
@@ -370,7 +370,7 @@ namespace church.ccv.CCVRest.PAV
                         }
                         else
                         {
-                            AddAttendedNote( familyMember.PersonId, visit, personAliasId );
+                            AddAttendedNote( familyMember.PersonId, visit, submitterAliasId );
                         }
 
                     }
