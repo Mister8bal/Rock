@@ -51,6 +51,9 @@ namespace RockWeb.Plugins.church_ccv.Cms
     [AttributeField( Rock.SystemGuid.EntityType.PERSON, "Person Attributes (children)", "The person attributes that should be displayed / edited for children.", false, true, order: 10 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS, "Default Connection Status", "The default connection status that is given to new family members.", true, false, Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT, "", 11 )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Default Record Status", "The default record status that is given to new family members.", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 12 )]
+
+    [DataViewField( "Photo Edit Blacklist", "A data view of people that are not allowed to edit their photo.", false, "", "Rock.Model.Person", "Photo Editing", 0 )]
+    [TextField( "Blacklist Message", "This photo cannot be edited.", true, "This photo cannot be edited.", "Photo Editing", 1 )]
     public partial class CCVPublicProfileEdit : RockBlock
     {
         #region Properties
@@ -65,6 +68,8 @@ namespace RockWeb.Plugins.church_ccv.Cms
         }
 
         bool _canEdit = false;
+
+        List<int> _photoBlacklistPersonIds;
 
         #endregion
 
@@ -100,6 +105,21 @@ namespace RockWeb.Plugins.church_ccv.Cms
             base.OnLoad( e );
             if ( CurrentPerson != null )
             {
+                Guid? dataViewGuid = GetAttributeValue( "PhotoEditBlacklist" ).AsGuidOrNull();
+                if ( dataViewGuid.HasValue )
+                {
+                    var dataView = new DataViewService( new RockContext() ).Get( dataViewGuid.Value );
+                    if ( dataView != null )
+                    {
+                        var errors = new List<string>();
+                        var qry = dataView.GetQuery( null, 30, out errors );
+                        if ( qry != null )
+                        {
+                            _photoBlacklistPersonIds = qry.Select( q => q.Id ).ToList();
+                        }
+                    }
+                }
+
                 if ( !Page.IsPostBack )
                 {
                     BindFamilies();
@@ -306,7 +326,6 @@ namespace RockWeb.Plugins.church_ccv.Cms
             if ( person.PhotoId.HasValue )
             {
                 lGroupMemberImage.Text = string.Format( "<a href='{0}'>{1}</a>", person.PhotoUrl, imgTag );
-
             }
             else
             {
@@ -961,8 +980,22 @@ namespace RockWeb.Plugins.church_ccv.Cms
                                 tbFirstName.Enabled = false;
                                 tbLastName.Enabled = false;
                             }
-                            imgPhoto.BinaryFileId = person.PhotoId;
-                            imgPhoto.NoPictureUrl = Person.GetPersonNoPictureUrl( person, 200, 200 );
+
+                            bool photoRestricted = _photoBlacklistPersonIds != null ? _photoBlacklistPersonIds.Contains( personId ) : false;
+                            if ( photoRestricted )
+                            {
+                                nbPhotoWarning.Text = GetAttributeValue( "BlacklistMessage" );
+                                nbPhotoWarning.Visible = true;
+                                imgPhoto.Visible = false;
+                            }
+                            else
+                            {
+                                imgPhoto.BinaryFileId = person.PhotoId;
+                                imgPhoto.NoPictureUrl = Person.GetPersonNoPictureUrl( person, 200, 200 );
+                                imgPhoto.Visible = true;
+                                nbPhotoWarning.Visible = false;
+                            }
+
                             ddlTitle.SelectedValue = person.TitleValueId.HasValue ? person.TitleValueId.Value.ToString() : string.Empty;
                             tbFirstName.Text = person.FirstName;
                             tbNickName.Text = person.NickName;
