@@ -206,11 +206,14 @@ namespace church.ccv.CCVRest.MobileApp
 
             // try to set the location into
             var groupLoc = group.GroupLocations.FirstOrDefault();
-            if ( groupLoc != null )
+            if ( groupLoc != null && groupLoc.Location != null )
             {
-                groupResult.Longitude = groupLoc.Location.Longitude.Value;
-                groupResult.Latitude = groupLoc.Location.Latitude.Value;
-                groupResult.DistanceFromSource = groupLoc.Location.Distance;
+                if ( groupLoc.Location.Latitude.HasValue && groupLoc.Location.Longitude.HasValue )
+                {
+                    groupResult.Longitude = groupLoc.Location.Longitude.Value;
+                    groupResult.Latitude = groupLoc.Location.Latitude.Value;
+                    groupResult.DistanceFromSource = groupLoc.Location.Distance;
+                }
 
                 groupResult.Street = groupLoc.Location.Street1;
                 groupResult.City = groupLoc.Location.City;
