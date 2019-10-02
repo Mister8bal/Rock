@@ -45,6 +45,9 @@ namespace church.ccv.CCVRest.MobileApp
 
             personModel.DisplayAge = GetDisplayAge( person );
 
+            // get an access token so they can SSO to Rock sites
+            personModel.RockAccessToken = "rckipid=" + person.GetImpersonationToken();
+
             if ( person.PhotoId.HasValue )
             {
                 personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId + "&width=1200";
