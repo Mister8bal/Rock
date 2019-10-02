@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace church.ccv.CCVRest.STARS
+namespace church.ccv.CCVRest.STARS.Model
 {
     [Serializable]
     public class STARSRegistrationModel

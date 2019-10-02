@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
+using church.ccv.CCVRest.STARS.Model;
+using church.ccv.CCVRest.STARS.Util;
 using Rock.Rest.Filters;
 
-namespace church.ccv.CCVRest.STARS
+namespace church.ccv.CCVRest.STARS.Controllers
 {
     public partial class STARSController : Rock.Rest.ApiControllerBase
     {

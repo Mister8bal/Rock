@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using church.ccv.CCVRest.STARS.Model;
 using Rock;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
 
-namespace church.ccv.CCVRest.STARS
+namespace church.ccv.CCVRest.STARS.Util
 {
     class STARSRegistrationService
     {
