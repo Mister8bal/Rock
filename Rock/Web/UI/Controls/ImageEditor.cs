@@ -972,12 +972,14 @@ Rock.controls.imageUploader.initialize({{
 $('#{6}').Jcrop({{
     aspectRatio:1,
     setSelect: [ 0,0,300,300 ],
-    boxWidth:$(window).width() * .8,
+    boxWidth:$('.image-editor-crop-container').width(),
     //boxHeight:100,
     onSelect: function(c) {{
         $('#{7}').val(c.x.toFixed() + ',' + c.y.toFixed() + ',' + c.w.toFixed() + ',' + c.h.toFixed() + ',');
     }}
 }});
+
+console.log($('#{6}').width());
 
 // prompt to upload image
 $('#{8}').click( function (e, data) {{
