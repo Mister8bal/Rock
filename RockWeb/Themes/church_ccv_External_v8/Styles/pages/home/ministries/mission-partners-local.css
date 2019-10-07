@@ -27,6 +27,11 @@
     background-color: #F3F3F3;
 }
 
+#zone-sectionf .btn-row a {
+    width: 230px;
+    max-width: 230px;
+}
+
 #section-g-bg {
     background-color: #FFFFFF; 
 }
@@ -40,4 +45,10 @@
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-mission-partners-local.jpg");
     }
+
+    #zone-sectionf .btn-row a {
+        width: 100%;
+        max-width: 100%;
+    }
+
 }
