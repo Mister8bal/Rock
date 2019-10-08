@@ -430,6 +430,12 @@ namespace church.ccv.CCVRest.MobileApp
                         URL = resourceItem.AttributeValues["URL"].ToString()
                     };
 
+                    // is there a 'launches external browser' flag?
+                    if ( resourceItem.ContainsKey( "LaunchesExternalBrowser" ) == true )
+                    {
+                        resModel.LaunchesExternalBrowser = resourceItem.AttributeValues["LaunchesExternalBrowser"].Value.AsBoolean();
+                    }
+
                     contentModel.Resources.Add( resModel );
                 }
 
@@ -531,6 +537,12 @@ namespace church.ccv.CCVRest.MobileApp
                         else
                         {
                             resourceModel.ImageURL = string.Empty;
+                        }
+
+                        // is there a 'launches external browser' flag?
+                        if ( resource.ContainsKey( "LaunchesExternalBrowser" ) == true )
+                        {
+                            resourceModel.LaunchesExternalBrowser = resource.AttributeValues["LaunchesExternalBrowser"].Value.AsBoolean();
                         }
 
                         ltTopicModel.Resources.Add( resourceModel );
