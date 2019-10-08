@@ -5,66 +5,119 @@
 {% include '~~/Assets/Lava/home/locations/script-campus-locations.lava' %}
 
 <h2 class="field-status-title">Field Status</h2>
-<div class="campus-cards-row">
-    {% for item in Items %}
-        <div class="campus-card">
-            <div class="card-content">
-                <h4>{{ item.Campus }}</h4>
-                <p id="summary">{{ item.Summary | Default:'All fields are open. Please refer to your Team Toolbox or the campus sports page for map and schedule.' }} </p>
-                <p>{{ item.ModifiedDateTime | Date:'M/d/yyyy' }}</p>
-            </div>
-            {% if item.FieldStatus == "Open" %}
-                <div class="card-footer field-open"><p>Fields are open for scheduled activities.</p></div>
-            {% else %}
-                <div class="card-footer field-closed"><p>Fields are closed for scheduled activities.</p></div>
-            {% endif %}
-        </div>
-    {% endfor %}    
+
+<div class="loading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
 
-<div class="campus-cards-row-mobile">
+<div id="desktopFieldStatus">
     <div class="campus-dropdown">
         <button id="btnCampusSelect" class="dropdown-toggle" type="button" data-toggle="dropdown" style="border: 0px;">Select Campus<b class="fa fa-caret-down"></b></button>
-        <ul class="dropdown-menu">
-            {% for campusItem in Campuses %}
-                {% if campusItem.IsActive == 'True' and campusItem.Name != 'Anthem' and campusItem.Name != 'Midtown Phoenix' and campusItem.Name != 'Scottsdale' %}
-                    <li><button type="button" onClick="changeCampus({{ campusItem.Id }});return false;">{{ campusItem.Name }}</button></li>
-                {% endif %}
-            {% endfor %} 
-        </ul>
+        <ul class="dropdown-menu" id="dropdown-menu"></ul>
     </div> 
-    
-    {% for item in Items %}
-        <div class="campus-card hidden" id="{{item.Campus | Replace:' ', '-' | Downcase }}">
-            <div class="card-content">
-                <h4>{{ item.Campus }}</h4>
-                <p id="summary">{{ item.Summary | Default:'All fields are open. Please refer to your Team Toolbox or the campus sports page for map and schedule.' }} </p>
-                <p>{{ item.ModifiedDateTime | Date:'M/d/yyyy' }}</p>
-            </div>
-            {% if item.FieldStatus == "Open" %}
-                <div class="card-footer field-open"><p>Fields are open for scheduled activities.</p></div>
-            {% else %}
-                <div class="card-footer field-closed"><p>Fields are closed for scheduled activities.</p></div>
-            {% endif %}
-        </div>
-    {% endfor %}     
 </div>
 
-
-
 <script type="text/javascript">
+    
+    $.ajax({
+        url: "/api/STARS/FieldStatus",
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+            for (let i = 0; i < data.Data.length; i++) {
+                // create campus card and add to page
+                var fieldStatusCard = createCampusCard(data.Data[i]);
+                $('#desktopFieldStatus').append(fieldStatusCard);
+                // create campus dropdown li for mobile view
+                var campusDropdownItem = createDropdownItem(data.Data[i]);
+                $('#dropdown-menu').append(campusDropdownItem);
+            }
+            $(document).ready(function() {
+                $('.loading').addClass('hidden');
+                $('#desktopFieldStatus').attr("style", "opacity: 1");
+            });
+        },
+        error:function(error){
+            console.log(`Error ${error}`)
+        }
+    });
 
-    function changeCampus(campusId) {
+    function createCampusCard(campusObject) {
+        // create div: campus card
+        var div = document.createElement('div');
+        div.setAttribute('class', 'campus-card');
+        div.setAttribute('id', campusObject.CampusName.replace(/ /g,'-').toLowerCase());
+
+        // create div: card content
+        var divCardContent = document.createElement('div');
+        divCardContent.setAttribute('class', 'card-content');
+        div.append(divCardContent);
+
+        // create h4: campus name
+        var h4CampusName = document.createElement('h4');
+        h4CampusName.innerText = campusObject.CampusName;
+        divCardContent.append(h4CampusName);
+
+        // create p: summary
+        var pSummary = document.createElement('p');
+        pSummary.setAttribute('class', 'summary');
+        pSummary.innerText = campusObject.Summary;
+        divCardContent.append(pSummary);
+        
+        // create p: modified date time
+        var pFieldStatusLastUpdate = document.createElement('p');
+        pFieldStatusLastUpdate.innerText = campusObject.ModifiedDateTime;
+        divCardContent.append(pFieldStatusLastUpdate);
+        
+        // create div: footer field status
+        var footerFieldStatus = createFieldStatusFooter(campusObject.FieldStatus);
+        div.append(footerFieldStatus);
+        
+        return div;
+    }
+
+    // returns div
+    function createFieldStatusFooter(fieldStatus) {
+        // create div: field status
+        var divFieldStatus = document.createElement('div');
+        divFieldStatus.setAttribute('class', 'card-footer field-' + fieldStatus.toLowerCase());
+        
+        // create p: field status content
+        var pFieldStatus = document.createElement('p');
+        pFieldStatus.innerText = "Fields are " + fieldStatus.toLowerCase() + " for scheduled activities.";
+
+        divFieldStatus.append(pFieldStatus);
+
+        return divFieldStatus;
+    }
+
+    function changeCampus(campusName) {
         for (var i = 0; i < CCV.locations.length; i++) {
-            var campus = CCV.locations[i].name.replace(' ','-').toLowerCase();
-            if (campusId == CCV.locations[i].id) {
+            var campusNameSanitized = CCV.locations[i].name.replace(/ /g,'-').toLowerCase());
+            if (campusName == CCV.locations[i].name) {
                 $('#btnCampusSelect').text( CCV.locations[i].name + " Campus");
-                $('#'+campus).removeClass("hidden");
-            }  
+                $('#'+campusNameSanitized).css("display", "flex");
+            } 
             else {
-                $('#'+campus).addClass("hidden");
+                $('#'+campusNameSanitized).css("display", "none");
             }
         }
     }
-            
-</script>
+
+    // returns li
+    function createDropdownItem(campusObject) {
+        // create li: campus item in dropdown
+        var li = document.createElement('li');
+
+        // create button:
+        var button = document.createElement('button');
+        button.innerText = campusObject.CampusName;
+        button.onclick = function () {
+           changeCampus(campusObject.CampusName);
+        };
+        
+        li.append(button);
+
+        return li;
+    }
+  </script>

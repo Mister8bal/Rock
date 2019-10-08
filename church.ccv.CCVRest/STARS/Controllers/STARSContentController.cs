@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using Rock.Rest.Filters;
 using church.ccv.CCVRest.STARS.Model;
