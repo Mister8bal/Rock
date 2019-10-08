@@ -40,8 +40,8 @@ namespace Rock.Jobs
     [DisallowConcurrentExecution]
     public class SendYouthApplicationNotification : IJob
     {
-        List<NotificationItem> _notificationList = new List<NotificationItem>();
-        List<GroupsMissingRequirements> _groupsMissingRequriements = new List<GroupsMissingRequirements>();
+        List<NotificationEntity> _notificationList = new List<NotificationEntity>();
+        List<GroupWithYouthMembers> _groupsWithYouthMembers = new List<GroupWithYouthMembers>();
 
         /// <summary> 
         /// Empty constructor for job initialization
@@ -97,38 +97,244 @@ namespace Rock.Jobs
                 GroupService groupService = new GroupService( rockContext );
                 var groups = groupService.Queryable().AsNoTracking()
                                 .Where( g => selectedGroupTypes.Contains( g.GroupType.Guid )
-                                    && g.IsActive == true).ToList();
+                                    && g.IsActive == true
+                                    && g.Members.Where( gm => dvQry.Any( dvp => dvp.Id == gm.PersonId) ).Any() );
 
                 var groupMemberServiceQry = new GroupMemberService( rockContext ).Queryable();
 
-               foreach(Group group in groups)
+                List<object> notificationEntities = new List<object>();
+                // Get all parent id's for Group Heirarchy. 
+                //var parentIds = groupService.GetAllAncestorIds()
+
+                foreach(Group group in groups)
                 {
-                    gmList = gmList.Concat( groupMemberServiceQry.Where( gm => gm.GroupId == group.Id && dvQry.Any( p => p.Id == gm.PersonId ) ).ToList() );
+                    var parentIds = groupService.GetAllAncestorIds( group.Id );
+                    GroupWithYouthMembers groupWithYouthMembers = new GroupWithYouthMembers();
+                    groupWithYouthMembers.Id = group.Id;
+                    groupWithYouthMembers.Name = group.Name;
+                    groupWithYouthMembers.AncestorPathName = groupService.GroupAncestorPathName( group.Id );
+
+                    if ( group.GroupType != null )
+                    {
+                        groupWithYouthMembers.GroupTypeId = group.GroupTypeId;
+                        groupWithYouthMembers.GroupTypeName = group.GroupType.Name;
+                    }
+
+                    // get list of the group leaders
+                    groupWithYouthMembers.Leaders = group.Members
+                        .Where( m => m.GroupRole.IsLeader )
+                        .Select( m => new ServingGroupMemberResult
+                        {
+                            Id = m.Id,
+                            PersonId = m.PersonId,
+                            FullName = m.Person.FullName
+                        } )
+                        .ToList();
+
+                    List<GroupYouthMember> groupMembers = new List<GroupYouthMember>();
+
+                    foreach(var youthMember in group.Members.Where( gm => dvQry.Any( dvp => dvp.Id == gm.PersonId ) ) )
+                    {
+                        GroupYouthMember groupYouthMember = new GroupYouthMember();
+                        groupYouthMember.FullName = youthMember.Person.FullName;
+                        groupYouthMember.Id = youthMember.Id;
+                        groupYouthMember.PersonId = youthMember.PersonId;
+                        groupYouthMember.GroupMemberRole = youthMember.GroupRole.Name;
+
+                        groupMembers.Add( groupYouthMember );
+                    }
+
+                    groupWithYouthMembers.GroupYouthMembers = groupMembers;
+
+                    _groupsWithYouthMembers.Add( groupWithYouthMembers );
+
+                    foreach (var leader in group.Members.Where( gm => gm.GroupRole.IsLeader ) )
+                    {
+                        var notificationEntity = new NotificationEntity();
+                        notificationEntity.Person = leader.Person;
+                        notificationEntity.GroupId = group.Id;
+                        _notificationList.Add( notificationEntity );
+                    }
+
+                    var parentLeaders = groupMemberServiceQry.Where( lm => parentIds.Contains( lm.GroupId ) && lm.GroupRole.IsLeader );
+
+                    foreach(var parentLeader in parentLeaders )
+                    {
+                        var notificationEntity = new NotificationEntity();
+                        notificationEntity.Person = parentLeader.Person;
+                        notificationEntity.GroupId = group.Id;
+                        _notificationList.Add( notificationEntity );
+                    }
+                    
+
                 }
 
-                //var minorAndGroupLeaderList = groups.Where( g => g.Members.Select( gm => gm.PersonId ).Contains( 409668 ) )
-                //    .Select(a=>new
-                //    {
-                //        Leader = a.Members.Where( x => x.GroupRole.IsLeader ).FirstOrDefault(),
-                //        GroupMinor = a.Members.Where( z => z.PersonId == 409668 ).FirstOrDefault()
-                //    } );
-                var minorAndGroupLeaderList = groups
-                    //.Where( g => g.Members.Select( gm => gm.PersonId ).Contains( 409668 ) )
-                    .Select( a => new
-                    {
-                        Leader = a.Members.Where( x => x.GroupRole.IsLeader ).FirstOrDefault(),
-                        GroupMinors = a.Members.Where( z => dvQry.Any( p => p.Id == z.PersonId ) )
-                    } );
+                // send out notificatons
+                int recipients = 0;
+                var notificationRecipients = _notificationList.GroupBy( p => p.Person.Id ).ToList();
+                foreach ( var recipientId in notificationRecipients )
+                {
+                    var recipient = _notificationList.Where( n => n.Person.Id == recipientId.Key ).Select( n => n.Person ).FirstOrDefault();
+
+                    var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
+                    mergeFields.Add( "Person", recipient );
+                    var notificationGroupIds = _notificationList
+                                                    .Where( n => n.Person.Id == recipient.Id )
+                                                    .Select( n => n.GroupId )
+                                                    .ToList();
+                    var withYouthMembers = _groupsWithYouthMembers.Where( g => notificationGroupIds.Contains( g.Id ) ).ToList();
+                    mergeFields.Add( "GroupsWithYouthMembers", withYouthMembers );
+
+                    var emailMessage = new RockEmailMessage( systemEmailGuid.Value );
+                    emailMessage.AddRecipient( new RecipientData( recipient.Email, mergeFields ) );
+                    emailMessage.Send();
+
+                    recipients++;
+                }
+
+                context.Result = string.Format( "{0} requirement notification {1} sent", recipients, "email".PluralizeIf( recipients != 1 ) );
 
             }
+            else
+            {
+                context.Result = "Warning: No NotificationEmailTemplate found";
+            }
 
-            context.Result = "Warning: No NotificationEmailTemplate found";
+            
         }
     }
 
     #region Helper Classes
 
-    
+    public class NotificationEntity
+    {
+        /// <summary>
+        /// Gets or sets the person identifier.
+        /// </summary>
+        /// <value>
+        /// The person identifier.
+        /// </value>
+        public Person Person { get; set; }
 
+        /// <summary>
+        /// Gets or sets the group identifier.
+        /// </summary>
+        /// <value>
+        /// The group identifier.
+        /// </value>
+        public int GroupId { get; set; }
+
+    }
+
+    /// <summary>
+    /// Group Missing Requirements
+    /// </summary>
+    [DotLiquid.LiquidType( "Id", "Name", "GroupYouthMembers", "AncestorPathName", "GroupTypeId", "GroupTypeName", "Leaders" )]
+    public class GroupWithYouthMembers
+    {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group members missing requirements.
+        /// </summary>
+        /// <value>
+        /// The group members missing requirements.
+        /// </value>
+        public List<GroupYouthMember> GroupYouthMembers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the ancestor path.
+        /// </summary>
+        /// <value>
+        /// The name of the ancestor path.
+        /// </value>
+        public string AncestorPathName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group type identifier.
+        /// </summary>
+        /// <value>
+        /// The group type identifier.
+        /// </value>
+        public int GroupTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the group type.
+        /// </summary>
+        /// <value>
+        /// The name of the group type.
+        /// </value>
+        public string GroupTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the leaders.
+        /// </summary>
+        /// <value>
+        /// The leaders.
+        /// </value>
+        public List<ServingGroupMemberResult> Leaders { get; set; }
+    }
+
+    /// <summary>
+    /// Group Member Missing Requirements
+    /// </summary>
+    [DotLiquid.LiquidType( "Id", "PersonId", "FullName", "GroupMemberRole", "MissingRequirements" )]
+    public class GroupYouthMember : GroupMemberResult
+    {
+       
+    }
+
+    /// <summary>
+    /// Group Member Result
+    /// </summary>
+    [DotLiquid.LiquidType( "Id", "PersonId", "FullName", "GroupMemberRole" )]
+    public class ServingGroupMemberResult
+    {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the person identifier.
+        /// </summary>
+        /// <value>
+        /// The person identifier.
+        /// </value>
+        public int PersonId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full name.
+        /// </summary>
+        /// <value>
+        /// The full name.
+        /// </value>
+        public string FullName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group member role.
+        /// </summary>
+        /// <value>
+        /// The group member role.
+        /// </value>
+        public string GroupMemberRole { get; set; }
+    }
     #endregion
 }
