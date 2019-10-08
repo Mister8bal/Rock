@@ -93,7 +93,7 @@
 
     function changeCampus(campusName) {
         for (var i = 0; i < CCV.locations.length; i++) {
-            var campusNameSanitized = CCV.locations[i].name.replace(/ /g,'-').toLowerCase());
+            var campusNameSanitized = CCV.locations[i].name.replace(/ /g,'-').toLowerCase();
             if (campusName == CCV.locations[i].name) {
                 $('#btnCampusSelect').text( CCV.locations[i].name + " Campus");
                 $('#'+campusNameSanitized).css("display", "flex");
