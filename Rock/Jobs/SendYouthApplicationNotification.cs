@@ -36,7 +36,7 @@ namespace Rock.Jobs
     [GroupTypesField( "Group Types", "Group types use to check the group requirements on.", order: 1 )]
     [DataViewField("Data View","Which Dataview to use",true, "4A9E2456-04BB-4377-972F-9951876C76E2", "Rock.Model.Person","",2)]
     [EnumField( "Notify Parent Leaders", "", typeof( NotificationOption ), true, "None", order: 3 )]
-    [GroupField( "Accountability Group", "Optional group that will receive a list of all group members that do not meet requirements.", false, order: 4 )]
+    [GroupField( "Accountability Group", "Optional group that will receive a list of all group members that are approaching the 7th grade.", false, order: 4 )]
     [DisallowConcurrentExecution]
     public class SendYouthApplicationNotification : IJob
     {
@@ -88,7 +88,7 @@ namespace Rock.Jobs
                 var personParameterExpression = personService.ParameterExpression;
 
                 List<string> errorMessages;
-                //var dvQry = dataView.GetExpression( personService, null, out errorMessages );
+                
                 var dvQry = dataView.GetQuery( null, rockContext, null, 120, out errorMessages );
 
                 IEnumerable<GroupMember> gmList = new List<GroupMember>();
@@ -103,9 +103,7 @@ namespace Rock.Jobs
                 var groupMemberServiceQry = new GroupMemberService( rockContext ).Queryable();
 
                 List<object> notificationEntities = new List<object>();
-                // Get all parent id's for Group Heirarchy. 
-                //var parentIds = groupService.GetAllAncestorIds()
-
+               
                 foreach(Group group in groups)
                 {
                     var parentIds = groupService.GetAllAncestorIds( group.Id );
@@ -199,7 +197,6 @@ namespace Rock.Jobs
             {
                 context.Result = "Warning: No NotificationEmailTemplate found";
             }
-
             
         }
     }
