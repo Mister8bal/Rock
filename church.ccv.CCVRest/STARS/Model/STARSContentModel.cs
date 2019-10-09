@@ -15,5 +15,4 @@ namespace church.ccv.CCVRest.STARS.Model
 
         public string FieldStatus;
     }
-
 }

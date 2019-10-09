@@ -1,11 +1,11 @@
+
 .page-background {
-	background-color: #EBEBEB;
-	background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mission-partners-along-side.jpg");
+	background-color: #000000
 }
 
 .main-feature {
-    height: 520px;
-    padding-top: 170px;
+    height: 400px;
+    padding-top: 140px;
 }
 
 #single-section-bg {
@@ -58,16 +58,15 @@
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-mission-partners-along-side.jpg");
+        background-color: #000000;
     }
 
     .main-feature {
-        height: 240px;
-        padding-top: 90px;
+        padding-top: 80px;
+        height: 250px;
     }
     
     .back-button {
-        margin-left: 0;
         margin-top: 10px;
     }
 }

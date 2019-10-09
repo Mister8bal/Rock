@@ -30,12 +30,12 @@ namespace church.ccv.CCVRest.STARS.Util
             ContentChannel fieldStatusContent = contentChannelService.Get( _contentChannelId_CampusFieldStatus );
 
             // loop through the items in the field status content channel
-            foreach ( var item in fieldStatusContent.Items )
+            foreach ( ContentChannelItem item in fieldStatusContent.Items )
             {
                 item.LoadAttributes();
 
-                var avCampus = item.AttributeValues["Campus"];
-                var avSummary = item.AttributeValues["Summary"];
+                AttributeValueCache avCampus = item.AttributeValues["Campus"];
+                AttributeValueCache avSummary = item.AttributeValues["Summary"];
 
                 // get field status atrribute value by passing attribute Id and content item id
                 AttributeValue fieldStatusAttributeValue = attributeValueService.GetByAttributeIdAndEntityId( _attributeId_FieldStatus, item.Id );
@@ -48,6 +48,12 @@ namespace church.ccv.CCVRest.STARS.Util
                 if ( fieldStatusAttributeValue != null )
                 {
                     fieldStatusModel.FieldStatus = fieldStatusAttributeValue.Value;
+
+                    if ( fieldStatusAttributeValue.ModifiedDateTime != null )
+                    {
+                        // set the model modified datetime to new formatted modified datetime
+                        fieldStatusModel.ModifiedDateTime = String.Format( "{0:g}", fieldStatusAttributeValue.ModifiedDateTime );
+                    }
                 }
 
                 if ( avCampus != null )
@@ -60,12 +66,6 @@ namespace church.ccv.CCVRest.STARS.Util
                     fieldStatusModel.Summary = avSummary.Value;
                 }
 
-                if ( fieldStatusAttributeValue.ModifiedDateTime != null )
-                {            
-                    // set the model modified datetime to new formatted modified datetime
-                    fieldStatusModel.ModifiedDateTime = String.Format( "{0:g}", fieldStatusAttributeValue.ModifiedDateTime );
-                }
-               
                 fieldStatusList.Add( fieldStatusModel );
             }
 
