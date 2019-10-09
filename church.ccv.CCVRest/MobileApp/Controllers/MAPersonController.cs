@@ -196,6 +196,7 @@ namespace church.ccv.CCVRest.MobileApp
             PersonNotFound
         }
 
+        [Obsolete("Access Token is now returned in the PersonData API. Remove this after the next Mobile App Upgrade", false)]
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route( "api/NewMobileApp/AccessToken" )]
         [Authenticate, Secured]

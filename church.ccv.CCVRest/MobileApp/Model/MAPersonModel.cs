@@ -68,6 +68,10 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public bool? IsCoaching;
                    
         public bool? SharedStory;
+
+
+        // Access Token (for SSO with Rock)
+        public string RockAccessToken;
     }
 
     [Serializable]
