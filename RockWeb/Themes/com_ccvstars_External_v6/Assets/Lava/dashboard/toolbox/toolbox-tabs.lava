@@ -97,11 +97,6 @@
             variableWidth: true,
         });
 
-		// $('.slick-menu').on('afterChange',function(e, slick, item){
-		// 	console.log(item);
-		// 	$('.slick-current .item').click();
-		// });
-
 		$('.nav-buttons .nav-next').click(function(){
 			$('.slick-menu').slick('slickNext');
 		});
