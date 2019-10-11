@@ -36,9 +36,16 @@
         {% comment %} mobile nav for tabs {% endcomment %}
         <div class="tabbed-panel-view-mobile">
             <div class="mobile-items">
-                <div class="select-dropdown">
-                    <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Players</h6><b class="fa fa-caret-down"></b></button>
-                    <ul class="dropdown-menu">
+				<div class="event-cards-header">
+					<div class="nav-buttons">
+						<button type="button" class="nav-button nav-prev"><i class="mdi mdi-chevron-left event-card-navigation-icon"></i></button>
+						<button type="button" class="nav-button nav-next"><i class="mdi mdi-chevron-right event-card-navigation-icon"></i></button>
+					</div>
+				</div>
+                <div class="toolbox-menu-wrapper">
+                    <!--<button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Players</h6><b class="fa fa-caret-down"></b></button>-->
+					
+                    <ul class="slick-menu" style="padding-left:0;">
                         <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Players</div></li>
                         {% if showCoachTools %}
                             <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
@@ -53,6 +60,7 @@
         </div>
     </div>
 </div> 
+
 
 <div class="tabbed-panel-view-cards">
     <div class="tabbed-panel-view-desktop">
@@ -80,22 +88,44 @@
         gCurrentPanel = $("#players-panel")[0];
 
         togglePanel( gCurrentLink, gCurrentPanel, true );
+
+		$('.slick-menu').slick({
+            infinite: false,
+            slidesToShow: 2,
+            swipeToSlide: true,    
+            arrows: false,
+            variableWidth: true,
+        });
+
+		// $('.slick-menu').on('afterChange',function(e, slick, item){
+		// 	console.log(item);
+		// 	$('.slick-current .item').click();
+		// });
+
+		$('.nav-buttons .nav-next').click(function(){
+			$('.slick-menu').slick('slickNext');
+		});
+
+		$('.nav-buttons .nav-prev').click(function(){
+			$('.slick-menu').slick('slickPrev');
+		});
     });
 
-    function togglePanel(panelLink, panelObj, enabled) {
+    function togglePanel(panelLink, panelObj, enabled, mobileView=false) {
+        tabClass = mobileView ? 'active' : 'tab-selected';
         if( enabled ) {
-            panelLink.classList.add('tab-selected');
+            panelLink.classList.add(tabClass);
             panelObj.style.display="block";
         }
         else {
-            panelLink.classList.remove('tab-selected');
+            panelLink.classList.remove(tabClass);
             panelObj.style.display="none";
         }
     }
         
     function linkClicked(linkElement, sectionName, mobileView = false) {
         // turn off existing panel
-        togglePanel( gCurrentLink, gCurrentPanel, false );
+        togglePanel( gCurrentLink, gCurrentPanel, false, mobileView );
         
         var targetPanel = $("#" + sectionName + "-panel")[0];
         gCurrentPanel = targetPanel;
@@ -106,6 +136,6 @@
             $('#btnMobileTabSelect').text($('#' + sectionName + '-mobile-button').text());
         }
 
-        togglePanel( gCurrentLink, gCurrentPanel, true );
+        togglePanel( gCurrentLink, gCurrentPanel, true, mobileView );
     }
 </script>
