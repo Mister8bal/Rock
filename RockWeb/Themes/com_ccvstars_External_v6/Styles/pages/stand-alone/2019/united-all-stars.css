@@ -1,0 +1,189 @@
+#section-feature-bg {
+    background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-soccer.jpg");
+    height: 290px;
+}
+
+#section-b-bg {
+    background-color: #ededed;
+}
+
+#zone-sectiona, #zone-sectionb, #zone-sectionc {
+    padding: 75px 0;
+}
+
+h3 {
+    color: #E73D30;
+}
+
+p {
+    color: #333333;
+    font-size: 16px;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -120px;
+    visibility: hidden;
+}
+
+hr {
+    margin: 0 -3%;
+}
+
+.title {
+    padding-top: 0;
+    height: 290px;
+    justify-content: center;
+}
+
+.title h1 {
+    padding-bottom: 0;
+}
+
+.choose-location {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.location-buttons {
+    padding: 25px 0 15px 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.location-buttons .btn-secondary {
+    min-width: 225px;
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 20px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.location-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.location-header .btn {
+    margin-right: 25px;
+    height: 40px;
+    width: 150px;
+}
+
+.details-mobile {
+    display: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #777777;
+}
+
+th {
+    text-align: center;
+    background-color: #E73D30;
+    color: #FFFFFF;
+    padding-top: 5px;
+}
+
+td {
+    text-align: center;
+    background-color: #ededed;
+    color: #555555;
+    padding-top: 3px;
+    height: 24px;
+    width: 350px;
+}
+
+td:first-of-type {
+    color: #FFFFFF;
+    background-color: #aaaaaa;
+}
+
+.contact a {
+    color: #E73D30;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.contact img {
+    height: 30px;
+    margin-right: 5px;
+}
+
+/* Small monitor */
+@media screen and  (max-width: 1075px ) {
+    .location-buttons .btn-secondary {
+        margin: 0 5px;
+    }
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 1023.98px) {
+    .location-buttons {
+        flex-wrap: wrap;
+        width: 70%;
+    }
+
+    .location-buttons .btn-secondary {
+        margin: 5px 20px;
+    }
+}
+
+/**** Phone Styling ****/
+@media screen and (max-width: 767.98px) {
+    #section-feature-bg {
+        height: 55px;
+    }
+
+    a.anchor {
+        top: -55px;
+    }
+
+    #zone-sectiona, #zone-sectionb, #zone-sectionc {
+        padding: 25px 0;
+    }
+
+    .title {
+        padding-top: 0;
+        height: 55px;
+    }
+
+    .location-header a {
+        display: none;
+    }
+
+    .details-desktop {
+        display: none;
+    }
+
+    .details-mobile {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .team-details {
+        display: none;
+    }
+
+    td {
+        padding: 10px 0;
+    }
+
+    td:first-of-type {
+        background-color: #ededed;
+        color: #555555;
+    }
+}
