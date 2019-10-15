@@ -130,8 +130,9 @@ namespace Rock.Jobs
                         .ToList();
 
                     List<GroupYouthMember> groupMembers = new List<GroupYouthMember>();
+                    var groupYouthMemberQry = group.Members.Where( gm => dvQry.Any( dvp => dvp.Id == gm.PersonId ) );
 
-                    foreach(var youthMember in group.Members.Where( gm => dvQry.Any( dvp => dvp.Id == gm.PersonId ) ) )
+                    foreach (var youthMember in groupYouthMemberQry )
                     {
                         GroupYouthMember groupYouthMember = new GroupYouthMember();
                         groupYouthMember.FullName = youthMember.Person.FullName;
@@ -163,8 +164,7 @@ namespace Rock.Jobs
                         notificationEntity.GroupId = group.Id;
                         _notificationList.Add( notificationEntity );
                     }
-                    
-
+                   
                 }
 
                 // send out notificatons
@@ -197,7 +197,6 @@ namespace Rock.Jobs
             {
                 context.Result = "Warning: No NotificationEmailTemplate found";
             }
-            
         }
     }
 
