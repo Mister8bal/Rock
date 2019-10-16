@@ -652,11 +652,20 @@ namespace church.ccv.CCVRest.MobileApp
                 apBoardModel = new APBoardModel();
                 apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
                 apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId + "&width=180";
-                apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+
+                // setup lava merge fields for personalizing tip of the week and summary attribute values
+                Dictionary<string, object> mergeFields = new Dictionary<string, object>
+                {
+                    { "Person", personAlias.Person }
+                };
+
+                string tipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+                apBoardModel.TipOfTheWeek = tipOfTheWeek.ResolveMergeFields( mergeFields, null);
 
                 // For the Summary, we'll need its value AND its ModifiedDateTime
                 AttributeValueCache summaryAVCache = apBoardItem.AttributeValues["APBoardContent"];
-                apBoardModel.Summary = summaryAVCache.ToString();
+                string summary = summaryAVCache.ToString();
+                apBoardModel.Summary = summary.ResolveMergeFields( mergeFields, null );
 
                 // for the date, see the last time the summary value was updated.
                 // Because AttributeValueCache doesn't bother to contain the AV's ID, we have to go the long way :-|
