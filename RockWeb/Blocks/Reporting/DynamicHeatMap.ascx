@@ -105,13 +105,15 @@
 
             HeatMapShapeControls.prototype.onAdd = function() {
 
-                var div = document.createElement('div');
+                if(!this.div_){
+                    var div = document.createElement('div');
 
-                div.style.border = 'none';
-                div.style.borderWidth = '0px';
-                div.style.position = 'absolute';
-        
-                this.div_ = div;
+                    div.style.border = 'none';
+                    div.style.borderWidth = '0px';
+                    div.style.position = 'absolute';
+            
+                    this.div_ = div;
+                }
         
                 // Add the element to the "overlayImage" pane.
                 var panes = this.getPanes();
@@ -136,10 +138,12 @@
                
                 div.innerHTML = "";
 
+               
                 if(this.shapeName_.length){
                     div.appendChild(this.createLabelElement());
                 }
 
+                console.log("APPENDING CONTROLS", div);
                 div.appendChild(controls);
 
                 div.style.left = cntr.x - (div.offsetWidth/2) + 'px';
@@ -153,11 +157,18 @@
 
             };
 
-            HeatMapShapeControls.prototype.remove = function() {
-                if(!this.div_ || !this.div_.parentNode){
+            HeatMapShapeControls.prototype.onRemove = function(){
+                if(!this.div_.parentNode){
+                    this.div_ = null;
                     return;
                 }
+                console.log("REMOVING");
                 this.div_.parentNode.removeChild(this.div_);
+            }
+
+            HeatMapShapeControls.prototype.remove = function() {
+                this.map_ = null;
+                this.setMap(this.map_);
             };
 
             HeatMapShapeControls.prototype.update = function(shape, count, shapeName, map) {
@@ -208,6 +219,7 @@
                 out.style.verticalAlign = "middle"
                 out.style.borderRadius = '10px';
                 google.maps.event.addDomListener(out,"click", event => {
+                    console.log("SAVE");
                     google.maps.event.trigger(this,'save-region');
                 });
                 return out;
@@ -224,6 +236,14 @@
                 return out;
             }
 
+            /**
+             * Heat Map Shape. This is a wrapper object used 
+             * to manage each shape created in the heatmap.
+             * 
+             * @param parentObj The object Heat Map that we're attaching the shape to.
+             * @param gmapShape A google maps shape objec
+             * @param gmapOptions Google map options.
+             */
             const HeatMapShape = function(parentObj, gmapShape = null, gmapOptions = null){
 
                 /**
@@ -325,10 +345,11 @@
                         var geoFencePath;
 
                         // Assume this is a polygon
-                        if (typeof(mapShapeObj.getPaths) != 'undefined') {
-                                
+                        if (typeof (mapShapeObj.getPaths) != 'undefined') {
+
                             var coordinates = new Array();
                             var vertices = mapShapeObj.getPaths().getAt(0);
+
                             // Iterate over the vertices of the shape's path
                             for (var i = 0; i < vertices.length; i++) {
                                 var xy = vertices.getAt(i);
@@ -342,6 +363,7 @@
                             }
     
                             geoFencePath = coordinates.join('|');
+
                         } else if (mapShapeObj.overlayType == 'rectangle'){
                                 var ne = mapShapeObj.getBounds().getNorthEast();
                                 var sw = mapShapeObj.getBounds().getSouthWest();
@@ -353,15 +375,16 @@
                         } 
     
                         $('#<%=hfLocationSavePath.ClientID%>').val(geoFencePath);
-                            
+              
                         Rock
                         .controls
                         .modal
                         .showModalDialog(
-                            $('#<%=mdSaveLocation.ClientID%>').find('.rock-modal'), 
+                            parentHeatMap.saveModal, 
                                 '#<%=upSaveLocation.ClientID%>'
                         );
 
+                        
                     },
                     
                     /**
@@ -372,9 +395,11 @@
                      * @param Function f: the function to be called when event is triggered
                      */
                     onSaveClick:function(f){
+                        
                         let func = f.bind(this);
                         mapCountLabel.addListener('save-region',func);
                     },
+
                     /**
                      * Registers a function on the labels
                      * delete-region event.  Value of this is assigned
@@ -388,33 +413,58 @@
                             func(ev);
                         });
                     },
+
+                    /**
+                     * updates the shape data and re-triggers the render process. 
+                     **/
                     update:function(){
                         that.processHeatMap(heatMap);
                         that.render();
                     },
+
+                    /**
+                     * Deletes the shape from the map.
+                     **/
                     delete:function(){
                         mapCountLabel.remove();
                         mapShapeObj.setMap(null);
                     },
+
+                    /**
+                     * Sets the map for this shape
+                     * 
+                     * @param newMap Object Google Map.  A google maps object.
+                     */
                     setMap:function(newMap){
-
                         map = newMap;
-
                     },
+
+                    /**
+                     * Returns the google map object this shape is attached to.
+                     * 
+                     * @return Object GoogleMap object.
+                     **/
                     getMap:function(){
                         return map ? map : mapShapeObj.getMap();
                     },
+
+                    /**
+                     * RE-Renders the label for this shape object.
+                     **/
                     redrawOverlay:function(){
-                        if(!mapShapeLabel || !map){
-                            return;
-                        }
                         
                         if(mapCountLabel){
                             mapCountLabel.remove();
+                            mapCountLabel = null;
                         }
                         
                         mapCountLabel = new HeatMapShapeControls(that, mapShapeLabel, map);
                     },
+
+                    /**
+                     * Renders the shape object on the 
+                     * google map.
+                     * */
                     render:function(){
 
                         bounds = mapShapeObj.getBounds();
@@ -430,6 +480,7 @@
 
                         totalCount = pointCount;
                         mapLabel = totalCount.toString();
+                        this.count = mapLabel;
 
                         new HeatMapShapeControls()
                         if (!mapCountLabel) {
@@ -450,6 +501,11 @@
                 return that;
             }
 
+            /**
+             * Wrapper object for the heatmap.
+             * 
+             * @param canvasId The id for the canvas where the map is displayed.
+             */
             const HeatMap = function( canvasId ) {
 
                 // if this is an async postback, the map is already created, so just break out
@@ -464,21 +520,18 @@
                 /**
                  * Private vars 
                  */
-                
+         
                 let map;
                 let mapCanvas;
-
                 let heatMap;
-
                 let mapStyle = <%=this.StyleCode%>;
                 let polygonColorIndex = 0;
                 let polygonColors = $('#<%=hfPolygonColors.ClientID%>').val().split(',');
-
                 let lat = Number($('#<%=hfCenterLatitude.ClientID%>').val());
                 let long = Number($('#<%=hfCenterLongitude.ClientID%>').val());
                 let zoom = Number($('#<%=hfZoom.ClientID%>').val());
                 let centerLatLng = null;
-                
+
                 // Set default map options
                 let mapOpts = {
                     mapTypeId: 'roadmap',
@@ -489,14 +542,10 @@
                 }
 
                 var groupId = <%=this.GroupId ?? 0 %>;
-
                 const heatMapData = [<%=this.HeatMapData%>]
-
                 const heatMapBounds = new google.maps.LatLngBounds();
-
                 const AllShapes = [];
                 let SelectedShape; 
-
                 let campusMarkersData = [<%=this.CampusMarkersData%>]
 
                 // Instantiate markers array to track campus markers.
@@ -516,6 +565,8 @@
                     new google.maps.Point(12, 35)
                 );
 
+                let polygonCompleteListener = null;
+                let overlayCompleteListener = null;
                 let initialColor;
 
                 /**
@@ -546,17 +597,10 @@
                         drawingControlOptions: {
                             position: google.maps.ControlPosition.TOP_CENTER,
                             drawingModes: [
-                                //google.maps.drawing.OverlayType.CIRCLE,
                                 google.maps.drawing.OverlayType.POLYGON,
                                 google.maps.drawing.OverlayType.RECTANGLE
                             ]
                         },
-                        // circleOptions: {
-                        //     draggable: true,
-                        //     editable: true,
-                        //     fillColor: initialColor,
-                        //     strokeColor: initialColor
-                        // },
                         polygonOptions: {
                             draggable: true,
                             editable: true,
@@ -578,8 +622,11 @@
                         }
                     })
                 }
+
                 that.allShapes = AllShapes;
                 that.activeShape = null;
+                that.saveModal = null;
+
                 that.loadGroups = ()=>{
                     
                     if(!groupId){
@@ -639,12 +686,6 @@
                     if (allShapesIndex > -1)
                     {
                         AllShapes.splice(allShapesIndex, 1);
-
-                        if (AllShapes.length == 0)
-                        {
-                            $('.js-deleteshape').hide();
-                        }
-
                     }
                                 
                     shape.delete();
@@ -659,7 +700,6 @@
                         return null;
                     }
 
-
                     if (polygonColorIndex >= polygonColors.length) {
                         polygonColorIndex = 0;
                     }
@@ -668,6 +708,19 @@
                    
                 }
 
+                that.hasShape = function (s) {
+
+                    let out = false;
+
+                    AllShapes.forEach(function(sh){
+                        if(s == sh){
+                            out = true;
+                        }
+                    });
+
+                    return out;
+
+                }
 
                 that.AddUpdateShape = function (shape, justUpdate) {
 
@@ -675,25 +728,25 @@
                         return;
                     }
 
+                    if(that.hasShape(shape)){
+                        return;
+                    }
+
                     SelectedShape = shape;
 
                     let gmShape = shape.getGMShapeObject();
-                    if (!justUpdate) {
 
-                        //google.maps.event.addListener(gmShape, 'click', selectedSHape.handleShapeClick);
+                    if (!justUpdate) {
 
                         // set the color of the next shape
                         if (polygonColors && polygonColors.length) {
                             var color = that.GetNextColor();
-
                             this.drawingManager.polygonOptions.fillColor = color;
                             this.drawingManager.polygonOptions.strokeColor = color;
-                            //this.drawingManager.circleOptions.fillColor = color;
-                            //this.drawingManager.circleOptions.strokeColor = color;
                             this.drawingManager.rectangleOptions.fillColor = color;
                             this.drawingManager.rectangleOptions.strokeColor = color;
                         }
-
+                        
                         AllShapes.push(shape);
 
                     }
@@ -721,6 +774,7 @@
 
                     //This will be the value of the HeatMapShape object.
                     shape.onSaveClick(function(ev){
+                        console.log("ON SAVE CLICK",this);
                         this.save();
                         that.activeShape = this;
                     });
@@ -734,6 +788,9 @@
                     initialColor = that.GetNextColor();
                     mapCanvas = document.getElementById(canvasId);
 
+                    that.saveModal = document.getElementById('mdSaveLocation');
+                    that.saveModal = $(that.saveModal).find('.rock-modal');
+                    
                     if(!mapCanvas){
                         throw new Error('Invalid Map canvas object');
                     }
@@ -773,9 +830,12 @@
                     
                     that.drawingManager.setMap(map);
 
-                    google.maps.event.addListener(that.drawingManager, 'overlaycomplete', that.handleOverlayComplete);
+                    google.maps.event.removeListener(overlayCompleteListener);
+                    google.maps.event.removeListener(polygonCompleteListener);
 
-                    google.maps.event.addListener(that.drawingManager, 'polygoncomplete', function (polygon) {
+                    overlayCompleteListener = google.maps.event.addListener(that.drawingManager, 'overlaycomplete', that.handleOverlayComplete);
+
+                    polygonCompleteListener = google.maps.event.addListener(that.drawingManager, 'polygoncomplete', function (polygon) {
                         google.maps.event.addListener(polygon, 'dragend', function (a,b,c) {
                             handleShapeChange(polygon);
                         });
@@ -814,12 +874,13 @@
 
             }
 
+            /**
+             * Instantiate a new Heatmap object.
+             * */
             const hm = new HeatMap('map_canvas');
 
             Sys.Application.add_load(function () {
-                
                 hm.initMap();
-
             });
 
             // extend polygon to getBounds
@@ -857,12 +918,14 @@
 
 
 <asp:UpdatePanel ID="upSaveLocation" runat="server">
+
     <ContentTemplate>
+        
         <Rock:HiddenFieldWithClass ID="hfLocationSavePath" runat="server" CssClass="js-savelocation-value" />
         <Rock:HiddenFieldWithClass ID="hfLocationId" runat="server" CssClass="js-savelocationid" />
 
         <%-- Save Shape to Location --%>
-        <Rock:ModalDialog ID="mdSaveLocation" runat="server" CssClass="js-savelocation-modal" ValidationGroup="vgSaveLocation" OnOkScript="hm.saveLocationGeofence();" Visible="true">
+        <Rock:ModalDialog ID="mdSaveLocation" runat="server" ClientIDMode="static" CssClass="js-savelocation-modal" ValidationGroup="vgSaveLocation" OnOkScript="hm.saveLocationGeofence();" Visible="true">
             <Content>
                 <Rock:LocationItemPicker ID="lpLocation" runat="server" AllowMultiSelect="false" />
             </Content>
