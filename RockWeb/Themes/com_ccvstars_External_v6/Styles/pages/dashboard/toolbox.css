@@ -459,10 +459,10 @@ strong {
         justify-content:center;
     }
     .slick-menu .item:hover {
-        color:#7a1315;
+        color: #E73D30;
     }
     .slick-menu .item.active {
-        color:#7a1315
+        color: #E73D30;
     }
     .mobile-items {
         background-color: white;

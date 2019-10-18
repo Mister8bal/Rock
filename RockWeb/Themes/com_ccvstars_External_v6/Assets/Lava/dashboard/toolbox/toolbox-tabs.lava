@@ -46,7 +46,7 @@
                     <!--<button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Players</h6><b class="fa fa-caret-down"></b></button>-->
 					
                     <ul class="slick-menu" style="padding-left:0;">
-                        <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item">Players</div></li>
+                        <li><div id="players-mobile-button" onClick="linkClicked(this, 'players', true)" class="item active">Players</div></li>
                         {% if showCoachTools %}
                             <li><div id="contact-team-mobile-button" onClick="linkClicked(this, 'contact-team', true)" class="item">Contact Team</div></li>
                         {% endif %}
@@ -96,6 +96,11 @@
             arrows: false,
             variableWidth: true,
         });
+
+		// $('.slick-menu').on('afterChange',function(e, slick, item){
+		// 	console.log(item);
+		// 	$('.slick-current .item').click();
+		// });
 
 		$('.nav-buttons .nav-next').click(function(){
 			$('.slick-menu').slick('slickNext');
