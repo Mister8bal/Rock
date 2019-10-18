@@ -27,20 +27,6 @@
                     <asp:LinkButton ID="btnApplyOptions" runat="server" Text="Apply" CssClass="btn btn-primary" OnClick="btn_ApplyOptionsClick" />
                 </div>
             </asp:Panel>
-
-            <div class="margin-all-md">
-                <!--<div class="pull-right js-heatmap-actions">
-                    <asp:Panel ID="pnlPieSlicer" runat="server" CssClass="btn btn-default btn-xs js-createpieshape">
-                        <i class='fa fa-pie-chart' title="Create pie slices from selected circle"></i>
-                    </asp:Panel>
-                    <asp:Panel ID="pnlSaveShape" runat="server" CssClass="btn btn-default btn-xs js-saveshape">
-                        <i class='fa fa-floppy-o' title="Save selected shape to a named location"></i>
-                    </asp:Panel>
-
-                    <div class="btn btn-danger btn-xs js-deleteshape" style="display:none"><i class='fa fa-times' title="Delete selected shape"></i></div>
-                
-                </div>-->
-            </div>
             <div class="panel-body">
                 <asp:Literal ID="lMapStyling" runat="server" />
 
@@ -142,8 +128,7 @@
                 if(this.shapeName_.length){
                     div.appendChild(this.createLabelElement());
                 }
-
-                console.log("APPENDING CONTROLS", div);
+                
                 div.appendChild(controls);
 
                 div.style.left = cntr.x - (div.offsetWidth/2) + 'px';
@@ -162,7 +147,6 @@
                     this.div_ = null;
                     return;
                 }
-                console.log("REMOVING");
                 this.div_.parentNode.removeChild(this.div_);
             }
 
@@ -219,7 +203,6 @@
                 out.style.verticalAlign = "middle"
                 out.style.borderRadius = '10px';
                 google.maps.event.addDomListener(out,"click", event => {
-                    console.log("SAVE");
                     google.maps.event.trigger(this,'save-region');
                 });
                 return out;
@@ -774,7 +757,6 @@
 
                     //This will be the value of the HeatMapShape object.
                     shape.onSaveClick(function(ev){
-                        console.log("ON SAVE CLICK",this);
                         this.save();
                         that.activeShape = this;
                     });
