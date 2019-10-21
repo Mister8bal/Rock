@@ -1,5 +1,7 @@
 ﻿using church.ccv.PersonalizationEngine.Model;
+using Rock;
 using Rock.Data;
+using Rock.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -285,6 +287,19 @@ namespace church.ccv.PersonalizationEngine.Data
         {
             //given a person id, get whatever is less - the number of relevant campaigns that exist, or numCampaigns.
 
+            // return empty list if we fail to load the person
+            Person person = new PersonService( new RockContext() ).Get( personId );
+            if ( person == null )
+            {
+                return new List<Campaign>();
+            }
+
+            // setup lava merge fields
+            Dictionary<string, object> mergeFields = new Dictionary<string, object>
+            {
+                { "Person", person }
+            };
+
             // if no target date is passed in, use Now. (Target date is used generally for debugging a future time)
             if ( targetDate == null )
                 targetDate = DateTime.Now.Date;
@@ -307,6 +322,8 @@ namespace church.ccv.PersonalizationEngine.Data
                     {
                         if ( PersonaFits( persona, personId ) )
                         {
+                            campaign.ContentJson = campaign.ContentJson.ResolveMergeFields( mergeFields, null );
+
                             relevantCampaigns.Add( campaign );
 
                             // subtract off each time we find a campaign, and when this is 0, we're done
