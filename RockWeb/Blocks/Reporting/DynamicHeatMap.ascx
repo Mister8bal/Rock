@@ -81,7 +81,6 @@
 
                 // Explicitly call setMap on this overlay
                 this.setMap(map);
-
                 this.deleteControl = null;
                 this.countLabel = null;
             
@@ -91,14 +90,16 @@
 
             HeatMapShapeControls.prototype.onAdd = function() {
 
-                if(!this.div_){
+                if (!this.div_) {
+
                     var div = document.createElement('div');
 
                     div.style.border = 'none';
                     div.style.borderWidth = '0px';
                     div.style.position = 'absolute';
-            
+       
                     this.div_ = div;
+
                 }
         
                 // Add the element to the "overlayImage" pane.
@@ -111,7 +112,6 @@
             HeatMapShapeControls.prototype.handleProjectionReady = function() {
 
                 var overlayProjection = this.getProjection();
-        
                 let cntr = overlayProjection.fromLatLngToDivPixel(this.shape_.getCenter());
         
                 // center the main element.
@@ -123,23 +123,19 @@
                 controls.appendChild(this.createDeleteElement());
                
                 div.innerHTML = "";
-
                
                 if(this.shapeName_.length){
                     div.appendChild(this.createLabelElement());
                 }
                 
                 div.appendChild(controls);
-
                 div.style.left = cntr.x - (div.offsetWidth/2) + 'px';
                 div.style.top = cntr.y - (div.offsetHeight/2) + 'px';
                 
             }
 
             HeatMapShapeControls.prototype.draw = function() {
-
                 this.handleProjectionReady();
-
             };
 
             HeatMapShapeControls.prototype.onRemove = function(){
@@ -161,7 +157,6 @@
                 this.shape_ = shape;
                 this.map_ = shape.getMap();
                 this.setMap(this.map_);
-                //this.draw();
             };
 
             HeatMapShapeControls.prototype.createLabelElement = function(){
@@ -366,7 +361,6 @@
                             parentHeatMap.saveModal, 
                                 '#<%=upSaveLocation.ClientID%>'
                         );
-
                         
                     },
                     
@@ -378,7 +372,6 @@
                      * @param Function f: the function to be called when event is triggered
                      */
                     onSaveClick:function(f){
-                        
                         let func = f.bind(this);
                         mapCountLabel.addListener('save-region',func);
                     },
@@ -503,7 +496,6 @@
                 /**
                  * Private vars 
                  */
-         
                 let map;
                 let mapCanvas;
                 let heatMap;
@@ -659,6 +651,7 @@
                         geoFencePoly.overlayType = 'polygon';
 
                         that.AddUpdateShape(geoFencePoly);
+
                     }
                 }
 
@@ -672,7 +665,6 @@
                     }
                                 
                     shape.delete();
-
                     shape = null;
 
                 };
@@ -717,8 +709,6 @@
 
                     SelectedShape = shape;
 
-                    let gmShape = shape.getGMShapeObject();
-
                     if (!justUpdate) {
 
                         // set the color of the next shape
@@ -746,7 +736,6 @@
                 that.handleOverlayComplete = function(event){
 
                     let shape = new HeatMapShape(that,event.overlay);
-
                     shape.overlayType = event.type;
 
                     that.AddUpdateShape(shape, false);
@@ -764,8 +753,7 @@
                 }
 
                 that.initMap = ()=>{
-
-                    const _this = this;
+                    
                     centerLatLng = new google.maps.LatLng(lat,long );
                     initialColor = that.GetNextColor();
                     mapCanvas = document.getElementById(canvasId);
@@ -809,7 +797,6 @@
                     heatmap.setMap(map);
 
                     that.loadGroups();
-                    
                     that.drawingManager.setMap(map);
 
                     google.maps.event.removeListener(overlayCompleteListener);
