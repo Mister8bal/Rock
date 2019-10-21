@@ -205,12 +205,15 @@ namespace church.ccv.CCVRest.MobileApp
             };
 
             // try to set the location into
-            var groupLoc = group.GroupLocations.First();
-            if ( groupLoc != null )
+            var groupLoc = group.GroupLocations.FirstOrDefault();
+            if ( groupLoc != null && groupLoc.Location != null )
             {
-                groupResult.Longitude = groupLoc.Location.Longitude.Value;
-                groupResult.Latitude = groupLoc.Location.Latitude.Value;
-                groupResult.DistanceFromSource = groupLoc.Location.Distance;
+                if ( groupLoc.Location.Latitude.HasValue && groupLoc.Location.Longitude.HasValue )
+                {
+                    groupResult.Longitude = groupLoc.Location.Longitude.Value;
+                    groupResult.Latitude = groupLoc.Location.Latitude.Value;
+                    groupResult.DistanceFromSource = groupLoc.Location.Distance;
+                }
 
                 groupResult.Street = groupLoc.Location.Street1;
                 groupResult.City = groupLoc.Location.City;
@@ -346,11 +349,13 @@ namespace church.ccv.CCVRest.MobileApp
                 Guid photoGuid = group.AttributeValues[FamilyPicture_Key].Value.AsGuid();
                 if ( photoGuid.IsEmpty() == false )
                 {
-                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid;
+                    groupResult.PhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid + "&width=1200";
+                    groupResult.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Guid=" + photoGuid + "&width=400";
                 }
                 else
                 {
                     groupResult.PhotoURL = publicAppRoot + "Themes/church_ccv_External_v8/Assets/Images/support/mobile-app-no-group-photo.jpg";
+                    groupResult.ThumbnailPhotoURL = publicAppRoot + "Themes/church_ccv_External_v8/Assets/Images/support/mobile-app-no-group-photo.jpg";
                 }
             }
 
@@ -414,7 +419,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             if ( person.PhotoId.HasValue )
             {
-                maGroupMember.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId.Value;
+                maGroupMember.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId.Value + "&width=180";
             }
 
             // if we should include contact info, put it
@@ -437,7 +442,8 @@ namespace church.ccv.CCVRest.MobileApp
             Success,
             GroupNotFound,
             SecurityIssue,
-            AlreadyInGroup
+            AlreadyInGroup,
+            UnknownError
         }
 
         public static RegisterPersonResult RegisterPersonInGroup( JoinGroupModel regModel )
@@ -487,6 +493,12 @@ namespace church.ccv.CCVRest.MobileApp
                 // Save all changes
                 rockContext.SaveChanges();
 
+                // Make sure they're not alread in this group
+                if ( IsPersonInGroup( person.Id, requestedGroup ) )
+                {
+                    return RegisterPersonResult.AlreadyInGroup;
+                }
+
                 // now, it's time to either add them to the group, or kick off the Alert Re-Route workflow
                 // (Or nothing if there's no problem but they're already in the group)
                 GroupMember primaryGroupMember = PersonToGroupMember( rockContext, person, requestedGroup );
@@ -507,14 +519,14 @@ namespace church.ccv.CCVRest.MobileApp
                 // if above, we didn't flag that they should not join the group, let's add them
                 else
                 {
-                    // try to add them to the group (would only fail if the're already in it)
+                    // try to add them to the group (would only fail if the're already in it, which we checked above)
                     if ( TryAddGroupMemberToGroup( rockContext, primaryGroupMember, requestedGroup ) )
                     {
                         return RegisterPersonResult.Success;
                     }
                     else
                     {
-                        return RegisterPersonResult.AlreadyInGroup;
+                        return RegisterPersonResult.UnknownError;
                     }
                 }
             }
@@ -535,13 +547,27 @@ namespace church.ccv.CCVRest.MobileApp
         }
 
         /// <summary>
+        /// Returns true if the person is a member of the given group
+        /// </summary>
+        private static bool IsPersonInGroup( int personId, Group group )
+        {
+            if ( group.Members.Any( m =>
+                                    m.PersonId == personId &&
+                                    m.GroupRoleId == group.GroupType.DefaultGroupRole.Id ) )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Adds the group member to the group if they aren't already in it
         /// </summary>
         private static bool TryAddGroupMemberToGroup( RockContext rockContext, GroupMember newGroupMember, Group group )
         {
-            if ( !group.Members.Any( m =>
-                                      m.PersonId == newGroupMember.PersonId &&
-                                      m.GroupRoleId == group.GroupType.DefaultGroupRole.Id ) )
+            // if they're not already in the group
+            if ( IsPersonInGroup( newGroupMember.PersonId, group ) == false )
             {
                 var groupMemberService = new GroupMemberService( rockContext );
                 groupMemberService.Add( newGroupMember );
@@ -625,12 +651,21 @@ namespace church.ccv.CCVRest.MobileApp
             {
                 apBoardModel = new APBoardModel();
                 apBoardModel.AssociatePastorName = associatePastor.NickName + " " + associatePastor.LastName;
-                apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId;
-                apBoardModel.TipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+                apBoardModel.AssociatePastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId + "&width=180";
+
+                // setup lava merge fields for personalizing tip of the week and summary attribute values
+                Dictionary<string, object> mergeFields = new Dictionary<string, object>
+                {
+                    { "Person", personAlias.Person }
+                };
+
+                string tipOfTheWeek = apBoardItem.AttributeValues["TipOfTheWeek"].ToString();
+                apBoardModel.TipOfTheWeek = tipOfTheWeek.ResolveMergeFields( mergeFields, null);
 
                 // For the Summary, we'll need its value AND its ModifiedDateTime
                 AttributeValueCache summaryAVCache = apBoardItem.AttributeValues["APBoardContent"];
-                apBoardModel.Summary = summaryAVCache.ToString();
+                string summary = summaryAVCache.ToString();
+                apBoardModel.Summary = summary.ResolveMergeFields( mergeFields, null );
 
                 // for the date, see the last time the summary value was updated.
                 // Because AttributeValueCache doesn't bother to contain the AV's ID, we have to go the long way :-|

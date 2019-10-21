@@ -229,6 +229,101 @@ namespace church.ccv.CCVRest.PAV
         }
 
         /// <summary>
+        /// Update a family members First Visit Date attribute if not already set. 
+        /// </summary>
+        /// <param name="visit"></param>
+        /// <param name="familyMember"></param>
+        /// <returns type="bool">Whether or not the update succeeded.  If any family member update fails,
+        /// will return false, however will not halt the process.  All other family member updates may still
+        /// succeed
+        /// </returns>
+        public static bool UpdateFamilyMemberVisitDate(PlanAVisit visit, GroupMember familyMember)
+        {
+            RockContext rockContext = new RockContext();
+            AttributeValueService avService = new AttributeValueService( rockContext );
+
+            try
+            {
+                
+                // get the first campus visit person attribute for adult one
+                int firstCampusVisit_AttributeId = 717;
+
+                AttributeValue avFirstCampusVisit = avService.Queryable().Where( av => av.EntityId == familyMember.PersonId && av.AttributeId == firstCampusVisit_AttributeId ).SingleOrDefault();
+
+                if ( avFirstCampusVisit == null )
+                {
+                    // attribute does not yet exist, create before proceeding
+                    avFirstCampusVisit = new AttributeValue
+                    {
+                        EntityId = familyMember.PersonId,
+                        AttributeId = firstCampusVisit_AttributeId
+                    };
+                    avService.Add( avFirstCampusVisit );
+                }
+
+                // only update value if current value does not exist so we dont lose previous first visit
+                if ( avFirstCampusVisit.Value.IsNullOrWhiteSpace() )
+                {
+                    avFirstCampusVisit.Value = visit.AttendedDate.ToString();
+                }
+
+                rockContext.SaveChanges();
+
+            }
+            catch ( Exception )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Update a family members First Visit Date attribute if not already set. 
+        /// </summary>
+        /// <param name="personId">The person id to add the note for</param>
+        /// <param name="visit">The visit object related to the note.</param>
+        /// <param name="visit">The person alias id of the logged in user who marked the visit as attened</param>
+        /// <returns></returns>
+        public static void AddAttendedNote( int personId, PlanAVisit visit, int? personAliasId = null )
+        {
+
+            RockContext rockContext = new RockContext();
+
+            var noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
+            var noteService = new NoteService( rockContext );
+            var campusService = new CampusService( rockContext );
+            PersonService personService = new PersonService(rockContext);
+            ScheduleService scheduleService = new ScheduleService( rockContext );
+
+            Person notePerson = personService.Get( personId );
+            Campus visitCampus = campusService.Get( visit.AttendedCampusId.Value );
+            Schedule visitSchedule = scheduleService.Get( visit.ScheduledServiceScheduleId );
+            // Ensure that person id provided is a valid person record.
+            // This check is mainly to ensure we don't end up
+            // with orphaned db records in scenarios where the person id
+            // is invalid, or no longer exists.
+            if ( notePerson.IsNotNull() )
+            {
+                var note = new Note();
+                note.IsSystem = false;
+                note.IsAlert = false;
+                note.IsPrivateNote = false;
+                note.NoteTypeId = noteType.Id;
+                note.EntityId = notePerson.Id;
+                note.Text = string.Format("Plan A Visit Attended [{0}] [{1}] [{2}]", visit.AttendedDate.Value.ToString( "MM/dd/yyyy" ), visitSchedule.Name, visitCampus.Name ); 
+                if ( personAliasId.HasValue )
+                {
+                    note.CreatedByPersonAliasId = personAliasId;
+                }
+                noteService.Add( note );
+
+                rockContext.SaveChanges();
+            }
+
+        }
+
+        /// <summary>
         /// Record attended information to a visit
         /// </summary>
         /// <param name="visitId"></param>
@@ -237,13 +332,16 @@ namespace church.ccv.CCVRest.PAV
         /// <param name="attendedDate"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message )
+        public static RecordAttendedResponse RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, out string message, int? submitterAliasId = null )
         {
             RockContext rockContext = new RockContext();
 
             Service<PlanAVisit> pavService = new Service<PlanAVisit>( rockContext );
             PersonAliasService personAliasService = new PersonAliasService( rockContext );
-            AttributeValueService avService = new AttributeValueService( rockContext );
+            
+            PersonService pService = new PersonService( rockContext );
+            IEnumerable<GroupMember> familyMembers;
+            bool success = true;
 
             PlanAVisit visit = pavService.Get( visitId );
 
@@ -254,48 +352,43 @@ namespace church.ccv.CCVRest.PAV
                     // we have a valid visit with no attended date
                     // get adult one as a person
                     PersonAlias adultOne = personAliasService.Get( visit.AdultOnePersonAliasId );
+                    Group family = pService.GetFamilies( adultOne.PersonId ).FirstOrDefault();
 
-                    try
+                    familyMembers = family.ActiveMembers();
+
+                    // update attended info for visit
+                    visit.AttendedDate = attendedDate;
+                    visit.AttendedServiceScheduleId = attendedScheduleId;
+                    visit.AttendedCampusId = attendedCampusId;
+
+                    foreach (GroupMember familyMember in familyMembers)
                     {
-                        // update attended info for visit
-                        visit.AttendedDate = attendedDate;
-                        visit.AttendedServiceScheduleId = attendedScheduleId;
-                        visit.AttendedCampusId = attendedCampusId;
 
-                        // get the first campus visit person attribute for adult one
-                        int firstCampusVisit_AttributeId = 717;
-
-                        AttributeValue avFirstCampusVisit = avService.Queryable().Where( av => av.EntityId == adultOne.PersonId && av.AttributeId == firstCampusVisit_AttributeId ).SingleOrDefault();
-
-                        if ( avFirstCampusVisit == null )
+                        if(!UpdateFamilyMemberVisitDate( visit, familyMember ) )
                         {
-                            // attribute does not yet exist, create before proceeding
-                            avFirstCampusVisit = new AttributeValue
-                            {
-                                EntityId = adultOne.PersonId,
-                                AttributeId = firstCampusVisit_AttributeId
-                            };
-                            avService.Add( avFirstCampusVisit );
+                            success = false;
+                        }
+                        else
+                        {
+                            AddAttendedNote( familyMember.PersonId, visit, submitterAliasId );
                         }
 
-                        // only update value if current value does not exist so we dont lose previous first visit
-                        if ( avFirstCampusVisit.Value.IsNullOrWhiteSpace() )
-                        {
-                            avFirstCampusVisit.Value = visit.AttendedDate.ToString();
-                        }
+                    }
 
-                        rockContext.SaveChanges();
-
+                    rockContext.SaveChanges();
+                    
+                    if ( success )
+                    {
+                        
                         message = "Visit updated successfully";
-
                         return RecordAttendedResponse.Success;
                     }
-                    catch ( Exception )
+                    else
                     {
-                        message = "Failed to update visit.";
-
+                        message = "Failed to update visit. One or more family members failed to update successfully.";
                         return RecordAttendedResponse.Failed;
                     }
+
                 }
                 else
                 {

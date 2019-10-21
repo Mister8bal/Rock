@@ -45,11 +45,11 @@ namespace church.ccv.CCVRest.PAV
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route( "api/PlanAVisit/Attended" )]
         [Authenticate, Secured]
-        public HttpResponseMessage RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate )
+        public HttpResponseMessage RecordAttended( int visitId, int attendedCampusId, int attendedScheduleId, DateTime attendedDate, int? personAliasId = null )
         {
             string message = String.Empty;
 
-            PAVScheduledVisitService.RecordAttendedResponse updateResponse = PAVScheduledVisitService.RecordAttended( visitId, attendedCampusId, attendedScheduleId, attendedDate, out message );
+            PAVScheduledVisitService.RecordAttendedResponse updateResponse = PAVScheduledVisitService.RecordAttended( visitId, attendedCampusId, attendedScheduleId, attendedDate, out message, personAliasId );
                        
             return Common.Util.GenerateResponse( updateResponse == PAVScheduledVisitService.RecordAttendedResponse.Success, updateResponse.ToString(), message );
         }

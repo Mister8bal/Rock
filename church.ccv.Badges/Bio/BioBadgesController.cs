@@ -162,15 +162,9 @@ namespace church.ccv.Badges.Bio
                     // Note: Would love to have the SQL function "_church_ccv_ufnGetAssociatePastorId_NoDatamart" handle this but
                     //       there is some complex requirements for this that the function can't provide.
                     var attributeValueService = new AttributeValueService( rockContext );
-                    int groupEntityTypeId = GroupTypeCache.Read( Rock.SystemGuid.EntityType.GROUP.AsGuid() ).Id;
                     int attributeId = AttributeCache.Read( church.ccv.Utility.SystemGuids.Attribute.FAMILY_ASSOCIATE_PASTOR_OVERRIDE.AsGuid() ).Id;
 
-                    associatePastorOverrideId = attributeValueService.Queryable().AsNoTracking()
-                        .Where( av => av.EntityId == family.Id &&
-                                      av.Attribute.EntityTypeId == groupEntityTypeId &&
-                                      av.AttributeId == attributeId )
-                        .Select( av => av.ValueAsPersonId )
-                        .FirstOrDefault();
+                    associatePastorOverrideId = attributeValueService.GetByAttributeIdAndEntityId( attributeId, family.Id ).ValueAsPersonId;
 
                     // If an override exists, override the results
                     if ( associatePastorOverrideId.HasValue )

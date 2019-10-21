@@ -45,9 +45,12 @@ namespace church.ccv.CCVRest.MobileApp
 
             personModel.DisplayAge = GetDisplayAge( person );
 
+            // get an access token so they can SSO to Rock sites
+            personModel.RockAccessToken = "rckipid=" + person.GetImpersonationToken();
+
             if ( person.PhotoId.HasValue )
             {
-                personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId;
+                personModel.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + person.PhotoId + "&width=1200";
             }
             else
             {
@@ -95,11 +98,11 @@ namespace church.ccv.CCVRest.MobileApp
 
                     if ( groupMember.Person.PhotoId.HasValue )
                     {
-                        familyMember.PhotoURL = publicAppRoot + "GetImage.ashx?Id=" + groupMember.Person.PhotoId;
+                        familyMember.ThumbnailPhotoURL = publicAppRoot + "GetImage.ashx?Id=" + groupMember.Person.PhotoId + "&width=180";
                     }
                     else
                     {
-                        familyMember.PhotoURL = string.Empty;
+                        familyMember.ThumbnailPhotoURL = string.Empty;
                     }
 
                     // if they're a child, set that, and also flag that this person HAS children
@@ -350,6 +353,19 @@ namespace church.ccv.CCVRest.MobileApp
                         familyAddress.Location.City = mobileAppPerson.City;
                         familyAddress.Location.State = mobileAppPerson.State;
                         familyAddress.Location.PostalCode = mobileAppPerson.Zip;
+                    }
+                    else
+                    {
+                        GroupService.AddNewGroupAddress( rockContext, 
+                                                         personFamily, 
+                                                         homeAddressDv.Guid.ToString(), 
+                                                         mobileAppPerson.Street1, 
+                                                         mobileAppPerson.Street2, 
+                                                         mobileAppPerson.City, 
+                                                         mobileAppPerson.State, 
+                                                         mobileAppPerson.Zip, 
+                                                         "US", 
+                                                         true );
                     }
                 }
 

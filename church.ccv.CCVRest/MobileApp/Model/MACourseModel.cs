@@ -24,6 +24,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string Zip;
 
         public string PhotoURL;
+        public string ThumbnailPhotoURL;
 
         public MACourseMemberModel AssociatePastor;
         public MACourseMemberModel CourseLeader;
@@ -35,6 +36,6 @@ namespace church.ccv.CCVRest.MobileApp.Model
     public class MACourseMemberModel
     {
         public string Name;
-        public string PhotoURL;
+        public string ThumbnailPhotoURL;
     }
 }

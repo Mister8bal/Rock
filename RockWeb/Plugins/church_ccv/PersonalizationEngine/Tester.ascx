@@ -86,29 +86,6 @@
     </ContentTemplate>
 </asp:UpdatePanel>
 
-<asp:UpdatePanel ID="upnlDefaultCampaigns" runat="server">
-    <ContentTemplate>
-        <div class ="panel panel-block">
-            <div class="panel-heading">
-                <div class="row col-sm-4">
-                    <h4 class="panel-title">Default Campaigns</h4>
-                </div>
-            </div>
-
-            <div class="panel-body">
-                <Rock:Grid ID="gDefaultCampaigns" runat="server" DisplayType="Light" RowItemText="Campaign" AllowPaging="false">
-                    <Columns>
-                        <Rock:RockBoundField DataField="Name" HeaderText="Name" />
-                        <Rock:RockBoundField DataField="Description" HeaderText="Description" />
-                        <Rock:RockBoundField DataField="Priority" HeaderText="Priority" />
-                        <Rock:RockBoundField DataField="Type" HeaderText="Locations" />
-                    </Columns>
-                </Rock:Grid>
-            </div>
-        </div>
-    </ContentTemplate>
-</asp:UpdatePanel>
-
 <style>
     .persona-editable-item{
         display: flex;

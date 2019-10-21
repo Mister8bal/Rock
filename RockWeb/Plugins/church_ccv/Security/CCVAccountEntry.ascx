@@ -33,7 +33,7 @@
                                 usernameUnavailable.removeClass('alert-warning');
                             } else {
                                 availabilityMessageRow.show();
-                                usernameUnavailable.html('That username is already taken!');
+                                usernameUnavailable.html('That username is already taken.');
                                 usernameUnavailable.addClass('alert-warning');
                                 usernameUnavailable.removeClass('alert-success');
                             }
@@ -164,7 +164,7 @@
         </div>
 
         <div class="actions">
-            <asp:Button ID="btnDuplicatesPrev" runat="server" Text="Previous" CssClass="btn btn-link" OnClick="btnDuplicatesPrev_Click" />
+            <asp:Button ID="btnDuplicatesPrev" runat="server" Text="Previous" CssClass="btn btn-primary" OnClick="btnDuplicatesPrev_Click" />
             <asp:Button ID="btnDuplicatesNext" runat="server" Text="Next" CssClass="btn btn-primary" OnClick="btnDuplicatesNext_Click" />
         </div>
 

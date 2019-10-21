@@ -38,12 +38,12 @@
   {{/if}}
 
   {{#ifStatus ConnectionResult.ConnectionStatus is=0}}
-  <div class="badge badge-connect badge-icon" data-toggle="tooltip" title="Is in a connection group (eariest active group {{dateFormat ConnectionResult.ConnectedSince format='l'}})" data-container="body">
+  <div class="badge badge-connect badge-icon" data-toggle="tooltip" title="Is in a connection group (earliest active group {{dateFormat ConnectionResult.ConnectedSince format='l'}})" data-container="body">
     <i class="icon ccv-connect"></i>
   </div>
   {{/ifStatus}}
   {{#ifStatus ConnectionResult.ConnectionStatus is=2}}
-  <div class="badge badge-connect badge-icon step-partial" data-toggle="tooltip" title="Is pending in a connection group (eariest active group {{dateFormat ConnectionResult.ConnectedSince format='l'}})" data-container="body">
+  <div class="badge badge-connect badge-icon step-partial" data-toggle="tooltip" title="Is pending in a connection group (earliest active group {{dateFormat ConnectionResult.ConnectedSince format='l'}})" data-container="body">
     <i class="icon ccv-connect"></i>
   </div>
   {{/ifStatus}}

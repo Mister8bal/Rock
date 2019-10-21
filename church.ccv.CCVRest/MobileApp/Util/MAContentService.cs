@@ -15,53 +15,80 @@ namespace church.ccv.CCVRest.MobileApp
 {
     public class MAContentService
     {
-        public static List<PersonalizedItem> GetPreGatePersonalizedContent()
+        public static List<PersonalizedItem> GetPreGatePersonalizedContent( int numCampaigns, bool includeAllOverride = false )
         {
+            const int ContentChannelId_PreGate = 318;
+
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            ContentChannel pregateContent = contentChannelService.Get( ContentChannelId_PreGate );
+
             List<Model.PersonalizedItem> itemsList = new List<MobileApp.Model.PersonalizedItem>();
-
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
-            Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
+
+            foreach ( var item in pregateContent.Items )
             {
-                Title = "Sign In",
-                Description = "Get personalized content by signing in!",
-                DetailsURL = "ccv://login",
-                ImageURL = publicAppRoot + "Content/ccv.church/pe/mobile-app/PE_social-male.jpg",
-                SkipDetailsPage = true,
+                item.LoadAttributes();
 
-                // For future compatibility
-                LaunchExternalBrowser = false,
-                IncludeAccessToken = true
-            };
+                bool isActive = item.AttributeValues["Active"].ToString().AsBoolean();
+                if ( isActive == true )
+                {
+                    Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem();
 
-            itemsList.Add( psItem );
+                    psItem.Title = item.AttributeValues["PreGate_Title"].ToString();
+                    psItem.SubTitle = item.AttributeValues["SubTitle"].ToString();
+                    psItem.DetailsBody = item.AttributeValues["DetailsBody"].ToString();
+                    psItem.DetailsURL = item.AttributeValues["Link"].ToString();
+                    psItem.SortPriority = item.AttributeValues["SortPriority"].ToString().AsInteger();
+                    psItem.SkipDetailsPage = item.AttributeValues["SkipDetailsPage"].ToString().AsBoolean();
+                    psItem.LaunchesExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
+
+                    string imageGuid = item.AttributeValues["Image"].Value.ToString();
+                    if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
+                    {
+                        psItem.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=1200";
+                    }
+                    else
+                    {
+                        psItem.ImageURL = string.Empty;
+                    }
+
+                    // we always want access tokens for personalization engine stuff
+                    psItem.IncludeAccessToken = true;
+
+                    itemsList.Add( psItem );
+                }
+            }
+
+            //sort them
+            itemsList = itemsList.OrderBy( i => i.SortPriority ).ToList();
+
+            // now take only the number they asked for
+            // this is not the most efficient--loading and building everything just to throw things out, but i'm tired
+            // and we need to ship this.
+            if ( includeAllOverride == false )
+            {
+                itemsList = itemsList.Take( numCampaigns ).ToList();
+            }
 
             return itemsList;
         }
 
         public static List<PersonalizedItem> GetPersonalizedItems( int numCampaigns, int personId, bool includeAllOverride = false )
         {
-            const string PersonalizationEngine_MobileAppNewsFeed_Key = "MobileAppNewsFeed";
+            const string PersonalizationEngine_MobileAppJustForYou_Key = "MobileApp_JustForYou";
             List<Campaign> campaignResults = new List<Campaign>();
 
             // if includeAllOverride is true, we'll treat this as a debug mode, and include every campaign that's active.
             if ( includeAllOverride )
             {
-                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, false );
-
-                var defaultcampaigns = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppNewsFeed_Key, DateTime.Now, DateTime.Now, true );
-                campaignResults.AddRange( defaultcampaigns );
+                campaignResults = PersonalizationEngineUtil.GetCampaigns( PersonalizationEngine_MobileAppJustForYou_Key, DateTime.Now, DateTime.Now );
             }
             else
             {
                 // try getting campaigns for this person
-                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, personId, numCampaigns );
-
-                // if no results came back, then provide "ever green" default campaigns for the user, because we have nothing
-                // relevant / personal to show them
-                if ( campaignResults.Count == 0 )
-                {
-                    campaignResults = PersonalizationEngineUtil.GetDefaultCampaign( PersonalizationEngine_MobileAppNewsFeed_Key, numCampaigns );
-                }
+                campaignResults = PersonalizationEngineUtil.GetRelevantCampaign( PersonalizationEngine_MobileAppJustForYou_Key, personId, numCampaigns );
             }
 
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
@@ -71,19 +98,20 @@ namespace church.ccv.CCVRest.MobileApp
             foreach ( Campaign campaign in campaignResults )
             {
                 JObject contentBlob = JObject.Parse( campaign["ContentJson"].ToString() );
-                JObject mobileAppNewsFeedBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppNewsFeed_Key].ToString() );
+                JObject mobileAppBlob = JObject.Parse( contentBlob[PersonalizationEngine_MobileAppJustForYou_Key].ToString() );
 
                 // try getting values for each piece of the campaign
                 Model.PersonalizedItem psItem = new MobileApp.Model.PersonalizedItem
                 {
-                    Title = mobileAppNewsFeedBlob["title"].ToString(),
-                    Description = mobileAppNewsFeedBlob["body"].ToString(),
-                    DetailsURL = mobileAppNewsFeedBlob["link"].ToString(),
-                    ImageURL = mobileAppNewsFeedBlob["img"].ToString(),
-                    SkipDetailsPage = mobileAppNewsFeedBlob["skip-details-page"].ToString().AsBoolean(),
+                    Title = mobileAppBlob["title"].ToString(),
+                    SubTitle = mobileAppBlob["subtitle"].ToString(),
+                    DetailsBody = mobileAppBlob["detailsbody"].ToString(),
+                    DetailsURL = mobileAppBlob["link"].ToString(),
+                    ImageURL = mobileAppBlob["img"].ToString(),
+                    SkipDetailsPage = mobileAppBlob["skip-details-page"].ToString().AsBoolean(),
+                    LaunchesExternalBrowser = mobileAppBlob["launches-external-browser"].ToString().AsBoolean(),
 
-                    // For future compatibility
-                    LaunchExternalBrowser = false,
+                    // we always want access tokens for personalization engine stuff
                     IncludeAccessToken = true
                 };
 
@@ -100,6 +128,65 @@ namespace church.ccv.CCVRest.MobileApp
 
                 itemsList.Add( psItem );
             }
+
+            return itemsList;
+        }
+
+        public static List<Promotion> GetPromotions( bool includeUnpublished = false )
+        {
+            const int ContentChannelId_Promotions = 319;
+
+            RockContext rockContext = new RockContext();
+            ContentChannelService contentChannelService = new ContentChannelService( rockContext );
+
+            ContentChannel promotionContent = contentChannelService.Get( ContentChannelId_Promotions );
+
+            List<Model.Promotion> itemsList = new List<MobileApp.Model.Promotion>();
+            string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
+
+            foreach ( var item in promotionContent.Items )
+            {
+                item.LoadAttributes();
+
+                // if it's active
+                bool isActive = item.AttributeValues["Active"].ToString().AsBoolean();
+                if ( isActive == true )
+                {
+                    // if it's not expired
+                    DateTime? startDate = item.AttributeValues["Start"].ToString().AsDateTime();
+                    DateTime? endDate = item.AttributeValues["End"].ToString().AsDateTime();
+                    if ( ( (startDate == null || startDate < DateTime.Now) && ( endDate == null || endDate >= DateTime.Now) ) 
+                        || includeUnpublished == true )
+                    {
+                        Model.Promotion promoItem = new MobileApp.Model.Promotion();
+
+                        promoItem.Title = item.AttributeValues["NE_Title"].ToString();
+                        promoItem.Description = item.AttributeValues["DetailsBody"].ToString();
+                        promoItem.DetailsURL = item.AttributeValues["Link"].ToString();
+                        promoItem.SortPriority = item.AttributeValues["SortPriority"].ToString().AsInteger();
+                        promoItem.SkipDetailsPage = item.AttributeValues["SkipDetailsPage"].ToString().AsBoolean();
+                        promoItem.LaunchesExternalBrowser = item.AttributeValues["LaunchesExternalBrowser"].ToString().AsBoolean();
+
+                        string imageGuid = item.AttributeValues["Image"].Value.ToString();
+                        if ( string.IsNullOrWhiteSpace( imageGuid ) == false )
+                        {
+                            promoItem.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=1200";
+                            promoItem.ThumbnailImageURL = publicAppRoot + "GetImage.ashx?Guid=" + imageGuid + "&width=825";
+                        }
+                        else
+                        {
+                            promoItem.ImageURL = string.Empty;
+                        }
+
+                        promoItem.IncludeAccessToken = item.AttributeValues["ForwardUserIdentity"].ToString().AsBoolean();
+
+                        itemsList.Add( promoItem );
+                    }
+                }
+            }
+
+            //sort them
+            itemsList = itemsList.OrderBy( i => i.SortPriority ).ToList();
 
             return itemsList;
         }
@@ -320,7 +407,7 @@ namespace church.ccv.CCVRest.MobileApp
                 string seriesImageGuid = atCCVItem.AttributeValues["SeriesImage"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( seriesImageGuid ) == false )
                 {
-                    contentModel.AtCCV_ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + seriesImageGuid;
+                    contentModel.AtCCV_ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + seriesImageGuid + "&width=1200";
                 }
                 else
                 {
@@ -342,6 +429,12 @@ namespace church.ccv.CCVRest.MobileApp
                         Subtitle = resourceItem.AttributeValues["Subtitle"].ToString(),
                         URL = resourceItem.AttributeValues["URL"].ToString()
                     };
+
+                    // is there a 'launches external browser' flag?
+                    if ( resourceItem.ContainsKey( "LaunchesExternalBrowser" ) == true )
+                    {
+                        resModel.LaunchesExternalBrowser = resourceItem.AttributeValues["LaunchesExternalBrowser"].Value.AsBoolean();
+                    }
 
                     contentModel.Resources.Add( resModel );
                 }
@@ -392,7 +485,7 @@ namespace church.ccv.CCVRest.MobileApp
                 string ltItemImageGuid = ltTopic.AttributeValues["Image"].Value.ToString();
                 if ( string.IsNullOrWhiteSpace( ltItemImageGuid ) == false )
                 {
-                    ltTopicModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid;
+                    ltTopicModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + ltItemImageGuid + "&width=1200";
                 }
                 else
                 {
@@ -439,11 +532,17 @@ namespace church.ccv.CCVRest.MobileApp
                         string resourceImageGuid = resource.AttributeValues["Image"].Value.ToString();
                         if ( string.IsNullOrWhiteSpace( resourceImageGuid ) == false )
                         {
-                            resourceModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + resourceImageGuid;
+                            resourceModel.ImageURL = publicAppRoot + "GetImage.ashx?Guid=" + resourceImageGuid + "&width=400";
                         }
                         else
                         {
                             resourceModel.ImageURL = string.Empty;
+                        }
+
+                        // is there a 'launches external browser' flag?
+                        if ( resource.ContainsKey( "LaunchesExternalBrowser" ) == true )
+                        {
+                            resourceModel.LaunchesExternalBrowser = resource.AttributeValues["LaunchesExternalBrowser"].Value.AsBoolean();
                         }
 
                         ltTopicModel.Resources.Add( resourceModel );

@@ -40,8 +40,6 @@ namespace church.ccv.CCVRest.CCVLive
 
         /// <summary>
         /// The group id to associate with any logged attendance records.
-        /// Production Value: 2575040
-        /// DEV Value: 2567090
         /// </summary>
         private const int AttendanceGroupId = 2575040;
 

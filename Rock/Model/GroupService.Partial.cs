@@ -568,7 +568,7 @@ namespace Rock.Model
                 }
 
                 // also add any groupRequirements that they don't have statuses for (and therefore haven't met)
-                foreach (var groupRequirement in qryGroupRequirements)
+                foreach (var groupRequirement in qryGroupRequirements.Where( x=> x.GroupRoleId == groupMemberWithIssues.GroupMember.GroupRoleId ) )
                 {
                     if ( !statuses.Any( x => x.Key.GroupRequirement.Id == groupRequirement.Id) )
                     {

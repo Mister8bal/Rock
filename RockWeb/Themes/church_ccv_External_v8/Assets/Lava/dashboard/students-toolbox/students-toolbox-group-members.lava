@@ -626,7 +626,7 @@
         switch (data.ConnectionStatus) {
             case 0: {
                 // in a group
-                statusValue = `Is in a CCV group (eariest active group ${moment( new Date(data.ConnectedSince)).format("M/D/YYYY")}).`; 
+                statusValue = `Is in a CCV group (earliest active group ${moment( new Date(data.ConnectedSince)).format("M/D/YYYY")}).`; 
 
                 // change color of icon
                 toggleActiveBadge(element);

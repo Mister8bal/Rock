@@ -54,10 +54,8 @@ namespace RockWeb.Plugins.church_ccv.CommandCenter
         {
             base.OnInit( e );
 
-            // Using the newest version of flowplayer and plugins (as of 9/1/2014) for this block since it works best
-            // for DVR playback.  The older versions would struggle to play video when a different recording was
-            // selected.
-            RockPage.AddScriptLink( "~/Plugins/church_ccv/CommandCenter/Scripts/flowplayer-3.2.13.min.js" );
+            RockPage.AddScriptLink( "~/Plugins/church_ccv/CommandCenter/Assets/video.js" );
+            RockPage.AddCSSLink( "~/Plugins/church_ccv/CommandCenter/Assets/video-js.min.css" );
             RockPage.AddCSSLink( "~/Plugins/church_ccv/CommandCenter/Styles/commandcenter.css" );
         }
 

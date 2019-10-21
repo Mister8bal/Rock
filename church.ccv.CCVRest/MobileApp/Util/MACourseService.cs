@@ -17,15 +17,10 @@ namespace church.ccv.CCVRest.MobileApp
         const int GroupTypeId_LifeTrainingGroup = 117;
         const int GroupRoleId_LifeTrainingCourseLeader = 170;
 
-        // TODO JHM 5-24-19: - depending on mobile app design needs, we may be able to get rid of the commented out keys.
-        //const string Course_Title_Key = "CourseTitle";
         const string Course_Description_Key = "CourseDescription";
-        //const string Course_StartDate_Key = "CourseStartDate";
-        //const string Course_EndDate_Key = "CourseEndDate";
         const string Course_RegStartDate_Key = "RegistrationStartDate";
         const string Course_RegEndDate_Key = "RegistrationEndDate";
         const string Course_Topic_Key = "CourseTopic";
-        //const string Course_Confidential_Key = "Confidential";
        
         public static List<MACourseModel> GetMobileAppCourses( string nameKeyword,
                                                               string descriptionKeyword,
@@ -173,12 +168,15 @@ namespace church.ccv.CCVRest.MobileApp
             };
 
             // try to set the location into
-            var groupLoc = group.GroupLocations.First();
-            if ( groupLoc != null )
+            var groupLoc = group.GroupLocations.FirstOrDefault();
+            if ( groupLoc != null && groupLoc.Location != null )
             {
-                courseResult.Longitude = groupLoc.Location.Longitude.Value;
-                courseResult.Latitude = groupLoc.Location.Latitude.Value;
-                courseResult.DistanceFromSource = groupLoc.Location.Distance;
+                if ( groupLoc.Location.Latitude.HasValue && groupLoc.Location.Longitude.HasValue )
+                {
+                    courseResult.Longitude = groupLoc.Location.Longitude.Value;
+                    courseResult.Latitude = groupLoc.Location.Latitude.Value;
+                    courseResult.DistanceFromSource = groupLoc.Location.Distance;
+                }
 
                 courseResult.Street = groupLoc.Location.Street1;
                 courseResult.City = groupLoc.Location.City;
@@ -190,7 +188,7 @@ namespace church.ccv.CCVRest.MobileApp
             courseResult.CourseLeader = new MACourseMemberModel
             {
                 Name = leader.Person.NickName + " " + leader.Person.LastName,
-                PhotoURL = leader.Person.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + leader.Person.PhotoId.Value : ""
+                ThumbnailPhotoURL = leader.Person.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + leader.Person.PhotoId.Value + "&width=180" : ""
             };
 
             // if the leader has a neighborhood pastor (now called associate pastor) defined, grab their person object. (This is allowed to be null)
@@ -205,7 +203,7 @@ namespace church.ccv.CCVRest.MobileApp
                 courseResult.AssociatePastor = new MACourseMemberModel
                 {
                     Name = associatePastor.NickName + " " + associatePastor.LastName,
-                    PhotoURL = associatePastor.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value : ""
+                    ThumbnailPhotoURL = associatePastor.PhotoId.HasValue ? publicAppRoot + "GetImage.ashx?Id=" + associatePastor.PhotoId.Value + "&width=180" : ""
                 };
             };
             
@@ -276,6 +274,7 @@ namespace church.ccv.CCVRest.MobileApp
                 }
 
                 courseResult.PhotoURL = publicAppRoot + topicImageURL;
+                courseResult.ThumbnailPhotoURL = publicAppRoot + topicImageURL;
             }
 
             return courseResult;

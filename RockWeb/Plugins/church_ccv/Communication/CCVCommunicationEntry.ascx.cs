@@ -27,7 +27,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
     /// </summary>
     [DisplayName( "CCV Communication Entry" )]
     [Category( "CCV > Communication" )]
-    [Description( "Used for creating and sending a new communications such as email, SMS, etc. to recipients.  CCV Customized for sending communication to a group using groupId as page parameter" )]
+    [Description( "Used for creating and sending a new communications such as email, SMS, etc. to recipients.  CCV Customized: send to a group using groupId as page parameter, personId page parameter can be single Id or multple Id's, and modifications for bulk category opt out feature." )]
 
     [SecurityAction( Authorization.APPROVE, "The roles and/or users that have access to approve new communications." )]
 
@@ -44,6 +44,8 @@ namespace RockWeb.Plugins.church_ccv.Communication
 
         #region Fields
 
+        private static int _attributeId_MarketingOptOut = 96313;
+        private static Category _templateCategory = null;
         private bool _fullMode = true;
         private bool _editingApproved = false;
 
@@ -403,24 +405,24 @@ namespace RockWeb.Plugins.church_ccv.Communication
                                 else
                                 {
                                     // Email is active
-                                    if ( recipient.EmailPreference != EmailPreference.EmailAllowed )
-                                    {
-                                        textTooltip = Recipient.PreferenceMessage( recipient );
+                                    // check for a preference setting
+                                    textTooltip = Recipient.PreferenceMessage( recipient );
 
-                                        if ( recipient.EmailPreference == EmailPreference.NoMassEmails )
+                                    if ( recipient.EmailPreference == EmailPreference.DoNotEmail )
+                                    {
+                                        // Email preference is 'Do Not Email'
+                                        textClass = "text-danger";
+                                        
+                                    }
+                                    else if ( textTooltip.IsNotNullOrWhitespace() )
+                                    {
+                                        textClass = "js-no-bulk-email";
+                                        if ( cbBulk.Checked )
                                         {
-                                            textClass = "js-no-bulk-email";
-                                            if ( cbBulk.Checked )
-                                            {
-                                                // This is a bulk email and user does not want bulk emails
-                                                textClass += " text-danger";
-                                            }
+                                            // This is a bulk email and user does not want bulk emails
+                                            textClass += " text-danger";
                                         }
-                                        else
-                                        {
-                                            // Email preference is 'Do Not Email'
-                                            textClass = "text-danger";
-                                        }
+
                                     }
                                 }
                             }
@@ -1162,6 +1164,8 @@ namespace RockWeb.Plugins.church_ccv.Communication
             var template = new CommunicationTemplateService( new RockContext() ).Get( templateId );
             if ( template != null )
             {
+                _templateCategory = template.Category;
+
                 // save what was entered for FromEmail and FromName in case the template blanks it out
                 var enteredFromEmail = CommunicationData.FromEmail;
                 var enteredFromName = CommunicationData.FromName;
@@ -1189,6 +1193,11 @@ namespace RockWeb.Plugins.church_ccv.Communication
                 {
                     var mediumControl = LoadMediumControl( true );
                 }
+            }
+            else
+            {
+                // no template found, clear the template category
+                _templateCategory = null;
             }
         }
 
@@ -1589,15 +1598,31 @@ namespace RockWeb.Plugins.church_ccv.Communication
 
             public static string PreferenceMessage( Recipient recipient )
             {
+                string preferenceMessage = "";
+
                 switch ( recipient.EmailPreference )
                 {
                     case EmailPreference.DoNotEmail:
-                        return "Email Preference is set to 'Do Not Email!'";
+                        preferenceMessage = "Email Preference is set to 'Do Not Email!'";
+                        break;
                     case EmailPreference.NoMassEmails:
-                        return "Email Preference is set to 'No Mass Emails!'";
+                        preferenceMessage = "Email Preference is set to 'No Bulk Emails!'";
+                        break;
                 }
 
-                return string.Empty;
+                // if we dont already have a preference, check if person has opted out of marketing category
+                if ( preferenceMessage == "" && _templateCategory != null )
+                {
+                    var marketingOptOut = new AttributeValueService( new RockContext() ).GetByAttributeIdAndEntityId( _attributeId_MarketingOptOut, recipient.PersonId );
+
+                    if ( marketingOptOut != null && marketingOptOut.Value.IsNotNullOrWhitespace() && marketingOptOut.Value.Contains( _templateCategory.ToString() ) )
+                    {
+                        preferenceMessage = String.Format( "Email Preference is set to 'No {0} Bulk Emails!", _templateCategory.ToString() );
+                    }
+
+                }
+
+                return preferenceMessage;
             }
         }
 

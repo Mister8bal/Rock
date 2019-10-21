@@ -100,7 +100,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                     if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
                     {
-                        resource.SeriesImageURL = publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"];
+                        resource.SeriesImageURL = publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"] + "&width=825";
                     }
 
                     // Get the most recent sunday date
@@ -206,7 +206,7 @@ namespace church.ccv.CCVRest.MobileApp
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
             if ( string.IsNullOrWhiteSpace( series.Attributes["Image_16_9"] ) == false )
             {
-                return publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"];
+                return publicAppRoot + "GetImage.ashx?Guid=" + series.Attributes["Image_16_9"] + "&width=1200";
             }
 
             return string.Empty;

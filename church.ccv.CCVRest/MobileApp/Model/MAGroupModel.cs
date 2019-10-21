@@ -23,6 +23,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
         public string Zip;
 
         public string PhotoURL;
+        public string ThumbnailPhotoURL;
 
         public bool Childcare;
         public string ChildcareDesc;
@@ -45,7 +46,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
     {
         public int PrimaryAliasId;
         public string Name;
-        public string PhotoURL;
+        public string ThumbnailPhotoURL;
         public string PhoneNumberDigits;
         public string Email;
         public MAGroupRole Role;

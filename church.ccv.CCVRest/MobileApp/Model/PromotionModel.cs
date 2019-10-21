@@ -12,6 +12,8 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public string ImageURL;
 
+        public string ThumbnailImageURL;
+
         public string Title;
 
         public string Description;
@@ -20,7 +22,7 @@ namespace church.ccv.CCVRest.MobileApp.Model
 
         public bool SkipDetailsPage;
 
-        public bool LaunchExternalBrowser;
+        public bool LaunchesExternalBrowser;
 
         public bool IncludeAccessToken;
     }

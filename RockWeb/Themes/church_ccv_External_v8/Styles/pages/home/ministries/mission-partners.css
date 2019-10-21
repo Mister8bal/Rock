@@ -2,70 +2,71 @@
 	background-color: #EBEBEB;
 	background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-missions-partners.jpg");
  }
- 
- /* Mobile Background Image */
+
+#section-a-bg {
+    background-color: #FFFFFF;
+}
+
+#section-b-bg {
+    background-color: #F3F3F3;
+}
+
+#section-c-bg {
+    background-color: #FFFFFF; 
+    margin: 0 auto;
+}
+
+.mission-partners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    text-align: center;
+    padding-bottom: 50px;
+}
+
+.mission-partner-icon {
+    width: 30%;
+    padding-top: 50px;
+}
+
+.mission-partner-icon img {
+    width: 200px;
+}
+
+.infoSection p {
+    color: #535353;
+}
+
+/* Tablet Styling */
+@media screen and (max-width: 768px) {
+    .mission-partner-icon {
+        width: unset;
+    }
+
+    .mission-partner-icon img {
+        width: 300px;
+    }
+}
+
+/* End Tablet Styling */
+
+
+/* Mobile Styling */
 @media screen and (max-width: 500px) {
     .page-background {
         background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-missions-partners.jpg");
     }
-}
 
- #ternavbar-bg {
-	 display: flex;
- }
- 
- #zone-singlesection {
-	margin: 0 auto;
-}
-
-.event-cards-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.event-card {
-    height: 500px;
-    z-index: 1;
-	overflow: hidden;
-	padding-bottom: 25px;
-    margin-bottom: 25px;
-}
-
-.card-content {
-    padding: 0px 16px;
-}
- 
-.event-card .card-content {
-	height: 115px;
-}
-
-.event-card .card-content p {
-    line-height: unset;
-    margin: unset;
-}
-
-.event-card .link a {
-    display: flex;
-}
-
- /* Campus Card Responsive Styling */
-@media screen and (max-width: 760px) {
-    .event-cards-row {
+    .mission-partners {
         flex-direction: column;
         align-items: center;
     }
 
-    .event-card {
-        height: 500px;
-    }
-
-    .event-card .link {
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .btn-primary {
-        min-width: 100%;
+    .mission-partner-icon {
+        width: 90%;
+        padding-top: 100px;
     }
 }
+
+/* End Mobile Styling */

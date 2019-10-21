@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Data.Entity;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Rock;
@@ -31,6 +32,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         const int AttributeId_Allergies = 676;
         const int AttributeId_HowDidYouHearAboutCCV = 719;
         const int DefinedTypeId_SourceofVisit = 33;
+        const string DefaultCountry = "US";
 
         private Visit _visit;
 
@@ -68,6 +70,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 // bind dropdowns
                 BindCampuses();
                 BindBDayYearDropDown();
+                BindStatesDropDown( DefaultCountry );
 
                 ViewState["Visit"] = _visit;
             }
@@ -110,7 +113,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void btnFormBack_Click( object sender, EventArgs e )
-        {            
+        {
             Button button = sender as Button;
 
             // if back button on submit page was pressed, ensure edit details is in correct state
@@ -130,7 +133,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
                     // if back button on existing person form or Adults progress navigation was hit we want to go to adult form panel
                     // else go to panel that is in _visit state
-                    if ( button == btnAdultsExistingBack || button == btnProgressAdults)
+                    if ( button == btnAdultsExistingBack || button == btnProgressAdults )
                     {
                         subPanel = pnlAdultsForm;
                     }
@@ -140,7 +143,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     }
 
                     // reset children panel to existing or question - so they can cancel creating a child
-                    if (_visit.Children.Count > 0 )
+                    if ( _visit.Children.Count > 0 )
                     {
                         _visit.SubPanelChildren = SubPanelChildren.Existing;
                     }
@@ -281,7 +284,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                             break;
                     }
 
-                    _visit.VisitDate = DateTime.Parse( visitDateDropDownList.SelectedValue);
+                    _visit.VisitDate = DateTime.Parse( visitDateDropDownList.SelectedValue );
 
                     ViewState["Visit"] = _visit;
 
@@ -322,7 +325,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             MainPanel? currentMainPanel = GetCurrentMainPanel( rockDropDownList.ID );
 
             if ( rockDropDownList.SelectedValue.IsNotNullOrWhitespace() && currentMainPanel != null )
-            {                    
+            {
                 // sync value to other service time drop down
                 switch ( currentMainPanel )
                 {
@@ -361,7 +364,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         #endregion
 
         #region Adult Panel Events
-                                 
+
         /// <summary>
         /// Handles btnAdultsNext click event 
         /// </summary>
@@ -375,7 +378,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             PersonService personService = new PersonService( new RockContext() );
 
             // first look for matching people
-            PersonService.PersonMatchQuery searchParameters = new PersonService.PersonMatchQuery( 
+            PersonService.PersonMatchQuery searchParameters = new PersonService.PersonMatchQuery(
                 firstName: tbAdultOneFirstName.Text,
                 lastName: tbAdultOneLastName.Text,
                 email: tbAdultOneEmail.Text,
@@ -383,7 +386,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             var personQry = personService.FindPersons( searchParameters, false, false );
 
-            if ( personQry.Count() > 0)
+            if ( personQry.Count() > 0 )
             {
                 // matches found
 
@@ -395,7 +398,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 // add matching people to radio button list
                 foreach ( var prsn in personQry )
                 {
-                    if (prsn.Age < 18)
+                    if ( prsn.Age < 18 )
                     {
                         // person found is under the age of 18, skip
                         continue;
@@ -436,7 +439,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                         selectedRadioIndex = rblExisting.Items.Count - 1;
                     }
                 }
-               
+
                 rblExisting.Items.Add( new ListItem( "None of these people are me", "none" ) );
 
                 // select person if was previously selected
@@ -450,7 +453,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     rblExisting.SelectedIndex = rblExisting.Items.Count - 1;
                 }
             }
-            
+
             if ( newPerson == true )
             {
                 _visit.AdultOneFirstName = tbAdultOneFirstName.Text;
@@ -459,7 +462,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 _visit.AdultTwoFirstName = tbAdultTwoFirstName.Text;
                 _visit.AdultTwoLastName = tbAdultTwoLastName.Text;
 
-                if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace())
+                if ( tbAdultFormMobile.Text.IsNotNullOrWhitespace() )
                 {
                     _visit.MobileNumber = PhoneNumber.CleanNumber( tbAdultFormMobile.Text );
 
@@ -540,7 +543,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     }
 
                     // dont add the kids if family ID is already in visit object - prevents kids from being added multiple times
-                    if (_visit.FamilyId != person.GetFamily().Id)
+                    if ( _visit.FamilyId != person.GetFamily().Id )
                     {
                         _visit.FamilyId = person.GetFamily().Id;
 
@@ -552,7 +555,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                         var familyMembers = person.GetFamilyMembers( false, null );
 
                         if ( familyMembers.Count() > 0 )
-                        {                                                       
+                        {
                             foreach ( var familyMember in familyMembers )
                             {
                                 var groupTypeRole = familyMember.Person.GetFamilyRole();
@@ -604,13 +607,13 @@ namespace RockWeb.Plugins.church_ccv.PAV
                         }
                     }
                 }
-            } 
+            }
 
             // person not selected or couldnt load person, proceed using new person
             if ( rblExisting.SelectedValue.IsNotNullOrWhitespace() && ( rblExisting.SelectedValue == "none" || person == null ) )
             {
                 // reset visit object if none not already selected
-                if (_visit.NoneRadioSelected == false)
+                if ( _visit.NoneRadioSelected == false )
                 {
                     ReInitializeAsNewPerson();
                 }
@@ -619,8 +622,8 @@ namespace RockWeb.Plugins.church_ccv.PAV
             _visit.MainPanel = MainPanel.Children;
 
             // get the subpanel to show
-            Panel subPanel = GetSubPanelControl( _visit.SubPanelChildren );                    
- 
+            Panel subPanel = GetSubPanelControl( _visit.SubPanelChildren );
+
             ShowFormPanel( pnlChildren, subPanel );
 
             nbAlertExisting.Text = "";
@@ -644,7 +647,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             // default to children form
             Panel subPanel = pnlChildrenForm;
 
-            if (button == btnNotMyChildren )
+            if ( button == btnNotMyChildren )
             {
                 // resetup form as a new person
                 ReInitializeAsNewPerson();
@@ -677,7 +680,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         protected void btnChildrenAddAnother_Click( object sender, EventArgs e )
         {
             if ( RequiredChildFormFieldsReady() )
-            { 
+            {
                 // update mobile number in visit object if it doesnt exist
                 if ( _visit.MobileNumber.IsNullOrWhiteSpace() && tbChildrenFormMobile.Text.IsNotNullOrWhitespace() )
                 {
@@ -685,7 +688,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     tbAdultFormMobile.Text = tbChildrenFormMobile.Text;
 
                     // populate / hide mobile field on children form for future children to pass validation
-                    tbChildrenFormMobile.Visible = false;                
+                    tbChildrenFormMobile.Visible = false;
                 }
 
                 Child newChild = CreateChild();
@@ -770,7 +773,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         /// <param name="e"></param>
         protected void ddlChildBdayYear_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if ( ddlChildBdayYear.SelectedValue.IsNotNullOrWhitespace())
+            if ( ddlChildBdayYear.SelectedValue.IsNotNullOrWhitespace() )
             {
                 // year changed rebind month (also clears day) (in case leap year)
                 BindBDayMonthDropDown();
@@ -802,7 +805,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         /// <param name="e"></param>
         protected void ddlChildBdayMonth_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if ( ddlChildBdayMonth.SelectedValue.IsNotNullOrWhitespace())
+            if ( ddlChildBdayMonth.SelectedValue.IsNotNullOrWhitespace() )
             {
                 // month changed rebind days (# of days likely different)
                 BindBdayDayDropDown();
@@ -883,17 +886,18 @@ namespace RockWeb.Plugins.church_ccv.PAV
             var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_WEB_PROSPECT.AsGuid() );
             var homeLocationType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
             var mobilePhoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
-            
+
             // servicis needed
             AttributeValueService attributeValueService = new AttributeValueService( rockContext );
             PersonService personService = new PersonService( rockContext );
             Service<PlanAVisit> planAVisitService = new Service<PlanAVisit>( rockContext );
-            
+
             // person / family objects
             Group family = null;
             Person adultOne = null;
             Person adultTwo = null;
             string visitNoteText = "";
+            string defaultCountry = "US";
 
             // use existing person if exists
             if ( _visit.AdultOnePersonId > 0 )
@@ -1002,10 +1006,92 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 rockContext.SaveChanges();
             }
 
+            // Handle address.  If address is entered, replace
+            // existing address with the one entered and
+            // set the old one as a previous address.
+            if ( !string.IsNullOrWhiteSpace(tbStreet1.Text) )
+            {
+                if ( family != null )
+                {
+                    Guid? addressTypeGuid = Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid();
+                    if ( addressTypeGuid.HasValue )
+                    {
+                        var groupLocationService = new GroupLocationService( rockContext );
+                        var dvHomeAddressType = DefinedValueCache.Read( addressTypeGuid.Value );
+
+                        var familyAddress = groupLocationService.Queryable()
+                            .Where( l => l.GroupId == family.Id && l.GroupLocationTypeValueId == dvHomeAddressType.Id )
+                            .FirstOrDefault();
+                        var street1String = tbStreet1.ToString();
+
+                        if ( !string.IsNullOrWhiteSpace( tbStreet1.Text ) )
+                        {
+                            // Create a new location from the address info.
+                            var newLoc = new Location();
+                            newLoc.Street1 = tbStreet1.Text;
+                            newLoc.City = tbCity.Text;
+                            newLoc.State = ddlState.Text;
+                            newLoc.PostalCode = tbPostalCode.Text;
+                            newLoc.Country = defaultCountry;
+
+                            var newLocation = new LocationService( rockContext )
+                                .Get( newLoc.Street1, newLoc.Street2, newLoc.City, newLoc.State, newLoc.PostalCode, newLoc.Country, family, true );
+
+                            if ( familyAddress == null )
+                            {
+                                familyAddress = new GroupLocation();
+                                groupLocationService.Add( familyAddress );
+                                familyAddress.GroupLocationTypeValueId = dvHomeAddressType.Id;
+                                familyAddress.GroupId = family.Id;
+                                familyAddress.IsMailingLocation = true;
+                                familyAddress.IsMappedLocation = true;
+                            }
+                            else if ( tbStreet1.Text != string.Empty )
+                            {
+
+                                //Check to see if the new address matches the existing address.
+                                var existingLocation = familyAddress.Location;
+                                if ( existingLocation.Guid != newLocation.Guid )
+                                {
+
+                                    // addresses are different, so save existing address 
+                                    // as a previous address. 
+                                    var previousAddress = new GroupLocation();
+                                    groupLocationService.Add( previousAddress );
+
+                                    var previousAddressValue = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_PREVIOUS.AsGuid() );
+                                    if ( previousAddressValue != null )
+                                    {
+                                        previousAddress.GroupLocationTypeValueId = previousAddressValue.Id;
+                                        previousAddress.GroupId = family.Id;
+                                        previousAddress.Location = existingLocation;
+                                    }
+                                }
+                            }
+
+                            familyAddress.Location = newLocation;
+
+                            // since there can only be one mapped location, set the other locations to not mapped
+                            if ( familyAddress.IsMappedLocation )
+                            {
+                                var groupLocations = groupLocationService.Queryable()
+                                    .Where( l => l.GroupId == family.Id && l.Id != familyAddress.Id ).ToList();
+
+                                foreach ( var grouplocation in groupLocations )
+                                {
+                                    grouplocation.IsMappedLocation = false;
+                                    grouplocation.IsMailingLocation = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // if not a new family, check if adult two already in family
             if ( !newFamily && _visit.AdultTwoFirstName.IsNotNullOrWhitespace() )
             {
-                GroupMember member = family.Members.FirstOrDefault( a => (a.Person.FirstName == _visit.AdultTwoFirstName || a.Person.NickName == _visit.AdultTwoFirstName) && a.GroupRoleId == adultRoleId );
+                GroupMember member = family.Members.FirstOrDefault( a => ( a.Person.FirstName == _visit.AdultTwoFirstName || a.Person.NickName == _visit.AdultTwoFirstName ) && a.GroupRoleId == adultRoleId );
 
                 if ( member != null )
                 {
@@ -1035,14 +1121,14 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
 
             // add children to family if specified
-            if (_visit.Children.Count > 0 )
+            if ( _visit.Children.Count > 0 )
             {
                 foreach ( var child in _visit.Children )
                 {
                     // first check if already in family
-                    GroupMember childFamilyMember = family.Members.FirstOrDefault( a => (a.Person.FirstName == child.FirstName || a.Person.NickName == child.FirstName) && a.Person.BirthDate == child.Birthday );
+                    GroupMember childFamilyMember = family.Members.FirstOrDefault( a => ( a.Person.FirstName == child.FirstName || a.Person.NickName == child.FirstName ) && a.Person.BirthDate == child.Birthday );
 
-                    if ( childFamilyMember == null)
+                    if ( childFamilyMember == null )
                     {
                         // no matching child found, add new family member
                         Person newChild = new Person()
@@ -1102,7 +1188,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             PlanAVisit visit = new PlanAVisit
             {
                 AdultOnePersonAliasId = adultOne.PrimaryAlias.Id,
-                AdultTwoPersonAliasId = adultTwo.IsNotNull() ? adultTwo.PrimaryAlias.Id : (int?)null,
+                AdultTwoPersonAliasId = adultTwo.IsNotNull() ? adultTwo.PrimaryAlias.Id : ( int? ) null,
                 ScheduledCampusId = _visit.CampusId,
                 ScheduledDate = _visit.VisitDate,
                 ScheduledServiceScheduleId = _visit.ServiceTimeScheduleId,
@@ -1320,7 +1406,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             foreach ( var serviceTime in campus.ServiceTimes )
             {
                 // check if service time matches day selected
-                if ( serviceTime.Day == day)
+                if ( serviceTime.Day == day )
                 {
                     string time = serviceTime.Time.Replace( "%", "" ).Replace( "*", "" ).Trim();
 
@@ -1329,7 +1415,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
                     var scheduleLookup = scheduleLookupList.FirstOrDefault( a => a.Name == scheduleName );
 
-                    if ( scheduleLookup != null && selectedScheduleIds.Contains(scheduleLookup.Id) )
+                    if ( scheduleLookup != null && selectedScheduleIds.Contains( scheduleLookup.Id ) )
                     {
                         // schedule found, add to drop down lists
                         ListItem item = new ListItem( time, scheduleLookup.Id.ToString() );
@@ -1349,7 +1435,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             // reset the year dropdown
             ddlChildBdayYear.Items.Clear();
             ddlChildBdayYear.Items.Add( new ListItem( "" ) );
-            
+
             // add past 50 years (special needs kids can be any age) to year dropdown..overkill? lol
             for ( int i = 0; i < 50; i++ )
             {
@@ -1391,6 +1477,56 @@ namespace RockWeb.Plugins.church_ccv.PAV
             {
                 ddlChildBdayDay.Items.Add( new ListItem( i.ToString() ) );
             }
+        }
+
+        private void BindStatesDropDown( string country )
+        {
+            string countryGuid = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_COUNTRIES ) )
+                .DefinedValues
+                .Where( v => v.Value.Equals( country, StringComparison.OrdinalIgnoreCase ) )
+                .Select( v => v.Guid )
+                .FirstOrDefault()
+                .ToString();
+
+            var definedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
+            var stateList = definedType
+                .DefinedValues
+                .Where( v =>
+                    (
+                        v.AttributeValues.ContainsKey( "Country" ) &&
+                        v.AttributeValues["Country"] != null &&
+                        v.AttributeValues["Country"].Value.Equals( countryGuid, StringComparison.OrdinalIgnoreCase )
+                    ) ||
+                    (
+                        ( !v.AttributeValues.ContainsKey( "Country" ) || v.AttributeValues["Country"] == null ) &&
+                        v.Attributes.ContainsKey( "Country" ) &&
+                        v.Attributes["Country"].DefaultValue.Equals( countryGuid, StringComparison.OrdinalIgnoreCase )
+                    ) )
+                .OrderBy( v => v.Order )
+                .ThenBy( v => v.Value )
+                .Select( v => new { Id = v.Value, Value = v.Description } )
+                .ToList();
+
+            if ( stateList.Any() )
+            {
+
+                string currentValue = ddlState.SelectedValue;
+
+                ddlState.Items.Clear();
+                ddlState.SelectedIndex = -1;
+                ddlState.SelectedValue = null;
+                ddlState.ClearSelection();
+                
+                ddlState.DataTextField = "Id";
+                ddlState.DataSource = stateList;
+                ddlState.DataBind();
+
+                if ( !string.IsNullOrWhiteSpace( currentValue ) )
+                {
+                    ddlState.SetValue( currentValue, "AZ" );
+                }
+            }
+            
         }
 
         #endregion
@@ -1581,7 +1717,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 return true;
             }
         }
-        
+
         /// <summary>
         /// Validate a rock dropdown list for value
         /// </summary>
@@ -1722,10 +1858,10 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     break;
             }
 
-            if ( ddlServiceTime.SelectedValue.IsNotNullOrWhitespace())
+            if ( ddlServiceTime.SelectedValue.IsNotNullOrWhitespace() )
             {
                 divAdultTwo.Attributes["class"] = "";
-            }           
+            }
         }
 
         /// <summary>
@@ -1738,7 +1874,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         {
             return ( ( int ) dayOfWeek - ( int ) today.DayOfWeek + 7 ) % 7;
         }
-  
+
         /// <summary>
         /// Resets visit date dropdowns (adds a blank item after reset)
         /// </summary>
@@ -1788,7 +1924,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <param name="day"></param>
-        private void ResetBDayDropDowns(bool year, bool month, bool day)
+        private void ResetBDayDropDowns( bool year, bool month, bool day )
         {
             // reset year
             if ( year )
@@ -1797,7 +1933,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
 
             // reset month - force reset if year was reset
-            if ( month || year)
+            if ( month || year )
             {
                 ddlChildBdayMonth.Items.Clear();
                 ddlChildBdayMonth.Items.Add( new ListItem( "", "" ) );
@@ -1806,7 +1942,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             }
 
             // reset day - force reset if year or month was reset
-            if (day || month || year)
+            if ( day || month || year )
             {
                 ddlChildBdayDay.Items.Clear();
                 ddlChildBdayDay.Items.Add( new ListItem( "", "" ) );
@@ -1972,7 +2108,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             NoteService noteService = new NoteService( rockContext );
             NoteTypeCache noteType = NoteTypeCache.Read( Rock.SystemGuid.NoteType.PERSON_TIMELINE_NOTE.AsGuid() );
-        
+
             if ( noteType != null )
             {
                 Note note = new Note
@@ -2014,7 +2150,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             public string AdultOneLastName { get; set; }
             public string AdultOneEmail { get; set; }
             public int AdultOnePersonId { get; set; }
-            public int FamilyId { get; set; }            
+            public int FamilyId { get; set; }
             public string MobileNumber { get; set; }
 
             // Adult Two
@@ -2048,7 +2184,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             public Child()
             {
-            }                       
+            }
         }
 
         protected enum MainPanel

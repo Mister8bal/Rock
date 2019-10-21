@@ -138,9 +138,12 @@
     <Compile Include="PAV\Model\PAVScheduledVisitModel.cs" />
     <Compile Include="PAV\PAVScheduledVisitService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="STARS\STARSRegistrationController.cs" />
-    <Compile Include="STARS\STARSRegistrationModel.cs" />
-    <Compile Include="STARS\STARSRegistrationService.cs" />
+    <Compile Include="STARS\Controllers\STARSContentController.cs" />
+    <Compile Include="STARS\Controllers\STARSRegistrationController.cs" />
+    <Compile Include="STARS\Model\STARSContentModel.cs" />
+    <Compile Include="STARS\Model\STARSRegistrationModel.cs" />
+    <Compile Include="STARS\Util\STARSContentService.cs" />
+    <Compile Include="STARS\Util\STARSRegistrationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
