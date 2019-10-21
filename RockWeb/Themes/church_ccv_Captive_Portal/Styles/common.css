@@ -1,0 +1,79 @@
+.page-background {
+    display: flex;
+    flex-direction: column;
+}
+
+#zone-sectiona, #zone-sectionb {
+    max-width: 1280px;
+    margin: 0 15%;
+}
+
+#section-b-bg {
+    background-color: #f3f3f3;  
+}
+
+/* Header */
+.header {
+    background-color: #000;
+    display: flex;
+}
+
+.logo {
+    display: block;
+    background-image: url(../assets/images/logo.svg);
+    background-repeat: no-repeat;
+    background-position: left center;
+    height: 35px;
+    width: 225px;
+    margin: 15px 20px;
+}
+
+/* Content */
+#welcomePanel {
+    width: 100%;
+}
+
+.login-actions .btn-primary {
+    max-width: 300px;
+    margin-top: 20px;
+}
+
+.terms-conditions p {
+    padding: 0 0 10px;
+    margin: 0;
+}
+
+/* Footer */
+.footer {
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 125px;
+}
+
+.footer img {
+    height: 55px;
+    margin: 15px 20px;
+}
+
+.footer span {
+    color: #FFFFFF;
+}
+
+@media screen and (max-width: 768px) {
+    #zone-sectiona, #zone-sectionb {
+        margin: 0 10%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #zone-sectiona, #zone-sectionb {
+        margin: 0 5%;
+    }
+
+    .login-actions .btn-primary {
+        width: 100%;
+        max-width: none;
+    }
+}

@@ -35,72 +35,95 @@ namespace RockWeb.Plugins.church_ccv.Security
     [Description( "Form used to access to Wi-Fi." )]
 
     #region Block Settings
+    [CodeEditorField(
+        name: "Welcome Content",
+        description: "Content displayed on the first panel of the captive portal",
+        defaultValue: "Thanks for visiting our campus!",
+        category: "Captive Portal Content",
+        order: 0,
+        key: "WelcomeContent" )]
+    [TextField(
+        name: "Title Text",
+        description: "Title Text to display",
+        defaultValue: "Thank you for joining us.",
+        category: "Captive Portal Content",
+        order: 1,
+        key: "TitleText" )]
+    [TextField(
+        name: "Button Text",
+        description: "Text to display on the button",
+        defaultValue: "Connect",
+        category: "Captive Portal Content",
+        order: 2,
+        key: "ButtonText" )]
     [TextField(
         name: "MAC Address Paramameter",
         description: "The query string parameter used for the MAC Address",
         defaultValue: "client_mac",
-        order: 0,
+        category: "Captive Portal Settings",
+        order: 5,
         key: "MacAddressParam" )]
+    [TextField(
+        name: "Location Parameter",
+        description: "The query string parameter used for the access point location",
+        defaultValue: "loc",
+        category: "Captive Portal Settings",
+        order: 6,
+        key: "LocationParam")]
     [TextField(
         name: "Release Link",
         description: "The full URL to redirect users to after registration.",
-        order: 1,
+        category: "Captive Portal Settings",
+        order: 7,
         key: "ReleaseLink" )]
     [BooleanField(
         name: "Show Name",
         description: "Show or hide the Name fields. If it is visible then it will be required.",
         defaultValue: true,
-        order: 2,
+        category: "Captive Portal Settings",
+        order: 10,
         key: "ShowName",
         IsRequired = true )]
     [BooleanField(
         name: "Show Mobile Phone",
         description: "Show or hide the Mobile Phone Number field. If it is visible then it will be required.",
         defaultValue: true,
-        order: 3,
+        category: "Captive Portal Settings",
+        order: 11,
         key: "ShowMobilePhone",
         IsRequired = true )]
     [BooleanField(
         name: "Show Email",
         description: "Show or hide the Email field. If it is visible then it will be required.",
         defaultValue: true,
-        order: 4,
+        category: "Captive Portal Settings",
+        order: 12,
         key: "ShowEmail",
         IsRequired = true )]
-    [TextField(
-        name: "Title Text",
-        description: "Title Text to display",
-        defaultValue: "Thank you for joining us.",
-        order: 5,
-        key: "TitleText" )]
-    [TextField(
-        name: "Button Text",
-        description: "Text to display on the button",
-        defaultValue: "Connect",
-        order: 7,
-        key: "ButtonText" )]
     [DefinedValueField(
         definedTypeGuid: Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON,
         name: "New Person Record Type",
         description: "The person type to assign to new persons created by Captive Portal.",
         defaultValue: Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON,
-        order: 9,
+        category: "Captive Portal Settings",
+        order: 13,
         key: "NewPersonRecordType" )]
     [DefinedValueField(
         definedTypeGuid: Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS,
         name: "New Person Record Status",
         description: "The record status to assign to new persons created by Captive Portal.",
         defaultValue: Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE,
-        order: 10,
+        category: "Captive Portal Settings",
+        order: 14,
         key: "NewPersonRecordStatus" )]
     [DefinedValueField(
         definedTypeGuid: Rock.SystemGuid.DefinedType.PERSON_CONNECTION_STATUS,
         name: "New Person Connection Status",
         description: "The connection status to assign to new persons created by Captive Portal",
         defaultValue: Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_VISITOR,
-        order: 11,
-        key: "NewPersonConnectionStatus" )]
-
+        category: "Captive Portal Settings",
+        order: 15,
+        key: "NewPersonConnectionStatus" )]    
     #endregion Block Settings
     public partial class CCVCaptivePortalForm : RockBlock
     {
@@ -150,6 +173,16 @@ namespace RockWeb.Plugins.church_ccv.Security
                     return;
                 }
 
+                // check for access point location and then look for a matching campus
+                string locationParam = RockPage.PageParameter( GetAttributeValue( "LocationParam" ) );
+                int? campusId = GetCampusIdFromLocation( locationParam );
+
+                if ( campusId != null )
+                {
+                    // save campus id to the page
+                    hfCampusId.Value = campusId.ToString();
+                }
+
                 // Save the supplied MAC address to the page removing any non-Alphanumeric characters
                 macAddress = macAddress.RemoveAllNonAlphaNumericCharacters();
                 hfMacAddress.Value = macAddress;
@@ -183,6 +216,13 @@ namespace RockWeb.Plugins.church_ccv.Security
                 if ( titleText.IsNotNullOrWhiteSpace() )
                 {
                     lblTitleText.Text = titleText;
+                }
+
+                // Set the welcome content
+                string welcomeContent = GetAttributeValue( "WelcomeContent" );
+                if ( welcomeContent.IsNotNullOrWhitespace() )
+                {
+                    lWelcomeContent.Text = welcomeContent;
                 }
 
                 // Direct connect if no controls are visible
@@ -335,6 +375,27 @@ namespace RockWeb.Plugins.church_ccv.Security
         }
 
         /// <summary>
+        /// Returns a campus if match found in location parameter.
+        /// </summary>
+        /// <param name="locationParam"></param>
+        /// <returns></returns>
+        private int? GetCampusIdFromLocation( string location )
+        {
+            var campuses = CampusCache.All();
+
+            foreach ( var campus in campuses )
+            {
+                // check the location for an active campus name or shortcode
+                if ( campus.IsActive == true && location.Contains( campus.Name ) || location.Contains( campus.ShortCode ) )
+                {
+                    return campus.Id;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Creates the device cookie if it does not exist.
         /// </summary>
         private void CreateDeviceCookie( string macAddress )
@@ -434,7 +495,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                 if ( person.IsNotNull() )
                 {
                     RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
-                    return person.PrimaryAliasId;
+                    return person.PrimaryAlias.Id;
                 }
                 else
                 {
@@ -466,7 +527,7 @@ namespace RockWeb.Plugins.church_ccv.Security
                 if ( person != null )
                 {
                     RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
-                    return person.PrimaryAliasId;
+                    return person.PrimaryAlias.Id;
                 }
             }
 
@@ -478,6 +539,8 @@ namespace RockWeb.Plugins.church_ccv.Security
 
         protected Person CreateAndSaveNewPerson()
         {
+            var rockContext = new RockContext();
+
             int mobilePhoneTypeId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ).Id;
 
             var recordTypeValue = DefinedValueCache.Read( GetAttributeValue( "NewPersonRecordType" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() );
@@ -493,13 +556,41 @@ namespace RockWeb.Plugins.church_ccv.Security
                 RecordStatusValueId = recordStatusValue != null ? recordStatusValue.Id : ( int? ) null,
                 ConnectionStatusValueId = connectionStatusValue != null ? connectionStatusValue.Id : ( int? ) null
             };
-
+            
             if ( tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters().IsNotNullOrWhiteSpace() )
             {
                 person.PhoneNumbers = new List<PhoneNumber>() { new PhoneNumber { IsSystem = false, Number = tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters(), NumberTypeValueId = mobilePhoneTypeId } };
             }
 
-            PersonService.SaveNewPerson( person, new RockContext() );
+            PersonService.SaveNewPerson( person, rockContext );
+
+            string campusHistoryText = "";
+
+            if ( hfCampusId.Value.IsNotNullOrWhitespace() )
+            {
+                // we have a location campus id, get the campus and add to the family
+                var campus = new CampusService( rockContext ).Get( hfCampusId.Value.AsInteger() );
+
+                if ( campus != null )
+                {
+                    var family = person.GetFamily( rockContext );
+
+                    family.CampusId = campus.Id;
+
+                    // add campus to history message
+                    campusHistoryText = string.Format( " at {0} campus", campus.Name );
+                }
+            }
+
+            // add message in person history that this came from the captive portal
+            var changes = new List<string>
+            {
+                String.Format( "Created by Wifi Captive Portal{0}", campusHistoryText)
+            };
+
+            HistoryService.AddChanges( rockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_DEMOGRAPHIC_CHANGES.AsGuid(), person.Id, changes );
+            rockContext.SaveChanges();
+
             return person;
         }
 
