@@ -453,39 +453,46 @@ strong {
         padding: 0 15px;
         background-color: white;
     }
+
     .toolbox-menu-wrapper {
         display:flex;
         flex-direction:row; 
         justify-content:center;
     }
+
     .slick-menu .item:hover {
         color: #E73D30;
     }
+
     .slick-menu .item.active {
         color: #E73D30;
     }
+
     .mobile-items {
         background-color: white;
         padding-bottom: 20px;
         position: relative;
     }
+
     .mobile-items .slick-menu {
         position: absolute;
         padding-left: 0;
         top: 0;
         width: 80%;
     }
+
     .mobile-items .event-cards-header {
         padding-top:0;
         position:relative;
     }
+
     .slick-menu .slick-slide:focus {
         outline: none;
     }
+
     .slick-menu li {
         padding: 0 1rem;
         text-transform:uppercase;
-        
     }
 
     .tabbed-panel-view-cards .header h4 {
