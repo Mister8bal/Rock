@@ -1491,7 +1491,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             var definedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
 
             var stateDdlListValues = new List<Object>();
-            stateDdlListValues.Add( new { Id = "", Value = "--" } );
+            stateDdlListValues.Add( new { Id = "", Value = "" } );
 
             var stateList = definedType
                 .DefinedValues
