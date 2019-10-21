@@ -1139,7 +1139,7 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
     .modal-scrollable {
         display: flex;
         flex-direction: row;
-        justify-cotent: center;
+        justify-content: center;
         max-width: 100vw;
     }
 
