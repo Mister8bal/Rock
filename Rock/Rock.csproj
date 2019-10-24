@@ -2004,6 +2004,7 @@
     <Compile Include="Workflow\Action\Communications\SendEmail.cs" />
     <Compile Include="Workflow\Action\Communications\SendEmailWithEvents.cs" />
     <Compile Include="Workflow\Action\Communications\SendNotification.cs" />
+    <Compile Include="Workflow\Action\Communications\SendSmsToRole.cs" />
     <Compile Include="Workflow\Action\Communications\SendSms.cs" />
     <Compile Include="Workflow\Action\Communications\SendSystemEmail.cs" />
     <Compile Include="Workflow\Action\Connections\AddConnectionRequestActivity.cs" />
