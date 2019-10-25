@@ -76,7 +76,7 @@
             </div>
          
             <div class="no-event-placeholder" style="display: none;">
-                <h4 style="color: #7c7c7c">No events are currently scheduled.</h4>
+                <h4 style="color: #545454">No events are currently scheduled.</h4>
             </div>
          
          
