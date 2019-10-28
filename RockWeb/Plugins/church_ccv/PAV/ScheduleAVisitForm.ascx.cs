@@ -1489,6 +1489,10 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 .ToString();
 
             var definedType = DefinedTypeCache.Read( new Guid( Rock.SystemGuid.DefinedType.LOCATION_ADDRESS_STATE ) );
+
+            var stateDdlListValues = new List<Object>();
+            stateDdlListValues.Add( new { Id = "", Value = "" } );
+
             var stateList = definedType
                 .DefinedValues
                 .Where( v =>
@@ -1507,7 +1511,9 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 .Select( v => new { Id = v.Value, Value = v.Description } )
                 .ToList();
 
-            if ( stateList.Any() )
+            stateDdlListValues.AddRange( stateList );
+
+            if ( stateDdlListValues.Any() )
             {
 
                 string currentValue = ddlState.SelectedValue;
@@ -1518,7 +1524,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 ddlState.ClearSelection();
                 
                 ddlState.DataTextField = "Id";
-                ddlState.DataSource = stateList;
+                ddlState.DataSource = stateDdlListValues;
                 ddlState.DataBind();
 
                 if ( !string.IsNullOrWhiteSpace( currentValue ) )

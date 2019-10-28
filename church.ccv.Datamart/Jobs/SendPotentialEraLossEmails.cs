@@ -115,7 +115,7 @@ namespace church.ccv.Utility
                             emailMessage.AddRecipient( new RecipientData( headOfHouse.Email, mergeFields ) );
                             emailMessage.AppRoot = Rock.Web.Cache.GlobalAttributesCache.Read( rockContext ).GetValue( "ExternalApplicationRoot" );
                             emailMessage.FromEmail = neighborhoodPastor.Email;
-                            emailMessage.FromName = campusPastor;
+                            emailMessage.FromName = neighborhoodPastor.FullName;
                             emailMessage.Subject = systemEmail.Subject;
                             emailMessage.Message = systemEmail.Body.ResolveMergeFields( mergeFields );
                             emailMessage.CreateCommunicationRecord = true;

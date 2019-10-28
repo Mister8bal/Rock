@@ -27,8 +27,8 @@
 
     function handleOnLoad() {
         // default to the dashboard panel
-        gCurrentLink = $("#capital-initiative-button")[0];
-        gCurrentPanel = $("#capital-initiative-panel")[0];
+        gCurrentLink = $("#capital-lane-button")[0];
+        gCurrentPanel = $("#capital-lane-panel")[0];
         togglePanel( gCurrentLink, gCurrentPanel, true );        
     }
 
@@ -46,7 +46,7 @@
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
         if ( document.readyState === "complete") {
             // remove styling from default mobile panel
-            $('#capital-initiative-mobile-button').removeClass('toolbox-subnav-div-selected');
+            $('#capital-lane-mobile-button').removeClass('toolbox-subnav-div-selected');
 
             // turn off existing panel
             togglePanel( gCurrentLink, gCurrentPanel, false );
@@ -74,18 +74,18 @@
 </div>
 
 <div class="toolbox-subnav-desktop">
-    <div id="capital-initiative-button" onClick="linkClicked(this, 'capital-initiative')">Capital Initiative</div>
-    <div id="innovative-initiative-button" onClick="linkClicked(this, 'innovative-initiative')">Innovative Initiative</div>
-    <div id="ministry-initiative-button" onClick="linkClicked(this, 'ministry-initiative')">Ministry Initiative</div>
-    <div id="missions-initiative-button" onClick="linkClicked(this, 'missions-initiative')">Missions Initiative</div>
+    <div id="capital-lane-button" onClick="linkClicked(this, 'capital-lane')">Capital Lane</div>
+    <div id="innovative-lane-button" onClick="linkClicked(this, 'innovative-lane')">Technology & Innovation Lane</div>
+    <div id="ministry-lane-button" onClick="linkClicked(this, 'ministry-lane')">Ministry Lane</div>
+    <div id="missions-lane-button" onClick="linkClicked(this, 'missions-lane')">Missions Lane</div>
 </div>
 
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
-        <div id="capital-initiative-mobile-button" onClick="linkClicked(this, 'capital-initiative')" class="subnav-item toolbox-subnav-div-selected">Capital Initiative</div>
-        <div id="innovative-initiative-mobile-button" onClick="linkClicked(this, 'innovative-initiative')" class="subnav-item">Innovative Initiative</div>
-        <div id="ministry-initiative-mobile-button" onClick="linkClicked(this, 'ministry-initiative')" class="subnav-item">Ministry Initiative</div>
-        <div id="missions-initiative-mobile-button" onClick="linkClicked(this, 'missions-initiative')" class="subnav-item">Missions Initiative</div>
+        <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item toolbox-subnav-div-selected">Capital Lane</div>
+        <div id="innovative-lane-mobile-button" onClick="linkClicked(this, 'innovative-lane')" class="subnav-item">Technology & Innovation Lane lane</div>
+        <div id="ministry-lane-mobile-button" onClick="linkClicked(this, 'ministry-lane')" class="subnav-item">Ministry Lane</div>
+        <div id="missions-lane-mobile-button" onClick="linkClicked(this, 'missions-lane')" class="subnav-item">Missions Lane</div>
     </div>
 </div>
 

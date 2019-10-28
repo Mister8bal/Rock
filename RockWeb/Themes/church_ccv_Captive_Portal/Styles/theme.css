@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Heebo:300,400,500,700,800,900|Open+Sans:300,400,600,700,800&display=swap');
-
 .jcrop-holder {
     direction: ltr;
     text-align: left;
@@ -175,83 +173,33 @@
 
 @font-face {
     font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-Thin.eot');
-    src: url('../Assets/Fonts/Akrobat-Thin.eot?#iefix') format('embedded-opentype'),
-      url('../Assets/Fonts/Akrobat-Thin.woff') format('woff'),
-      url('../Assets/Fonts/Akrobat-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-ExtraLight.eot');
-    src: url('../Assets/Fonts/Akrobat-ExtraLight.eot?#iefix') format('embedded-opentype'),
-      url('../Assets/Fonts/Akrobat-ExtraLight.woff') format('woff'),
-      url('../Assets/Fonts/Akrobat-ExtraLight.ttf') format('truetype');
-    font-weight: 200;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-Light.eot');
-    src: url('../Assets/Fonts/Akrobat-Light.eot?#iefix') format('embedded-opentype'),
-      url('../Assets/Fonts/Akrobat-Light.woff') format('woff'),
-      url('../Assets/Fonts/Akrobat-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-Regular.eot');
-    src: url('../Assets/Fonts/Akrobat-Regular.eot?#iefix') format('embedded-opentype'),
-      url('../Assets/Fonts/Akrobat-Regular.woff') format('woff'),
-      url('../Assets/Fonts/Akrobat-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'akrobat';
     src: url('../Assets/Fonts/Akrobat-SemiBold.eot');
     src: url('../Assets/Fonts/Akrobat-SemiBold.eot?#iefix') format('embedded-opentype'),
       url('../Assets/Fonts/Akrobat-SemiBold.woff') format('woff'),
       url('../Assets/Fonts/Akrobat-SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
-}
+  }
   
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-Bold.eot');
-    src: url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
+  @font-face {
+  font-family: 'akrobat';
+  src: url('../Assets/Fonts/Akrobat-Bold.eot');
+  src: url('../Assets/Fonts/Akrobat-Bold.eot?#iefix') format('embedded-opentype'),
     url('../Assets/Fonts/Akrobat-Bold.woff') format('woff'),
     url('../Assets/Fonts/Akrobat-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-ExtraBold.eot');
-    src: url('../Assets/Fonts/Akrobat-ExtraBold.eot?#iefix') format('embedded-opentype'),
-      url('../Assets/Fonts/Akrobat-ExtraBold.woff') format('woff'),
-      url('../Assets/Fonts/Akrobat-ExtraBold.ttf') format('truetype');
-    font-weight: 800;
-    font-style: normal;
-}
+  font-weight: 700;
+  font-style: normal;
+  }
   
-@font-face {
-    font-family: 'akrobat';
-    src: url('../Assets/Fonts/Akrobat-Black.eot');
-    src: url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
-        url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
-        url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
-}
+  @font-face {
+  font-family: 'akrobat';
+  src: url('../Assets/Fonts/Akrobat-Black.eot');
+  src: url('../Assets/Fonts/Akrobat-Black.eot?#iefix') format('embedded-opentype'),
+    url('../Assets/Fonts/Akrobat-Black.woff') format('woff'),
+    url('../Assets/Fonts/Akrobat-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  }
 
 [class^="note-icon-"]:before, [class*=" note-icon-"]:before {
     display: inline-block;
@@ -1135,26 +1083,6 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
     .modal-footer .btn+.btn {
         margin-left: 0;
     }
-
-    .modal-scrollable {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        max-width: 100vw;
-    }
-
-    .modal.container {
-        max-width: 100%;
-        margin-left: 20px !important;
-    }
-
-    .image-editor-crop-container {
-        width: 100% !important;
-    }
-
-    .jcrop-holder {
-        background-color: transparent;
-    }
 }
 
 
@@ -2005,7 +1933,6 @@ tr.row-highlight td {
 .lava-debug {
     margin-top: 24px;
     clear: both;
-    position: relative;
 }
 
     .lava-debug code {
@@ -8214,9 +8141,6 @@ img.mfp-img {
     -moz-osx-font-smoothing: grayscale;
   }
   
-  .csi-special-needs:before {
-    content: "\e909";
-  }
   .csi-slt:before {
     content: "\e900";
   }
@@ -8225,12 +8149,6 @@ img.mfp-img {
   }
   .csi-map-marker:before {
     content: "\e902";
-  }
-  .csi-cog:before {
-    content: "\f013";
-  }
-  .csi-gear:before {
-    content: "\f013";
   }
   .csi-phone:before {
     content: "\e903";
@@ -8244,14 +8162,26 @@ img.mfp-img {
   .csi-caret-down:before {
     content: "\e906";
   }
-  .csi-location-arrow:before {
-    content: "\f124";
-  }
   .csi-instagram:before {
     content: "\e907";
   }
   .csi-facebook:before {
     content: "\e908";
+  }
+  .csi-special-needs:before {
+    content: "\e909";
+  }
+  .csi-espanol:before {
+    content: "\e90a";
+  }
+  .csi-cog:before {
+    content: "\f013";
+  }
+  .csi-gear:before {
+    content: "\f013";
+  }
+  .csi-location-arrow:before {
+    content: "\f124";
   }
   
 
@@ -10267,8 +10197,8 @@ h5 {
   margin: 0;
   padding: 0.82rem 0 0.656rem 0;
   font-family: akrobat;
-  text-transform: capitalize;
-  font-weight: 900;
+  color: #7A1315;
+  text-transform: uppercase;
 }
 
 h6 {
@@ -10285,6 +10215,10 @@ em {
   font-style: italic;
 }
 
+strong {
+  font-weight: 500;
+}
+
 small {
   font-size: 75%;
 }
@@ -10294,7 +10228,7 @@ small {
 }
 
 .thin {
-  font-weight: 100;
+  font-weight: 400;
 }
 
 .flow-text {
