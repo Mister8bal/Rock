@@ -186,8 +186,6 @@ namespace Rock.Workflow.Action
         private Guid? GetGroupRoleValue( WorkflowAction action )
         {
             Guid? groupRoleGuid = null;
-
-            string groupRole = GetAttributeValue( action, "GroupRole" );
             Guid? groupRoleAttributeGuid = GetAttributeValue( action, "GroupRole" ).AsGuidOrNull();
 
             if ( groupRoleAttributeGuid.HasValue )
@@ -197,6 +195,5 @@ namespace Rock.Workflow.Action
 
             return groupRoleGuid;
         }
-
     }
 }
