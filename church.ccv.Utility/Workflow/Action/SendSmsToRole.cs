@@ -36,8 +36,8 @@ namespace Rock.Workflow.Action
     [Export( typeof( ActionComponent ) )]
     [ExportMetadata( "ComponentName", "SMS Send To Group With Group Role" )]
     [DefinedValueField( Rock.SystemGuid.DefinedType.COMMUNICATION_SMS_FROM, "From", "The number to originate message from (configured under Admin Tools > General Settings > Defined Types > SMS From Values).", true, false, "", "", 0 )]
-    [WorkflowAttribute( "Recipients", "A Group attribute that contains the persons or phone numbers that messages should be sent to. <span class='tip tip-lava'></span>", true, "", "", 1, "To",
-        new string[] {"Rock.Field.Types.GroupFieldType"} )]
+    [WorkflowAttribute( "Recipients Group", "A Group attribute that contains the persons or phone numbers that messages should be sent to. <span class='tip tip-lava'></span>", true, "", "", 1, "To",
+        new string[] { "Rock.Field.Types.GroupFieldType" } )]
     [WorkflowAttribute( "Send to Group Role", "A Group Role attribute to limit recipients.", true, "", "", 2, "GroupRole",
         new string[] { "Rock.Field.Types.GroupRoleFieldType" } )]
     [WorkflowTextOrAttribute( "Message", "Attribute Value", "The message or an attribute that contains the message that should be sent. <span class='tip tip-lava'></span>", true, "", "", 2, "Message",
@@ -73,81 +73,67 @@ namespace Rock.Workflow.Action
             }
 
             // Get the recipients
-            var recipients = new List<RecipientData>();
-            string toValue = GetAttributeValue( action, "To" );
-            Guid guid = toValue.AsGuid();
-            if ( !guid.IsEmpty() )
+            var recipientsList = new List<RecipientData>();
+            string toGroupAttribute = GetAttributeValue( action, "To" );
+            Guid toGroupAttributeGuid = toGroupAttribute.AsGuid();
+
+            if ( toGroupAttributeGuid.IsEmpty() )
             {
-                var attribute = AttributeCache.Read( guid, rockContext );
-                if ( attribute != null )
-                {
-                    string toAttributeValue = action.GetWorklowAttributeValue( guid );
-                    if ( !string.IsNullOrWhiteSpace( toAttributeValue ) )
-                    {
-                        {
-                            int? groupId = toAttributeValue.AsIntegerOrNull();
-                            Guid? groupGuid = toAttributeValue.AsGuidOrNull();
+                action.AddLogEntry( "Invalid Submission: No valid group attribute guid", true );
+                return false;
+            }
 
-                            //Get the Group Role attribute value
-                            Guid? groupRoleValueGuid = GetGroupRoleValue( action );
+            // Get the selected groups guid usig the Appropriate attribute guid.
+            string toAttributeValue = action.GetWorklowAttributeValue( toGroupAttributeGuid );
 
-                            IQueryable<GroupMember> qry = null;
+            if ( string.IsNullOrWhiteSpace( toAttributeValue ) )
+            {
+                action.AddLogEntry( "Invalid Group: No valid group", true );
+                return false;
+            }
+            
+            Guid? groupGuid = toAttributeValue.AsGuidOrNull();
 
-                            // Handle situations where the attribute value is the ID
-                            if ( groupId.HasValue )
-                            {
-                                qry = new GroupMemberService( rockContext ).GetByGroupId( groupId.Value );
-                            }
+            //Get the Group Role attribute value
+            Guid? groupRoleValueGuid = GetGroupRoleValue( action );
 
-                            // Handle situations where the attribute value stored is the Guid
-                            else if ( groupGuid.HasValue )
-                            {
-                                qry = new GroupMemberService( rockContext ).GetByGroupGuid( groupGuid.Value );
-                            }
-                            else
-                            {
-                                action.AddLogEntry( "Invalid Recipient: No valid group id or Guid", true );
-                            }
+            IEnumerable<Person> groupRecipients = null;
 
-                            // Filter recipients query by the provided group role. 
-                            if ( groupRoleValueGuid.HasValue )
-                            {
-                                qry = qry.Where( m => m.GroupRole != null && m.GroupRole.Guid.Equals( groupRoleValueGuid.Value ) );
-                            }
-
-                            if ( qry != null )
-                            {
-                                foreach ( var person in qry
-                                    .Where( m => m.GroupMemberStatus == GroupMemberStatus.Active )
-                                    .Select( m => m.Person ) )
-                                {
-                                    var phoneNumber = person.PhoneNumbers
-                                        .Where( p => p.IsMessagingEnabled )
-                                        .FirstOrDefault();
-                                    if ( phoneNumber != null )
-                                    {
-                                        string smsNumber = phoneNumber.Number;
-                                        if ( !string.IsNullOrWhiteSpace( phoneNumber.CountryCode ) )
-                                        {
-                                            smsNumber = "+" + phoneNumber.CountryCode + phoneNumber.Number;
-                                        }
-
-                                        var recipientMergeFields = new Dictionary<string, object>( mergeFields );
-                                        var recipient = new RecipientData( smsNumber, recipientMergeFields );
-                                        recipients.Add( recipient );
-                                        recipient.MergeFields.Add( "Person", person );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if ( groupGuid.HasValue && groupRoleValueGuid.HasValue )
+            {
+                groupRecipients = new GroupMemberService( rockContext ).GetByGroupGuid( groupGuid.Value )
+                    .Where( m => m.GroupRole != null && m.GroupRole.Guid.Equals( groupRoleValueGuid.Value ) && m.GroupMemberStatus == GroupMemberStatus.Active )
+                    .Select( m => m.Person );
             }
             else
             {
-                if ( !string.IsNullOrWhiteSpace( toValue ) )
+                action.AddLogEntry( "Invalid Recipient: No valid group Guid or group role Guid", true );
+                return false;
+            }
+
+
+            if ( groupRecipients.Count() <= 0 )
+            {
+                return true;
+            }
+
+            foreach ( var person in groupRecipients)
+            {
+                var phoneNumber = person.PhoneNumbers
+                    .Where( p => p.IsMessagingEnabled )
+                    .FirstOrDefault();
+                if ( phoneNumber != null )
                 {
-                    recipients.Add( new RecipientData( toValue.ResolveMergeFields( mergeFields ), mergeFields ) );
+                    string smsNumber = phoneNumber.Number;
+                    if ( !string.IsNullOrWhiteSpace( phoneNumber.CountryCode ) )
+                    {
+                        smsNumber = "+" + phoneNumber.CountryCode + phoneNumber.Number;
+                    }
+
+                    var recipientMergeFields = new Dictionary<string, object>( mergeFields );
+                    var recipient = new RecipientData( smsNumber, recipientMergeFields );
+                    recipientsList.Add( recipient );
+                    recipient.MergeFields.Add( "Person", person );
                 }
             }
 
@@ -175,10 +161,10 @@ namespace Rock.Workflow.Action
             var binaryFile = new BinaryFileService( rockContext ).Get( GetAttributeValue( action, "Attachment", true ).AsGuid() );
 
             // Send the message
-            if ( recipients.Any() && !string.IsNullOrWhiteSpace( message ) )
+            if ( recipientsList.Any() && !string.IsNullOrWhiteSpace( message ) )
             {
                 var smsMessage = new RockSMSMessage();
-                smsMessage.SetRecipients( recipients );
+                smsMessage.SetRecipients( recipientsList );
                 smsMessage.FromNumber = DefinedValueCache.Read( fromId.Value );
                 smsMessage.Message = message;
                 if ( binaryFile != null )
@@ -192,6 +178,11 @@ namespace Rock.Workflow.Action
             return true;
         }
 
+        /// <summary>
+        /// Returns the group role guid using the Workflow Action Object.
+        /// </summary>
+        /// <param name="action">The workflow action object.</param>
+        /// <returns>A group role guid or null</returns>
         private Guid? GetGroupRoleValue( WorkflowAction action )
         {
             Guid? groupRoleGuid = null;
