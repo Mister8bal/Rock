@@ -83,7 +83,7 @@
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
         <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item toolbox-subnav-div-selected">Capital Lane</div>
-        <div id="innovative-lane-mobile-button" onClick="linkClicked(this, 'innovative-lane')" class="subnav-item">Technology & Innovation Lane lane</div>
+        <div id="innovative-lane-mobile-button" onClick="linkClicked(this, 'innovative-lane')" class="subnav-item">Technology & Innovation Lane</div>
         <div id="ministry-lane-mobile-button" onClick="linkClicked(this, 'ministry-lane')" class="subnav-item">Ministry Lane</div>
         <div id="missions-lane-mobile-button" onClick="linkClicked(this, 'missions-lane')" class="subnav-item">Missions Lane</div>
     </div>
