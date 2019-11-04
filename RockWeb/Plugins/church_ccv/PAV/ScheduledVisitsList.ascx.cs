@@ -561,7 +561,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
             var planAVisitTable = new Service<PlanAVisit>( rockContext ).Queryable().AsNoTracking();
             var campusTable = new CampusService( rockContext ).Queryable().AsNoTracking();
             var personAliasTable = new PersonAliasService( rockContext ).Queryable().AsNoTracking();
-            var personTable = new PersonService( rockContext ).Queryable().AsNoTracking();
+            var personTable = new PersonService( rockContext ).Queryable( true ).AsNoTracking();
             var scheduleTable = new ScheduleService( rockContext ).Queryable().AsNoTracking();
             var attributeValueTable = new AttributeValueService( rockContext ).Queryable().AsNoTracking();
 
