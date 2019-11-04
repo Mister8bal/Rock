@@ -4,8 +4,9 @@
 
     <div id="bg-video-wrapper">
         <div class="bg-video">
-            <video playsinline="" muted="" onplaying="this.controls=false" autoplay loop>
-                <source src="/Themes/church_ccv_External_v8/Assets/Images/home/HOMEPAGE_Rough_V1.mp4" type="video/mp4" />
+            <video playsinline="" muted="" onplaying="this.controls=false" poster="/Themes/church_ccv_External_v8/Assets/Images/home/ccv-home-video-snapshot.png" autoplay loop>
+                <source src="/Themes/church_ccv_External_v8/Assets/Images/home/CCV-Home-VIDEO-LOOP_7.mp4" type="video/mp4" />
+                <source src="/Themes/church_ccv_External_v8/Assets/Images/home/CCV-Home-VIDEO-LOOP_7.webm" type="video/webm" />
             </video>
         </div>
         <section class="main-feature">
