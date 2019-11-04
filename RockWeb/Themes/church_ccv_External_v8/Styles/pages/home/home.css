@@ -1,29 +1,26 @@
 .page-background {
-    background-color :#000 !important;
-    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/hero-home.jpg") !important;
+    background-color: #000 !important;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ccv-home-video-snapshot.png") !important;
     background-size: unset;
 }
 
 #bg-video-wrapper {
-    /*height: 50vw;
-    min-height: 50vh;*/
     position: relative;
 }
 
-    #bg-video-wrapper .bg-video {
-        position: absolute;
-        z-index: 1;
-        top: 0px;
-        left: 0px;
-        bottom: 0px;
-        right: 0px;
-        overflow: hidden;
-        background-size: cover;
-        background-color: transparent;
-        background-repeat: no-repeat;
-        background-position: 0% 50%;
-        /* background-image: url ();*/
-    }
+#bg-video-wrapper .bg-video {
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    overflow: hidden;
+    background-size: cover;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0% 50%;
+}
 
 .sldtext {
     z-index: 2;
@@ -57,7 +54,6 @@
         height: auto;
         width: 100%;
     }
-
 }
 
 /* Mobile Background Image */
