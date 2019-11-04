@@ -4684,7 +4684,7 @@ fieldset .actions {
     .datepicker table tr td.range:focus, .datepicker table tr td.range.focus {
         color: #000;
         background-color: #d5d5d5;
-        border-color: #545454;
+        border-color: #7c7c7c;
     }
 
     .datepicker table tr td.range:hover {
@@ -4702,7 +4702,7 @@ fieldset .actions {
         .datepicker table tr td.range:active:hover, .datepicker table tr td.range.active:hover, .open > .dropdown-toggle.datepicker table tr td.range:hover, .datepicker table tr td.range:active:focus, .datepicker table tr td.range.active:focus, .open > .dropdown-toggle.datepicker table tr td.range:focus, .datepicker table tr td.range:active.focus, .datepicker table tr td.range.active.focus, .open > .dropdown-toggle.datepicker table tr td.range.focus {
             color: #000;
             background-color: #c3c3c3;
-            border-color: #545454;
+            border-color: #7c7c7c;
         }
 
     .datepicker table tr td.range:active, .datepicker table tr td.range.active, .open > .dropdown-toggle.datepicker table tr td.range {
