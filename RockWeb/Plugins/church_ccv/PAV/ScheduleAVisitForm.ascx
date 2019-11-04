@@ -140,7 +140,7 @@
 
     .existing-children-vertical .existing-child {
         font-family: heebo;
-        color: #7c7c7c;
+        color: #545454;
         font-weight: 900;
         padding: 10px 0;
     }
