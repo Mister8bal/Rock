@@ -335,7 +335,9 @@ namespace church.ccv.CCVRest.STARS.Util
                 }
             }
 
-            return activeCamps;
+            List<STARSRegistrationModel> sortedActiveCamps = activeCamps.OrderBy( a => a.EventOccurrenceDate ).ToList();
+
+            return sortedActiveCamps;
         }
 
         /// <summary>
