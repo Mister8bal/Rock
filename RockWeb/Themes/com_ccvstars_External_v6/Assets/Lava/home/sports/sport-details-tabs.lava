@@ -9,7 +9,14 @@
     {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
 {% endcomment %}
 
-<div id="practice-panel">
+<div id="general-panel" class="general-panel">
+    <div class="background-card">
+        <p id="sport-summary">{{ sportSummary }}</p>
+        {{ generalInfo }}
+    </div>
+</div>
+
+<div id="practice-panel" class="practice-panel" style="display: none;">
     <div class="infoSection background-card">
         <div class="left-and-right-container">
             {% if practiceMap != "" or practiceSchedule != "" or keyDates != "" %}
