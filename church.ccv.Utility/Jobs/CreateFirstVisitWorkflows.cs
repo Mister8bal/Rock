@@ -124,17 +124,18 @@ namespace church.ccv.Utility
                 foreach ( var family in families )
                 {
                     var headOfHouse = family.Members
+                                            .Where( m => m.Person.Age.HasValue && m.Person.Age.Value >= minAgeHeadOfHouse )
                                             .OrderBy( m => m.GroupRole.Order )
                                             .ThenBy( m => m.Person.Gender  )
-                                            .FirstOrDefault()
+                                            .FirstOrDefault()?
                                             .Person;
-                    headOfHouse.LoadAttributes();
 
-                    var headOfHouseAliasIds = headOfHouse.Aliases.Select( a => a.Id ).ToList();
-
-                    // only create workflow is the head of house age is not known or it's greater than the min age
-                    if ( !headOfHouse.Age.HasValue || headOfHouse.Age >= minAgeHeadOfHouse )
+                    if ( headOfHouse != null )
                     {
+                        headOfHouse.LoadAttributes();
+
+                        var headOfHouseAliasIds = headOfHouse.Aliases.Select( a => a.Id ).ToList();
+
                         // don't create a workflow if there is no contact info
                         int addressCount = family.GroupLocations.Count();
                         string homePhone = family.Members
@@ -181,7 +182,7 @@ namespace church.ccv.Utility
                                 // set attribute values
                                 visitorWorkflow.SetAttributeValue( "HeadOfHouse", headOfHouse.PrimaryAlias.Guid.ToString() );
                                 visitorWorkflow.SetAttributeValue( "Family", family.ToString() );
-                                
+
                                 var firstVisitDate = firstVisitDates.OrderByDescending( d => d.ValueAsDateTime ).Select( d => d.ValueAsDateTime ).FirstOrDefault();
                                 visitorWorkflow.SetAttributeValue( "FirstVisitDate", firstVisitDate != null ? firstVisitDate.ToString() : string.Empty );
                                 visitorWorkflow.SetAttributeValue( "Campus", family.Campus != null ? family.Campus.Guid.ToString() : string.Empty );
@@ -205,7 +206,7 @@ namespace church.ccv.Utility
                                 if ( geofenceGroupType != Guid.Empty )
                                 {
                                     var neighborhoods = new GroupService( rockContext ).GetGeofencingGroups( headOfHouse.Id, geofenceGroupType )
-                                        .Where(a => a.CampusId == family.CampusId)
+                                        .Where( a => a.CampusId == family.CampusId )
                                         .AsNoTracking();
 
                                     if ( neighborhoods != null && neighborhoods.Count() > 0 )
@@ -242,7 +243,6 @@ namespace church.ccv.Utility
                             }
                         }
                     }
-                    
                 }
             }
 
