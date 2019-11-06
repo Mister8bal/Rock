@@ -128,6 +128,15 @@
             prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
             nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
         });
+
+        // move slider to position selected item at the start
+        $('.toolbox-subnav-mobile-items').on('click', '.slick-slide', function (e) {
+            e.stopPropagation();
+            var index = $(this).data("slick-index");
+            if ($('.toolbox-subnav-mobile-items').slick('slickCurrentSlide') !== index) {
+                $('.toolbox-subnav-mobile-items').slick('slickGoTo', index);
+            }
+        });
     });
     
     $('.nav-prev').click(function(){
