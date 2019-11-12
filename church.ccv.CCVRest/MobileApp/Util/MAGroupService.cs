@@ -488,6 +488,13 @@ namespace church.ccv.CCVRest.MobileApp
                     person.Gender = Gender.Unknown;
 
                     PersonService.SaveNewPerson( person, rockContext, requestedGroup.CampusId, false );
+
+                    // add demographic note in person history
+                    var changes = new List<string>
+                    {
+                        "Created by CCV Mobile App"
+                    };
+                    HistoryService.AddChanges( rockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_DEMOGRAPHIC_CHANGES.AsGuid(), person.Id, changes );
                 }
 
                 // Save all changes
