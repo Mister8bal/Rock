@@ -253,8 +253,8 @@
                 }
 
                 // registrations found, create register buttons and add to page
-                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
-                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
+                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
+                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
 
                 $(document).ready(function(){
                     $('#desktopRegister').append(registerButtonDesktop);
@@ -268,13 +268,12 @@
     {% endif %}
 
     // return a link button
-    function createRegisterButton(sport,campus,season,text,cssClass) {
+    function createRegisterButton(sport,campus,text,cssClass) {
         var a = document.createElement('a');
 
         var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
         hrefUrl += "?Campus=" + campus.replace(/\s/g,'-').toLowerCase();
         hrefUrl += "&Sport=" + sport;
-        hrefUrl += "&Season=" + season;
 
         a.setAttribute('href',hrefUrl);
         a.setAttribute('class',cssClass);
