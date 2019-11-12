@@ -8,10 +8,10 @@
     {% endperson %}
     {% include '~~/Assets/Lava/dashboard/legacy-team-toolbox/toolbox-header.lava' %}
 
-    You must add all the above code into content channel block setting above the lava include and configure for relative toolbox
+    You must add all the above code before the lava include and configure for relative toolbox
 
     Legacy Team Dataview
-    xxxx - xxxx    
+    741  
 {% endcomment %}
 
 <script>
@@ -27,8 +27,8 @@
 
     function handleOnLoad() {
         // default to the dashboard panel
-        gCurrentLink = $("#capital-lane-button")[0];
-        gCurrentPanel = $("#capital-lane-panel")[0];
+        gCurrentLink = $("#quarterly-update-button")[0];
+        gCurrentPanel = $("#quarterly-update-panel")[0];
         togglePanel( gCurrentLink, gCurrentPanel, true );        
     }
 
@@ -56,6 +56,16 @@
             gCurrentLink = linkElement;
             
             togglePanel( gCurrentLink, gCurrentPanel, true );
+
+            // show hide the lanes parent panel
+            var lanesPanel = $("#lanes-panel")[0];
+
+            if( sectionName.includes("lane") ) {
+                lanesPanel.style.display="block";
+            }
+            else {
+                lanesPanel.style.display="none"
+            }
         }
     }
 </script>
@@ -74,16 +84,18 @@
 </div>
 
 <div class="toolbox-subnav-desktop">
+    <div id="quarterly-update-button" onClick="linkClicked(this, 'quarterly-update')">Quarterly Update</div>
     <div id="capital-lane-button" onClick="linkClicked(this, 'capital-lane')">Capital Lane</div>
-    <div id="innovative-lane-button" onClick="linkClicked(this, 'innovative-lane')">Technology & Innovation Lane</div>
+    <div id="technology-lane-button" onClick="linkClicked(this, 'technology-lane')">Technology & Innovation Lane</div>
     <div id="ministry-lane-button" onClick="linkClicked(this, 'ministry-lane')">Ministry Lane</div>
     <div id="missions-lane-button" onClick="linkClicked(this, 'missions-lane')">Missions Lane</div>
 </div>
 
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
-        <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item toolbox-subnav-div-selected">Capital Lane</div>
-        <div id="innovative-lane-mobile-button" onClick="linkClicked(this, 'innovative-lane')" class="subnav-item">Technology & Innovation Lane</div>
+        <div id="quarterly-update-mobile-button" onClick="linkClicked(this, 'quarterly-update')" class="subnav-item toolbox-subnav-div-selected">Quarterly Update</div>
+        <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item">Capital Lane</div>
+        <div id="technology-lane-mobile-button" onClick="linkClicked(this, 'technology-lane')" class="subnav-item">Technology & Innovation Lane</div>
         <div id="ministry-lane-mobile-button" onClick="linkClicked(this, 'ministry-lane')" class="subnav-item">Ministry Lane</div>
         <div id="missions-lane-mobile-button" onClick="linkClicked(this, 'missions-lane')" class="subnav-item">Missions Lane</div>
     </div>
@@ -99,6 +111,15 @@
             variableWidth: true,
             prevArrow: '<div class="nav-prev nav-arrow"><i class="mdi mdi-chevron-left"></i></div>',
             nextArrow: '<div class="nav-next nav-arrow"><i class="mdi mdi-chevron-right"></i></div>'
+        });
+
+        // move slider to position selected item at the start
+        $('.toolbox-subnav-mobile-items').on('click', '.slick-slide', function (e) {
+            e.stopPropagation();
+            var index = $(this).data("slick-index");
+            if ($('.toolbox-subnav-mobile-items').slick('slickCurrentSlide') !== index) {
+                $('.toolbox-subnav-mobile-items').slick('slickGoTo', index);
+            }
         });
     });
     

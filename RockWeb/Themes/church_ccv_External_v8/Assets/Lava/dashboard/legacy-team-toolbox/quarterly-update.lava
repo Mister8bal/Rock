@@ -1,0 +1,37 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/legacy-team-toolbox/quarterly-update.lava' %}
+{% endcomment %}
+
+{% assign item = Items | First %}
+{% assign itemVideo = item | Attribute:'WistiaVideoId' %}
+{% assign itemPDFUrl = item | Attribute:'PDF', 'Url' %}
+{% assign itemPDF = item | Attribute:'PDF' %}
+
+<div class="giving-button">
+    <a href="https://pushpay.com/g/ccvlegacy?rcv=false&fnd=Legacy%20General%20Donations" target="_blank" class="btn btn-primary">Give General Donation</a>
+</div>
+<div class="quarterly-update">
+    <div class="quarterly-content">
+        <img src="/Themes/church_ccv_External_v8/Assets/Images/dashboard/feature-toolbox-legacy-team.png">
+    </div>
+    {% if itemVideo && itemVideo != empty  %}
+        <div class="quarterly-video">
+            <script src="https://fast.wistia.com/embed/medias/{{ itemVideo }}.jsonp" async></script>
+            <script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
+            <div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;">
+                <div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;">
+                    <span class="wistia_embed wistia_async_{{ itemVideo }} popover=true popoverAnimateThumbnail=true videoFoam=true" style="display:inline-block;height:100%;width:100%">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if itemPDF && itemPDF != empty %}
+        <div class="quarterly-pdf">
+            <object id="quarterlyUpdate" data="{{ itemPDFUrl }}" width="100%" height="100%" type="application/pdf"></object>
+
+            <div id="quarterlyUpdateDownload">
+                {{ itemPDF }}
+            </div>
+        </div>
+    {% endif %}
+</div>
