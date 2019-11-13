@@ -13,6 +13,9 @@
     <div class="background-card">
         <p id="sport-summary">{{ sportSummary }}</p>
         {{ generalInfo }}
+        {% if keyDates != "" %}
+            <a href="{{ keyDates }}" class="btn btn-primary">Key Dates</a>
+        {% endif %}
     </div>
 </div>
 
@@ -30,9 +33,6 @@
                 <div class="right">
                     {% if practiceSchedule !="" or keyDates != "" or practiceMiscUrl != "" %}
                         <h3>Resources</h3>
-                        {% if keyDates != "" %}
-                            <a href="{{ keyDates }}" class="btn btn-primary">Key Dates</a>
-                        {% endif %}
                         {% if practiceSchedule != "" %}
                             <a href="{{ practiceSchedule }}" class="btn btn-primary">Practice Schedule</a>
                         {% endif %}
