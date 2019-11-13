@@ -121,7 +121,7 @@ namespace church.ccv.Utility
                     continue;
                 }
 
-                var campusPastor = campus.LeaderPersonAlias;
+                var campusPastor = campus.LeaderPersonAlias.Person;
                 if ( campusPastor == null )
                 {
                     // no campus pastor, skip to next item
