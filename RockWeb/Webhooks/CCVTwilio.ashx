@@ -95,7 +95,6 @@ class TwilioResponseAsync : IAsyncResult
         }
         else
         {
-
             // determine if we should log
             if ((!string.IsNullOrEmpty(request.QueryString["Log"]) && request.QueryString["Log"] == "true") || ENABLE_LOGGING)
             {
@@ -208,6 +207,7 @@ class TwilioResponseAsync : IAsyncResult
 
         return mmsData;
     }
+
     private void WriteToLog ()
     {
         var request = _context.Request;
@@ -246,7 +246,5 @@ class TwilioResponseAsync : IAsyncResult
                 }
             }
         }
-
     }
-
 }
