@@ -757,11 +757,11 @@ a:focus {
     height: 100%;
 }
 
-#practice-panel, #game-panel, #rules-panel {
+#general-panel, #practice-panel, #game-panel, #rules-panel {
     background-color: #eeeeee;
 }
 
-.practice-panel, .game-panel, .rules-panel {
+.general-panel, .practice-panel, .game-panel, .rules-panel {
     background-color: #eeeeee;
 }
 

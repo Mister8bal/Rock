@@ -60,11 +60,11 @@ namespace church.ccv.Badges.NextSteps
                 <div class='badge badge-tithe badge-icon step-nottaken' data-toggle='tooltip' data-original-title='{1} is not giving' data-container='body'>
                     <i class='icon ccv-tithe'></i>
                 </div>
-                <a class='badge badge-coach badge-icon step-nottaken' data-toggle='tooltip' data-original-title='{1} is not coaching' data-container='body' href='/page/{7}?PersonGuid={2}'>
-                    <i class='icon ccv-coach'></i>
-                </a>
                 <a class='badge badge-share badge-icon step-nottaken' data-toggle='tooltip' data-original-title='{1} has not shared a story' data-container='body' href='/WorkflowEntry/{8}?PersonId={9}&Internal=True'>
                     <i class='icon ccv-share'></i>
+                </a>
+                <a class='badge badge-coach badge-icon step-nottaken' data-toggle='tooltip' data-original-title='{1} is not coaching' data-container='body' href='/page/{7}?PersonGuid={2}'>
+                    <i class='icon ccv-coach'></i>
                 </a>
             </div>", 
                 badge.Id // 0

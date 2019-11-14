@@ -164,7 +164,7 @@ namespace church.ccv.Badges.Bio
                     var attributeValueService = new AttributeValueService( rockContext );
                     int attributeId = AttributeCache.Read( church.ccv.Utility.SystemGuids.Attribute.FAMILY_ASSOCIATE_PASTOR_OVERRIDE.AsGuid() ).Id;
 
-                    associatePastorOverrideId = attributeValueService.GetByAttributeIdAndEntityId( attributeId, family.Id ).ValueAsPersonId;
+                    associatePastorOverrideId = attributeValueService.GetByAttributeIdAndEntityId( attributeId, family.Id )?.ValueAsPersonId;
 
                     // If an override exists, override the results
                     if ( associatePastorOverrideId.HasValue )

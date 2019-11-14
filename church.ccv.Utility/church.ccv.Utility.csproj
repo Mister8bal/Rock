@@ -93,6 +93,7 @@
     <Compile Include="SystemGuids\Schedule.cs" />
     <Compile Include="Workflow\Action\PostToShipRush.cs" />
     <Compile Include="Workflow\Action\PostWebhook.cs" />
+    <Compile Include="Workflow\Action\SendSmsToRole.cs" />
     <Compile Include="Workflow\Action\SetPersonMobileSMSNumber.cs" />
     <Compile Include="SystemGuids\DefinedType.cs" />
     <Compile Include="SystemGuids\DefinedValue.cs" />

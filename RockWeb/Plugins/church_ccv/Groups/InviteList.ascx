@@ -20,9 +20,9 @@
 
             <asp:Literal ID="lTemplate" runat="server" />
 
-            <div class="action-row margin-t-md">
-                <asp:LinkButton ID="btnOpenEditor" runat="server" Text="Send Invitations" CssClass="btn btn-primary margin-h-md" OnClick="btnOpenEditor_Click"  />
-                <hr />
+            <div class="action-row" style="padding: 15px 20px 0 20px">
+                <asp:LinkButton ID="btnOpenEditor" runat="server" Text="Send Invitations" CssClass="btn btn-primary" OnClick="btnOpenEditor_Click"  />
+                <hr style="margin: 15px -20px 0 -20px;" />
             </div>
             <div class="panel-body">
 

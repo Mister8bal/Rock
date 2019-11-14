@@ -73,6 +73,13 @@ namespace church.ccv.CCVRest.MobileApp
             // now, save the person so that all the extra stuff (known relationship groups) gets created.
             Group newFamily = PersonService.SaveNewPerson( person, rockContext );
 
+            // add demographic note in person history
+            var changes = new List<string>
+            {
+                "Created by CCV Mobile App"
+            };
+            HistoryService.AddChanges( rockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_DEMOGRAPHIC_CHANGES.AsGuid(), person.Id, changes );
+            
             // save all changes
             person.SaveAttributeValues( rockContext );
             rockContext.SaveChanges();

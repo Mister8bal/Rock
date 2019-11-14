@@ -16,8 +16,9 @@
                 <div class="tabbed-panel-view-mobile">
                     <div class="mobile-items">
                         <div class="select-dropdown">
-                            <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">Practice Map & Resources</h6><b class="fa fa-caret-down"></b></button>
+                            <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6 id="btnMobileTabSelect">General Information</h6><b class="fa fa-caret-down"></b></button>
                             <ul class="dropdown-menu">
+                                <li><div id="general-mobile-button" onClick="linkClicked(this, 'general', true)" class="item">General Information</div></li>
                                 <li><div id="practice-mobile-button" onClick="linkClicked(this, 'practice', true)" class="item">Practice Map & Schedule</div></li>
                                 <li><div id="game-mobile-button" onClick="linkClicked(this, 'game', true)" class="item">Game Map & Schedule</div></li>
                                 <li><div id="rules-mobile-button" onClick="linkClicked(this, 'rules', true)" class="item">Rules</div></li>                           
@@ -37,13 +38,13 @@
 
             <div class="sport-title">
                 <h3>{{ item.Title }}</h3>
-                <p>{{ item | Attribute:'SportSummary' }}</p>
             </div>
         </div>
 
         <div class="tabbed-panel-view-cards">
             <div class="tabbed-panel-view-desktop">
                 <div class="tabs">
+                    <div id="general-button" class="btn tab" onClick="linkClicked(this, 'general')">General Information</div>
                     <div id="practice-button" class="btn tab" onClick="linkClicked(this, 'practice')">Practice <span class="responsive-hide">Map & Resources</span></div>
                     <div id="game-button" class="btn tab" onClick="linkClicked(this, 'game')">Game <span class="responsive-hide">Map & Schedule</span></div>
                     <div id="rules-button" class="btn tab" onClick="linkClicked(this, 'rules')">Rules</div>
@@ -57,6 +58,8 @@
             {% assign practiceMiscButtonText = item | Attribute: 'PracticeMiscButtonText' %}
             {% assign practiceMiscUrl = item | Attribute: 'PracticeMiscUrl', 'RawValue' %}
             {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
+            {% assign sportSummary = item | Attribute: 'SportSummary' %}
+            {% assign generalInfo = item | Attribute: 'GeneralInfo' %}
             {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
             {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
             {% assign rules = item | Attribute: 'Rules', 'Url' %}
@@ -69,11 +72,11 @@
 
             {% comment %} display game and practice map {% endcomment %}
             <div class="practice-and-game-map">
-                <h3 id="map-heading">NOT SURE WHERE TO GO FOR PRACTICE?</h3>
-                <p id="map-description">Use this map to find things like field numbers, restrooms, or entrances.</p>
+                <h3 id="map-heading"></h3>
+                <p id="map-description"></p>
 
                 {% if gameWhereToGo != "" and practiceWhereToGo != "" %}
-                    <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ practiceWhereToGo }}">
+                    <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ }}">
                 {% else %}
                     <p class="placeholder">Map Not Yet Available</p>
                 {% endif %}
@@ -95,9 +98,30 @@
             let gCurrentPanel;
 
             $(document).ready(function() {
-                // default to the first panel
-                gCurrentLink = $("#practice-button");
-                gCurrentPanel = $("#practice-panel");
+                var generalInfo = "{{ generalInfo | Escape | StripNewlines }}";
+                var sportSummary = "{{ sportSummary }}";
+                
+                if(generalInfo != "" && sportSummary != "") {
+                    // default to the first panel
+                    gCurrentLink = $("#general-button");
+                    gCurrentPanel = $("#general-panel");
+                }
+                else {
+                    // default to the second panel
+                    gCurrentLink = $("#practice-button");
+                    gCurrentPanel = $("#practice-panel");
+
+                    // hide first panel and make second panel active
+                    $("#general-panel").addClass("hidden");
+                    $("#general-button").addClass("hidden");
+
+                    /// hide first panel in mobile view and make second panel active
+                    $("#general-mobile-button").addClass("hidden");
+                    $("#practice-mobile-button").addClass("tab-selected");
+                    $('#btnMobileTabSelect').text($('#practice-mobile-button').text());
+                    
+                }
+               
 
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             });
@@ -171,6 +195,14 @@
     var practiceWhereToGo = "{{ practiceWhereToGo }}";
     var gameWhereToGo = "{{ gameWhereToGo }}";
 
+    $('#general-button, #general-mobile-button').on({
+        'click': function(){
+            $('#map-image').attr('src', "");
+            $('#map-heading').text("");
+            $('#map-description').text("");
+        }
+    });
+    
     $('#practice-button, #practice-mobile-button').on({
         'click': function(){
             $('#map-image').attr('src', practiceWhereToGo);
@@ -195,8 +227,6 @@
         }
     });
 
-    var test;
-
     // check for active registrations for sport / campus
     {% if sport != "" and campus != "" %}       
         // setup getUrl
@@ -213,8 +243,6 @@
                 var buttonText = 'Join Wait List';
                 var buttonCssClass = 'btn btn-waitlist';
 
-                test = data.Data
-
                 // loop through returned registrations
                 // if any have availabe spots, change button text and class to Register -1 equals unlimited spots
                 for (let i = 0; i < data.Data.length; i++) {
@@ -225,8 +253,8 @@
                 }
 
                 // registrations found, create register buttons and add to page
-                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
-                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',data.Data[0].Season,buttonText,buttonCssClass);
+                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
+                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
 
                 $(document).ready(function(){
                     $('#desktopRegister').append(registerButtonDesktop);
@@ -240,13 +268,12 @@
     {% endif %}
 
     // return a link button
-    function createRegisterButton(sport,campus,season,text,cssClass) {
+    function createRegisterButton(sport,campus,text,cssClass) {
         var a = document.createElement('a');
 
         var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
         hrefUrl += "?Campus=" + campus.replace(/\s/g,'-').toLowerCase();
         hrefUrl += "&Sport=" + sport;
-        hrefUrl += "&Season=" + season;
 
         a.setAttribute('href',hrefUrl);
         a.setAttribute('class',cssClass);
@@ -255,12 +282,4 @@
 
         return a;
     }
-
-
-
-
-
-
-//    <a href="/register?Sport={{ sport }}&Campus={{ campus }}" class="btn btn-register">Register</a>
-
 </script>

@@ -511,7 +511,7 @@ namespace church.ccv.CCVRest.MobileApp
 
                     // is this resource associated with this topic?
                     string associatedTopics = resource.AttributeValues["AssociatedLifeTrainingTopics"].Value.ToString();
-                    if ( associatedTopics.Contains( ltTopic.Title ) )
+                    if ( associatedTopics.Contains( ltTopicModel.Title ) )
                     {
                         // then add it
                         LifeTrainingResourceModel resourceModel = new LifeTrainingResourceModel();

@@ -39,6 +39,7 @@ namespace RockWeb.Plugins.church_ccv.Communication
     [BooleanField( "Send When Approved", "Should communication be sent once it's approved (vs. just being queued for scheduled job to send)?", true, "", 5 )]
     [CustomDropdownListField( "Mode", "The mode to use ( 'Simple' mode will prevent uers from searching/adding new people to communication).", "Full,Simple", true, "Full", "", 6 )]
     [BooleanField( "Show Attachment Uploader", "Should the attachment uploader be shown for email communications.", true, "", 7 )]
+    [DefinedValueField( Rock.SystemGuid.DefinedType.COMMUNICATION_SMS_FROM, "Allowed SMS Numbers", "Set the allowed FROM numbers to appear when in SMS mode (if none are selected all numbers will be included). ", false, true, "", "", 9 )]
     public partial class CCVCommunicationEntry : RockBlock
     {
 
@@ -1048,6 +1049,40 @@ namespace RockWeb.Plugins.church_ccv.Communication
                 else if ( mediumControl is Rock.Web.UI.Controls.Communication.Sms )
                 {
                     ( ( Rock.Web.UI.Controls.Communication.Sms ) mediumControl ).SelectedNumbers = GetAttributeValue( "AllowedSMSNumbers" ).SplitDelimitedValues( true ).AsGuidList();
+
+                    // CCV Specific: If the current person is a response recipient for a number, default to that number.
+                    var controls = ( ( Rock.Web.UI.Controls.Communication.Sms ) mediumControl ).Controls;
+                    foreach ( Control control in controls )
+                    {
+                        if ( control.ID.Contains( "ddlFrom_" ) )
+                        {
+                            RockDropDownList ddlFrom = control as RockDropDownList;
+
+                            var definedType = DefinedTypeCache.Read( Rock.SystemGuid.DefinedType.COMMUNICATION_SMS_FROM.AsGuid() );
+                            if ( definedType != null )
+                            {
+                                if ( definedType.DefinedValues != null && definedType.DefinedValues.Any() )
+                                {
+                                    foreach (var definedValue in definedType.DefinedValues )
+                                    {
+                                        Guid? personAliasGuid = definedValue.GetAttributeValue( "ResponseRecipient" ).AsGuidOrNull();
+                                        if ( personAliasGuid.HasValue )
+                                        {
+                                            var responseRecipient = new PersonAliasService( new RockContext() ).Get( personAliasGuid.Value );
+                                            if ( responseRecipient != null )
+                                            {
+                                                if ( responseRecipient.PersonId == CurrentPerson.Id )
+                                                {
+                                                    ddlFrom.SelectedValue = definedValue.Id.ToString();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 mediumControl.ID = "commControl";
                 mediumControl.IsTemplate = false;

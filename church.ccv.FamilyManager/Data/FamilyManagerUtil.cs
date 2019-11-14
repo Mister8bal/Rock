@@ -363,6 +363,9 @@ namespace church.ccv.FamilyManager
                     // lastly, save the person so that all the extra stuff (known relationship groups) gets created.
                     Group newFamily = PersonService.SaveNewPerson( person, rockContext, updatePersonBody.CampusId );
 
+                    // add note that the person was created by family manager
+                    changes.Add( "Created by CCV Family Manager" );
+                    
                     // if there's an existing family to place them in, put them in it and remove them from the existing, newly created family.
                     if ( updatePersonBody.FamilyId > 0 )
                     {
@@ -416,9 +419,7 @@ namespace church.ccv.FamilyManager
 
                 // attempt to set their graduation year (if this is an adult and null is passed, it won't cause an existing grade to be erased)
                 int? newGradYear = Person.GraduationYearFromGradeOffset( updatePersonBody.GradeOffset );
-                History.EvaluateChange( changes, "Graduation Year", person.GraduationYear, newGradYear );
                 person.GraduationYear = newGradYear;
-
 
                 // now set the attributes
                 person.LoadAttributes( );

@@ -83,19 +83,11 @@
         divRow.setAttribute('class','camp-row');
 
         // setup title 
-        var eventDate = new Date(camp.EventOccurrenceDate);
         var titleText = camp.Sport.replace(/\s|\-/g,' ') + " CAMP";
 
         if ( camp.Cost == 0 ) {
             // free camps title gets changed to include FREE and camp is changed to clinic
             titleText =  "FREE " + camp.Sport.replace(/\s|\-/g,' ') + " CLINIC";
-        }
-
-        if ( eventDate ) {
-            // we have an event date, include in title
-            var eventMonth = eventDate.getMonth() + 1;
-
-            titleText += " - " + eventMonth + "/" + eventDate.getDate();
         }
 
         hTitle.innerHTML = titleText;

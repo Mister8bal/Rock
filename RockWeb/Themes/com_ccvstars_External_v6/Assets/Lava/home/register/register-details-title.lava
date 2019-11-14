@@ -25,6 +25,9 @@
     {% assign sportType = "Exceptional STARS" %}
 {% endif %}
 
+{% if sport contains 'financial' %}
+    {% assign sportType = "Financial Assistance" %}
+{% endif %}
 <style>
     #section-feature-bg {
         background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-{{ sportType | Downcase | Replace:' ','-' }}.jpg");

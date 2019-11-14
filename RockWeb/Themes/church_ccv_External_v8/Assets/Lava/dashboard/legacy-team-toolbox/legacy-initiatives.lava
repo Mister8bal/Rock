@@ -1,0 +1,182 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/legacy-team-toolbox/legacy-initiatives.lava' %}
+{% endcomment %}
+
+<div id="capital-lane-panel" class="lane-panel" style="display: none;">
+</div>
+<div id="technology-lane-panel" class="lane-panel" style="display: none;">
+</div>
+<div id="ministry-lane-panel" class="lane-panel" style="display: none;">
+</div>
+<div id="missions-lane-panel" class="lane-panel" style="display: none;">
+</div>
+
+<script>
+// hydrate our arrays of items
+var capitalItems = [];
+var technologyItems = [];
+var ministryItems = [];
+var missionsItems = [];
+
+{% for item in Items %}
+    var newItem = {
+        title: "{{ item.Title }}",
+        content: "{{ item.Content }}",
+        lane: "{{ item | Attribute:'Lane' }}",
+        financialGoal: "{{ item | Attribute:'FinancialGoal' }}",
+        progress: "{{ item | Attribute:'Progress' }}",
+        progressColor: "{{ item | Attribute:'ProgressColor' | Default:'#7A1513' }}",
+        priority: "{{ item.Priority }}"
+    }
+
+    switch (newItem.lane) {
+        case "Capital":
+            capitalItems.push(newItem);
+            break;
+        case "Technology & Innovation":
+            technologyItems.push(newItem);
+            break;
+        case "Ministry":
+            ministryItems.push(newItem);
+            break;
+        case "Missions":
+            missionsItems.push(newItem);
+            break;
+        default:
+            break;
+    }
+{% endfor %}
+
+$( document ).ready(function() {
+    // render the panels
+    renderLanePanel("capital", capitalItems);
+    renderLanePanel("technology", technologyItems);
+    renderLanePanel("ministry", ministryItems);
+    renderLanePanel("missions", missionsItems);
+
+    // events to toggle chevron and prevent multi click craziness
+    $('.collapse').on('show.bs.collapse', function() {
+        var toggle = $('#' + this.id + 'toggle i')[0];
+
+        toggle.setAttribute('class','fa fa-chevron-up');
+    });
+
+    $('.collapse').on('hide.bs.collapse', function() {
+        var toggle = $('#' + this.id + 'toggle i')[0];
+
+        toggle.setAttribute('class','fa fa-chevron-down');
+    });
+});
+
+function renderLanePanel( panelName, panelItems ) {
+    var giveButton = renderGiveButton( panelName );
+    $('#' + panelName + '-lane-panel').append(giveButton);
+
+    panelItems.sort((a, b) => (a.priority < b.priority) ? 1 : -1);
+
+    for (let i = 0; i < panelItems.length; i++) {
+        var newItem = renderLaneItem( panelName, i, panelItems[i] );
+
+        $('#' + panelName + '-lane-panel').append(newItem);
+    }
+}
+
+function renderGiveButton( laneName ) {
+    var givingUrl = "https://pushpay.com/g/ccvlegacy?rcv=false&fnd=";
+    var givingText = "";
+    switch (laneName) {
+        case "capital": {
+            givingUrl += "Legacy Capital Lane Donations";
+            givingText = "Give Capital Lane Donation";
+            break;
+        }
+        case "technology": {
+            givingUrl += "Legacy Innovative Lane Donation";
+            givingText = "Give Innovative Lane Donation";
+            break;
+        }
+        case "ministry": {
+            givingUrl += "Legacy Ministry Lane Donation";
+            givingText = "Give Ministry Lane Donation";
+            break;
+        }
+        case "missions": {
+            givingUrl += "Legacy Missions Lane Donation";
+            givingText = "Give Missions Lane Donation";
+            break;  
+        }
+        default:
+            // if we couldnt match a lane name dont return a button
+            return;
+    }
+
+    var newButton = document.createElement('a');
+    newButton.setAttribute('class','btn btn-primary');
+    newButton.setAttribute('href',givingUrl);
+    newButton.setAttribute('target','_blank');
+    newButton.innerHTML = givingText;
+
+    return newButton;
+}
+
+function renderLaneItem( panelName, itemNumber, item ) {
+    var div = document.createElement('div');
+    div.setAttribute('class','lane-item');
+
+    var content = renderTitleAndContent( panelName + itemNumber, item.title, item.content, item.financialGoal );
+    div.append( content );
+
+    var progressBar = renderProgressBar( item.progress, item.progressColor );
+    div.append( progressBar );
+
+    return div;
+}
+
+function renderTitleAndContent( id, title, content, financialGoal ) {
+    var div = document.createElement('div');
+
+    var itemTitle = document.createElement('h4');
+    itemTitle.setAttribute('id',id + "toggle");
+    itemTitle.setAttribute('data-toggle','collapse');
+    itemTitle.setAttribute('data-target','#' + id);
+    itemTitle.innerHTML = title;
+
+    var chevron = document.createElement('i');
+    chevron.setAttribute('class','fa fa-chevron-down chevron');    
+
+    itemTitle.append( chevron );
+
+    div.append( itemTitle );
+
+    var contentDiv = document.createElement('div');
+    contentDiv.setAttribute('id',id);
+    contentDiv.setAttribute('class','collapse');
+
+    var contentP = document.createElement('p');
+    contentP.innerHTML = content;
+    contentDiv.append( contentP );
+
+    var financialGoalH5 = document.createElement( 'h5' );
+    financialGoalH5.innerHTML = "Financial Goal: " + financialGoal;
+    contentDiv.append( financialGoalH5 );
+
+    div.append( contentDiv );
+
+    return div;
+}
+
+function renderProgressBar( progress, progressColor ) {
+    var outerDiv = document.createElement('div');
+    outerDiv.setAttribute('class','progress');
+
+    var innerDiv = document.createElement('div');
+    innerDiv.setAttribute('class','progress-bar');
+    innerDiv.style.width=progress + "%";
+    innerDiv.style.background=progressColor;
+    innerDiv.innerHTML =  progress + "%";
+
+    outerDiv.append( innerDiv );
+
+    return outerDiv;
+}
+</script>

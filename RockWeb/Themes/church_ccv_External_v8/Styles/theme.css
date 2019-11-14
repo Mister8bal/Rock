@@ -10088,16 +10088,16 @@ legend {
 }
 
 .control-label {
-	 font-size: 12px;
-	 font-weight: normal;
-	 color: #7c7c7c;
-	 text-transform: uppercase;
-	 font-family: heebo;
+    font-size: 12px;
+    font-weight: normal;
+    color: #545454;
+    text-transform: uppercase;
+    font-family: heebo;
 }
 
 .registrationentry-summary p {
-	color: #7c7c7c;
-	font-family: heebo;
+    color: #545454;
+    font-family: heebo;
 }
 
 .progress {
@@ -10107,11 +10107,11 @@ legend {
 }
 
 .registrationentry-summary .checkbox {
-	color: #7c7c7c;
+    color: #545454;
 }
 
 .registrationentry-summary .radio-inline {
-	color: #7c7c7c;
+    color: #545454;
 }
 
 .well {
@@ -10148,9 +10148,9 @@ legend {
 }
 
 #subnavbar ul li a {
-	color: #7c7c7c;
-	font-family: akrobat;
-	font-weight: bold;
+    color: #545454;
+    font-family: akrobat;
+    font-weight: bold;
 }
 
 #subnavbar ul li:hover a {
@@ -10255,7 +10255,7 @@ small {
 }
 
 p {
-    color: #7c7c7c;
+    color: #545454;
     font-family: heebo;
 }
 
