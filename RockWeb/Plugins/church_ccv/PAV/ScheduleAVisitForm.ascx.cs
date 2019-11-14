@@ -24,8 +24,9 @@ namespace RockWeb.Plugins.church_ccv.PAV
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
-    [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 5 )]
-    [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 6 )]
+    [TextField("Exclude Dates","Comma Separated List of dates to exclude",false,"","",5)]
+    [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 6 )]
+    [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 7 )]
 
     public partial class ScheduleAVisitForm : RockBlock
     {
