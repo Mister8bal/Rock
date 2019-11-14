@@ -1353,33 +1353,55 @@ namespace RockWeb.Plugins.church_ccv.PAV
             int daysUntilSaturday = DaysUntil( DayOfWeek.Saturday, today );
             int daysUntilSunday = DaysUntil( DayOfWeek.Sunday, today );
 
+            string exclusions = GetAttributeValue( "ExcludeDates" );
+            string[] exclusionsStringArray = new string[0];
+            List<DateTime> exclusionDates = new List<DateTime>();
+
+            if ( exclusions.IsNotNullOrWhitespace() )
+            {
+                // Need to check to see if string contains a comma.  If not, we
+                // need to manually add the string to the array.
+                exclusionsStringArray = exclusions.Split( ',' ).Select( sValue => sValue.Trim() ).ToArray();
+            }
+
+            if ( exclusionsStringArray.Count() > 0 )
+            {
+                foreach( string dateStr in exclusionsStringArray )
+                {
+                    DateTime exclusionDate = DateTime.Parse( dateStr );
+                    exclusionDates.Add( exclusionDate );
+                }
+            }
+
             DateTime nextSaturday = today.AddDays( daysUntilSaturday );
             DateTime nextSunday = today.AddDays( daysUntilSunday );
 
             // loop 4 times to add 4 upcoming dates for sat and sunday to the dropdowns
             for ( int i = 0; i < 4; i++ )
             {
-                if ( hasSaturday )
+                if ( hasSaturday && !exclusionDates.Contains(nextSaturday))
                 {
                     ListItem satItem = new ListItem( nextSaturday.ToString( "dddd, MMMM d" ), nextSaturday.ToString( "dddd, MMMM d" ) );
 
                     ddlVisitDate.Items.Add( satItem );
                     ddlEditVisitDate.Items.Add( satItem );
 
-                    // increase 7 days to next saturday
-                    nextSaturday = nextSaturday.AddDays( 7 );
                 }
 
-                if ( hasSunday )
+                if ( hasSunday && !exclusionDates.Contains( nextSunday ))
                 {
                     ListItem sunItem = new ListItem( nextSunday.ToString( "dddd, MMMM d" ), nextSunday.ToString( "dddd, MMMM d" ) );
 
                     ddlVisitDate.Items.Add( sunItem );
                     ddlEditVisitDate.Items.Add( sunItem );
 
-                    // increase 7 days to next sunday
-                    nextSunday = nextSunday.AddDays( 7 );
                 }
+
+                // increase 7 days to next saturday
+                nextSaturday = nextSaturday.AddDays( 7 );
+                // increase 7 days to next sunday
+                nextSunday = nextSunday.AddDays( 7 );
+
             }
         }
 
