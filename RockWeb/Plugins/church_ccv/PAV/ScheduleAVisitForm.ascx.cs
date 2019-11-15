@@ -25,7 +25,7 @@ namespace RockWeb.Plugins.church_ccv.PAV
     [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
     [IntegerField("Number Of Weekends","Number of weekends to include in the selection of service times.",false,4,"",5)]
-    [TextField("Exclude Dates","Comma Separated List of dates to exclude",false,"","",6)]
+    [TextField("Exclude Dates","Comma Separated List of dates to exclude.  Dates should be entered in the format MM/DD/YYYY.",false,"","",6)]
     [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 7 )]
     [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 8 )]
 
