@@ -1360,8 +1360,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
 
             if ( exclusions.IsNotNullOrWhitespace() )
             {
-                // Need to check to see if string contains a comma.  If not, we
-                // need to manually add the string to the array.
                 exclusionsStrings = exclusions.Split( ',' ).Select( sValue => sValue.Trim() ).ToList();
 
                 // If nothing exists in the List at this point, we can
@@ -1393,7 +1391,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
             int numberOfWeekends = int.Parse( GetAttributeValue( "NumberOfWeekends" ));
             do
             {
-
                 bool hasWeekend = false;
 
                 if ( hasSaturday && !exclusionDates.Contains( nextSaturday ) )
@@ -1404,7 +1401,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     ddlEditVisitDate.Items.Add( satItem );
 
                     hasWeekend = true;
-
                 }
 
                 if ( hasSunday && !exclusionDates.Contains( nextSunday ) )
@@ -1415,7 +1411,6 @@ namespace RockWeb.Plugins.church_ccv.PAV
                     ddlEditVisitDate.Items.Add( sunItem );
 
                     hasWeekend = true;
-
                 }
 
                 // increase 7 days to next saturday
