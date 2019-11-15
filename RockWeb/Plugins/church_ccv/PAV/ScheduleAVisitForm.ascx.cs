@@ -24,9 +24,10 @@ namespace RockWeb.Plugins.church_ccv.PAV
     [DefinedValueField( Rock.SystemGuid.DefinedType.PERSON_RECORD_STATUS, "Record Status", "The record status to use for new individuals (default: 'Pending'.)", true, false, Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING, "", 1 )]
     [CampusesField( "Campuses", "Campuses that offer visit scheduling", false, "", "", 3 )]
     [SchedulesField( "Service Schedules", "Service Schedules available for use", true, "", "", 4 )]
-    [TextField("Exclude Dates","Comma Separated List of dates to exclude",false,"","",5)]
-    [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 6 )]
-    [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 7 )]
+    [IntegerField("Number Of Weekends","Number of weekends to include in the selection of service times.",false,4,"",5)]
+    [TextField("Exclude Dates","Comma Separated List of dates to exclude",false,"","",6)]
+    [SystemEmailField( "Confirmation Email Template", "System email template to use for the email confirmation.", true, "", "", 7 )]
+    [WorkflowTypeField( "Schedule A Visit Workflow", "Workflow used by staff to process visit submitted from website", true, false, "", "", 8 )]
 
     public partial class ScheduleAVisitForm : RockBlock
     {
@@ -1354,19 +1355,27 @@ namespace RockWeb.Plugins.church_ccv.PAV
             int daysUntilSunday = DaysUntil( DayOfWeek.Sunday, today );
 
             string exclusions = GetAttributeValue( "ExcludeDates" );
-            string[] exclusionsStringArray = new string[0];
+            List<string> exclusionsStrings = new List<string>();
             List<DateTime> exclusionDates = new List<DateTime>();
 
             if ( exclusions.IsNotNullOrWhitespace() )
             {
                 // Need to check to see if string contains a comma.  If not, we
                 // need to manually add the string to the array.
-                exclusionsStringArray = exclusions.Split( ',' ).Select( sValue => sValue.Trim() ).ToArray();
+                exclusionsStrings = exclusions.Split( ',' ).Select( sValue => sValue.Trim() ).ToList();
+
+                // If nothing exists in the List at this point, we can
+                // assume that there was a date entered, but only one.  
+                // In this case, we simply add the single date string to the array.
+                if(exclusionsStrings.Count() < 1 )
+                {
+                    exclusionsStrings.Add( exclusions );
+                }
             }
 
-            if ( exclusionsStringArray.Count() > 0 )
+            if ( exclusionsStrings.Count() > 0 )
             {
-                foreach( string dateStr in exclusionsStringArray )
+                foreach ( string dateStr in exclusionsStrings )
                 {
                     DateTime exclusionDate = DateTime.Parse( dateStr );
                     exclusionDates.Add( exclusionDate );
@@ -1376,24 +1385,36 @@ namespace RockWeb.Plugins.church_ccv.PAV
             DateTime nextSaturday = today.AddDays( daysUntilSaturday );
             DateTime nextSunday = today.AddDays( daysUntilSunday );
 
-            // loop 4 times to add 4 upcoming dates for sat and sunday to the dropdowns
-            for ( int i = 0; i < 4; i++ )
+            // Start a loop to check dates to see if a weekend date exists
+            // that's not an excluded date.  We also add a checked count
+            // to protect against infinite loops.  
+            int dateCount = 0;
+            int checkedCount = 0;
+            int numberOfWeekends = int.Parse( GetAttributeValue( "NumberOfWeekends" ));
+            do
             {
-                if ( hasSaturday && !exclusionDates.Contains(nextSaturday))
+
+                bool hasWeekend = false;
+
+                if ( hasSaturday && !exclusionDates.Contains( nextSaturday ) )
                 {
                     ListItem satItem = new ListItem( nextSaturday.ToString( "dddd, MMMM d" ), nextSaturday.ToString( "dddd, MMMM d" ) );
 
                     ddlVisitDate.Items.Add( satItem );
                     ddlEditVisitDate.Items.Add( satItem );
 
+                    hasWeekend = true;
+
                 }
 
-                if ( hasSunday && !exclusionDates.Contains( nextSunday ))
+                if ( hasSunday && !exclusionDates.Contains( nextSunday ) )
                 {
                     ListItem sunItem = new ListItem( nextSunday.ToString( "dddd, MMMM d" ), nextSunday.ToString( "dddd, MMMM d" ) );
 
                     ddlVisitDate.Items.Add( sunItem );
                     ddlEditVisitDate.Items.Add( sunItem );
+
+                    hasWeekend = true;
 
                 }
 
@@ -1402,7 +1423,16 @@ namespace RockWeb.Plugins.church_ccv.PAV
                 // increase 7 days to next sunday
                 nextSunday = nextSunday.AddDays( 7 );
 
-            }
+                // increment the date count if either a saturday or sunday
+                // date exists. 
+                if( hasWeekend )
+                {
+                    dateCount++;
+                }
+
+                checkedCount++;
+
+            } while ( dateCount < numberOfWeekends && checkedCount <= 52);
         }
 
         /// <summary>
