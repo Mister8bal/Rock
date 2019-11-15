@@ -73,6 +73,26 @@
     min-width: 5%;
 }
 
+.color-capital {
+    background-color: #721a1d;
+    border-color: #721a1d;
+}
+
+.color-technology {
+    background-color: #7a97ab;
+    border-color: #7a97ab;
+}
+
+.color-ministry {
+    background-color: #d49106;
+    border-color: #d49106;
+}
+
+.color-missions {
+    background-color: #898f65;
+    border-color: #898f65;
+}
+
 @media screen and (max-width: 767.98px) {
     .lane-panel {
         padding: 0 20px;
