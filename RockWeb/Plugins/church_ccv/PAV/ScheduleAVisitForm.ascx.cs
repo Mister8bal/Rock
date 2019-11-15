@@ -1375,8 +1375,11 @@ namespace RockWeb.Plugins.church_ccv.PAV
             {
                 foreach ( string dateStr in exclusionsStrings )
                 {
-                    DateTime exclusionDate = DateTime.Parse( dateStr );
-                    exclusionDates.Add( exclusionDate );
+                    DateTime exclusionDate;
+                    if( DateTime.TryParse( dateStr, out exclusionDate ) )
+                    {
+                        exclusionDates.Add( exclusionDate );
+                    }
                 }
             }
 
