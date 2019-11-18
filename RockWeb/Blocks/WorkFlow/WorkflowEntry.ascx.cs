@@ -797,6 +797,24 @@ namespace RockWeb.Blocks.WorkFlow
                     }
                 }
 
+                /*
+                 * Temporary Persistence Fix
+                 * --------------------------
+                 * There is a bug that occurs when a newly launched workflow (without auto persist) processes too fast.
+                 * This would cause the workflow to sometimes not persist.  We have traced it down to line 594 of Workflow.cs:
+                 *
+                 *    LINE 594: activity.LastProcessedDateTime.Value.CompareTo( processStartTime ) < 0 )
+                 * 
+                 * In some cases, the activity's process start time would be equal to the last processed time.  This would cause the
+                 * activity to be skipped and not persisted.
+                 * 
+                 * Adding the Sleep() step below fixes the issue since it is no longer possible for timestamps to be equal.  I tested
+                 * against core Rock v9 and 10 in the same server environment but was unable to replicate this issue so it could be 
+                 * possible this was fixed somewhere else in code.  Once we upgrade to a newer version of Rock, this can be removed
+                 * and tested again.
+                 */
+                System.Threading.Thread.Sleep( 1 );
+
                 List<string> errorMessages;
                 if ( _workflowService.Process( _workflow, out errorMessages ) )
                 {
