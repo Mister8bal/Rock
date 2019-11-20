@@ -53,7 +53,7 @@ namespace church.ccv.SafetySecurity.Model
             public const string sState_InReviewWithCampus = "In Review with Campus";
             public const string sState_InReviewWithSecurity = "In Review with Security";
             public const string sState_Waiting = "Waiting for Applicant to Complete";
-            public const string sState_Accepted = "Accepted by Security";
+            public const string sState_Accepted = "In Process with Security";
 
             public static string GetState( DateTime sentDate, DateTime completedDate, string workflowStatus )
             {
