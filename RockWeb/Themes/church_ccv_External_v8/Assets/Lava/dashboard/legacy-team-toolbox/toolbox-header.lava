@@ -46,7 +46,7 @@
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
         if ( document.readyState === "complete") {
             // remove styling from default mobile panel
-            $('#capital-lane-mobile-button').removeClass('toolbox-subnav-div-selected');
+            $('#quarterly-update-mobile-button').removeClass('toolbox-subnav-div-selected');
 
             // turn off existing panel
             togglePanel( gCurrentLink, gCurrentPanel, false );
@@ -85,7 +85,7 @@
 
 <div class="toolbox-subnav-desktop">
     <div id="quarterly-update-button" onClick="linkClicked(this, 'quarterly-update')">Quarterly Update</div>
-    <div id="capital-lane-button" onClick="linkClicked(this, 'capital-lane')">Capital Lane</div>
+    <div id="building-lane-button" onClick="linkClicked(this, 'building-lane')">Building Lane</div>
     <div id="technology-lane-button" onClick="linkClicked(this, 'technology-lane')">Technology & Innovation Lane</div>
     <div id="ministry-lane-button" onClick="linkClicked(this, 'ministry-lane')">Ministry Lane</div>
     <div id="missions-lane-button" onClick="linkClicked(this, 'missions-lane')">Missions Lane</div>
@@ -94,7 +94,7 @@
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
         <div id="quarterly-update-mobile-button" onClick="linkClicked(this, 'quarterly-update')" class="subnav-item toolbox-subnav-div-selected">Quarterly Update</div>
-        <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item">Capital Lane</div>
+        <div id="building-lane-mobile-button" onClick="linkClicked(this, 'building-lane')" class="subnav-item">Building Lane</div>
         <div id="technology-lane-mobile-button" onClick="linkClicked(this, 'technology-lane')" class="subnav-item">Technology & Innovation Lane</div>
         <div id="ministry-lane-mobile-button" onClick="linkClicked(this, 'ministry-lane')" class="subnav-item">Ministry Lane</div>
         <div id="missions-lane-mobile-button" onClick="linkClicked(this, 'missions-lane')" class="subnav-item">Missions Lane</div>

@@ -8,7 +8,7 @@
 {% assign itemPDF = item | Attribute:'PDF' %}
 
 <div class="giving-button">
-    <a href="https://pushpay.com/g/ccvlegacy?rcv=false&fnd=Legacy%20General%20Donations" target="_blank" class="btn btn-primary">Give General Donation</a>
+    <a href="https://pushpay.com/g/ccvlegacy?rcv=false&fnd=Legacy%20General%20Donations" target="_blank" class="btn btn-primary">Give</a>
 </div>
 <div class="quarterly-update">
     <div class="quarterly-content">

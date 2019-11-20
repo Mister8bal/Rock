@@ -2,7 +2,7 @@
     {% include '~~/Assets/Lava/dashboard/legacy-team-toolbox/legacy-initiatives.lava' %}
 {% endcomment %}
 
-<div id="capital-lane-panel" class="lane-panel" style="display: none;">
+<div id="building-lane-panel" class="lane-panel" style="display: none;">
 </div>
 <div id="technology-lane-panel" class="lane-panel" style="display: none;">
 </div>
@@ -13,7 +13,7 @@
 
 <script>
 // hydrate our arrays of items
-var capitalItems = [];
+var buildingItems = [];
 var technologyItems = [];
 var ministryItems = [];
 var missionsItems = [];
@@ -30,8 +30,8 @@ var missionsItems = [];
     }
 
     switch (newItem.lane) {
-        case "Capital":
-            capitalItems.push(newItem);
+        case "Building":
+            buildingItems.push(newItem);
             break;
         case "Technology & Innovation":
             technologyItems.push(newItem);
@@ -49,7 +49,7 @@ var missionsItems = [];
 
 $( document ).ready(function() {
     // render the panels
-    renderLanePanel("capital", capitalItems);
+    renderLanePanel("building", buildingItems);
     renderLanePanel("technology", technologyItems);
     renderLanePanel("ministry", ministryItems);
     renderLanePanel("missions", missionsItems);
@@ -85,24 +85,24 @@ function renderGiveButton( laneName ) {
     var givingUrl = "https://pushpay.com/g/ccvlegacy?rcv=false&fnd=";
     var givingText = "";
     switch (laneName) {
-        case "capital": {
-            givingUrl += "Legacy Capital Lane Donations";
-            givingText = "Give Capital Lane Donation";
+        case "building": {
+            givingUrl += "Legacy Building Lane Donations";
+            givingText = "Give To Building Lane";
             break;
         }
         case "technology": {
             givingUrl += "Legacy Innovative Lane Donation";
-            givingText = "Give Innovative Lane Donation";
+            givingText = "Give To Innovative Lane";
             break;
         }
         case "ministry": {
             givingUrl += "Legacy Ministry Lane Donation";
-            givingText = "Give Ministry Lane Donation";
+            givingText = "Give To Ministry Lane";
             break;
         }
         case "missions": {
             givingUrl += "Legacy Missions Lane Donation";
-            givingText = "Give Missions Lane Donation";
+            givingText = "Give To Missions Lane";
             break;  
         }
         default:
