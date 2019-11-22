@@ -109,8 +109,9 @@
                 <p>{{ group | Attribute:'Color' | Default:'Not Assigned' }}</p>
             </div>
             <div class="person-details-item">
+                {% assign groupSportName = group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize %}
                 <h6>Sport</h6>
-                <p>{{ group | Attribute:'Sport' | Default:'Not Assigned' }}</p>
+                <p>{{ groupSportName | Default:'Not Assigned' }}</p>
             </div>
         </div>
     </div>
@@ -142,7 +143,7 @@
         {% comment %} display dropdown if more than one group, other just display name {% endcomment %}
         {% if numberOfCoachGroups > 1 %}
             <div class="teams-dropdown">
-                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name }}<b class="fa fa-caret-down"></b></button>
+                <button id="btnTeamsSelect" class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown">{{ group.Name | ReplaceLast:'-',' ' | Capitalize }}<b class="fa fa-caret-down"></b></button>
                 <ul class="dropdown-menu">
                     {% for currentPersonGroup in currentPersonGroups %}
                         {% unless currentPersonGroup.Group.Id == group.Id %}
@@ -150,7 +151,7 @@
                             {% assign campus = "" %}   
                             {% assign campus = currentPersonGroup.Group.CampusId | FromCache:'Campus' %}
 
-                            <li><a href="/team-toolbox?GroupId={{ currentPersonGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}">{{ currentPersonGroup.Group.Name }}</a></li>
+                            <li><a href="/team-toolbox?GroupId={{ currentPersonGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ currentPersonGroup.Group | Attribute:'Sport' }}">{{ currentPersonGroup.Group.Name  | ReplaceLast:'-',' ' | Capitalize }}</a></li>
                         {% endunless %}
                     {% endfor %}
                 </ul>
@@ -196,7 +197,7 @@
 
                             {% comment %} Check to see if group is active and not the current group being displayed  {% endcomment %}
                             {% if childGroup.Group.IsPublic and childGroup.Group.Id != PageParameter.GroupId  %}
-                                <li><a href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' | Downcase | Replace: ' ', '-' }}&Player={{ child.PrimaryAlias.Guid }}">{{ childGroup.Group.Name }} ({{ child.FullName }})</a></li>
+                                <li><a href="/team-toolbox?GroupId={{ childGroup.Group.Id }}&Campus={{ campus.Name | Replace:' ','-' | Downcase }}&Sport={{ childGroup.Group | Attribute:'Sport' }}&Player={{ child.PrimaryAlias.Guid }}">{{ childGroup.Group.Name | ReplaceLast:'-',' ' | Capitalize }} ({{ child.FullName }})</a></li>
                             {% endif %}    
                         {% endfor %}
                     {% endfor %}

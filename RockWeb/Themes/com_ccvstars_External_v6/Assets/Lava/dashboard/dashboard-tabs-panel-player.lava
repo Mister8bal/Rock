@@ -83,7 +83,7 @@
                 <tr class="desktop-view-table-row">
                     <td><img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
                     <td>{{ CurrentPerson.FullName }}</td>
-                    <td>{{ playerTeam.Group | Attribute:'Sport' }}</td>
+                    <td>{{ playerTeam.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                     <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
                     <td>{{ playerTeam.Group | Attribute:'Color' }}</td>
                     <td>{{ playerTeam.Group | Attribute:'PracticeDays' }} {{ playerTeam.Group | Attribute:'PracticeTime' }}</td>
@@ -163,7 +163,7 @@
                     <tr class="desktop-view-table-row">
                         <td><img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
                         <td>{{ child.FullName }}</td>
-                        <td>{{ childGroup.Group | Attribute:'Sport' }}</td>
+                        <td>{{ childGroup.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                         <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
                         <td>{{ childGroup.Group | Attribute:'Color' }}</td>
                         <td>{{ childGroup.Group | Attribute:'PracticeDays' }} {{ childGroup.Group | Attribute:'PracticeTime' }}</td>
@@ -248,7 +248,7 @@
                         <table class="player-mobile-view-table">
                             <tr>
                                 <th class="row-mobile-header red">Sport</th>
-                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ playerTeam.Group | Attribute:'Sport' }}</td>
+                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ playerTeam.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                             </tr>
                             <tr>
                                 <th class="row-mobile-header gray">Coach</th>
@@ -363,7 +363,7 @@
                                 <table class="player-mobile-view-table">
                                     <tr>
                                         <th class="row-mobile-header red">Sport</th>
-                                        <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ childGroup.Group | Attribute:'Sport' }}</td>
+                                        <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ childGroup.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                                     </tr>
                                     <tr>
                                         <th class="row-mobile-header gray">Coach</th>

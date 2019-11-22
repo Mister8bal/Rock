@@ -80,7 +80,7 @@
 
                     <tr>
                         <td><img class="sport-icon" width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png"></td>
-                        <td>{{ coachTeam.Group | Attribute:'Sport' }}</td>
+                        <td>{{ coachTeam.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                         <td><a href="/page/2355?person={{ coach.Person.Id }}"><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/email-red.png"></a>{{ coach.Person.FullName }}</td>
                         <td>{{ coachTeam.Group | Attribute:'Color' | Default:'Not Assigned' }}</td>
                         <td>{{ coachTeam.Group | Attribute:'PracticeDays' | Default:'Not Assigned' }}</td>
@@ -159,7 +159,7 @@
                         <table class="coach-mobile-view-table">
                             <tr>
                                 <th class="row-mobile-header red">Sport</th>
-                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ mobileCoachTeam.Group | Attribute:'Sport' }}</td>
+                                <td><img width="20" height="20" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/{{ sportIcon }}-red.png">{{ mobileCoachTeam.Group | Attribute:'Sport' | ReplaceLast:'-',' ' | Capitalize }}</td>
                             </tr>
                             <tr>
                                 <th class="row-mobile-header gray">Coach</th>
