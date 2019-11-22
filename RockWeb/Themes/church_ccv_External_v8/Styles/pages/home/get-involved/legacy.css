@@ -1,0 +1,215 @@
+.page-background {   
+    background-color: #EBEBEB;
+    background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-legacy-landing.jpg");
+}
+
+h2, h3 {
+    font-weight: 600;
+}
+
+#ternavbar-bg {
+    display: none;
+}
+
+#section-b-bg {
+    background-color: #000000;
+}
+
+#section-d-bg {
+    background-color: #FFFFFF;
+}
+
+#section-e-bg {
+   display: none;
+}
+
+.title img {
+    margin-bottom: 25px;
+    max-width: none;
+    width: 48%;
+}
+
+/* Section A*/
+.summary-center {
+    padding: 20px 0 50px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.summary-center p {
+    margin: 0 16%;
+    font-size: 15px;
+}
+
+/* End Section A */
+
+/* Section B */
+.three-quote-section {
+    height: 650px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-around;
+    padding: 100px 0 50px 0;
+}
+
+.top img {
+    height: 250px;
+}
+
+.top-left {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.top-left h3 {
+    color: #FFFFFF;
+    font-size: 26px;
+    padding-bottom: 10px;
+}
+
+.top-left p {
+    color: #FFFFFF;
+    font-size: 13px;
+}
+
+.bottom {
+    text-align: center;
+}
+
+.verse {
+    color: #FFFFFF;
+    font-style: italic;
+    margin: 0 23%;
+    font-size: 19px;
+}
+
+.book {
+    color: #FFFFFF;
+    font-size: 19px;
+    padding-top: 10px;
+}
+
+/* End Section B */
+
+/* Section C */
+.impact-chart-section {
+    display: flex;
+    flex-direction: column;
+    height: 712px;
+}
+
+.impact-chart-section h2 {
+    color: #7A1315;
+    text-align: center;
+    padding: 0;
+    padding-top: 30px;
+}
+/* End Section C */
+
+/* Call to action */
+.call-to-action {
+    padding: 60px 0 100px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.call-to-action p {
+    color: #707270;
+    margin: 0 21%;
+    padding-bottom: 15px;
+    font-size: 15px;
+}
+
+/* End Call to action */
+
+.legacy-workflow {
+    padding-bottom: 20px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 769px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/hero-legacy-landing.jpg");
+    }
+    .title img {
+        width: 80%;
+    }
+    
+    .summary-center p {
+        margin: 0;
+    }
+
+    .three-quote-section {
+        height: unset;
+    }
+    
+    .top {
+        display: flex;
+        justify-content: unset;
+        padding: 0;
+        flex-direction: column;
+    }
+    
+    .top img {
+        height: unset;
+    }
+    
+    .top-left {
+        width: unset;
+    }
+    
+    .bottom {
+        padding-top: 20px;
+    }
+    
+    .verse {
+        margin: 0 16%;
+        font-size: 15px;
+    }
+    
+    .book {
+        padding-bottom: 20px;
+    }
+    
+    .impact-chart-section {
+        height: 512px;
+    }
+    
+    .call-to-action p {
+        margin: 0;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .join {
+        width: 100%;
+    }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 500px) {
+    .verse {
+        margin: 0;
+    }
+    
+    .impact-chart-section {
+        height: 412px;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: unset;
+    }
+}
