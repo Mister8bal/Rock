@@ -124,7 +124,7 @@ namespace church.ccv.Utility
                 foreach ( var family in families )
                 {
                     var headOfHouse = family.Members
-                                            .Where( m => m.Person.Age.HasValue && m.Person.Age.Value >= minAgeHeadOfHouse )
+                                            .Where( m => !m.Person.Age.HasValue || m.Person.Age >= minAgeHeadOfHouse )
                                             .OrderBy( m => m.GroupRole.Order )
                                             .ThenBy( m => m.Person.Gender  )
                                             .FirstOrDefault()?
