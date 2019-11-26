@@ -91,17 +91,17 @@ function renderGiveButton( laneName ) {
             break;
         }
         case "technology": {
-            givingUrl += "Legacy Innovative Lane Donation";
+            givingUrl += "Legacy Innovative Lane Donations";
             givingText = "Give To Innovative Lane";
             break;
         }
         case "ministry": {
-            givingUrl += "Legacy Ministry Lane Donation";
+            givingUrl += "Legacy Ministry Lane Donations";
             givingText = "Give To Ministry Lane";
             break;
         }
         case "missions": {
-            givingUrl += "Legacy Missions Lane Donation";
+            givingUrl += "Legacy Missions Lane Donations";
             givingText = "Give To Missions Lane";
             break;  
         }

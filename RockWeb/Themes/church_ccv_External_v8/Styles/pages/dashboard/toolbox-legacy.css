@@ -15,6 +15,10 @@
     padding: 5px 40px 20px 40px;
 }
 
+.giving-button .btn {
+    width: auto;
+}
+
 .quarterly-update {
     padding: 0 40px;
 }
@@ -49,6 +53,7 @@
 .lane-panel .btn {
     margin: 5px 0;
     max-width: inherit;
+    width: inherit;
 }
 
 .lane-item {
@@ -102,6 +107,10 @@
         padding: 0 20px 20px 20px;
     }
 
+    .giving-button .btn {
+        width: 100%;
+    }
+
     .quarterly-content {
         margin: 0 -15px;
     }
@@ -121,6 +130,11 @@
 
     #quarterlyUpdateDownload a {
         margin: 0 20px;
+    }
+
+    .lane-panel .btn {
+        max-width: 100%;
+        width: 100%;
     }
 
     .lane-item h4 {
