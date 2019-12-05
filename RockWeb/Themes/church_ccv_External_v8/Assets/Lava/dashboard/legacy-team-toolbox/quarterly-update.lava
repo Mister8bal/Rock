@@ -12,7 +12,7 @@
 </div>
 <div class="quarterly-update">
     <div class="quarterly-content">
-        <img src="/Themes/church_ccv_External_v8/Assets/Images/dashboard/feature-toolbox-legacy-team.png">
+        <img src="/Themes/church_ccv_External_v8/Assets/Images/dashboard/feature-toolbox-legacy-lanes.png">
     </div>
     {% if itemVideo && itemVideo != empty  %}
         <div class="quarterly-video">

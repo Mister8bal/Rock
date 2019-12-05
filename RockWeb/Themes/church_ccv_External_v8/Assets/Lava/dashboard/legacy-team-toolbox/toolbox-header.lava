@@ -85,8 +85,8 @@
 
 <div class="toolbox-subnav-desktop">
     <div id="quarterly-update-button" onClick="linkClicked(this, 'quarterly-update')">Quarterly Update</div>
-    <div id="building-lane-button" onClick="linkClicked(this, 'building-lane')">Building Lane</div>
-    <div id="technology-lane-button" onClick="linkClicked(this, 'technology-lane')">Technology & Innovation Lane</div>
+    <div id="capital-lane-button" onClick="linkClicked(this, 'capital-lane')">Capital Lane</div>
+    <div id="innovative-lane-button" onClick="linkClicked(this, 'innovative-lane')">Innovative Lane</div>
     <div id="ministry-lane-button" onClick="linkClicked(this, 'ministry-lane')">Ministry Lane</div>
     <div id="missions-lane-button" onClick="linkClicked(this, 'missions-lane')">Missions Lane</div>
 </div>
@@ -94,8 +94,8 @@
 <div class="toolbox-subnav-mobile">
     <div class="toolbox-subnav-mobile-items">
         <div id="quarterly-update-mobile-button" onClick="linkClicked(this, 'quarterly-update')" class="subnav-item toolbox-subnav-div-selected">Quarterly Update</div>
-        <div id="building-lane-mobile-button" onClick="linkClicked(this, 'building-lane')" class="subnav-item">Building Lane</div>
-        <div id="technology-lane-mobile-button" onClick="linkClicked(this, 'technology-lane')" class="subnav-item">Technology & Innovation Lane</div>
+        <div id="capital-lane-mobile-button" onClick="linkClicked(this, 'capital-lane')" class="subnav-item">Capital Lane</div>
+        <div id="innovative-lane-mobile-button" onClick="linkClicked(this, 'innovative-lane')" class="subnav-item">Innovative Lane</div>
         <div id="ministry-lane-mobile-button" onClick="linkClicked(this, 'ministry-lane')" class="subnav-item">Ministry Lane</div>
         <div id="missions-lane-mobile-button" onClick="linkClicked(this, 'missions-lane')" class="subnav-item">Missions Lane</div>
     </div>

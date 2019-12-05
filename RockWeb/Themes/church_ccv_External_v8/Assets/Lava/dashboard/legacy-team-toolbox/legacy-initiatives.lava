@@ -2,9 +2,9 @@
     {% include '~~/Assets/Lava/dashboard/legacy-team-toolbox/legacy-initiatives.lava' %}
 {% endcomment %}
 
-<div id="building-lane-panel" class="lane-panel" style="display: none;">
+<div id="capital-lane-panel" class="lane-panel" style="display: none;">
 </div>
-<div id="technology-lane-panel" class="lane-panel" style="display: none;">
+<div id="innovative-lane-panel" class="lane-panel" style="display: none;">
 </div>
 <div id="ministry-lane-panel" class="lane-panel" style="display: none;">
 </div>
@@ -13,8 +13,8 @@
 
 <script>
 // hydrate our arrays of items
-var buildingItems = [];
-var technologyItems = [];
+var capitalItems = [];
+var innovativeItems = [];
 var ministryItems = [];
 var missionsItems = [];
 
@@ -30,11 +30,11 @@ var missionsItems = [];
     }
 
     switch (newItem.lane) {
-        case "Building":
-            buildingItems.push(newItem);
+        case "Capital":
+            capitalItems.push(newItem);
             break;
-        case "Technology & Innovation":
-            technologyItems.push(newItem);
+        case "Innovative":
+            innovativeItems.push(newItem);
             break;
         case "Ministry":
             ministryItems.push(newItem);
@@ -49,8 +49,8 @@ var missionsItems = [];
 
 $( document ).ready(function() {
     // render the panels
-    renderLanePanel("building", buildingItems);
-    renderLanePanel("technology", technologyItems);
+    renderLanePanel("capital", capitalItems);
+    renderLanePanel("innovative", innovativeItems);
     renderLanePanel("ministry", ministryItems);
     renderLanePanel("missions", missionsItems);
 
@@ -85,12 +85,12 @@ function renderGiveButton( laneName ) {
     var givingUrl = "https://pushpay.com/g/ccvlegacy?rcv=false&fnd=";
     var givingText = "";
     switch (laneName) {
-        case "building": {
-            givingUrl += "Legacy Building Lane Donations";
-            givingText = "Give To Building Lane";
+        case "capital": {
+            givingUrl += "Legacy Capital Lane Donations";
+            givingText = "Give To Capital Lane";
             break;
         }
-        case "technology": {
+        case "innovative": {
             givingUrl += "Legacy Innovative Lane Donations";
             givingText = "Give To Innovative Lane";
             break;
