@@ -42,6 +42,10 @@
                     {% if childPageTitle == 'watch' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
+                {% when 'plan-your-visit' %}
+                    {% if childPageTitle == 'plan your visit' %}
+                        {% assign activeClass = 'active' %}
+                    {% endif %}    
                 {% else %}
             {% endcase %}
 
