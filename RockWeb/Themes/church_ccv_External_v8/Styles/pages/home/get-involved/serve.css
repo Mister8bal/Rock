@@ -104,6 +104,10 @@
      object-fit: contain;
  }
 
+ .legacy-override .image img {
+    height: auto;
+}
+
  .control-wrapper textarea {
     background-color: #eeeeee;
     border-bottom: unset;

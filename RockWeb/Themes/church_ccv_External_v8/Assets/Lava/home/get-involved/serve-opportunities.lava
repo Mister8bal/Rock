@@ -99,11 +99,23 @@
                 <div class="read-more link pull-right">
                     <a href="//ccvstars.com/stars-serve">Visit Website<i class="mdi mdi-chevron-right event-card-navigation-icon"></i></a>
                 </div>
-         </div>    
+            </div>    
+        </div>  
+
+        <div class="serve-card legacy-override">
+            <div class="image">
+                <img class="rounded-edge-img img-responsive" src="/Themes/church_ccv_External_v8/Assets/Images/home/get-involved/feature-serve-card.jpg">   
+            </div>
+            <div class="header">
+                <h4>Legacy Team</h4>
+            </div>
+            <div class="content">
+                <p>The Legacy Team is committed to expanding the Kingdom through eternal investments. This team engages in expansion projects that include ministry growth, missions’ outreach and capital improvements. If you’re looking for a place where you can serve as you steward the resources God has given you to increase the impact CCV is having around the world, then this is the place for you.</p>
+                <div class="read-more link pull-right">
+                    <a href="/get-involved/legacy-team">Visit Website<i class="mdi mdi-chevron-right event-card-navigation-icon"></i></a>
+                </div>
             </div>
         </div>
-
-        
     </div>
 </div>
 
