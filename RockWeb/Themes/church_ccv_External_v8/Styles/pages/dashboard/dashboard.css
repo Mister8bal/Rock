@@ -883,6 +883,62 @@ h2 {
 
 /* End Dashboard Card Styling */
 
+/* Associate Pastor and Campus Pastor */
+.pastors {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 50px 0;
+}
+
+.pastor {
+    display: flex;
+}
+
+.pastor h4 {
+    line-height: 0;
+}
+
+.name {
+    color: grey;
+    text-transform: capitalize;
+    padding: 10px 0 0 0;
+    line-height: unset;
+}
+
+.email {
+    text-transform: lowercase;  
+    padding: 0;
+    line-height: unset;
+}
+
+.pastor-info {
+    padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+strong {
+    font-weight: 900;
+}
+
+@media screen and (max-width: 768px) {
+    .pastor-info {
+        padding-left: 10px;
+    }
+    
+    .pastors {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pastor {
+        padding-bottom: 20px;
+    }
+}
+
+/* End Associate Pastor and Campus Pastor */
+
 /* Dashboard Events Scroller */
 .dashboard-events-row {
     margin: 20px 0;

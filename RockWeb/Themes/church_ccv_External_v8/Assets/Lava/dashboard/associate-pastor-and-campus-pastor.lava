@@ -1,0 +1,48 @@
+{% comment %} 
+    {% include '~~/Assets/Lava/dashboard/associate-pastor-and-campus-pastor.lava' %}  
+ {% endcomment %}
+
+{% comment %} Ensure CurrentPerson exists so SQL doesnt fail {% endcomment %}
+{% if CurrentPerson.Id != null and CurrentPerson.Id != '' %}
+    {% comment %} Get CurrentPerson campus {% endcomment %}
+    {% assign currentPersonCampus = CurrentPerson | Campus %}
+    {% comment %} If CurrentPerson is part of a campus, set campusPastor {% endcomment %}
+    {% if currentPersonCampus != Empty %}
+        {% assign campusPastor = currentPersonCampus.LeaderPersonAliasId | PersonByAliasId %}
+    {% endif %}
+
+    {% comment %} Check SQL if current person has associate person {% endcomment %}
+    {% sql %}
+        SELECT dbo._church_ccv_ufnGetAssociatePastorId_NoDatamart({{ CurrentPerson.Id }}) AS 'Id'
+    {% endsql %}
+
+    {% for item in results %}
+        {% if item.Id != null and item.Id != 0 %}
+            {% assign associatePastor = item.Id | PersonById %}
+        {% endif %}
+    {% endfor %}    
+{% endif %}
+
+<div class="pastors">
+    {% if campusPastor != Empty %}
+        <div class="pastor">
+            <img src="{{ campusPastor.PhotoUrl }}" width="100" height="100" style="border-radius: 50%;">
+            <div class="pastor-info">
+                <h4>Your Campus Pastor</h4>
+                <h5 class="name"><strong>{{ campusPastor.FullName }}</strong></h5>
+                <h5 class="email">{{ campusPastor.Email }}</h5>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if associatePastor != Empty %}
+        <div class="pastor">
+            <img src="{{ associatePastor.PhotoUrl }}" width="100" height="100" style="border-radius: 50%;">
+            <div class="pastor-info">
+                <h4>Your Associate Pastor</h4>
+                <h5 class="name"><strong>{{ associatePastor.FullName }}</strong></h5>
+                <h5 class="email">{{ associatePastor.Email }}</h5>
+            </div>
+        </div>
+    {% endif %}    
+</div>
