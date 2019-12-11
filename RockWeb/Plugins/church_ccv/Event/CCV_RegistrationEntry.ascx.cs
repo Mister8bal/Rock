@@ -58,7 +58,6 @@ namespace RockWeb.Plugins.church_ccv.Event
     [BooleanField( "Enable Debug", "Display the merge fields that are available for lava ( Success Page ).", false, "", 5 )]
     [BooleanField( "Allow InLine Digital Signature Documents", "Should inline digital documents be allowed? This requires that the registration template is configured to display the document inline", true, "", 6, "SignInline" )]
     [SystemEmailField( "Confirm Account Template", "Confirm Account Email Template", false, Rock.SystemGuid.SystemEmail.SECURITY_CONFIRM_ACCOUNT, "", 7 )]
-    [WorkflowTypeField( "Multiple Family Alert Workflow", "Workflow used when a registrant is in multiple families.", false, false, "", "" )]
     public partial class CCV_RegistrationEntry : RockBlock
     {
         #region Fields
@@ -1306,14 +1305,6 @@ namespace RockWeb.Plugins.church_ccv.Event
                 }
             }
 
-            if ( RegistrationState != null &&
-                RegistrationState.FamilyGuid == Guid.Empty &&
-                RegistrationTemplate != null &&
-                RegistrationTemplate.RegistrantsSameFamily != RegistrantsSameFamily.Ask )
-            {
-                RegistrationState.FamilyGuid = Guid.NewGuid();
-            }
-
             if ( RegistrationState != null )
             {
                 if ( !RegistrationState.RegistrationId.HasValue && RegistrationInstanceState != null && RegistrationInstanceState.MaxAttendees > 0 )
@@ -1390,22 +1381,29 @@ namespace RockWeb.Plugins.church_ccv.Event
                     var registrant = new RegistrantInfo( RegistrationInstanceState, CurrentPerson );
                     if ( RegistrationTemplate.ShowCurrentFamilyMembers )
                     {
-                        // If currentfamily members can be selected, the firstname and lastname fields will be 
+                        // If currentfamily members can be selected, the firstname, lastname and email fields will be 
                         // disabled so values need to be set (in case those fields did not have the 'showCurrentValue' 
                         // option selected
                         foreach( var field in RegistrationTemplate.Forms
                             .SelectMany( f => f.Fields )
                             .Where( f =>
                                 ( f.PersonFieldType == RegistrationPersonFieldType.FirstName ||
-                                f.PersonFieldType == RegistrationPersonFieldType.LastName ) &&
-                                f.FieldSource == RegistrationFieldSource.PersonField ) )
+                                  f.PersonFieldType == RegistrationPersonFieldType.LastName || 
+                                  f.PersonFieldType == RegistrationPersonFieldType.Email ) &&
+                                  f.FieldSource == RegistrationFieldSource.PersonField ) )
                         {
-                            registrant.FieldValues.AddOrReplace( field.Id, 
-                                new FieldValueObject( field, field.PersonFieldType == RegistrationPersonFieldType.FirstName ? CurrentPerson.NickName : CurrentPerson.LastName ) );
+                            object fieldValue = null;
+                            if ( field.PersonFieldType == RegistrationPersonFieldType.FirstName )
+                                fieldValue = CurrentPerson.NickName;
+                            else if ( field.PersonFieldType == RegistrationPersonFieldType.LastName )
+                                fieldValue = CurrentPerson.LastName;
+                            else if ( field.PersonFieldType == RegistrationPersonFieldType.Email )
+                                fieldValue = CurrentPerson.Email;
+
+                            registrant.FieldValues.AddOrReplace( field.Id, new FieldValueObject( field, fieldValue ) );
                         }
                     }
                     registrant.Cost = cost;
-                    registrant.FamilyGuid = RegistrationState.FamilyGuid;
                     if ( RegistrationState.Registrants.Count >= RegistrationState.SlotsAvailable )
                     {
                         registrant.OnWaitList = true;
@@ -1418,15 +1416,6 @@ namespace RockWeb.Plugins.church_ccv.Event
                 while ( RegistrationState.RegistrantCount < registrantCount )
                 {
                     var registrant = new RegistrantInfo { Cost = cost };
-                    if ( RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.No )
-                    {
-                        registrant.FamilyGuid = Guid.NewGuid();
-                    }
-                    else if ( RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Yes )
-                    {
-                        registrant.FamilyGuid = RegistrationState.FamilyGuid;
-                    }
-
                     if ( RegistrationState.Registrants.Count >= RegistrationState.SlotsAvailable )
                     {
                         registrant.OnWaitList = true;
@@ -1746,25 +1735,10 @@ namespace RockWeb.Plugins.church_ccv.Event
             var personService = new PersonService( rockContext );
             var groupService = new GroupService( rockContext );
             var documentService = new SignatureDocumentService( rockContext );
-
-            // variables to keep track of the family that new people should be added to
-            // NOTE: The "PERSON is at the same address as..." radio button drives these, and
-            // ONLY CONTROLS the family *NEWLY CREATED* people are placed in.
-            int? singleFamilyId = null;
-            var multipleFamilyGroupIds = new Dictionary<Guid, int>();
-
+            
             var dvcConnectionStatus = DefinedValueCache.Read( GetAttributeValue( "ConnectionStatus" ).AsGuid() );
             var dvcRecordStatus = DefinedValueCache.Read( GetAttributeValue( "RecordStatus" ).AsGuid() );
             var familyGroupType = GroupTypeCache.Read( Rock.SystemGuid.GroupType.GROUPTYPE_FAMILY );
-            var adultRoleId = familyGroupType.Roles
-                .Where( r => r.Guid.Equals( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT.AsGuid() ) )
-                .Select( r => r.Id )
-                .FirstOrDefault();
-            var childRoleId = familyGroupType.Roles
-                .Where( r => r.Guid.Equals( Rock.SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD.AsGuid() ) )
-                .Select( r => r.Id )
-                .FirstOrDefault();
-           
             
             bool newRegistration = false;
             Registration registration = null;
@@ -1889,23 +1863,6 @@ namespace RockWeb.Plugins.church_ccv.Event
                 }
             }
 
-            // Set the family guid for any other registrants that were selected to be in the same family
-            if ( registrar != null )
-            {
-                var family = registrar.GetFamilies( rockContext ).FirstOrDefault();
-
-                if ( family != null )
-                {
-                    multipleFamilyGroupIds.AddOrIgnore( RegistrationState.FamilyGuid, family.Id );
-                    if ( !singleFamilyId.HasValue )
-                    {
-                        singleFamilyId = family.Id;
-                    }
-
-                }
-
-            }
-            
             // Make sure there's an actual person associated to registration
             // by creating a new registrant (person registering, not BEING registered) if
             // there isn't one.
@@ -1928,7 +1885,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                     person.RecordStatusValueId = dvcRecordStatus.Id;
                 }
 
-                registrar = SavePerson( rockContext, person, RegistrationState.FamilyGuid, CampusId, null, adultRoleId, childRoleId, multipleFamilyGroupIds, ref singleFamilyId, null );
+                registrar = SavePerson( rockContext, person, CampusId, null );
                 registration.PersonAliasId = registrar != null ? registrar.PrimaryAliasId : (int?)null;
 
                 History.EvaluateChange( registrationChanges, "Registrar", string.Empty, registrar.FullName );
@@ -1991,11 +1948,12 @@ namespace RockWeb.Plugins.church_ccv.Event
 
                     RegistrationRegistrant registrant = null;
                     Person person = null;
-
+                    
                     string firstName = registrantInfo.GetFirstName( RegistrationTemplate );
                     string lastName = registrantInfo.GetLastName( RegistrationTemplate );
                     string email = registrantInfo.GetEmail( RegistrationTemplate );
 
+                    // Attempt to get the person from the registration
                     if ( registrantInfo.Id > 0 )
                     {
                         registrant = registration.Registrants.FirstOrDefault( r => r.Id == registrantInfo.Id );
@@ -2024,76 +1982,50 @@ namespace RockWeb.Plugins.church_ccv.Event
                         }
                     }
 
+                    // we couldn't load them from the registration or FamilyDropDown picker, so 
+                    // try to find them by matching their info. If that fails, they're new to us.
                     if ( person == null )
                     {
                         // Try to find a matching person based on name and email address
                         var personMatches = personService.GetByMatch( firstName, lastName, email );
                         if ( personMatches.Count() == 1 )
                         {
+                            // we found them
                             person = personMatches.First();
                         }
-
-                        // Try to find a matching person based on name within same family as registrar
-                        if ( person == null && registrar != null && registrantInfo.FamilyGuid == RegistrationState.FamilyGuid )
+                        else
                         {
-                            var familyMembers = registrar.GetFamilyMembers( true, rockContext )
-                                .Where( m =>
-                                    ( m.Person.FirstName == firstName || m.Person.NickName == firstName ) &&
-                                    m.Person.LastName == lastName )
-                                .Select( m => m.Person )
-                                .ToList();
-
-                            if ( familyMembers.Count() == 1 )
+                            person = new Person();
+                            person.FirstName = firstName;
+                            person.LastName = lastName;
+                            person.IsEmailActive = true;
+                            person.Email = email;
+                            person.EmailPreference = EmailPreference.EmailAllowed;
+                            person.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                            if ( dvcConnectionStatus != null )
                             {
-                                person = familyMembers.First();
-                                if ( !string.IsNullOrWhiteSpace( email ) )
-                                {
-                                    person.Email = email;
-                                }
+                                person.ConnectionStatusValueId = dvcConnectionStatus.Id;
                             }
 
-                            if ( familyMembers.Count() > 1 && !string.IsNullOrWhiteSpace( email ) )
+                            if ( dvcRecordStatus != null )
                             {
-                                familyMembers = familyMembers
-                                    .Where( m =>
-                                        m.Email != null &&
-                                        m.Email.Equals( email, StringComparison.OrdinalIgnoreCase ) )
-                                    .ToList();
-                                if ( familyMembers.Count() == 1 )
-                                {
-                                    person = familyMembers.First();
-                                }
+                                person.RecordStatusValueId = dvcRecordStatus.Id;
                             }
-                        }
-                    }
-
-                    if ( person == null )
-                    {
-                        // If a match was not found, create a new person
-                        person = new Person();
-                        person.FirstName = firstName;
-                        person.LastName = lastName;
-                        person.IsEmailActive = true;
-                        person.Email = email;
-                        person.EmailPreference = EmailPreference.EmailAllowed;
-                        person.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-                        if ( dvcConnectionStatus != null )
-                        {
-                            person.ConnectionStatusValueId = dvcConnectionStatus.Id;
-                        }
-
-                        if ( dvcRecordStatus != null )
-                        {
-                            person.RecordStatusValueId = dvcRecordStatus.Id;
                         }
                     }
 
                     int? campusId = CampusId;
                     Location location = null;
 
-                    // Set any of the template's person fields
+                    // Take the values entered into the registration form, and copy them to the Person.
+                    // NOTE:
+                    // We will NOT overwrite existing values on a Person. We only copy over values that the Person doesn't have.
+                    // We don't overwrite because often a relative or friend will register a person, and they
+                    // put their OWN information (thanks Browser Auto-fill), which would then overwrite the actual data for the person.
+                    // (Now, if the Person being registered into Rock is brand new, they won't have any existing data, so we'll take everything.)
+                    // Also, since Campus and Address are on the Family, so in effect if the Person already exists, we won't save these values.
                     foreach ( var field in RegistrationTemplate.Forms
-                        .SelectMany( f => f.Fields
+                            .SelectMany( f => f.Fields
                             .Where( t => t.FieldSource == RegistrationFieldSource.PersonField ) ) )
                     {
                         // Find the registrant's value
@@ -2102,27 +2034,28 @@ namespace RockWeb.Plugins.church_ccv.Event
                             .Select( f => f.Value.FieldValue )
                             .FirstOrDefault();
 
-
                         if ( fieldValue != null )
                         {
                             switch ( field.PersonFieldType )
                             {
                                 case RegistrationPersonFieldType.Campus:
+                                {
+                                    if ( fieldValue != null )
                                     {
-                                        if ( fieldValue != null )
-                                        {
-                                            campusId = fieldValue.ToString().AsIntegerOrNull();
-                                        }
-                                        break;
+                                        campusId = fieldValue.ToString().AsIntegerOrNull();
                                     }
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.Address:
-                                    {
-                                        location = fieldValue as Location;
-                                        break;
-                                    }
+                                {
+                                    location = fieldValue as Location;
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.Birthdate:
+                                {
+                                    if ( person.BirthDate == null )
                                     {
                                         var birthMonth = person.BirthMonth;
                                         var birthDay = person.BirthDay;
@@ -2133,28 +2066,37 @@ namespace RockWeb.Plugins.church_ccv.Event
                                         History.EvaluateChange( personChanges, "Birth Month", birthMonth, person.BirthMonth );
                                         History.EvaluateChange( personChanges, "Birth Day", birthDay, person.BirthDay );
                                         History.EvaluateChange( personChanges, "Birth Year", birthYear, person.BirthYear );
-
-                                        break;
                                     }
 
+                                    break;
+                                }
+
                                 case RegistrationPersonFieldType.Grade:
+                                {
+                                    if ( person.GradeOffset == null )
                                     {
                                         var newGraduationYear = fieldValue.ToString().AsIntegerOrNull();
                                         History.EvaluateChange( personChanges, "Graduation Year", person.GraduationYear, newGraduationYear );
                                         person.GraduationYear = newGraduationYear;
-
-                                        break;
                                     }
 
+                                    break;
+                                }
+
                                 case RegistrationPersonFieldType.Gender:
+                                {
+                                    if ( person.Gender == Gender.Unknown )
                                     {
                                         var newGender = fieldValue.ToString().ConvertToEnumOrNull<Gender>() ?? Gender.Unknown;
                                         History.EvaluateChange( personChanges, "Gender", person.Gender, newGender );
                                         person.Gender = newGender;
-                                        break;
                                     }
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.MaritalStatus:
+                                {
+                                    if ( person.MaritalStatusValueId == null )
                                     {
                                         if ( fieldValue != null )
                                         {
@@ -2162,39 +2104,52 @@ namespace RockWeb.Plugins.church_ccv.Event
                                             History.EvaluateChange( personChanges, "Marital Status", DefinedValueCache.GetName( person.MaritalStatusValueId ), DefinedValueCache.GetName( newMaritalStatusId ) );
                                             person.MaritalStatusValueId = newMaritalStatusId;
                                         }
-                                        break;
                                     }
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.MobilePhone:
+                                {
+                                    var numberType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
+                                    if ( numberType != null && person.GetPhoneNumber( numberType.Id ) == null )
                                     {
                                         SavePhone( fieldValue, person, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid(), personChanges );
-                                        break;
                                     }
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.HomePhone:
+                                {
+                                    var numberType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_HOME.AsGuid() );
+                                    if ( numberType != null && person.GetPhoneNumber( numberType.Id ) == null )
                                     {
                                         SavePhone( fieldValue, person, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_HOME.AsGuid(), personChanges );
-                                        break;
                                     }
+                                    break;
+                                }
 
                                 case RegistrationPersonFieldType.WorkPhone:
+                                {
+                                    var numberType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid() );
+                                    if ( numberType != null && person.GetPhoneNumber( numberType.Id ) == null )
                                     {
                                         SavePhone( fieldValue, person, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_WORK.AsGuid(), personChanges );
-                                        break;
                                     }
+                                    break;
+                                }
                             }
                         }
                     }
 
                     // Save the person ( and family if needed )
-                    SavePerson( rockContext, person, registrantInfo.FamilyGuid, campusId, location, adultRoleId, childRoleId, multipleFamilyGroupIds, ref singleFamilyId, registration.Id );
+                    SavePerson( rockContext, person, campusId, location );
 
                     // Load the person's attributes
                     person.LoadAttributes();
 
                     // Set any of the template's person fields
                     foreach ( var field in RegistrationTemplate.Forms
-                        .SelectMany( f => f.Fields
+                            .SelectMany( f => f.Fields
                             .Where( t =>
                                 t.FieldSource == RegistrationFieldSource.PersonAttribute &&
                                 t.AttributeId.HasValue ) ) )
@@ -2211,37 +2166,41 @@ namespace RockWeb.Plugins.church_ccv.Event
                             if ( attribute != null )
                             {
                                 string originalValue = person.GetAttributeValue( attribute.Key );
-                                string newValue = fieldValue.ToString();
-                                person.SetAttributeValue( attribute.Key, fieldValue.ToString() );
 
-                                // DateTime values must be stored in ISO8601 format as http://www.rockrms.com/Rock/Developer/BookContent/16/16#datetimeformatting
-                                if ( attribute.FieldType.Guid.Equals( Rock.SystemGuid.FieldType.DATE.AsGuid() ) ||
-                                    attribute.FieldType.Guid.Equals( Rock.SystemGuid.FieldType.DATE_TIME.AsGuid() ) )
+                                // Make sure the Person doesn't already have a value--we don't overwrite existing values (see note way above)
+                                if ( string.IsNullOrWhiteSpace( originalValue ) == true )
                                 {
-                                    DateTime aDateTime;
-                                    if ( DateTime.TryParse( newValue, out aDateTime ) )
-                                    {
-                                        newValue = aDateTime.ToString( "o" );
-                                    }
-                                }
+                                    string newValue = fieldValue.ToString();
+                                    person.SetAttributeValue( attribute.Key, fieldValue.ToString() );
 
-                                if ( ( originalValue ?? string.Empty ).Trim() != ( newValue ?? string.Empty ).Trim() )
-                                {
-                                    string formattedOriginalValue = string.Empty;
-                                    if ( !string.IsNullOrWhiteSpace( originalValue ) )
+                                    // DateTime values must be stored in ISO8601 format as http://www.rockrms.com/Rock/Developer/BookContent/16/16#datetimeformatting
+                                    if ( attribute.FieldType.Guid.Equals( Rock.SystemGuid.FieldType.DATE.AsGuid() ) ||
+                                        attribute.FieldType.Guid.Equals( Rock.SystemGuid.FieldType.DATE_TIME.AsGuid() ) )
                                     {
-                                        formattedOriginalValue = attribute.FieldType.Field.FormatValue( null, originalValue, attribute.QualifierValues, false );
-                                    }
-
-                                    string formattedNewValue = string.Empty;
-                                    if ( !string.IsNullOrWhiteSpace( newValue ) )
-                                    {
-                                        formattedNewValue = attribute.FieldType.Field.FormatValue( null, newValue, attribute.QualifierValues, false );
+                                        DateTime aDateTime;
+                                        if ( DateTime.TryParse( newValue, out aDateTime ) )
+                                        {
+                                            newValue = aDateTime.ToString( "o" );
+                                        }
                                     }
 
-                                    Helper.SaveAttributeValue( person, attribute, newValue, rockContext );
-                                    History.EvaluateChange( personChanges, attribute.Name, formattedOriginalValue, formattedNewValue );
+                                    if ( ( originalValue ?? string.Empty ).Trim() != ( newValue ?? string.Empty ).Trim() )
+                                    {
+                                        string formattedOriginalValue = string.Empty;
+                                        if ( !string.IsNullOrWhiteSpace( originalValue ) )
+                                        {
+                                            formattedOriginalValue = attribute.FieldType.Field.FormatValue( null, originalValue, attribute.QualifierValues, false );
+                                        }
 
+                                        string formattedNewValue = string.Empty;
+                                        if ( !string.IsNullOrWhiteSpace( newValue ) )
+                                        {
+                                            formattedNewValue = attribute.FieldType.Field.FormatValue( null, newValue, attribute.QualifierValues, false );
+                                        }
+
+                                        Helper.SaveAttributeValue( person, attribute, newValue, rockContext );
+                                        History.EvaluateChange( personChanges, attribute.Name, formattedOriginalValue, formattedNewValue );
+                                    }
                                 }
                             }
                         }
@@ -2395,10 +2354,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                             "Registrant: " + person.FullName,
                             null, null, true, CurrentPersonAliasId )
                     );
-
-                    // Clear this registran't family guid so it's not updated again
-                    registrantInfo.FamilyGuid = Guid.Empty;
-
+                    
                     // Save the signed document
                     try
                     {
@@ -2459,178 +2415,34 @@ namespace RockWeb.Plugins.church_ccv.Event
         /// <summary>
         /// Saves the person.
         /// </summary>
-        private Person SavePerson( RockContext rockContext, Person person, Guid familyGuid, int? campusId, Location location, int adultRoleId, int childRoleId,
-            Dictionary<Guid, int> multipleFamilyGroupIds, ref int? singleFamilyId, int? registrationId )
+        private Person SavePerson( RockContext rockContext, Person person, int? campusId, Location location )
         {
-            // This function attempts to do _TWO_ things.
-
-            // First.
-            // *IF* this person was chosen as the "At the same address as..." radio button,
-            // AND there's not *already* a family associated with that radio button,
-            // then this will cause any NEWLY created person after this point to be placed INTO this family.
-
-            // Second.
-            // *IF* the registration template asks for an address, it will update the address of whatever Family THIS person
-            // is in to that address. It's making a mostly-true assumption that a person registering will give us their latest address.
-
-            // Both of these issues breakdown if a person is in multiple families. This can only happen if person.Id > 0 (because a person that doesn't exist yet can't be in two families).
-            // With two families, we have no way of knowing which one to use.
-
-            // Example:
-            // Billy is from a broken home. Mommy is in one family, daddy in another. The child is in two families.
-            // GRANDMA registers little Billy, and puts Grandma's address in the registration.
-            
-            // Now we get here. Which family's address do we update? If Grandma used a new address, we don't know which family to put it on.
-            // If grandma used either Mommy or Daddy's address, there's no need to update.
-
-            // Example Two:
-            // Same as above, but Grandma also registers Billy's new brother Jimmy, who isn't in the system.
-            // Which family should Jimmy be placed in? We don't know.
-
-            // We solve the issues by not making any changes if the person is in two families.
-            
-            // This will result in newly created Jimmy being in his own family, which a person merge will solve.
-            
-            // For the address issue, we will kick off a workflow saying "Billy registered for an event and is in multiple families."
-            // And from there, a human can evaluate whether to put the address used in the registration on either family.
-            int? familyId = null;
-            
             if ( person.Id > 0 )
             {
                 rockContext.SaveChanges();
-
-                // only use this person's family if they're in ONE family.
-                if( person.GetFamilies( rockContext ).Count( ) == 1 )
-                {
-                    var family = person.GetFamilies( rockContext ).FirstOrDefault();
-                    if ( family != null )
-                    {
-                        familyId = family.Id;
-                        multipleFamilyGroupIds.AddOrIgnore( familyGuid, family.Id );
-                        if ( !singleFamilyId.HasValue )
-                        {
-                            singleFamilyId = family.Id;
-                        }
-                    }
-                }
-                // they're in multiple families.
-                else
-                {
-                    // If we have a registration Id and the registration took an address,
-                    // kick off a workflow so a human can decide what to do.
-                    // (Registration Id will only be null if this function was called for the person REGISTERING. And in that case, we don't take an address, so it doesn't matter.)
-                    if( registrationId.HasValue && location != null )
-                    {
-                        // kick off a workflow that alerts staff that this person is in multiple families, so we didn't update their address
-                        Dictionary<string, string> workflowAttribs = new Dictionary<string, string>( );
-
-                        // we hope there's a registration id available. This means we're calling SavePerson on the
-                        // registrant, and can point right to their registration.
-                        workflowAttribs.Add( "RegistrationId", registrationId.Value.ToString( ) );
-
-                        StartWorkflow( "MultipleFamilyAlertWorkflow", person, workflowAttribs, rockContext );
-                    }
-                }
             }
             else
             {
-                // If we've created the family aready for this registrant, add them to it
-                if (
-                        ( RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Ask && multipleFamilyGroupIds.ContainsKey( familyGuid ) ) ||
-                        ( RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Yes && singleFamilyId.HasValue )
-                    )
+               // Create Person & Family, and set the address given for that family
+                var familyGroup = PersonService.SaveNewPerson( person, rockContext, campusId, false );
+                if ( familyGroup != null )
                 {
-
-                    // Add person to existing family
-                    var age = person.Age;
-                    int familyRoleId = age.HasValue && age < 18 ? childRoleId : adultRoleId;
-
-                    familyId = RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Ask ?
-                        multipleFamilyGroupIds[familyGuid] :
-                        singleFamilyId.Value;
-                    PersonService.AddPersonToFamily( person, true, multipleFamilyGroupIds[familyGuid], familyRoleId, rockContext );
-
-                }
-
-                // otherwise create a new family
-                else
-                {
-                    // Create Person/Family
-                    var familyGroup = PersonService.SaveNewPerson( person, rockContext, campusId, false );
-                    if ( familyGroup != null )
+                    if ( location != null )
                     {
-                        familyId = familyGroup.Id;
-
-                        // Store the family id for next person 
-                        multipleFamilyGroupIds.AddOrIgnore( familyGuid, familyGroup.Id );
-                        if ( !singleFamilyId.HasValue )
+                        var homeLocationType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
+                        if ( homeLocationType != null )
                         {
-                            singleFamilyId = familyGroup.Id;
+                            GroupService.AddNewGroupAddress(
+                                    rockContext,
+                                    familyGroup,
+                                    Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME,
+                                    location.Street1, location.Street2, location.City, location.State, location.PostalCode, location.Country, true );
                         }
-                    }
-                }
-            }
-
-
-            if ( familyId.HasValue && location != null )
-            {
-                var homeLocationType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid() );
-                if ( homeLocationType != null )
-                {
-                    var familyGroup = new GroupService( rockContext ).Get( familyId.Value );
-                    if ( familyGroup != null )
-                    {
-                        GroupService.AddNewGroupAddress(
-                            rockContext,
-                            familyGroup,
-                            Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME,
-                            location.Street1, location.Street2, location.City, location.State, location.PostalCode, location.Country, true );
                     }
                 }
             }
 
             return new PersonService( rockContext ).Get( person.Id );
-        }
-
-        /// <summary>
-        /// Starts the workflow if one was defined in the block setting.
-        /// </summary>
-        /// <param name="person">The person.</param>
-        /// <param name="rockContext">The rock context.</param>
-        private void StartWorkflow( string workflowName, object entity, Dictionary<string, string> attributes, RockContext rockContext )
-        {
-            WorkflowType workflowType = null;
-            Guid? workflowTypeGuid = GetAttributeValue( workflowName ).AsGuidOrNull();
-
-            if ( workflowTypeGuid.HasValue )
-            {
-                var workflowTypeService = new WorkflowTypeService( rockContext );
-                workflowType = workflowTypeService.Get( workflowTypeGuid.Value );
-                if ( workflowType != null )
-                {
-                    try
-                    {
-                        var workflow = Rock.Model.Workflow.Activate( workflowType, workflowName );
-
-                        // set optional attributes for the workflow
-                        if( attributes != null )
-                        {
-                            foreach ( KeyValuePair<string, string> kvp in attributes )
-                            {
-                                workflow.SetAttributeValue( kvp.Key, kvp.Value );
-                            }
-                        }
-
-                        List<string> workflowErrors;
-                        new WorkflowService( rockContext ).Process( workflow, entity, out workflowErrors );
-                    }
-                    catch ( Exception ex )
-
-                    {
-                        ExceptionLogService.LogException( ex, this.Context );
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -3980,41 +3792,6 @@ namespace RockWeb.Plugins.church_ccv.Event
                 if ( RegistrationState != null && RegistrationState.RegistrantCount > CurrentRegistrantIndex )
                 {
                     registrant = RegistrationState.Registrants[CurrentRegistrantIndex];
-
-                    // If this is not the first person, then check to see if option for asking about family should be displayed
-                    if ( CurrentFormIndex == 0 && CurrentRegistrantIndex > 0 &&
-                        RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Ask )
-                    {
-                        var familyOptions = RegistrationState.GetFamilyOptions( RegistrationTemplate, CurrentRegistrantIndex );
-                        if ( familyOptions.Any() )
-                        {
-                            familyOptions.Add( familyOptions.ContainsKey( registrant.FamilyGuid ) ?
-                                Guid.NewGuid() :
-                                registrant.FamilyGuid.Equals( Guid.Empty ) ? Guid.NewGuid() : registrant.FamilyGuid,
-                                "None of the above" );
-                            rblFamilyOptions.DataSource = familyOptions;
-                            rblFamilyOptions.DataBind();
-                            pnlFamilyOptions.Visible = true;
-                        }
-                        else
-                        {
-                            pnlFamilyOptions.Visible = false;
-                        }
-                    }
-                    else
-                    {
-                        pnlFamilyOptions.Visible = false;
-                    }
-
-                    if ( setValues )
-                    {
-                        if ( CurrentRegistrantIndex > 0 )
-                        {
-                            previousRegistrant = RegistrationState.Registrants[CurrentRegistrantIndex - 1];
-                        }
-
-                        rblFamilyOptions.SetValue( registrant.FamilyGuid.ToString() );
-                    }
                 }
 
                 var familyMemberSelected = registrant.Id <= 0 && registrant.PersonId.HasValue && RegistrationTemplate.ShowCurrentFamilyMembers;
@@ -4171,6 +3948,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                         tbEmail.Label = "Email";
                         tbEmail.Required = field.IsRequired;
                         tbEmail.ValidationGroup = BlockValidationGroup;
+                        tbEmail.Enabled = !familyMemberSelected;
                         phRegistrantControls.Controls.Add( tbEmail );
 
                         if ( setValue && fieldValue != null )
@@ -4498,16 +4276,6 @@ namespace RockWeb.Plugins.church_ccv.Event
             {
                 var registrant = RegistrationState.Registrants[CurrentRegistrantIndex];
 
-                if ( rblFamilyOptions.Visible )
-                {
-                    registrant.FamilyGuid = rblFamilyOptions.SelectedValue.AsGuid();
-                }
-
-                if ( registrant.FamilyGuid.Equals( Guid.Empty ) )
-                {
-                    registrant.FamilyGuid = Guid.NewGuid();
-                }
-
                 var form = RegistrationTemplate.Forms.OrderBy( f => f.Order ).ToList()[CurrentFormIndex];
                 foreach ( var field in form.Fields
                     .Where( f => 
@@ -4819,7 +4587,8 @@ namespace RockWeb.Plugins.church_ccv.Event
 
                             if ( field.ShowCurrentValue ||
                                 ( ( field.PersonFieldType == RegistrationPersonFieldType.FirstName ||
-                                field.PersonFieldType == RegistrationPersonFieldType.LastName ) &&
+                                field.PersonFieldType == RegistrationPersonFieldType.LastName ||
+                                field.PersonFieldType == RegistrationPersonFieldType.Email ) &&
                                 field.FieldSource == RegistrationFieldSource.PersonField ) )
                             {
                                 dbValue = registrant.GetRegistrantValue( null, person, family, field, rockContext );
@@ -4850,37 +4619,6 @@ namespace RockWeb.Plugins.church_ccv.Event
         {
             lRegistrationTerm.Text = RegistrationTerm;
             lDiscountCodeLabel.Text = DiscountCodeTerm;
-
-            if ( RegistrationTemplate.RegistrantsSameFamily == RegistrantsSameFamily.Ask )
-            {
-                var familyOptions = RegistrationState.GetFamilyOptions( RegistrationTemplate, RegistrationState.RegistrantCount );
-                if ( familyOptions.Any() )
-                {
-                    Guid? selectedGuid = rblRegistrarFamilyOptions.SelectedValueAsGuid();
-
-                    familyOptions.Add( familyOptions.ContainsKey( RegistrationState.FamilyGuid ) ?
-                        Guid.NewGuid() :
-                        RegistrationState.FamilyGuid.Equals( Guid.Empty ) ? Guid.NewGuid() : RegistrationState.FamilyGuid,
-                        "None" );
-                    rblRegistrarFamilyOptions.DataSource = familyOptions;
-                    rblRegistrarFamilyOptions.DataBind();
-
-                    if ( selectedGuid.HasValue )
-                    {
-                        rblRegistrarFamilyOptions.SetValue( selectedGuid );
-                    }
-
-                    pnlRegistrarFamilyOptions.Visible = true;
-                }
-                else
-                {
-                    pnlRegistrarFamilyOptions.Visible = false;
-                }
-            }
-            else
-            {
-                pnlRegistrarFamilyOptions.Visible = false;
-            }
 
             if ( setValues && RegistrationState != null && RegistrationInstanceState != null )
             {
@@ -4914,13 +4652,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                     }
                 }
 
-                rblRegistrarFamilyOptions.Label = string.IsNullOrWhiteSpace( tbYourFirstName.Text ) ?
-                    "You are at the same address as" :
-                    tbYourFirstName.Text + " is at the same address as";
-
                 cbUpdateEmail.Visible = CurrentPerson != null && !string.IsNullOrWhiteSpace( CurrentPerson.Email );
-
-                //rblRegistrarFamilyOptions.SetValue( RegistrationState.FamilyGuid.ToString() );
 
                 // Build Discount info if template has discounts and this is a new registration
                 if ( RegistrationTemplate != null 
@@ -5260,17 +4992,6 @@ namespace RockWeb.Plugins.church_ccv.Event
                 RegistrationState.FirstName = tbYourFirstName.Text;
                 RegistrationState.LastName = tbYourLastName.Text;
                 RegistrationState.ConfirmationEmail = tbConfirmationEmail.Text;
-
-                if ( rblRegistrarFamilyOptions.Visible )
-                {
-                    RegistrationState.FamilyGuid = rblRegistrarFamilyOptions.SelectedValue.AsGuid();
-                }
-
-                if ( RegistrationState.FamilyGuid.Equals( Guid.Empty ) )
-                {
-                    RegistrationState.FamilyGuid = Guid.NewGuid();
-                }
-
                 RegistrationState.PaymentAmount = nbAmountPaid.Text.AsDecimal();
             }
         }

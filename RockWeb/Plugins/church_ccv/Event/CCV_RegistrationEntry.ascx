@@ -49,11 +49,6 @@
         </asp:Panel>
 
         <asp:Panel id="pnlRegistrantFields" runat="server" >
-
-            <asp:Panel ID="pnlFamilyOptions" runat="server" CssClass="well js-registration-same-family">
-                <Rock:RockRadioButtonList ID="rblFamilyOptions" runat="server" Label="Individual is at the same address as" RepeatDirection="Vertical" Required="true" RequiredErrorMessage="Answer to which family is required." DataTextField="Value" DataValueField="Key" />
-            </asp:Panel>
-        
             <asp:Panel ID="pnlFamilyMembers" runat="server" Visible="false" CssClass="row" >
                 <div class="col-md-6">
                     <Rock:RockDropDownList ID="ddlFamilyMembers" runat="server" Label="Family Member" AutoPostBack="true" OnSelectedIndexChanged="ddlFamilyMembers_SelectedIndexChanged" />
@@ -115,11 +110,6 @@
                 <div class="col-md-6">
                     <Rock:EmailBox ID="tbConfirmationEmail" runat="server" Label="Send Confirmation Emails To" Required="true" />
                     <Rock:RockCheckBox ID="cbUpdateEmail" runat="server" Text="Should Your Account Be Updated To Use This Email Address?" Visible="false" Checked="true" />
-                </div>
-                <div class="col-md-6">
-                    <asp:Panel ID="pnlRegistrarFamilyOptions" runat="server" CssClass="js-registration-same-family">
-                        <Rock:RockRadioButtonList ID="rblRegistrarFamilyOptions" runat="server" Label="You are at the same address as" RepeatDirection="Horizontal" Required="true" DataTextField="Value" DataValueField="Key" RequiredErrorMessage="Answer to which family is required." />
-                    </asp:Panel>
                 </div>
             </div>
 

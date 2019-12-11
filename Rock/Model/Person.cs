@@ -1883,6 +1883,16 @@ namespace Rock.Model
             return PhoneNumbers.FirstOrDefault( n => n.NumberTypeValue.Guid == phoneType );
         }
 
+        /// <summary>
+        /// Gets the phone number.
+        /// </summary>
+        /// <param name="phoneTypeId">Type of the phone by defined value id.</param>
+        /// <returns></returns>
+        public PhoneNumber GetPhoneNumber( int phoneTypeId )
+        {
+            return PhoneNumbers.FirstOrDefault( n => n.NumberTypeValueId == phoneTypeId );
+        }
+
         #endregion
 
         #region Static Helper Methods
