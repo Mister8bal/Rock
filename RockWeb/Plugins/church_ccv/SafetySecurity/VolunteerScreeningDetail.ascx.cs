@@ -75,9 +75,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
 
             gCharacterRefs.Actions.ShowAdd = true;
             gCharacterRefs.Actions.AddClick += gCharacterRef_AddClick;
-
-            // setup the legacy application file uploader's filetype
-            fu_legAppFile.BinaryFileTypeGuid = Rock.SystemGuid.BinaryFiletype.DEFAULT.AsGuid();
         }
 
         protected void gCharacterRef_AddClick( object sender, EventArgs e )
@@ -86,7 +83,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             using ( RockContext rockContext = new RockContext( ) )
             {
                 // let it throw an exception if any of these objects come back null
-                VolunteerScreening vsInstance = new Service<VolunteerScreening>( rockContext ).Get( VSInstanceId );
+                VolunteerScreening vsInstance = new VolunteerScreeningService( rockContext ).Get( VSInstanceId );
                 
                 // setup the person info / Application Instance Header details
                 PersonAlias personAlias = new PersonAliasService( rockContext ).Get( vsInstance.PersonAliasId );
@@ -157,7 +154,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         {
             using ( RockContext rockContext = new RockContext( ) )
             {
-                VolunteerScreening vsInstance = new Service<VolunteerScreening>( rockContext ).Get( vsInstanceId );
+                VolunteerScreening vsInstance = new VolunteerScreeningService( rockContext ).Get( vsInstanceId );
                 if( vsInstance != null )
                 {
                     // setup the person info / Application Instance Header details
@@ -167,67 +164,58 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     lPersonName.Text = "<a href=/Person/" + person.Id + ">" + person.FullName + "</a>";
                     lDateApplicationSent.Text = "Date Sent to Applicant: " + vsInstance.CreatedDateTime.Value.ToShortDateString( );
 
-                    if( vsInstance.Type == VolunteerScreening.Types.Normal.ConvertToInt( ) )
-                    {
-                        pNewScreening.Visible = true;
-                        pLegacy.Visible = false;
+                    pNewScreening.Visible = true;
                                                 
-                        // setup the background check info
-                        if( vsInstance.BGCheck_Result_Date.HasValue )
-                        {
-                            lBGCheck_Date.Text = vsInstance.BGCheck_Result_Date.Value.ToShortDateString( );
-                        }
-                        else
-                        {
-                            lBGCheck_Date.Text = "Pending";
-                        }
-
-                        if( vsInstance.BGCheck_Result_DocGuid.HasValue )
-                        {
-                            lBGCheck_Doc.Text = "<a href=/GetFile.ashx?guid=" + vsInstance.BGCheck_Result_DocGuid.Value + ">View Document</a>";
-                        }
-                        else
-                        {
-                            lBGCheck_Doc.Text = "Pending";
-                        }
-
-                        // if they have an actual Result, display it and hide links to view / kickoff a request
-                        if( string.IsNullOrWhiteSpace( vsInstance.BGCheck_Result_Value ) == false )
-                        {
-                            lBGCheck_Link.Text = "Background Check Complete";
-
-                            lBGCheck_Result.Text = vsInstance.BGCheck_Result_Value;
-                        }
-                        else
-                        {
-                            lBGCheck_Result.Text = "Pending";
-
-                            // assume we'll link to launching a new background check, and all fields should be hidden
-                            string bgCheckText = "<a href=/WorkflowEntry/" + sBackgroundCheck_WorkflowId.ToString( ) + "?PersonId=" + person.Id + "&VolunteerScreeningInstanceId=" + vsInstance.Id + ">Request Background Check</a>";
-
-                            // but if there's a result, link them to the one in progress
-                            List<int?> attribIds = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( ).Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == vsInstance.Id ).Select( av => av.EntityId ).ToList( );
-                            if( attribIds.Count > 0 )
-                            { 
-                                Workflow bgCheckWorkflow = new WorkflowService( rockContext ).Queryable( ).AsNoTracking( ).Where( wf => wf.WorkflowTypeId == sBackgroundCheck_WorkflowId && attribIds.Contains( wf.Id ) ).FirstOrDefault( );
-                                if ( bgCheckWorkflow != null )
-                                {
-                                    // since there is one, let them view the date and doc (which may or may not be filled in)
-                                    bgCheckText = "Background Check In Progress";
-                                }
-                            }
-                            
-                            lBGCheck_Link.Text = bgCheckText;
-                        }
-
-                        // setup the application info
-                        ShowApplicationInfo( rockContext, vsInstance, person );
+                    // setup the background check info
+                    if( vsInstance.BGCheck_Result_Date.HasValue )
+                    {
+                        lBGCheck_Date.Text = vsInstance.BGCheck_Result_Date.Value.ToShortDateString( );
                     }
                     else
                     {
-                        pNewScreening.Visible = false;
-                        pLegacy.Visible = true;
+                        lBGCheck_Date.Text = "Pending";
                     }
+
+                    if( vsInstance.BGCheck_Result_DocGuid.HasValue )
+                    {
+                        lBGCheck_Doc.Text = "<a href=/GetFile.ashx?guid=" + vsInstance.BGCheck_Result_DocGuid.Value + ">View Document</a>";
+                    }
+                    else
+                    {
+                        lBGCheck_Doc.Text = "Pending";
+                    }
+
+                    // if they have an actual Result, display it and hide links to view / kickoff a request
+                    if( string.IsNullOrWhiteSpace( vsInstance.BGCheck_Result_Value ) == false )
+                    {
+                        lBGCheck_Link.Text = "Background Check Complete";
+
+                        lBGCheck_Result.Text = vsInstance.BGCheck_Result_Value;
+                    }
+                    else
+                    {
+                        lBGCheck_Result.Text = "Pending";
+
+                        // assume we'll link to launching a new background check, and all fields should be hidden
+                        string bgCheckText = "<a href=/WorkflowEntry/" + sBackgroundCheck_WorkflowId.ToString( ) + "?PersonId=" + person.Id + "&VolunteerScreeningInstanceId=" + vsInstance.Id + ">Request Background Check</a>";
+
+                        // but if there's a result, link them to the one in progress
+                        List<int?> attribIds = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( ).Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == vsInstance.Id ).Select( av => av.EntityId ).ToList( );
+                        if( attribIds.Count > 0 )
+                        { 
+                            Workflow bgCheckWorkflow = new WorkflowService( rockContext ).Queryable( ).AsNoTracking( ).Where( wf => wf.WorkflowTypeId == sBackgroundCheck_WorkflowId && attribIds.Contains( wf.Id ) ).FirstOrDefault( );
+                            if ( bgCheckWorkflow != null )
+                            {
+                                // since there is one, let them view the date and doc (which may or may not be filled in)
+                                bgCheckText = "Background Check In Progress";
+                            }
+                        }
+                            
+                        lBGCheck_Link.Text = bgCheckText;
+                    }
+
+                    // setup the application info
+                    ShowApplicationInfo( rockContext, vsInstance, person );
                 }
             }
         }
@@ -240,14 +228,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             var avQuery = new AttributeValueService( rockContext ).Queryable( ).AsNoTracking( );
             var attribWithValue = attribQuery.Join( avQuery, a => a.Id, av => av.AttributeId, ( a, av ) => new { Attribute = a, AttribValue = av } )
                                                  .Where( a => a.Attribute.EntityTypeQualifierColumn.Equals( "WorkflowTypeId", StringComparison.OrdinalIgnoreCase ) );
-            
-            // JHM 7-10-17
-            // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-            // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-            // We can get rid of this when all workflows of type 202 are marked as 'completed'
-            var starsQueryResult = attribWithValue.Where( a => a.Attribute.Key == "ApplyingForStars" )
-                .Select( a => new ApplyingForStars{  EntityId = a.AttribValue.EntityId, Applying = a.AttribValue.Value } )
-                .ToList( );
 
             if( vsInstance.Application_WorkflowId.HasValue )
             {
@@ -256,7 +236,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 // first, get the application workflow
                 Workflow applicationWorkflow = workflowService.Queryable( ).AsNoTracking( ).Where( wf => wf.Id == vsInstance.Application_WorkflowId ).SingleOrDefault( );
 
-                lApplicationType.Text = ParseApplicationType( applicationWorkflow, starsQueryResult );
+                lApplicationType.Text = ParseApplicationType( applicationWorkflow );
 
                 if( applicationWorkflow.Status == "Completed" )
                 {
@@ -368,101 +348,23 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             }
         }
 
-        // JHM 7-10-17
-        // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-        // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-        // We can get rid of this when all workflows of type 202 are marked as 'completed'
-        public class ApplyingForStars
+        string ParseApplicationType( Workflow workflow )
         {
-            public int? EntityId { get; set; }
-            public string Applying { get; set; }
-        }
-
-        string ParseApplicationType( Workflow workflow, List<ApplyingForStars> starsQueryResult )
-        {
-            // JHM 7-10-17
-            // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-            // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-            // We can get rid of this when all workflows of type 202 are marked as 'completed'
-            ApplyingForStars applyingForStars = starsQueryResult.Where( av => av.EntityId == workflow.Id ).SingleOrDefault( );
-            if ( applyingForStars != null )
+            // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
+            // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
+            int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
+            if ( appTypeStartIndex > -1 )
             {
-                return applyingForStars.Applying == "True" ? sApplicationType_STARS : sApplicationType_Standard;
+                // there was an ending "()", so take just that part of the workflow name
+                string applicationType = workflow.Name.Substring( appTypeStartIndex );
+
+                // take the character after the first, up to just before the closing ')', which removes the ()s
+                return applicationType.Substring( 1, applicationType.Length - 2 );
             }
             else
             {
-                // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
-                // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
-                int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
-                if ( appTypeStartIndex > -1 )
-                {
-                    // there was an ending "()", so take just that part of the workflow name
-                    string applicationType = workflow.Name.Substring( appTypeStartIndex );
-
-                    // take the character after the first, up to just before the closing ')', which removes the ()s
-                    return applicationType.Substring( 1, applicationType.Length - 2 );
-                }
-                else
-                {
-                    return sApplicationType_Standard;
-                }
+                return sApplicationType_Standard;
             }
         }
-                
-        // ---- Legacy Application Document File Uploader ---
-        protected void fu_legAppFile_FileUploaded( object sender, EventArgs e )
-        {
-        }
-
-        protected void fu_legAppFile_FileRemoved( object sender, EventArgs e )
-        {
-        }
-        // ----
-
-        // ---- Legacy Character Reference File Uploader ----
-        //protected void dl_legCharRefDocs_ItemDataBound( object sender, DataListItemEventArgs e )
-        //{
-        //    Guid binaryFileTypeGuid = Rock.SystemGuid.BinaryFiletype.DEFAULT.AsGuid();
-        //    var fileupDoc = e.Item.FindControl( "fu_legCharRefDocs" ) as Rock.Web.UI.Controls.FileUploader;
-        //    if ( fileupDoc != null )
-        //    {
-        //        fileupDoc.BinaryFileTypeGuid = binaryFileTypeGuid;
-        //    }
-        //}
-
-        //protected void fu_legCharRefDocs_FileUploaded( object sender, EventArgs e )
-        //{
-        //    var fileUpDoc = (Rock.Web.UI.Controls.FileUploader)sender;
-
-        //    if ( fileUpDoc.BinaryFileId.HasValue )
-        //    {
-        //        DocumentsState.Add( fileUpDoc.BinaryFileId.Value );
-        //        BindDocuments_LegCharRefDocs( true );
-        //    }
-        //}
-        
-        //protected void fu_legCharRefDocs_FileRemoved( object sender, FileUploaderEventArgs e )
-        //{
-        //    var fileUpDoc = (Rock.Web.UI.Controls.FileUploader)sender;
-        //    if ( e.BinaryFileId.HasValue )
-        //    {
-        //        DocumentsState.Remove( e.BinaryFileId.Value );
-        //        BindDocuments_LegCharRefDocs( true );
-        //    }
-        //}
-
-        //protected void BindDocuments_LegCharRefDocs( bool canEdit )
-        //{
-        //    var ds = DocumentsState.ToList();
-
-        //    if ( ds.Count() < 6 )
-        //    {
-        //        ds.Add( 0 );
-        //    }
-
-        //    dl_legCharRefDocs.DataSource = ds;
-        //    dl_legCharRefDocs.DataBind();
-        //}
-        // ----
     }
 }

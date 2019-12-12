@@ -118,21 +118,6 @@
                 <asp:Literal ID="lNoCharacterRefs" runat="server">No Character References have been Issued</asp:Literal>
             </div>
         </asp:Panel>
-        
-        <%-- Legacy Application Doc info --%>
-        <asp:Panel ID="pLegacy" runat="server" class="panel panel-block">
-            <div class="panel-body">
-                <h4 class="panel-title">Legacy Documents</h4>
-
-                <div class="row col-sm-4">
-                    <Rock:FileUploader ID="fu_legAppFile" runat="server" Label="Application Document" IsBinary="true" OnFileUploaded="fu_legAppFile_FileUploaded" OnFileRemoved="fu_legAppFile_FileRemoved" />
-                    
-                    <Rock:FileUploader ID="FileUploader1" runat="server" Label="Character Reference 1" IsBinary="true" OnFileUploaded="fu_legAppFile_FileUploaded" OnFileRemoved="fu_legAppFile_FileRemoved" />
-                    <Rock:FileUploader ID="FileUploader2" runat="server" Label="Character Reference 2" IsBinary="true" OnFileUploaded="fu_legAppFile_FileUploaded" OnFileRemoved="fu_legAppFile_FileRemoved" />
-                    <Rock:FileUploader ID="FileUploader3" runat="server" Label="Character Reference 3" IsBinary="true" OnFileUploaded="fu_legAppFile_FileUploaded" OnFileRemoved="fu_legAppFile_FileRemoved" />
-                </div>
-            </div>
-        </asp:Panel>
 
     </ContentTemplate>
 </asp:UpdatePanel>

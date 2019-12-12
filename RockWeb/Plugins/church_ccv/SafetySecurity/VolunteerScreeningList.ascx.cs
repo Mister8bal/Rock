@@ -106,9 +106,8 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 instance.PersonAliasId = TargetPerson.PrimaryAliasId.Value;
                 instance.CreatedDateTime = RockDateTime.Now;
                 instance.ModifiedDateTime = RockDateTime.Now;
-                instance.Type = (int)VolunteerScreening.Types.Legacy;
 
-                Service<VolunteerScreening> rockService = new Service<VolunteerScreening>( rockContext );
+                var rockService = new VolunteerScreeningService( rockContext );
                 rockService.Add( instance );
 
                 rockContext.SaveChanges( );
@@ -147,47 +146,12 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             {
                 using ( RockContext rockContext = new RockContext() )
                 {
-                    var vsService = new Service<VolunteerScreening>( rockContext );
+                    var vsService = new VolunteerScreeningService( rockContext );
                     VolunteerScreening screening = vsService.Get( e.RowKeyId.ToString().AsInteger() );
 
-                    rockContext.WrapTransaction( () =>
-                    {
-                        // remove attached workflows
-                        if ( screening != null && screening.Application_WorkflowId.HasValue )
-                        {
-                            var workflowService = new WorkflowService( rockContext );
-                            Workflow wf = workflowService.Get( screening.Application_WorkflowId.Value );
-
-                            // get character references
-                            List<int?> attribIds = new AttributeValueService( rockContext ).Queryable()
-                                .AsNoTracking()
-                                .Where( av => av.Attribute.Key == "VolunteerScreeningInstanceId" && av.ValueAsNumeric == screening.Id )
-                                .Select( av => av.EntityId )
-                                .ToList();
-
-                            List<Workflow> charRefWorkflows = new List<Workflow>();
-                            if ( attribIds.Count > 0 )
-                            {
-                                charRefWorkflows = workflowService.Queryable()
-                                    .Where( w => w.WorkflowTypeId == sCharacterReference_WorkflowId && attribIds.Contains( w.Id ) )
-                                    .ToList();
-
-                                // remove character workflows
-                                if ( charRefWorkflows.Any() )
-                                {
-                                    workflowService.DeleteRange( charRefWorkflows );
-                                }
-                            }
-
-                            // remove attached workflow
-                            workflowService.Delete( wf );
-                        }
-
-                        // remove volunteer screening
-                        vsService.Delete( screening );
-
-                        rockContext.SaveChanges();
-                    } );
+                    // remove volunteer screening
+                    vsService.Delete( screening );
+                    rockContext.SaveChanges();
 
                     BindGrid( rockContext );
                 }
@@ -204,7 +168,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         private void BindGrid( RockContext rockContext )
         {
             // get all the volunteer screening instances tied to this person
-            var vsQuery = new Service<VolunteerScreening>( rockContext ).Queryable( ).AsNoTracking( );
+            var vsQuery = new VolunteerScreeningService( rockContext ).Queryable( ).AsNoTracking( );
             var paQuery = new Service<PersonAlias>( rockContext ).Queryable( ).AsNoTracking( );
             var wfQuery = new Service<Workflow>( rockContext ).Queryable( ).AsNoTracking( );
 
@@ -218,14 +182,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                        .AsQueryable( );
 
             var instanceQuery = vsForPersonQuery.Join( wfQuery, vs => vs.Application_WorkflowId, wf => wf.Id, ( vs, wf ) => new { VolunteerScreening = vs, Workflow = wf, WorkflowStatus = wf.Status, InitiatedBy = wf.InitiatorPersonAliasId  } ).AsQueryable( );
-
-            // JHM 7-10-17
-                // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-                // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-                // We can get rid of this when all workflows of type 202 are marked as 'completed'
-            var starsQueryResult = attribWithValue.Where( a => a.Attribute.Key == "ApplyingForStars" )
-                .Select( a => new ApplyingForStars{  EntityId = a.AttribValue.EntityId, Applying = a.AttribValue.Value } )
-                .ToList( );
 
             if ( instanceQuery.Count( ) > 0 )
             {
@@ -243,7 +199,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                             InitiatedBy = GetInitiator(vs.InitiatedBy),
                             CompletedDate = ParseCompletedDate( vs.SentDate, vs.CompletedDate ),
                             State = VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.WorkflowStatus ),
-                            ApplicationType = ParseApplicationType( vs.Workflow, starsQueryResult )
+                            ApplicationType = ParseApplicationType( vs.Workflow )
                         } ).ToList( );
             }
             
@@ -279,44 +235,22 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             }
         }
 
-         // JHM 7-10-17
-        // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-        // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-        // We can get rid of this when all workflows of type 202 are marked as 'completed'
-        public class ApplyingForStars
+        string ParseApplicationType( Workflow workflow )
         {
-            public int? EntityId { get; set; }
-            public string Applying { get; set; }
-        }
-
-        string ParseApplicationType( Workflow workflow, List<ApplyingForStars> starsQueryResult )
-        {
-            // JHM 7-10-17
-            // HORRIBLE HACK - If the application was sent before we ended testing, we need to support old states and attributes.
-            // We need to do this because we have 100+ applications that were sent out (and not yet completed) during our testing phase. I was hoping for like, 10.
-            // We can get rid of this when all workflows of type 202 are marked as 'completed'
-            ApplyingForStars applyingForStars = starsQueryResult.Where( av => av.EntityId == workflow.Id ).SingleOrDefault( );
-            if ( applyingForStars != null )
+            // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
+            // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
+            int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
+            if ( appTypeStartIndex > -1 )
             {
-                return applyingForStars.Applying == "True" ? sApplicationType_STARS : sApplicationType_Standard;
+                // there was an ending "()", so take just that part of the workflow name
+                string applicationType = workflow.Name.Substring( appTypeStartIndex );
+
+                // take the character after the first, up to just before the closing ')', which removes the ()s
+                return applicationType.Substring( 1, applicationType.Length - 2 );
             }
             else
             {
-                // given the name of the workflow (which is always in the format 'FirstName LastName Application (Specific Type)' we'll return
-                // either what's in parenthesis, or if nothing's there, "Standard" to convey it wasn't for a specific area.
-                int appTypeStartIndex = workflow.Name.LastIndexOf( '(' );
-                if ( appTypeStartIndex > -1 )
-                {
-                    // there was an ending "()", so take just that part of the workflow name
-                    string applicationType = workflow.Name.Substring( appTypeStartIndex );
-
-                    // take the character after the first, up to just before the closing ')', which removes the ()s
-                    return applicationType.Substring( 1, applicationType.Length - 2 );
-                }
-                else
-                {
-                    return sApplicationType_Standard;
-                }
+                return sApplicationType_Standard;
             }
         }
         #endregion
