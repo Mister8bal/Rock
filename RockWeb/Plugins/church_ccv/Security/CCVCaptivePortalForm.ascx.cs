@@ -32,13 +32,13 @@ namespace RockWeb.Plugins.church_ccv.Security
 {
     [DisplayName( "CCV Captive Portal Form" )]
     [Category( "CCV > Security" )]
-    [Description( "Form used to access to Wi-Fi." )]
+    [Description( "Form used to access to Wi-Fi. Customized for CCV specifically to capture new people." )]
 
     #region Block Settings
     [CodeEditorField(
         name: "Welcome Content",
         description: "Content displayed on the first panel of the captive portal",
-        defaultValue: "Thanks for visiting our campus!",
+        defaultValue: "Welcome to CCV! We're so glad you're here. Log on to our network once and this device will automatically connect at any of our campuses.",
         category: "Captive Portal Content",
         order: 0,
         key: "WelcomeContent" )]
@@ -71,19 +71,11 @@ namespace RockWeb.Plugins.church_ccv.Security
         order: 6,
         key: "LocationParam")]
     [TextField(
-        name: "Release Link",
+        name: "Release Url",
         description: "The full URL to redirect users to after registration.",
         category: "Captive Portal Settings",
         order: 7,
-        key: "ReleaseLink" )]
-    [BooleanField(
-        name: "Show Name",
-        description: "Show or hide the Name fields. If it is visible then it will be required.",
-        defaultValue: true,
-        category: "Captive Portal Settings",
-        order: 10,
-        key: "ShowName",
-        IsRequired = true )]
+        key: "ReleaseUrl" )]
     [BooleanField(
         name: "Show Mobile Phone",
         description: "Show or hide the Mobile Phone Number field. If it is visible then it will be required.",
@@ -160,55 +152,76 @@ namespace RockWeb.Plugins.church_ccv.Security
                 {
                     nbAlert.Text = "Missing or invalid MAC Address";
                     nbAlert.Visible = true;
-                    ShowControls( false );
+                    pnlDetails.Visible = false;
                     return;
                 }
 
-                string releaseLink = GetAttributeValue( "ReleaseLink" );
-                if ( string.IsNullOrWhiteSpace( releaseLink ) || !releaseLink.IsValidUrl() )
+                string releaseUrl = GetAttributeValue( "ReleaseUrl" );
+                if ( string.IsNullOrWhiteSpace( releaseUrl ) || !releaseUrl.IsValidUrl() )
                 {
-                    nbAlert.Text = "Missing or invalid Release Link";
+                    nbAlert.Text = "Missing or invalid Release Url";
                     nbAlert.Visible = true;
-                    ShowControls( false );
+                    pnlDetails.Visible = false;
                     return;
-                }
-
-                // check for access point location and then look for a matching campus
-                string locationParam = RockPage.PageParameter( GetAttributeValue( "LocationParam" ) );
-                int? campusId = GetCampusIdFromLocation( locationParam );
-
-                if ( campusId != null )
-                {
-                    // save campus id to the page
-                    hfCampusId.Value = campusId.ToString();
                 }
 
                 // Save the supplied MAC address to the page removing any non-Alphanumeric characters
                 macAddress = macAddress.RemoveAllNonAlphaNumericCharacters();
                 hfMacAddress.Value = macAddress;
 
-                // create or get device
-                PersonalDeviceService personalDeviceService = new PersonalDeviceService( new RockContext() );
-                PersonalDevice personalDevice = null;
+                // check for existing device
+                RockContext rockContext = new RockContext();
+                PersonalDeviceService personalDeviceService = new PersonalDeviceService( rockContext );
+                PersonalDevice personalDevice = personalDeviceService.GetByMACAddress( macAddress );
 
-                if ( DoesPersonalDeviceExist( macAddress ) )
+                // create device if doesnt exist
+                if ( personalDevice == null )
                 {
-                    personalDevice = VerifyDeviceInfo( macAddress );
-                }
-                else
-                {
-                    personalDevice = CreateDevice( macAddress );
+                    personalDevice = new PersonalDevice()
+                    {
+                        MACAddress = macAddress
+                    };
+
+                    personalDeviceService.Add( personalDevice );
+                    rockContext.SaveChanges();
                 }
 
-                // We are going to create this everytime they hit the captive portal page. Otherwise if the device is saved but not linked to an actual user (not the fake one created here),
+                // Update the device info
+                UAParser.ClientInfo client = UAParser.Parser.GetDefault().Parse( Request.UserAgent );
+                personalDevice.PersonalDeviceTypeValueId = GetDeviceTypeValueId();
+                personalDevice.PlatformValueId = GetDevicePlatformValueId( client );
+                personalDevice.DeviceVersion = GetDeviceOsVersion( client );
+                rockContext.SaveChanges();
+
+                // check if the device is already linked to a person
+                if ( personalDevice.PersonAlias != null )
+                {
+                    Response.Redirect( CreateRedirectUrl( personalDevice.PersonAlias.Id ) );
+                    return;
+                }
+
+                // check if user is logged in
+                if ( CurrentPerson != null )
+                {
+                    // link the CurrentPerson to the device and skip form
+                    RockPage.LinkPersonAliasToDevice( CurrentPerson.PrimaryAlias.Id, macAddress );
+
+                    Response.Redirect( CreateRedirectUrl( CurrentPerson.PrimaryAlias.Id ) );
+                    return;
+                }
+
+                // We are going to create this everytime they hit the captive portal page. 
+                // Otherwise if the device is saved but not linked to an actual user (not the fake one created here)
                 // and then deleted by the user/browser/software, then they'll never get the cookie again and won't automatically get linked by RockPage.
                 CreateDeviceCookie( macAddress );
 
-                // See if user is logged in and link the alias to the device.
-                if ( CurrentPerson != null )
+                // check for access point location and then look for a matching campus
+                string locationParam = RockPage.PageParameter( GetAttributeValue( "LocationParam" ) );
+                int? campusId = GetCampusIdFromLocation( locationParam );
+                if ( campusId != null )
                 {
-                    Prefill( CurrentPerson );
-                    RockPage.LinkPersonAliasToDevice( ( int ) CurrentPersonAliasId, macAddress );
+                    // save campus id to the page
+                    hfCampusId.Value = campusId.ToString();
                 }
 
                 // Set the title text
@@ -225,77 +238,22 @@ namespace RockWeb.Plugins.church_ccv.Security
                     lWelcomeContent.Text = welcomeContent;
                 }
 
-                // Direct connect if no controls are visible
-                if ( !ShowControls() )
-                {
-                    // Nothing to show means nothing to enter. Redirect user back to FP with the primary alias ID and query string
-                    if ( IsUserAuthorized( Rock.Security.Authorization.ADMINISTRATE ) )
-                    {
-                        nbAlert.Text = string.Format( "If you did not have Administrative permissions on this block you would have been redirected to: <a href='{0}'>{0}</a>.", CreateRedirectUrl( null ) );
-                    }
-                    else
-                    {
-                        Response.Redirect( CreateRedirectUrl( null ) );
-                        return;
-                    }
-                }
+                // Set mobile phone form field
+                bool showMobilePhone = GetAttributeValue( "ShowMobilePhone" ).AsBoolean();
+                tbMobilePhone.Visible = showMobilePhone;
+                tbMobilePhone.Required = showMobilePhone;
+                tbMobilePhone.Enabled = showMobilePhone;
+
+                // Set email form field
+                bool showEmail = GetAttributeValue( "ShowEmail" ).AsBoolean();
+                tbEmail.Visible = showEmail;
+                tbEmail.Required = showEmail;
+                tbEmail.Enabled = showEmail;
+
+                // Set connect button text
+                string connectButtonText = GetAttributeValue( "ButtonText " );
+                btnConnect.Text = connectButtonText.IsNotNullOrWhiteSpace() ? connectButtonText : "Connect";
             }
-        }
-
-        /// <summary>
-        /// Doeses a personal device exist for the provided MAC address
-        /// </summary>
-        /// <param name="macAddress">The mac address.</param>
-        /// <returns></returns>
-        private bool DoesPersonalDeviceExist( string macAddress )
-        {
-            PersonalDeviceService personalDeviceService = new PersonalDeviceService( new RockContext() );
-            return personalDeviceService.GetByMACAddress( macAddress ) == null ? false : true;
-        }
-
-        /// <summary>
-        /// Creates the device if new.
-        /// </summary>
-        /// <returns>Returns true if the device was created, false it already existed</returns>
-        private PersonalDevice CreateDevice( string macAddress )
-        {
-            UAParser.ClientInfo client = UAParser.Parser.GetDefault().Parse( Request.UserAgent );
-
-            RockContext rockContext = new RockContext();
-            PersonalDeviceService personalDeviceService = new PersonalDeviceService( rockContext );
-
-            PersonalDevice personalDevice = new PersonalDevice();
-            personalDevice.MACAddress = macAddress;
-
-            personalDevice.PersonalDeviceTypeValueId = GetDeviceTypeValueId();
-            personalDevice.PlatformValueId = GetDevicePlatformValueId( client );
-            personalDevice.DeviceVersion = GetDeviceOsVersion( client );
-
-            personalDeviceService.Add( personalDevice );
-            rockContext.SaveChanges();
-
-            return personalDevice;
-        }
-
-        /// <summary>
-        /// Gets the current device platform info and updates the obj if needed.
-        /// </summary>
-        /// <param name="personalDevice">The personal device.</param>
-        private PersonalDevice VerifyDeviceInfo( string macAddress )
-        {
-            UAParser.ClientInfo client = UAParser.Parser.GetDefault().Parse( Request.UserAgent );
-
-            RockContext rockContext = new RockContext();
-            PersonalDeviceService personalDeviceService = new PersonalDeviceService( rockContext );
-
-            PersonalDevice personalDevice = personalDeviceService.GetByMACAddress( macAddress );
-            personalDevice.PersonalDeviceTypeValueId = GetDeviceTypeValueId();
-            personalDevice.PlatformValueId = GetDevicePlatformValueId( client );
-            personalDevice.DeviceVersion = GetDeviceOsVersion( client );
-
-            rockContext.SaveChanges();
-
-            return personalDevice;
         }
 
         /// <summary>
@@ -410,56 +368,13 @@ namespace RockWeb.Plugins.church_ccv.Security
         }
 
         /// <summary>
-        /// Prefills the visible fields with info from the specified rock person
-        /// if there is a logged in user than the name fields will be disabled.
-        /// </summary>
-        /// <param name="rockUserId">The rock user identifier.</param>
-        protected void Prefill( Person person )
-        {
-            if ( person == null )
-            {
-                return;
-            }
-
-            if ( tbFirstName.Visible == true )
-            {
-                tbFirstName.Text = person.FirstName;
-                tbFirstName.Enabled = CurrentPerson == null;
-
-                tbLastName.Text = person.LastName;
-                tbLastName.Enabled = CurrentPerson == null;
-            }
-
-            if ( tbMobilePhone.Visible )
-            {
-                PhoneNumberService phoneNumberService = new PhoneNumberService( new RockContext() );
-                PhoneNumber phoneNumber = phoneNumberService.GetNumberByPersonIdAndType( person.Id, Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE );
-                tbMobilePhone.Text = phoneNumber == null ? string.Empty : phoneNumber.Number;
-            }
-
-            if ( tbEmail.Visible == true )
-            {
-                tbEmail.Text = person.Email;
-            }
-        }
-
-        /// <summary>
         /// Handles the Click event of the btnConnect control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnConnect_Click( object sender, EventArgs e )
         {
-            // We know there is a device with the stored MAC
-            // If we have an alias ID then we have all data needed and can redirect the user to frontporch
-            // also if hfPersonAliasId has a value at this time it has already been linked to the device.
-            if ( CurrentPerson != null )
-            {
-                UpdatePersonInfo();
-                Response.Redirect( CreateRedirectUrl( CurrentPersonAliasId ) );
-                return;
-            }
-
+            // link the device in the hidden field to person
             int? primaryAliasId = LinkDeviceToPerson();
             if ( primaryAliasId != null )
             {
@@ -477,63 +392,46 @@ namespace RockWeb.Plugins.church_ccv.Security
         /// <returns>true if device successfully linked to a person</returns>
         protected int? LinkDeviceToPerson()
         {
-            // At this point the user is not logged in and not found by looking up the device
             // So lets try to find the user using entered info and then link them to the device.
             PersonService personService = new PersonService( new RockContext() );
             int mobilePhoneTypeId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ).Id;
             Person person = null;
             string mobilePhoneNumber = string.Empty;
 
-            // Looking for a 100% match
-            if ( tbFirstName.Visible && tbLastName.Visible && tbEmail.Visible && tbMobilePhone.Visible )
+            // Look for a single match if we ask for phone or email
+            if ( tbMobilePhone.Visible || tbEmail.Visible )
             {
-                mobilePhoneNumber = tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters();
+                if ( tbMobilePhone.Visible )
+                {
+                    mobilePhoneNumber = tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters();
+                }
 
                 var personQuery = new PersonService.PersonMatchQuery( tbFirstName.Text, tbLastName.Text, tbEmail.Text, mobilePhoneNumber );
-                person = personService.FindPerson( personQuery, true );
+                List<Person> personMatchResults = personService.FindPersons( personQuery, false, false ).ToList();
 
-                if ( person.IsNotNull() )
+                if ( personMatchResults.Count == 1 )
                 {
-                    RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
-                    return person.PrimaryAlias.Id;
-                }
-                else
-                {
-                    // If no known person record then create one since we have the minimum info required
-                    person = CreateAndSaveNewPerson();
-
-                    // Link new device to person alias
-                    RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
-                    return person.PrimaryAlias.Id;
+                    person = personMatchResults.Single();
                 }
             }
 
-            // Look for minimum info
-            if ( tbFirstName.Visible && tbLastName.Visible && ( tbMobilePhone.Visible || tbEmail.Visible ) )
+            if ( person == null && tbFirstName.Text.IsNotNullOrWhiteSpace() && tbLastName.Text.IsNotNullOrWhiteSpace() )
             {
-                // If no known person record then create one since we have the minimum info required
+                // single match wasnt found and we have at least first and last name, create new person
                 person = CreateAndSaveNewPerson();
+            }
 
-                // Link new device to person alias
+            if ( person != null )
+            {
+                // person succesfully found or created
                 RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
                 return person.PrimaryAlias.Id;
-            }
-
-            // Just match off phone number if no other fields are showing.
-            if ( tbMobilePhone.Visible && !tbFirstName.Visible && !tbLastName.Visible && !tbEmail.Visible )
-            {
-                mobilePhoneNumber = tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters();
-                person = personService.Queryable().Where( p => p.PhoneNumbers.Where( n => n.NumberTypeValueId == mobilePhoneTypeId ).FirstOrDefault().Number == mobilePhoneNumber ).FirstOrDefault();
-                if ( person != null )
-                {
-                    RockPage.LinkPersonAliasToDevice( person.PrimaryAlias.Id, hfMacAddress.Value );
-                    return person.PrimaryAlias.Id;
-                }
             }
 
             // Unable to find an existing user and we don't have the minimium info to create one.
             // We'll let Rock.Page and the cookie created in OnLoad() link the device to a user when they are logged in.
             // This will not work if this page is loaded into a Captive Network Assistant page as the cookie will not persist.
+            // CCV requires first name and last name, so this should never happen...but leaving just in case...
             return null;
         }
 
@@ -544,18 +442,22 @@ namespace RockWeb.Plugins.church_ccv.Security
             int mobilePhoneTypeId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE ).Id;
 
             var recordTypeValue = DefinedValueCache.Read( GetAttributeValue( "NewPersonRecordType" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() );
-            var recordStatusValue = DefinedValueCache.Read( GetAttributeValue( "NewPersonRecordStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE.AsGuid() );
+            var recordStatusValue = DefinedValueCache.Read( GetAttributeValue( "NewPersonRecordStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING.AsGuid() );
             var connectionStatusValue = DefinedValueCache.Read( GetAttributeValue( "NewPersonConnectionStatus" ).AsGuid() ) ?? DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_CONNECTION_STATUS_VISITOR.AsGuid() );
 
             var person = new Person
             {
                 FirstName = tbFirstName.Text,
                 LastName = tbLastName.Text,
-                Email = tbEmail.Text,
                 RecordTypeValueId = recordTypeValue != null ? recordTypeValue.Id : ( int? ) null,
                 RecordStatusValueId = recordStatusValue != null ? recordStatusValue.Id : ( int? ) null,
                 ConnectionStatusValueId = connectionStatusValue != null ? connectionStatusValue.Id : ( int? ) null
             };
+
+            if ( tbEmail.Text.IsNotNullOrWhiteSpace() )
+            {
+                person.Email = tbEmail.Text;
+            }
             
             if ( tbMobilePhone.Text.RemoveAllNonAlphaNumericCharacters().IsNotNullOrWhiteSpace() )
             {
@@ -605,45 +507,12 @@ namespace RockWeb.Plugins.church_ccv.Security
 
             if ( primaryAliasId != null )
             {
-                s = string.Format( "{0}?id={1}&{2}", GetAttributeValue( "ReleaseLink" ), primaryAliasId, Request.QueryString );
+                s = string.Format( "{0}?id={1}&{2}", GetAttributeValue( "ReleaseUrl" ), primaryAliasId, Request.QueryString );
                 return s;
             }
 
-            s = string.Format( "{0}?{1}", GetAttributeValue( "ReleaseLink" ), Request.QueryString );
+            s = string.Format( "{0}?{1}", GetAttributeValue( "ReleaseUrl" ), Request.QueryString );
             return s;
-        }
-
-        /// <summary>
-        /// Shows the controls according to the attribute values. If they are visible then they are also required.
-        /// </summary>
-        /// <returns>If any control is visible then true, else false.</returns>
-        protected bool ShowControls( bool isEnabled = true )
-        {
-            tbFirstName.Visible = GetAttributeValue( "ShowName" ).AsBoolean();
-            tbFirstName.Required = GetAttributeValue( "ShowName" ).AsBoolean();
-            tbFirstName.Enabled = isEnabled;
-
-            tbLastName.Visible = GetAttributeValue( "ShowName" ).AsBoolean();
-            tbLastName.Required = GetAttributeValue( "ShowName" ).AsBoolean();
-            tbLastName.Enabled = isEnabled;
-
-            tbMobilePhone.Visible = GetAttributeValue( "ShowMobilePhone" ).AsBoolean();
-            tbMobilePhone.Required = GetAttributeValue( "ShowMobilePhone" ).AsBoolean();
-            tbMobilePhone.Enabled = isEnabled;
-
-            tbEmail.Visible = GetAttributeValue( "ShowEmail" ).AsBoolean();
-            tbEmail.Required = GetAttributeValue( "ShowEmail" ).AsBoolean();
-            tbEmail.Enabled = isEnabled;
-
-            btnConnect.Text = isEnabled ? GetAttributeValue( "ButtonText" ) : "Connect";
-            btnConnect.Enabled = isEnabled;
-
-            if ( tbFirstName.Visible || tbLastName.Visible || tbMobilePhone.Visible || tbEmail.Visible )
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>

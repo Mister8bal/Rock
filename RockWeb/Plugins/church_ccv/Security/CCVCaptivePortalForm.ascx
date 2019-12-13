@@ -19,7 +19,7 @@
 
                 <div class="login-actions">
                     <div>
-                        <div class="btn btn-primary" onclick="startForm();">Connect To Wifi</div>
+                        <div class="btn btn-primary" onclick="startForm();">Next</div>
                     </div>
                 </div>
             </div>
@@ -27,8 +27,8 @@
                 <div class="login-form">
                     <div class="person-name">
 
-                        <Rock:RockTextBox ID="tbFirstName" runat="server" Required="false" Label="First Name" ValidationGroup="CaptivePortal" />
-                        <Rock:RockTextBox ID="tbLastName" runat="server" Required="false" Label="Last Name" ValidationGroup="CaptivePortal" />
+                        <Rock:RockTextBox ID="tbFirstName" runat="server" Required="true" Label="First Name" ValidationGroup="CaptivePortal" />
+                        <Rock:RockTextBox ID="tbLastName" runat="server" Required="true" Label="Last Name" ValidationGroup="CaptivePortal" />
 
                     </div>
                     <div class="person-contact">
