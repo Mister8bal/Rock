@@ -643,7 +643,7 @@ namespace church.ccv.CCVRest.MobileApp
                 var group = new GroupService( rockContext ).Get( regionVal.AsGuid() );
 
                 // now see if this Region contains the Coach's associate pastor
-                if ( group.Members.Where( m => m.PersonId == associatePastor.Id ).Count() != 0 )
+                if ( group != null && group.Members.Where( m => m.PersonId == associatePastor.Id ).Count() != 0 )
                 {
                     // It did, so this is the appropriate AP Board item
                     apBoardItem = item;
