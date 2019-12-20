@@ -78,6 +78,7 @@
     <Compile Include="Jobs\SendConnectionReport.cs" />
     <Compile Include="Jobs\CreateFirstVisitWorkflows.cs" />
     <Compile Include="Jobs\GroupMemberFollowUpNotifications.cs" />
+    <Compile Include="Jobs\SendYouthApplicationNotification.cs" />
     <Compile Include="Lava\RockFilters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\DataView\Name.cs" />
