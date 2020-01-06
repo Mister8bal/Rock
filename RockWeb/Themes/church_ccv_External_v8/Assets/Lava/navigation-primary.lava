@@ -42,10 +42,6 @@
                     {% if childPageTitle == 'watch' %}
                         {% assign activeClass = 'active' %}
                     {% endif %}
-                {% when 'plan-your-visit' %}
-                    {% if childPageTitle == 'plan your visit' %}
-                        {% assign activeClass = 'active' %}
-                    {% endif %}    
                 {% else %}
             {% endcase %}
 
@@ -92,6 +88,10 @@
             <li class="navigation-primary-item {{ activeClass }}">
                 <a class="navigation-primary-item-a ccv-modal" href="https://pushpay.com/g/christchurchofthevalley?r=fortnightly" data-modal-type="outside-navigation"
                 data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">Give</a>
+            </li>
+        {% else %}
+            <li class="navigation-primary-item {{ activeClass }}">
+                <a class="navigation-primary-item-a" href="/plan-your-visit">Plan Your Visit</a>
             </li>
         {% endif %}
     </ul>
