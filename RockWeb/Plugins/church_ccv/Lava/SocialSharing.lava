@@ -135,8 +135,8 @@
 </div>
 
 <script>
-    function GenerateFacebook() {
-        var facebookShareLink = "https://www.facebook.com/dialog/share?app_id=495461873811179&display=page";
+  function GenerateFacebook() {
+  var facebookShareLink = "https://www.facebook.com/dialog/share?app_id={{ 'Global' | Attribute:'FacebookAppId' }}&display=page";
 
         // assume things will work out great
         var resultType = "success";

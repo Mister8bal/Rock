@@ -36,7 +36,7 @@
         <div class="share-modal-body">
             <a href="sms:&body={{smsBody}}"><i class="fa fa-comment share-sms"></i></a>
             <a href="mailto:?subject={{emailSubject}}&body={{emailBody}}"><i class="fa fa-envelope share-email"></i></a>
-            <a target="blank" href="https://www.facebook.com/dialog/share?app_id=495461873811179&display=page&href={{shareUrl}}&quote={{fbBody}}."><i class="fa fa-facebook-square share-facebook"></i></a>
+            <a target="blank" href="https://www.facebook.com/dialog/share?app_id={{ 'Global' | Attribute:'FacebookAppId' }}&display=page&href={{shareUrl}}&quote={{fbBody}}."><i class="fa fa-facebook-square share-facebook"></i></a>
             <a target="blank" href="https://twitter.com/intent/tweet?url={{shareUrl}}&text={{twitterBody}}"><i class="fa fa-twitter-square share-twitter"></i></a>
         </div>
     </div>
