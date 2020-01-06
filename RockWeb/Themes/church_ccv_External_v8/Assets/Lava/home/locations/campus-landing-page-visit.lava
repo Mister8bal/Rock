@@ -40,12 +40,14 @@
                 </ul>
             </div>
         </div>
-        <div class="info-tile attendance-info">
-            <div>
-                <h1>{{campus.AveragePerServiceAttendance}}</h1>
-                <h5>AVG ATTENDANCE</h5>
-                <p>per service</p>
+        {% if campus.Name != "Verrado" %}
+            <div class="info-tile attendance-info">
+                <div>
+                    <h1>{{campus.AveragePerServiceAttendance}}</h1>
+                    <h5>AVG ATTENDANCE</h5>
+                    <p>per service</p>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
