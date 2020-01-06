@@ -179,7 +179,7 @@ namespace church.ccv.CCVRest.MobileApp
                 maMessageModel.NoteURL = noteUrlValue;
             }
 
-            string watchUrlValue = message.Attributes["HostedVideoUrl"];
+            string watchUrlValue = message.Attributes["WatchUrl"];
             if ( string.IsNullOrWhiteSpace( watchUrlValue ) == false )
             {
                 maMessageModel.VideoURL = watchUrlValue;
