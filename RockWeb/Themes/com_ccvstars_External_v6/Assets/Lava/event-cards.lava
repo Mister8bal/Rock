@@ -46,7 +46,7 @@
                 <div class="event-card">
                     <div class="image">
                         {% assign imageGuid = item | Attribute:'Image', 'RawValue' %}
-                        <img src="/GetImage.ashx?Guid={{imageGuid}}&width=350&mode=crop"/>
+                        <img src="/GetImage.ashx?Guid={{imageGuid}}&width=310&mode=crop"/>
                     </div>
                     <div class="event-card-title">
                         <h6>{{ item.Title | Truncate: 26 }}</h6>
