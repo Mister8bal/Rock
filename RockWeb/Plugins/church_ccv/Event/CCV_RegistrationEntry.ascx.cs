@@ -2023,7 +2023,7 @@ namespace RockWeb.Plugins.church_ccv.Event
                     // We don't overwrite because often a relative or friend will register a person, and they
                     // put their OWN information (thanks Browser Auto-fill), which would then overwrite the actual data for the person.
                     // (Now, if the Person being registered into Rock is brand new, they won't have any existing data, so we'll take everything.)
-                    // Also, since Campus and Address are on the Family, so in effect if the Person already exists, we won't save these values.
+                    // Also, Campus and Address are on the Family, so in effect if the Person already exists, we won't save those values.
                     foreach ( var field in RegistrationTemplate.Forms
                             .SelectMany( f => f.Fields
                             .Where( t => t.FieldSource == RegistrationFieldSource.PersonField ) ) )
@@ -2038,6 +2038,20 @@ namespace RockWeb.Plugins.church_ccv.Event
                         {
                             switch ( field.PersonFieldType )
                             {
+                                case RegistrationPersonFieldType.Email:
+                                {
+                                    // This will only be true if a person was selected via the Dropdown Picker,
+                                    // doesn't have an email, and one was filled in. (Otherwise it would have been filled in by
+                                    // way of a new person being created above)
+                                    if ( string.IsNullOrWhiteSpace( person.Email ) == true )
+                                    {
+                                        person.Email = fieldValue.ToString();
+                                        person.IsEmailActive = true;
+                                        History.EvaluateChange( personChanges, "Email", string.Empty, person.Email );
+                                    }
+                                    break;
+                                }
+
                                 case RegistrationPersonFieldType.Campus:
                                 {
                                     if ( fieldValue != null )
@@ -3948,11 +3962,19 @@ namespace RockWeb.Plugins.church_ccv.Event
                         tbEmail.Label = "Email";
                         tbEmail.Required = field.IsRequired;
                         tbEmail.ValidationGroup = BlockValidationGroup;
-                        tbEmail.Enabled = !familyMemberSelected;
                         phRegistrantControls.Controls.Add( tbEmail );
 
                         if ( setValue && fieldValue != null )
                         {
+                            // if the person has an email address on their profile, and was selected
+                            // using the Dropdown Picker, disable the email field.
+                            // This will prevent the registrant from changing the person's email
+                            // while trying to register them.
+                            if ( string.IsNullOrWhiteSpace( fieldValue.ToString() ) == false )
+                            {
+                                tbEmail.Enabled = !familyMemberSelected;
+                            }
+
                             tbEmail.Text = fieldValue.ToString();
                         }
 
