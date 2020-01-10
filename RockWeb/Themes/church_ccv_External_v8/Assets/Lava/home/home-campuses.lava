@@ -2,10 +2,18 @@
     {% include '~~/Assets/Lava/home-campuses.lava' %}
 {% endcomment %}
 
+{% comment %} Get the number of active campuses {% endcomment %}
+{% assign numberOfCampuses = 0 %}
+{% for campus in Campuses %}
+    {% if campus.IsActive == true %}
+        {% assign numberOfCampuses = numberOfCampuses | Plus:1 %}
+    {% endif %}
+{% endfor %}
+
 {% comment %} Render Header {% endcomment %}
 <div class="campuses-cards">
     <div class="campuses-cards-header">
-        <h3>9 Valley Locations</h3>
+        <h3>{{ numberOfCampuses }} Valley Locations</h3>
         <div class="nav-buttons">
             <button type="button" class="nav-button nav-prev"><i class="mdi mdi-chevron-left event-card-navigation-icon"></i></button>
             <button type="button" class="nav-button nav-next"><i class="mdi mdi-chevron-right event-card-navigation-icon"></i></button>
