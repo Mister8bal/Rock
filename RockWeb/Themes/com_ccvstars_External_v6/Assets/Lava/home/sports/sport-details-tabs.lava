@@ -1,9 +1,13 @@
 {% comment %}
     {% assign practiceMap = "" %}
     {% assign practiceSchedule = "" %}
+    {% assign practiceMiscButtonText = "" %}
+    {% assign practiceMiscUrl = "" %}
+    {% assign keyDates = "" %}
+    {% assign sportSummary = "" %}
+    {% assign generalInfo = "" %}
     {% assign gameMap = "" %}
     {% assign gameSchedule = "" %}
-    {% assign keyDates = "" %}
     {% assign rules = "" %}
 
     {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
@@ -11,7 +15,7 @@
 
 <div id="general-panel" class="general-panel">
     <div class="background-card">
-        <p id="sport-summary">{{ sportSummary }}</p>
+        <p id="sport-summary">{{ sportSummary | Default:'Coming Soon!' }}</p>
         {{ generalInfo }}
         {% if keyDates != "" %}
             <a href="{{ keyDates }}" class="btn btn-primary">Key Dates</a>
@@ -47,7 +51,15 @@
                 <p class="placeholder">Practice Map and Resources Not Yet Available</p>
             {% endif %}
         </div>
-    </div>     
+    </div>
+    {% if practiceWhereToGo != "" %}
+        <div class="practice-and-game-map">
+            <h3 id="map-heading">NOT SURE WHERE TO GO FOR PRACTICE?</h3>
+            <p id="map-description">Use this map to find things like field numbers, restrooms, or entrances.</p>
+
+            <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ practiceWhereToGo }}">
+        </div>   
+    {% endif %}
 </div>
 
 <div id="game-panel" class="game-panel" style="display: none;">
@@ -74,8 +86,16 @@
             {% else %}
                 <p class="placeholder">Game Map and Schedule Not Yet Available</p>
             {% endif %}
-        </div>
+        </div>        
     </div>   
+    {% if gameWhereToGo != "" %}
+        <div class="practice-and-game-map">
+            <h3 id="map-heading">NOT SURE WHERE TO GO ON GAME DAY?</h3>
+            <p id="map-description">Use this map to find things like field numbers or where to get a snack before the game.</p>
+
+            <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ gameWhereToGo }}">
+        </div> 
+    {% endif %}
 </div>
 
 <div id="rules-panel" class="rules-panel" style="display: none;">

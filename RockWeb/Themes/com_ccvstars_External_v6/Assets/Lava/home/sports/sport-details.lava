@@ -57,30 +57,16 @@
             {% assign practiceSchedule = item | Attribute: 'PracticeSchedule', 'Url' %}
             {% assign practiceMiscButtonText = item | Attribute: 'PracticeMiscButtonText' %}
             {% assign practiceMiscUrl = item | Attribute: 'PracticeMiscUrl', 'RawValue' %}
+            {% assign practiceWhereToGo = item | Attribute: 'PracticeWhereToGo', 'Url' %}
             {% assign keyDates = item | Attribute: 'KeyDates', 'Url' %}
             {% assign sportSummary = item | Attribute: 'SportSummary' %}
             {% assign generalInfo = item | Attribute: 'GeneralInfo' %}
             {% assign gameMap = item | Attribute: 'GameMap', 'Url' %}
             {% assign gameSchedule = item | Attribute: 'GameSchedule', 'Url' %}
+            {% assign gameWhereToGo = item | Attribute: 'GameWhereToGo', 'Url' %}
             {% assign rules = item | Attribute: 'Rules', 'Url' %}
 
             {% include '~~/Assets/Lava/home/sports/sport-details-tabs.lava' %}
-
-            {% comment %} variables needed for game and practice map {% endcomment %}
-            {% assign practiceWhereToGo = item | Attribute: 'PracticeWhereToGo', 'Url' %}
-            {% assign gameWhereToGo = item | Attribute: 'GameWhereToGo', 'Url' %}
-
-            {% comment %} display game and practice map {% endcomment %}
-            <div class="practice-and-game-map">
-                <h3 id="map-heading"></h3>
-                <p id="map-description"></p>
-
-                {% if gameWhereToGo != "" and practiceWhereToGo != "" %}
-                    <img id="map-image" class="rounded-edge-img img-responsive map-image" src="{{ }}">
-                {% else %}
-                    <p class="placeholder">Map Not Yet Available</p>
-                {% endif %}
-            </div>
 
             <div id="mobileRegister" class="mobile-register"></div>
             <div class="dropdowns-mobile-view">
@@ -93,35 +79,13 @@
         </div>
 
         <script>
-
             let gCurrentLink;
             let gCurrentPanel;
 
             $(document).ready(function() {
-                var generalInfo = "{{ generalInfo | Escape | StripNewlines }}";
-                var sportSummary = "{{ sportSummary }}";
-                
-                if(generalInfo != "" && sportSummary != "") {
-                    // default to the first panel
-                    gCurrentLink = $("#general-button");
-                    gCurrentPanel = $("#general-panel");
-                }
-                else {
-                    // default to the second panel
-                    gCurrentLink = $("#practice-button");
-                    gCurrentPanel = $("#practice-panel");
-
-                    // hide first panel and make second panel active
-                    $("#general-panel").addClass("hidden");
-                    $("#general-button").addClass("hidden");
-
-                    /// hide first panel in mobile view and make second panel active
-                    $("#general-mobile-button").addClass("hidden");
-                    $("#practice-mobile-button").addClass("tab-selected");
-                    $('#btnMobileTabSelect').text($('#practice-mobile-button').text());
-                    
-                }
-               
+                // default to the first panel
+                gCurrentLink = $("#general-button");
+                gCurrentPanel = $("#general-panel");               
 
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             });
@@ -158,19 +122,61 @@
                 togglePanel( gCurrentLink, gCurrentPanel, true );
             }
 
-            //Use custom events to show or hide 
-            //the practice and game map container
-            //depending on which panel is being shown.
-            $('body').on('ccv.panel.shown',function(e){
-                let $panel = $(e.target);
-                let $hideTarget = $('.practice-and-game-map');
-                if($panel.attr('id') == 'rules-panel'){
-                    $hideTarget.hide();
-                }else{
-                    $hideTarget.show();
-                }
-            });
+            // check for active registrations for sport / campus
+            {% if sport != "" and campus != "" %}       
+                // setup getUrl
+                var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+                getUrl += `&sport={{ sport }}`;
+                getUrl += "&campusName={{ campus }}";
+                getUrl += '&returnRegistrationData=true';
 
+                // make api call
+                $.get(getUrl, function(data, status) {
+                    if ( data.Message === 'Success') {
+                        // determine button text and css class
+                        // default to join wait list
+                        var buttonText = 'Join Wait List';
+                        var buttonCssClass = 'btn btn-waitlist';
+
+                        // loop through returned registrations
+                        // if any have availabe spots, change button text and class to Register -1 equals unlimited spots
+                        for (let i = 0; i < data.Data.length; i++) {
+                            if ( data.Data[i].SlotsAvailable != 0 ) {
+                                buttonText = 'Register';
+                                buttonCssClass = 'btn btn-register';
+                            }                    
+                        }
+
+                        // registrations found, create register buttons and add to page
+                        var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
+                        var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
+
+                        $(document).ready(function(){
+                            $('#desktopRegister').append(registerButtonDesktop);
+                            $('#mobileRegister').append(registerButtonMobile);
+
+                            $('#desktopRegister').attr("style", "opacity: 1");
+                            $('#mobileRegister').attr("style", "opacity: 1");
+                        });
+                    }
+                });
+            {% endif %}
+
+            // return a link button
+            function createRegisterButton(sport,campus,text,cssClass) {
+                var a = document.createElement('a');
+
+                var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
+                hrefUrl += "?Campus=" + campus.replace(/\s/g,'-').toLowerCase();
+                hrefUrl += "&Sport=" + sport;
+
+                a.setAttribute('href',hrefUrl);
+                a.setAttribute('class',cssClass);
+
+                a.text = text;
+
+                return a;
+            }
         </script>
 
     {% else %}
@@ -190,96 +196,3 @@
         </div>
     {% endif %}        
 </div>
-
-<script>
-    var practiceWhereToGo = "{{ practiceWhereToGo }}";
-    var gameWhereToGo = "{{ gameWhereToGo }}";
-
-    $('#general-button, #general-mobile-button').on({
-        'click': function(){
-            $('#map-image').attr('src', "");
-            $('#map-heading').text("");
-            $('#map-description').text("");
-        }
-    });
-    
-    $('#practice-button, #practice-mobile-button').on({
-        'click': function(){
-            $('#map-image').attr('src', practiceWhereToGo);
-            $('#map-heading').text("NOT SURE WHERE TO GO FOR PRACTICE?");
-            $('#map-description').text("Use this map to find things like field numbers, restrooms, or entrances.");
-        }
-    });
-
-    $('#game-button, #game-mobile-button').on({
-        'click': function(){
-            $('#map-image').attr('src', gameWhereToGo);
-            $('#map-heading').text("NOT SURE WHERE TO GO ON GAME DAY?");
-            $('#map-description').text("Use this map to find things like field numbers or where to get a snack before the game.");
-        }
-    });
-
-    $('#rules-button, #rules-mobile-button').on({
-        'click': function(){
-            $('#map-image').attr('src', "");
-            $('#map-heading').text("");
-            $('#map-description').text("");
-        }
-    });
-
-    // check for active registrations for sport / campus
-    {% if sport != "" and campus != "" %}       
-        // setup getUrl
-        var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
-        getUrl += `&sport={{ sport }}`;
-        getUrl += "&campusName={{ campus }}";
-        getUrl += '&returnRegistrationData=true';
-
-        // make api call
-        $.get(getUrl, function(data, status) {
-            if ( data.Message === 'Success') {
-                // determine button text and css class
-                // default to join wait list
-                var buttonText = 'Join Wait List';
-                var buttonCssClass = 'btn btn-waitlist';
-
-                // loop through returned registrations
-                // if any have availabe spots, change button text and class to Register -1 equals unlimited spots
-                for (let i = 0; i < data.Data.length; i++) {
-                    if ( data.Data[i].SlotsAvailable > 0 || data.Data[i].SlotsAvailable == -1 ) {
-                        buttonText = 'Register';
-                        buttonCssClass = 'btn btn-register';
-                    }                    
-                }
-
-                // registrations found, create register buttons and add to page
-                var registerButtonDesktop = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
-                var registerButtonMobile = createRegisterButton('{{ sport }}','{{ campus }}',buttonText,buttonCssClass);
-
-                $(document).ready(function(){
-                    $('#desktopRegister').append(registerButtonDesktop);
-                    $('#mobileRegister').append(registerButtonMobile);
-
-                    $('#desktopRegister').attr("style", "opacity: 1");
-                    $('#mobileRegister').attr("style", "opacity: 1");
-                });
-            }
-        });
-    {% endif %}
-
-    // return a link button
-    function createRegisterButton(sport,campus,text,cssClass) {
-        var a = document.createElement('a');
-
-        var hrefUrl = "https://{{ 'Global' | Page:'Host' }}/register";
-        hrefUrl += "?Campus=" + campus.replace(/\s/g,'-').toLowerCase();
-        hrefUrl += "&Sport=" + sport;
-
-        a.setAttribute('href',hrefUrl);
-        a.setAttribute('class',cssClass);
-
-        a.text = text;
-
-        return a;
-    }
-</script>
