@@ -12,7 +12,7 @@
     <div class="rectangle">
         <h3 class="summer-camps-desktop">{{ 'Global' | Page:'Path' | Split:'/' | First }} Camps</h3>
 
-        <a id="singleCampus" href="/summer-camps/{{ sport }}/{{ campusParameter }}" class="btn btn-secondary hidden"><h6>More Info</h6></a>
+        <a id="singleCampus" href="/clinics-camps/{{ sport }}/{{ campusParameter }}" class="btn btn-secondary hidden"><h6>More Info</h6></a>
 
         <div id="multipleCampuses" class="select-dropdown hidden">
             <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A CAMPUS' }}</h6><b class="fa fa-caret-down"></b></button>
@@ -62,7 +62,7 @@
                         var li = document.createElement('li');
                         var a = document.createElement('a');
 
-                        a.setAttribute('href', `/summer-camps/{{ sport }}/` + availableCampuses[i].toLowerCase().replace(/\s/g,'-'));
+                        a.setAttribute('href', `/clinics-camps/{{ sport }}/` + availableCampuses[i].toLowerCase().replace(/\s/g,'-'));
                         a.text = availableCampuses[i];
 
                         li.append(a);
