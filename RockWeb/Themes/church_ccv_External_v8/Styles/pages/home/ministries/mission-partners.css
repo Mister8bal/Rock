@@ -4,15 +4,20 @@
  }
 
 #section-a-bg {
-    background-color: #FFFFFF;
-}
-
-#section-b-bg {
     background-color: #F3F3F3;
 }
 
+#section-b-bg {
+    background-color: #FFFFFF;
+}
+
 #section-c-bg {
-    background-color: #FFFFFF; 
+    background-color: #F3F3F3;
+    margin: 0 auto;
+}
+
+#section-d-bg {
+    background-color: #FFFFFF;
     margin: 0 auto;
 }
 
