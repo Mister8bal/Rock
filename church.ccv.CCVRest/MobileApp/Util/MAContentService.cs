@@ -155,7 +155,7 @@ namespace church.ccv.CCVRest.MobileApp
                     // if it's not expired
                     DateTime? startDate = item.AttributeValues["Start"].ToString().AsDateTime();
                     DateTime? endDate = item.AttributeValues["End"].ToString().AsDateTime();
-                    if ( ( (startDate == null || startDate < DateTime.Now) && ( endDate == null || endDate >= DateTime.Now) ) 
+                    if ( ( ( startDate == null || startDate < DateTime.Now ) && ( endDate == null || endDate >= DateTime.Now ) )
                         || includeUnpublished == true )
                     {
                         Model.Promotion promoItem = new MobileApp.Model.Promotion();
@@ -238,7 +238,7 @@ namespace church.ccv.CCVRest.MobileApp
             string targetContent = person.AttributeValues[MAMyFamilyContentOverrideKey]?.ToString();
 
             // if blank, there's no override, so choose content based on their grade/age
-            if( string.IsNullOrWhiteSpace( targetContent ) == true )
+            if ( string.IsNullOrWhiteSpace( targetContent ) == true )
             {
                 // this is technically cheating, but Rock abstracts grade and doesn't natively
                 // know about the US standard. To simplify things, let's do the conversion here
@@ -430,6 +430,8 @@ namespace church.ccv.CCVRest.MobileApp
                         URL = resourceItem.AttributeValues["URL"].ToString()
                     };
 
+                    int.TryParse( resourceItem.AttributeValues["ResourcePriority"].Value, out resModel.SortPriority );
+
                     // is there a 'launches external browser' flag?
                     if ( resourceItem.ContainsKey( "LaunchesExternalBrowser" ) == true )
                     {
@@ -439,6 +441,9 @@ namespace church.ccv.CCVRest.MobileApp
                     contentModel.Resources.Add( resModel );
                 }
 
+                // finally, sort the kids resources
+                contentModel.Resources = contentModel.Resources.OrderByDescending( lt => lt.SortPriority ).ToList();
+
                 return contentModel;
             }
             else
@@ -447,14 +452,14 @@ namespace church.ccv.CCVRest.MobileApp
             }
         }
 
-        public static List<LifeTrainingTopicModel> BuildLifeTrainingContent( )
+        public static List<LifeTrainingTopicModel> BuildLifeTrainingContent()
         {
             RockContext rockContext = new RockContext();
             ContentChannelService contentChannelService = new ContentChannelService( rockContext );
 
             // first, get the Life Training Topics
             const int ContentChannelId_LifeTrainingTopics = 295;
-            ContentChannel lifeTrainingTopics  = contentChannelService.Get( ContentChannelId_LifeTrainingTopics );
+            ContentChannel lifeTrainingTopics = contentChannelService.Get( ContentChannelId_LifeTrainingTopics );
 
             // sort by priority
             var ltTopicItems = lifeTrainingTopics.Items;
@@ -466,7 +471,7 @@ namespace church.ccv.CCVRest.MobileApp
 
             // sort by priority
             var ltResourceItems = ltResources.Items.OrderByDescending( i => i.Priority );
-
+            
             // now build the list of models we'll send down
             string publicAppRoot = GlobalAttributesCache.Value( "PublicApplicationRoot" ).EnsureTrailingForwardslash();
 
@@ -520,6 +525,8 @@ namespace church.ccv.CCVRest.MobileApp
                         resourceModel.Author = resource.AttributeValues["Author"].Value.ToString();
                         resourceModel.URL = resource.AttributeValues["URL"].Value.ToString();
 
+                        int.TryParse( resource.AttributeValues["LTPriority"].Value, out resourceModel.SortPriority );
+
                         // add a hint for the mobile app so it knows whether to show a book detail page or not.
                         // if there's content, and an author, it's a book.
                         if ( string.IsNullOrWhiteSpace( resourceModel.Content ) == false &&
@@ -549,8 +556,8 @@ namespace church.ccv.CCVRest.MobileApp
                     }
                 }
 
-                // sort resources with books on top
-                ltTopicModel.Resources = ltTopicModel.Resources.OrderByDescending( a => a.IsBook ).ToList();
+                // sort resources by priority with books on top
+                ltTopicModel.Resources = ltTopicModel.Resources.OrderByDescending( a => a.IsBook ).ThenByDescending( p => p.SortPriority ).ToList();
 
                 ltTopicModels.Add( ltTopicModel );
             }
