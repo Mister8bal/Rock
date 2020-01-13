@@ -366,14 +366,26 @@
     outline: none;
 }
 
+.icon-details {
+    max-width: unset;
+    width: unset;
+    margin-left: unset;
+}
+
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
     .campuses-cards {
-        padding: 0;
+        padding: 10px 0;
     }
 
     .btn-campus {
         margin-bottom: 20px;
+    }
+
+    .icon-details {
+        max-width: unset;
+        width: unset;
+        margin-left: unset;
     }
 }
 

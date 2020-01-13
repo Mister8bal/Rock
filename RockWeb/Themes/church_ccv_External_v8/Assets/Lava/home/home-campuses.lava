@@ -50,6 +50,18 @@
 
         {% endfor %}
     </div>
+
+    <div class="icon-details">
+        <div class="icon-desc">
+            <p><span class="csi csi-slt"></span> Sign language available</p>
+        </div>
+        <div class="icon-desc">
+            <p><span class="csi csi-special-needs"></span> Special Needs</p>
+        </div>
+        <div class="icon-desc">
+            <p><span class="csi csi-espanol"></span> Espanol</p>
+        </div>
+    </div>
 </div>
 
 <script>
