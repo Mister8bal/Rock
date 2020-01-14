@@ -46,6 +46,28 @@
             </div>
         {% endif %}
 
+		{% assign trainingVideo2 = item | Attribute: 'LinktoCoachTrainingVideo2' %}
+
+        {% if trainingVideo2 != '' %}
+            <div class="header">
+                <h4>Coach Training Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+		{% assign trainingVideo3 = item | Attribute: 'LinktoCoachTrainingVideo3' %}
+
+        {% if trainingVideo3 != '' %}
+            <div class="header">
+                <h4>Coach Training Video 3</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo3 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
         {% assign introVideo = item | Attribute: 'LinktoIntroVideo' %}
 
         {% if introVideo != '' %}
