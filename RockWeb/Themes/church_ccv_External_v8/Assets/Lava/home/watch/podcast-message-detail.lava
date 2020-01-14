@@ -132,7 +132,9 @@ REQUIRED VARIABLES
                     {% if Message.Attributes.SermonNotePDFUrl != empty %}
                         <a href="{{ Message.Attributes.SermonNotePDFUrl }}" class="list-group-item"><i class="fa fa-fw fa-file-text-o"></i> Download Sermon Note</a>
                     {% endif %}
-                    {% if Message.Attributes.DiscussionGuideUrl != empty %}
+                    {% if Message.Attributes.DiscussionGuideUrlWebsite != empty %}
+                        <a href="{{ Message.Attributes.DiscussionGuideUrlWebsite }}" class="list-group-item"><i class="fa fa-fw fa-file-text-o"></i> Download Discussion Guide</a>
+                    {% elseif Message.Attributes.DiscussionGuideUrl != empty %}
                         <a href="{{ Message.Attributes.DiscussionGuideUrl }}" class="list-group-item"><i class="fa fa-fw fa-file-text-o"></i> Download Discussion Guide</a>
                     {% endif %}
                 </div>

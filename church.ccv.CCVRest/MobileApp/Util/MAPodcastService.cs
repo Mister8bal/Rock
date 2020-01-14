@@ -185,10 +185,11 @@ namespace church.ccv.CCVRest.MobileApp
                 maMessageModel.VideoURL = watchUrlValue;
             }
 
-            string extraDetailsValue = message.Attributes["ExtraDetails"];
-            if ( string.IsNullOrWhiteSpace( extraDetailsValue ) == false )
+            string resourcesValue = null;
+            message.Attributes.TryGetValue( "ResourcesMobileApp", out resourcesValue );
+            if ( string.IsNullOrWhiteSpace( resourcesValue ) == false )
             {
-                maMessageModel.ResourcesHTML = extraDetailsValue;
+                maMessageModel.ResourcesHTML = resourcesValue;
             }
 
             string discussionGuideUrlValue = null;
