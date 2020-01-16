@@ -244,13 +244,38 @@ namespace church.ccv.CCVRest.MobileApp
                 if ( campusCache.LeaderPersonAliasId.HasValue )
                 {
                     PersonAlias campusPastor = paService.Get( campusCache.LeaderPersonAliasId.Value );
+                    campusPastor.Person.LoadAttributes();
 
-                    campusModel.CampusPastorName = campusPastor.Person.NickName + " " + campusPastor.Person.LastName;
-                    campusModel.CampusPastorEmail = campusPastor.Person.Email;
-
-                    if ( campusPastor.Person.PhotoId.HasValue )
+                    // try to get their public name
+                    AttributeValueCache publicNameAVCache = null;
+                    campusPastor.Person.AttributeValues.TryGetValue( "PublicName", out publicNameAVCache );
+                    if ( publicNameAVCache != null )
                     {
-                        campusModel.CampusPastorImageURL = publicAppRoot + "GetImage.ashx?Id=" + campusPastor.Person.PhotoId.Value + "&width=180";
+                        campusModel.CampusPastorName = publicNameAVCache.Value;
+                    }
+                    else
+                    {
+                        campusModel.CampusPastorName = string.Empty;
+                    }
+
+                    // try to get their public email
+                    AttributeValueCache publicEmailAVCache = null;
+                    campusPastor.Person.AttributeValues.TryGetValue( "PublicEmail", out publicEmailAVCache );
+                    if ( publicEmailAVCache != null )
+                    {
+                        campusModel.CampusPastorEmail = publicEmailAVCache.Value;
+                    }
+                    else
+                    {
+                        campusModel.CampusPastorEmail = string.Empty;
+                    }
+
+                    // try to get their public image
+                    AttributeValueCache publicPhotoAVCache = null;
+                    campusPastor.Person.AttributeValues.TryGetValue( "PublicPhoto", out publicPhotoAVCache );
+                    if ( publicPhotoAVCache != null )
+                    {
+                        campusModel.CampusPastorImageURL = publicAppRoot + "GetImage.ashx?Guid=" + publicPhotoAVCache.Value + "&width=180";
                     }
                     else
                     {
