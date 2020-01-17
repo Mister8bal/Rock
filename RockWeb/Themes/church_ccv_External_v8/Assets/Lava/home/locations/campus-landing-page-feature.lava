@@ -38,9 +38,10 @@
             {% assign campusLeader = campus.LeaderPersonAliasId | PersonByAliasId %}
             <div class="campus-leader">
                 {% if campusLeader %}
-                    <img src="{{ 'Global' | Attribute: 'PublicApplicationRoot' }}{{ campusLeader.PhotoUrl }}&width=600&height=600" style="border-radius: 50%;"/>
+                    <img src="{{ campusLeader | Attribute:'PublicPhoto','Url' }}&width=180" style="border-radius: 50%;"/>
+
                     <div class="campus-leader-details">
-                        <h4>{{ campusLeader.NickName }} {{ campusLeader.LastName }}</h4>
+                        <h4>{{ campusLeader.PublicName }}</h4>
                         <p>Campus Pastor</p>
                         <p class="campus-leader-email"><a href="mailto:{{ campusLeader.PublicEmail }}">{{ campusLeader.PublicEmail }}</a></p>
                     </div>
