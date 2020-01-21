@@ -150,5 +150,71 @@ namespace church.ccv.CCVRest.MobileApp
                 return Common.Util.GenerateResponse( false, PodcastLatestMessageResponse.NotAvailable.ToString(), null );
             }
         }
+
+        [Serializable]
+        public enum PodcastUserNotesResponse
+        {
+            NotSet = -1,
+
+            Success,
+
+            PodcastError
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route( "api/NewMobileApp/Podcast/UserNotes" )]
+        [Authenticate, Secured]
+        public HttpResponseMessage UserNotes( int primaryAliasId )
+        {
+            // Eventually, this will take the person's primaryAliasId, and use the CloudUserNote service to get a UserNoteSummary
+            // for each message they've taken notes in.
+
+            // Until we have that built, we'll just provide a list of every message they could possibly have a usernote in, which
+            // is any message from when Mobile App 2.0 launched until now. MA 2.0 launched in September 2015, so that would be the series
+            // Messy Grace, Id 151.
+            const int LastValidSeriesId = 151;
+
+            List<MASeriesModel> seriesList = new List<MASeriesModel>();
+
+            // for now, get all series since the beginning of time
+            PodcastUtil.PodcastCategory rootCategory = PodcastUtil.GetPodcastsByCategory( PodcastUtil.WeekendVideos_CategoryId, false, int.MaxValue - 1 );
+            if ( rootCategory == null )
+            {
+                // if this failed something really bad happened
+                return Common.Util.GenerateResponse( false, PodcastUserNotesResponse.PodcastError.ToString(), null );
+            }
+
+            // convert the series / messages into UserNoteSummaryModels
+            List<MAUserNoteSummaryModel> userNoteSummaryList = new List<MAUserNoteSummaryModel>();
+
+            foreach ( PodcastUtil.IPodcastNode podcastNode in rootCategory.Children )
+            {
+                // this is safe to cast to a series, because we ask for only Series by passing false to GetPodcastsByCategory                        
+                PodcastUtil.PodcastSeries series = podcastNode as PodcastUtil.PodcastSeries;
+
+                MASeriesModel maSeriesModel = MAPodcastService.PodcastSeriesToMobileAppSeries( series );
+
+                foreach ( MobileAppMessageModel message in maSeriesModel.Messages )
+                {
+                    MAUserNoteSummaryModel summary = new MAUserNoteSummaryModel();
+                    summary.SeriesName = series.Name;
+                    summary.SeriesImageURL = maSeriesModel.ImageURL;
+                    summary.SeriesDateRange = maSeriesModel.DateRange;
+                    summary.MessageName = message.Name;
+                    summary.MessageNoteURL = message.NoteURL;
+                    summary.MessageSpeaker = message.Speaker;
+
+                    userNoteSummaryList.Add( summary );
+                }
+
+                // if we go past the oldest valid series, stop.
+                if ( maSeriesModel.Id < LastValidSeriesId )
+                {
+                    break;
+                }
+            }
+
+            return Common.Util.GenerateResponse( true, PodcastUserNotesResponse.Success.ToString(), userNoteSummaryList );
+        }
     }
 }

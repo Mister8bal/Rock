@@ -122,6 +122,7 @@
     <Compile Include="MobileApp\Model\MALatestMessageModel.cs" />
     <Compile Include="MobileApp\Model\MAMessageModel .cs" />
     <Compile Include="MobileApp\Model\MAPersonModel.cs" />
+    <Compile Include="MobileApp\Model\MAUserNoteSummaryModel.cs" />
     <Compile Include="MobileApp\Model\NewUserModel.cs" />
     <Compile Include="MobileApp\Model\IsOnCampusModel.cs" />
     <Compile Include="MobileApp\Model\PersonalizedItemModel.cs" />
