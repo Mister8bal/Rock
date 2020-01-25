@@ -4,52 +4,162 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-camps.png");
 }
 
-/* Mobile Background Image */
-@media screen and (max-width: 768px) {
-    .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-camps.jpg");
-    }
-}
 #section-a-bg {
-	background-color: #f3f3f3;
-	padding-bottom:48px;
+    background-color: #FFFFFF;
 }
 
-#section-a-bg h1, #section-a-bg h2 {
+#section-b-bg h1, #section-b-bg h2 {
     text-align: center;
 }
-#section-a-bg h2 {
+
+#section-b-bg h2 {
     margin-top: 4rem;
 }
-#section-a-bg h2.no-top-margin {
+
+#section-b-bg h2.no-top-margin {
     margin-top:0;
 }
 
-#section-b-bg {
+#section-c-bg {
     background-color:#f9f9f9;
     padding: 2.8rem 0 4rem 0;
 }
 
-#section-c-bg {
+#section-d-bg {
     background-color: #f3f3f3;
 }
 
-#section-d-bg {
+#section-e-bg {
     background-color: #f9f9f9;
     padding-bottom: 48px;
 } 
 
-#section-e-bg {
+#section-f-bg {
     background-color: #f3f3f3;
 }
 
-#section-e-bg h2 {
+#section-f-bg h2 {
     padding: 3rem 0 2.8rem 0;
 }
 
 .title img {
     margin-bottom: 25px;
 }
+
+#section-b-bg h5 {
+    text-align: center;
+}
+
+.addtocalendar {
+    width: 185px;
+    margin: 0 auto;
+}
+
+.atc-style-menu-wb .atcb-list {
+    width:100%; 
+    margin-top: .25rem;
+}
+
+.title img {
+    width: 640px;
+}
+
+.countdown-wrapper {
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    padding: 1rem 0;
+}
+
+.count-down {
+    display:inline-block;
+}
+
+.header-countdown-time {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.countdown-complete {
+    display: none;
+    width: 100%;
+    justify-content: center;
+}
+
+.countdown-unit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 2px solid gray;
+    padding: 0 1rem;
+}
+
+.countdown-unit:first-child {
+    border-left: 2px solid gray;
+}
+
+.countdown-digit {
+    font-size: 34px;
+    line-height: .9
+}
+
+.countdown-label {
+    font-size: 12px;
+}
+
+.spacer {
+    border-left: 1px solid gray;
+    height: 44px;
+}
+
+/* campus dropdown */
+#btnCampusSelect {
+    color: #FFFFFF;
+    width: 100%;
+    background-color: #7a1315;
+    border-color: #7a1315;
+    border-radius: 10px;
+    transition: unset;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    width: 210px;
+}
+
+.dropdown-menu {
+    top: unset;
+    position: absolute;
+    float: initial;
+    left: unset;
+}
+
+.campus-dropdown li {
+    margin: 0%;
+}
+
+.campus-dropdown {
+    padding-top: 10px;
+}
+
+.campus-dropdown a {
+    width: 100%;
+    padding: 5px 15px 5px 25px;
+    color: #333;
+    background-color: #fff;
+    border-width: 0;
+    border-radius: 0;
+}
+
+.campus-dropdown .fa {
+    margin-left: 15px;
+}
+
+/* end campus dropdown */
 
 /* Helps keep the four graphics in a 2x2 layout */
 .img-row {
@@ -71,14 +181,6 @@
     margin-bottom: 25px;
 }
 
-@media screen and (min-width: 768px) {
-    .kid-features {
-        margin-top: unset;
-        margin-bottom: unset;
-        flex-direction: row;
-    }
-}
-
 .kid-point {
     display: flex;
     flex-direction: column;
@@ -95,15 +197,19 @@
 .kid-icon {
     margin-bottom: 25px;
 }
+
 .camps-btn-row {
     display:none;
 }
+
 .camps-btn-row .btn-primary {
 	min-width: 0;
 }
+
 .camp-dates {
     padding: 0 2rem;
 }
+
 .camp-row {
     display:flex;
     justify-content: center;
@@ -127,7 +233,6 @@
     margin-bottom: 10px;
 }
 
-
 .divContainForm.footersocial {
     max-width: 268px;
     display:flex;
@@ -135,23 +240,15 @@
     justify-content: space-between;
     margin: 1rem auto 3rem;
 }
-    .divContainForm.footersocial a {
-        display: inline-block;
-        width: 76px;
-        height: 76px;
-    }
-    .divContainForm.footersocial a img {
-        width: 100%;
-    }
 
-@media screen and (max-width: 768px) {
-    .camp-row {
-        flex-direction: column;
-        margin-bottom:0;
-    }
-    .camp {
-        width: 100%;
-    }
+.divContainForm.footersocial a {
+    display: inline-block;
+    width: 76px;
+    height: 76px;
+}
+
+.divContainForm.footersocial a img {
+    width: 100%;
 }
 
 .camp .btn-default {
@@ -159,26 +256,31 @@
     min-width:0;
     margin: 0 auto;
 }
-.camp h3{
+
+.camp h3 {
     font-size: 2rem;
 }
+
 .camps-social {
 	text-align:center;
-	margin: 4rem auto;
 }
+
 .camps-social small {
 	font-size: 1em;
 }
+
 .camps-social-icons {
 	width: 225px;
 	margin: 0 auto;
 }
+
 .social {
 	background-color:#D82E2F;
 	margin: 1rem;
 	border-radius:50%;	
 	display:inline-block;
 }
+
 .social a {
 	color:white;
 	display:table-cell;
@@ -215,34 +317,92 @@
     margin-bottom:5px;
 }
 
+h2.dark {
+    color:#000;
+    font-size: 2.7rem;
+}
+
+.no-btm-pad {
+    padding-bottom:0;
+}
+
+.no-top-pad {
+    padding-top:0;
+}
+
+/* Tablet size layout */
+@media screen and (max-width: 1024px) {
+    p.countdown-digit {
+        font-size: 36px;
+    }
+
+    p.countdown-label {
+        font-size: 12px;
+    }
+
+    .spacer {
+        height: 48px;
+    }   
+}
+
 @media screen and (max-width: 768px) {
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-camps.jpg");
+    }
+
+    .kid-features {
+        margin-top: unset;
+        margin-bottom: unset;
+        flex-direction: row;
+    }
+
+    .camp-row {
+        flex-direction: column;
+        margin-bottom:0;
+    }
+
+    .camp {
+        width: 100%;
+    }
+
     .name-fields, .info-fields {
         flex-direction: column;
     }
+
     .name-fields .field-wrapper, 
     .info-fields .field-wrapper {
         width:80%;
         margin:0 auto 2rem;
     }
+
     .divContainForm p {
         max-width: 80%;
     }
+
     .actions {
         text-align: center;
     }
+
     .actions .btn {
         max-width: 80%;
         margin: 0 auto 5px;
     }
-}
 
-h2.dark {
-    color:#000;
-    font-size: 2.7rem;
-}
-.no-btm-pad {
-    padding-bottom:0;
-}
-.no-top-pad {
-    padding-top:0;
+    .dropdown-menu {
+        width: 90%;
+    }
+
+    .dropdown-menu>li>a {
+        padding: 6px 12px;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .left-and-right-container {
+        justify-content: center;
+    }
+
+    #btnCampusSelect {
+        width: 100%;
+    }
 }
