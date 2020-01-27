@@ -23,6 +23,8 @@ namespace church.ccv.CCVRest.STARS.Model
 
         public string Season;
 
+        public string SeasonType;
+
         public string Grades;
 
         public int SlotsAvailable;

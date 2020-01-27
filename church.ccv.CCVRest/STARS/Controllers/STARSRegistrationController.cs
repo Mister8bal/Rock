@@ -20,12 +20,13 @@ namespace church.ccv.CCVRest.STARS.Controllers
         [System.Web.Http.Route( "api/STARS/ActiveRegistrations" )]
         public HttpResponseMessage ActiveRegistrations( int calendarId, 
                                                         string campusName = "", 
-                                                        string sport = "", 
+                                                        string sport = "",
+                                                        string seasonType = "",
                                                         bool returnRegistrationData = false )
         {
             string scrubbedCampusName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase( campusName.Replace( '-', ' ' ) );
 
-            List<STARSRegistrationModel> response = STARSRegistrationService.GetActiveRegistrations( calendarId, scrubbedCampusName, sport );
+            List<STARSRegistrationModel> response = STARSRegistrationService.GetActiveRegistrations( calendarId, scrubbedCampusName, sport, seasonType );
 
             if ( response.Count > 0 )
             {
@@ -44,43 +45,6 @@ namespace church.ccv.CCVRest.STARS.Controllers
 
             // default response
             return Common.Util.GenerateResponse( true, RegistrationsResponse.NoActiveRegistrations.ToString(), null );
-        }
-
-        public enum CampsResponse
-        {
-            Success,
-            NoActiveCamps
-        }
-
-        [Authenticate, Secured]
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route( "api/STARS/ActiveCamps" )]
-        public HttpResponseMessage ActiveCamps( int calendarId, 
-                                                string campusName = "", 
-                                                string sport = "", 
-                                                bool returnCampsData = false )
-        {
-            string scrubbedCampusName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase( campusName.Replace( '-', ' ' ) );
-
-            List<STARSRegistrationModel> response = STARSRegistrationService.GetActiveCamps( calendarId, scrubbedCampusName, sport );
-
-            if ( response.Count > 0 )
-            {
-                // success
-                if ( returnCampsData )
-                {
-                    // include camps data in response
-                    return Common.Util.GenerateResponse( true, CampsResponse.Success.ToString(), response );
-                }
-                else
-                {
-                    // dont include camps data in response
-                    return Common.Util.GenerateResponse( true, CampsResponse.Success.ToString(), null );
-                }
-            }
-
-            // default response
-            return Common.Util.GenerateResponse( true, CampsResponse.NoActiveCamps.ToString(), null );
-        }
+        }       
     }
 }

@@ -802,14 +802,14 @@ a:focus {
     line-height: 15px;
 }
 
-/* Summer Camps Section */
-.summer-camps-row {
+/* Clinics Section */
+.clinics-row {
     display: flex;
     justify-content: center;
     padding-bottom: 45px;
 }
 
-.summer-camps-row .rectangle {
+.clinics-row .rectangle {
     background-color: #E73D30;
     border-radius: 5px;
     display: flex;
@@ -819,7 +819,7 @@ a:focus {
     padding: 15px;
 }
 
-.summer-camps-row .rectangle button {
+.clinics-row .rectangle button {
     color: #E73D30;
     background-color: #FFFFFF;
     text-align: center;
@@ -831,18 +831,18 @@ a:focus {
     margin-left: 50px;
 }
 
-.summer-camps-row .select-dropdown .dropdown-menu {
+.clinics-row .select-dropdown .dropdown-menu {
     margin-left: 50px;
 }
 
-.summer-camps-row .btn-secondary {
+.clinics-row .btn-secondary {
     min-width: unset;
     width: 200px;
     max-width: 200px;
     margin-left: 50px;
 }
 
-.summer-camps-row .btn-secondary h6 {
+.clinics-row .btn-secondary h6 {
     color: inherit;
 }
 
@@ -1508,12 +1508,12 @@ a:focus {
         width: 390px;
     }
 
-    /* Summer camp */
-    .summer-camps-row {
+    /* Clinics */
+    .clinics-row {
         padding-top: 25px;
     }
 
-    .summer-camps-row .rectangle {
+    .clinics-row .rectangle {
         justify-content: space-evenly;
     }
 
@@ -1768,28 +1768,28 @@ a:focus {
         text-align: center;
     }
 
-    /* summer camps dropdown */
-    .summer-camps-row .btn-secondary {
+    /* clinics dropdown */
+    .clinics-row .btn-secondary {
         width: 100%;
         max-width: 100%;
         margin-left: 0;
     }
 
-    .summer-camps-row {
+    .clinics-row {
         padding: 25px 0 0 0;
     }
 
-    .summer-camps-row .rectangle {
+    .clinics-row .rectangle {
         flex-direction: column;
         padding: 0 15px 15px 15px;
         margin-bottom: 20px;
     }
 
-    .summer-camps-row .rectangle button {
+    .clinics-row .rectangle button {
         margin: 0;
     }
 
-    .summer-camps-row .select-dropdown .dropdown-menu {
+    .clinics-row .select-dropdown .dropdown-menu {
         width: 75%;
         margin-top: 44px;
         margin-left: 17px;

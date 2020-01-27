@@ -108,6 +108,7 @@
             <div class="modal-body">
                 <h6>Season</h6>
                 <div id="filterSeason" class="filter-row seasons"></div>
+                <div id="filterSeasonType" class="filter-row season-types"></div>               
 
                 <h6>Campus</h6>
                 <div id="filterCampus" class="filter-row campuses"></div>
@@ -163,11 +164,16 @@
     //
     // check for page parameters and set variables
     var pageParameterSeason = '';
+    var pageParameterSeasonType = '';
     var pageParameterCampus = '';
     var pageParameterSport = '';
 
     {% if PageParameter.Season and PageParameter.Season != "" %}            
         pageParameterSeason = `{{ PageParameter.Season }}`.split(',');
+    {% endif %}
+
+    {% if PageParameter.SeasonType and PageParameter.SeasonType != "" %}            
+        pageParameterSeasonType = `{{ PageParameter.SeasonType }}`.split(',');
     {% endif %}
 
     {% if PageParameter.Campus and PageParameter.Campus != "" %}            
@@ -186,10 +192,12 @@
     // global variables for mobile
     var filteredMobileRegistrations = [];
     var availableMobileSeasons = [];
+    var availableMobileSeasonTypes = [];
     var availableMobileSports = [];
     var availableMobileCampuses = [];
     var availableMobileDivisions = [];
     var selectedMobileSeason = '';
+    var selectedMobileSeasonType = '';
     var selectedMobileCampus = '';
     var selectedMobileSport = '';
     var selectedMobileDivision = '';
@@ -202,12 +210,21 @@
         activeRegistrations = data.Data;
 
         // hydrate mobile arrays
-        hydrateAvailableMobileArrays(activeRegistrations);
+        if ( activeRegistrations ) {
+            hydrateAvailableMobileArrays(activeRegistrations);
+        }
 
         $(document).ready(function(){
-            initializeGrid();
+            if ( activeRegistrations ) {
+                initializeGrid();
 
-            initializeMobile();
+                initializeMobile();
+            } else {
+                // api didnt return any registrations, render the grid with 0 items.
+                activeRegistrations = new Array().fill(0);
+
+                renderGrid(activeRegistrations);
+            }
         });
     });
 
@@ -229,23 +246,20 @@
 
     function initializeModalFilterOptions() {
         var availableSeasons = [];
+        var availableSeasonTypes = [];
         var availableCampuses = [];
         var availableSports = [];
         var availableGrades = [];
 
         // hydrate available arrays
         // add seasons
-        availableSeasons.push("Spring");
-        availableSeasons.push("Summer");
-        availableSeasons.push("Fall");
-        availableSeasons.push("Winter");
+        availableSeasons.push("Spring","Summer","Fall","Winter");
+
+        // add season types
+        availableSeasonTypes.push("League","Camp","Clinic");
 
         // add sports
-        availableSports.push("baseball");
-        availableSports.push("basketball");
-        availableSports.push("exceptional-stars");
-        availableSports.push("football");
-        availableSports.push("soccer");
+        availableSports.push("baseball","basketball","exceptional-stars","football","soccer");
 
         // add campuses
         {% for campus in Campuses %}
@@ -271,6 +285,12 @@
             var newCheckbox = createCheckboxItem('season', availableSeasons[i].replace(/\s|\-/g,''), availableSeasons[i]);
         
             $('#filterSeason').append(newCheckbox);
+        }
+
+        for (let i = 0; i < availableSeasonTypes.length; i++) {
+            var newCheckbox = createCheckboxItem('season-type',availableSeasonTypes[i].replace(/\s|\-/g,''), availableSeasonTypes[i]);
+
+            $('#filterSeasonType').append(newCheckbox);            
         }
 
         for (let i = 0; i < availableCampuses.length; i++) {
@@ -304,6 +324,25 @@
                 } else {
                     // matching filter option not found, add a filter checkbox to the hidden group
                     var newCheckbox = createCheckboxItem('season', seasonfilterItem, seasonfilterItem, true );
+
+                    $('#filterHidden').append(newCheckbox);
+                }                
+            }     
+        }
+
+        // process season type query parameters if any
+        if (pageParameterSeasonType.length > 0) {
+            for (let i = 0; i < pageParameterSeasonType.length; i++) {
+                var seasonTypeFilterItem = toTitleCase(pageParameterSeasonType[i]);
+
+                var seasonTypeCheckbox = $('[name=season-type][value=' + seasonTypeFilterItem + ']');
+
+                if (seasonTypeCheckbox.length) {
+                    // sport checkbox with matching value found, set it to true
+                    seasonTypeCheckbox.prop('checked',true);
+                } else {
+                    // matching filter option not found, add a filter checkbox to the hidden group
+                    var newCheckbox = createCheckboxItem('season', seasonTypeFilterItem, seasonTypeFilterItem, true );
 
                     $('#filterHidden').append(newCheckbox);
                 }                
@@ -369,7 +408,22 @@
         }
 
         // if we have season parameter check for campus paramter and refilter registrations
-        if ( selectedMobileSeason != '' && pageParameterCampus.length > 0 ) {
+        if ( selectedMobileSeason != '' && pageParameterSeasonType.length > 0 ) {
+            // convert parmeters to title case and replace - with spaces
+            var requestedSeasonType = toTitleCase(pageParameterSeasonType[0].replace(/\s|\-/g,' '));
+
+            if ( availableMobileSeasonTypes.includes(requestedSeasonType) ) {
+                // valid campus specified, update selectedMobileCampus and mobileState
+                selectedMobileSeasonType = requestedSeasonType;
+
+                // update filtered registrations and rehydrate the available arrays
+                filteredMobileRegistrations = applyMobileFilter();
+                hydrateAvailableMobileArrays(filteredMobileRegistrations);
+            }
+        }
+
+        // if we have season parameter check for campus paramter and refilter registrations
+        if ( selectedMobileSeason != '' && selectedMobileSeasonType != '' && pageParameterCampus.length > 0 ) {
             // convert parmeters to title case and replace - with spaces
             var requestedCampus = toTitleCase(pageParameterCampus[0].replace(/\s|\-/g,' '));
 
@@ -384,7 +438,7 @@
         }
 
         // if we have season and campus parameters check for sport parameter and refilter registrations
-        if ( selectedMobileSeason != '' && selectedMobileCampus != '' && pageParameterSport.length > 0 ) {
+        if ( selectedMobileSeason != '' && selectedMobileSeasonType != '' && selectedMobileCampus != '' && pageParameterSport.length > 0 ) {
             var requestedSport = pageParameterSport[0];
 
             if ( availableMobileSports.includes(requestedSport) ) {
@@ -398,12 +452,14 @@
         }      
 
         // set current state
-        if ( selectedMobileSeason != '' && selectedMobileCampus != '' && selectedMobileSport != '') {
+        if ( selectedMobileSeason != '' && selectedMobileSeasonType != '' && selectedMobileCampus != '' && selectedMobileSport != '') {
             mobileState = 'DIVISION';
-        } else if ( selectedMobileSeason != '' && selectedMobileCampus != '' && selectedMobileSport == '' ) {
+        } else if ( selectedMobileSeason != '' && selectedMobileSeasonType != '' && selectedMobileCampus != '' && selectedMobileSport == '' ) {
             mobileState = 'SPORT';
-        } else if ( selectedMobileSeason != '' && selectedMobileCampus == '' && selectedMobileSport == '') {
+        } else if ( selectedMobileSeason != '' && selectedMobileSeasonType != '' && selectedMobileCampus == '' && selectedMobileSport == '') {
             mobileState = 'CAMPUS';
+        } else if ( selectedMobileSeason != '' && selectedMobileSeasonType == '' && selectedMobileCampus == '' && selectedMobileSport == '' ) {
+            mobileState = "SEASONTYPE";
         } else {
             // default state
             mobileState = 'SEASON';
@@ -435,7 +491,7 @@
 
                 var waitListActive = items[i].SlotsAvailable !== -1 && items[i].SlotsAvailable === 0 && items[i].WaitListEnabled;
 
-                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season, items[i].EventOccurrenceId, waitListActive);
+                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season + " " + items[i].SeasonType, items[i].EventOccurrenceId, waitListActive);
 
                 table.appendChild(newRow);
 
@@ -488,7 +544,10 @@
                 break;
             case 'GRID':
                 renderRegistrationsGrid();
-                break;        
+                break; 
+            case 'SEASONTYPE':
+                renderSeasonTypeSelection();
+                break;
             default:
                 // by default show season selection
                 renderSeasonSelection();
@@ -500,7 +559,22 @@
         // clear mobile card and set header
         resetMobileCardUI('Select Season','');
 
-        var appendSuccess = appendNavigationItems(availableMobileSeasons,'CAMPUS',false);
+        var appendSuccess = appendNavigationItems(availableMobileSeasons,'SEASONTYPE',false);
+
+        // unhide the mobile body content once everything is processed
+        if (appendSuccess) {
+            showMobileGrid();
+        }    
+    }
+
+    function renderSeasonTypeSelection() {
+        // clear mobile card and set header
+        resetMobileCardUI('Select Season Type','SEASON');
+
+        // add navigation bread crumb
+        appendNavigationItem(selectedMobileSeason, '');
+
+        var appendSuccess = appendNavigationItems(availableMobileSeasonTypes,'CAMPUS',false);
 
         // unhide the mobile body content once everything is processed
         if (appendSuccess) {
@@ -510,10 +584,10 @@
 
     function renderCampusSelection() {
         // clear mobile card and set header
-        resetMobileCardUI('Select Campus','SEASON');
+        resetMobileCardUI('Select Campus','SEASONTYPE');
 
         // add selected season
-        appendNavigationItem(selectedMobileSeason,'');
+        appendNavigationItem(selectedMobileSeason + " " + selectedMobileSeasonType,'');
 
         // add available campuses
         var appendSuccess = appendNavigationItems(availableMobileCampuses,'SPORT',false);
@@ -529,7 +603,7 @@
         resetMobileCardUI('Select Sport','CAMPUS');
         
         // add selected season and campus
-        appendNavigationItem(selectedMobileSeason,'');
+        appendNavigationItem(selectedMobileSeason + " " + selectedMobileSeasonType,'');
         appendNavigationItem(selectedMobileCampus,'');
 
         // add available sports
@@ -546,7 +620,7 @@
         resetMobileCardUI('Select Division','SPORT');
 
         // add selected season, campus, and sport
-        appendNavigationItem(selectedMobileSeason,'');
+        appendNavigationItem(selectedMobileSeason + " " + selectedMobileSeasonType,'');
         appendNavigationItem(selectedMobileCampus,'');
         appendNavigationItem(selectedMobileSport.replace(/\s|\-/g,' '),'');
         
@@ -564,7 +638,7 @@
         resetMobileCardUI(selectedMobileDivision,'DIVISION');
 
         // add selected season, campus, sport, and division
-        appendNavigationItem(selectedMobileSeason,'');
+        appendNavigationItem(selectedMobileSeason + " " + selectedMobileSeasonType,'');
         appendNavigationItem(selectedMobileCampus,'');
         appendNavigationItem(selectedMobileSport.replace(/\s|\-/g,' '),'');
         appendNavigationItem(selectedMobileDivision,'');        
@@ -625,22 +699,78 @@
 
         // get the checked values from the filters
         var seasonFilter = $('input:checked[name="season"]').map(function() { return $(this).val(); }).get();
+        var seasonTypeFilter = $('input:checked[name="season-type"]').map(function() { return $(this).val(); }).get();
         var campusFilter = $('input:checked[name="campus"]').map(function() { return $(this).val(); }).get();
         var sportFilter = $('input:checked[name="sport"]').map(function() { return $(this).val(); }).get();
         var genderFilter = $('input:checked[name="gender"]').map(function() { return $(this).val(); }).get();
         var gradeFilter = $('input:checked[name="grade"]').map(function() { return $(this).val(); }).get();
 
+        //
         // apply filters
+        //
 
         if (seasonFilter.length > 0) {
-            tempRegistrations = tempRegistrations.filter(value => seasonFilter.includes(value.Season.replace(/\s|\-/g,'')));
+            // filter by season, ie spring, summer, etc
+            // using this style of filter so that multiple items will display when selected
+            // undefined items are filtered out by default. Example someone selects spring for filter, we
+            // we want to be sure no summer fall or winter items are shown.
+            var spring = 'undefined';
+            var summer = 'undefined';
+            var fall = 'undefined';
+            var winter = 'undefined';
 
-            // add filter badges for seasons
             for (let i = 0; i < seasonFilter.length; i++) {
-                var filterBadge = createFilterBadge(seasonFilter[i]);
+                // updating the variable name to its season, which tells the filter to include the season
+                if ( seasonFilter[i] === 'Spring' ) {
+                    spring = 'spring';
+                } else if ( seasonFilter[i] === 'Summer' ) {
+                    summer = 'summer';
+                } else if ( seasonFilter[i] === 'Fall' ) {
+                    fall = 'fall';
+                } else if ( seasonFilter[i] === 'Winter' ) {
+                    winter = 'winter';
+                } 
 
-                $('#divFilterBadges').append(filterBadge);                
+                // add filter badge for the item
+                var filterBadge = createFilterBadge(seasonFilter[i]);
+                $('#divFilterBadges').append(filterBadge);  
             }
+
+            // now apply the filter
+            tempRegistrations = tempRegistrations.filter(value => value.Season.toLowerCase().includes(spring) || 
+                                                                    value.Season.toLowerCase().includes(summer) || 
+                                                                    value.Season.toLowerCase().includes(fall) || 
+                                                                    value.Season.toLowerCase().includes(winter) );    
+        }
+
+        if (seasonTypeFilter.length > 0) {
+            // filter by season type, ie league, camp, etc
+            // using this style of filter so that multiple items will display when selected
+            // undefined items are filtered out by default. Example someone selects league for filter, we
+            // we want to be sure no camp or clinic items are shown.
+            var league = 'undefined';
+            var camp = 'undefined';
+            var clinic = 'undefined';
+
+            for (let i = 0; i < seasonTypeFilter.length; i++) {
+                // updating the variable name to its season type, which tells the filter to include the season type
+                if ( seasonTypeFilter[i] === 'League' ) {
+                    league = 'league';
+                } else if ( seasonTypeFilter[i] === 'Camp' )  {
+                    camp = 'camp';
+                } else if ( seasonTypeFilter[i] === 'Clinic' ) {
+                    clinic = 'clinic';
+                }
+
+                // add filter badge for the item
+                var filterBadge = createFilterBadge(seasonTypeFilter[i]);
+                $('#divFilterBadges').append(filterBadge);  
+            }
+
+            // now apply the filter
+            tempRegistrations = tempRegistrations.filter(value => value.SeasonType.toLowerCase().includes(league) ||
+                                                                    value.SeasonType.toLowerCase().includes(camp) ||
+                                                                    value.SeasonType.toLowerCase().includes(clinic) );    
         }
 
         if (campusFilter.length > 0) {
@@ -649,19 +779,19 @@
             // add filter badges for campus
             for (let i = 0; i < campusFilter.length; i++) {
                 var filterBadge = createFilterBadge(campusFilter[i]);
-
                 $('#divFilterBadges').append(filterBadge);                
             }
         }
 
         if (sportFilter.length > 0) {
+            // using this method of sorting so that people can display multiple sports at the same time
             // first determine if we need to filter by any general sports
             // set the variables to something that doesnt match a sport name
             var baseball = 'undefined';
             var basketball = 'undefined';
             var football = 'undefined';
             var soccer = 'undefined';
-            var exceptional = 'undefined'
+            var exceptional = 'undefined';
 
             // loop through each filter item and specifically look for general sport and then
             // set the text value to the sport name so it will match in the below filter include
@@ -677,24 +807,21 @@
                 } else if ( sportFilter[i] === 'exceptionalstars') {
                     exceptional = 'exceptional';
                 }
+
+                // add filter badge for item
+                var filterBadge = createFilterBadge(sportFilter[i]);                
+                $('#divFilterBadges').append(filterBadge);   
             }
 
             // now apply the filter
             // show item if general sport is in its name, IE football in flag football, soccer in united soccer
             // or show item if specific sport specified, ie flag football
             tempRegistrations = tempRegistrations.filter(value => value.Sport.includes(baseball) || 
-                                                                          value.Sport.includes(basketball) || 
-                                                                          value.Sport.includes(football) || 
-                                                                          value.Sport.includes(soccer) || 
-                                                                          value.Sport.includes(exceptional) ||
-                                                                          sportFilter.includes(value.Sport.replace(/\s|\-/g,'')) );     
-
-            // add filter badges
-            for (let i = 0; i < sportFilter.length; i++) {
-                var filterBadge = createFilterBadge(sportFilter[i]);
-
-                $('#divFilterBadges').append(filterBadge);                
-            }
+                                                                    value.Sport.includes(basketball) || 
+                                                                    value.Sport.includes(football) || 
+                                                                    value.Sport.includes(soccer) || 
+                                                                    value.Sport.includes(exceptional) ||
+                                                                    sportFilter.includes(value.Sport.replace(/\s|\-/g,'')) );   
         }
 
         if (genderFilter.length > 0) {
@@ -705,7 +832,6 @@
             // add filter badges for gender
             for (let i = 0; i < genderFilter.length; i++) {
                 var filterBadge = createFilterBadge(genderFilter[i]);
-
                 $('#divFilterBadges').append(filterBadge);                
             }
         }
@@ -719,7 +845,6 @@
             // add filter badges for Grades
             for (let i = 0; i < gradeFilter.length; i++) {
                 var filterBadge = createFilterBadge(gradeFilter[i],gradeFilter[i] + " grade");
-
                 $('#divFilterBadges').append(filterBadge);                
             }
         }
@@ -765,9 +890,10 @@
                         var sport = item.Sport.replace('-',' ');
 
                         return ( item.Season.toLowerCase().includes(searchItem) || 
-                                item.Campus.toLowerCase().includes(searchItem) ||
-                                sport.toLowerCase().includes(searchItem) ||
-                                item.Grades.toLowerCase().includes(searchItem) )
+                                    item.SeasonType.toLowerCase().includes(searchItem) ||
+                                    item.Campus.toLowerCase().includes(searchItem) ||
+                                    sport.toLowerCase().includes(searchItem) ||
+                                    item.Grades.toLowerCase().includes(searchItem) )
                     });
                 }
             }            
@@ -820,6 +946,9 @@
             case 'SEASON':
                 selectedMobileSeason = selectedItem;
                 break;
+            case 'SEASONTYPE':
+                selectedMobileSeasonType = selectedItem;
+                break;
             case 'CAMPUS':
                 selectedMobileCampus = selectedItem;             
                 break;
@@ -850,10 +979,16 @@
         switch (targetState) {
             case 'SEASON':
                 selectedMobileSeason = '';
+                selectedMobileSeasonType = '';
                 selectedMobileCampus = '';
                 selectedMobileSport = '';
                 selectedMobileDivision = '';                
                 break;
+            case 'SEASONTYPE':
+                selectedMobileSeasonType = '';
+                selectedMobileCampus = '';
+                selectedMobileSport = '';
+                selectedMobileDivision = '';
             case 'CAMPUS':
                 selectedMobileCampus = '';
                 selectedMobileSport = '';
@@ -1070,6 +1205,7 @@
     function hydrateAvailableMobileArrays(items) {
         // reset arrays
         availableMobileSeasons = [];
+        availableMobileSeasonTypes = [];
         availableMobileCampuses = [];
         availableMobileSports = [];
         availableMobileDivisions = [];
@@ -1077,6 +1213,10 @@
         for ( let i = 0; i < items.length; i++ ) {
             if ( !availableMobileSeasons.includes( items[i].Season ) ) {
                 availableMobileSeasons.push(items[i].Season);
+            }
+
+            if ( !availableMobileSeasonTypes.includes( items[i].SeasonType ) ) {
+                availableMobileSeasonTypes.push(items[i].SeasonType);
             }
 
             if ( !availableMobileCampuses.includes( items[i].Campus ) ) {
@@ -1093,6 +1233,7 @@
         }
 
         availableMobileSeasons.sort();
+        availableMobileSeasonTypes.sort();
         availableMobileCampuses.sort();
         availableMobileSports.sort();
         availableMobileDivisions.sort();
@@ -1105,6 +1246,10 @@
         // filter by various options if they have values
         if (selectedMobileSeason !== '') {
             mobileTempRegistrations = mobileTempRegistrations.filter(value => value.Season === selectedMobileSeason);
+        }
+
+        if (selectedMobileSeasonType !== '') {
+            mobileTempRegistrations = mobileTempRegistrations.filter(value => value.SeasonType == selectedMobileSeasonType);
         }
 
         if (selectedMobileCampus !== '') {

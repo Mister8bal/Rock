@@ -1,18 +1,18 @@
 {% comment %} 
-    {% include '~~/Assets/Lava/home/sports/sports-campssection.lava' %}
+    {% include '~~/Assets/Lava/home/sports/sports-clinics-section.lava' %}
 {% endcomment %}
 
-{% comment %} check for campus page paramenter {% endcomment %}
+{% comment %} check for campus page parameter {% endcomment %}
 {% assign campusParameter = PageParameter.Campus | Downcase %}
 
 {% comment %} get the sport from the path {% endcomment %}
 {% assign sport = 'Global' | Page:'Path' | Split:'/' | First %}
 
-<div id="summerCamps" class="summer-camps-row hidden">
+<div id="clinics" class="clinics-row hidden">
     <div class="rectangle">
-        <h3 class="summer-camps-desktop">{{ 'Global' | Page:'Path' | Split:'/' | First }} Camps</h3>
+        <h3 class="clinics-desktop">{{ 'Global' | Page:'Path' | Split:'/' | First }} Clinics</h3>
 
-        <a id="singleCampus" href="/clinics-camps/{{ sport }}/{{ campusParameter }}" class="btn btn-secondary hidden"><h6>More Info</h6></a>
+        <a id="singleCampus" href="/register?Sport={{ sport }}&Campus={{ campusParameter }}&SeasonType=clinic" class="btn btn-secondary hidden"><h6>More Info</h6></a>
 
         <div id="multipleCampuses" class="select-dropdown hidden">
             <button class="dropdown-toggle select-dropdown-button" type="button" data-toggle="dropdown"><h6>{{ selectButtonText | Default:'CHOOSE A CAMPUS' }}</h6><b class="fa fa-caret-down"></b></button>
@@ -23,46 +23,45 @@
 
 <script>
     // setup arrays
-    var activeCamps = [];
+    var activeClinics = [];
     var availableCampuses = [];
 
     // check for campus parameter
     var specifiedCampus = "{{ campusParameter }}";
 
     // setup getUrl
-    var getUrl = '/api/STARS/ActiveCamps?CalendarId=6';
+    var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
     getUrl += `&sport={{ 'Global' | Page:'Path' | Split:'/' | First }}`;
 
     if ( specifiedCampus !== '' ) {
         getUrl += '&campusName=' + specifiedCampus;
     }
 
-    getUrl += '&returnCampsData=true';
-    
+    getUrl += '&seasonType=clinic';
+    getUrl += '&returnRegistrationData=true';
+
     // make api call
     $.get(getUrl, function(data, status) {
         if ( data.Message === 'Success') {
-            // camps exist
-            activeCamps = data.Data;
+            // clinics exist
+            activeClinics = data.Data;
 
             $(document).ready(function(){
-                if ( specifiedCampus === '' ) {   
+                if ( activeClinics !== null && specifiedCampus === '' ) {   
                     // specific campus not specified                 
                     // hydrate availabe campuses
-                    if ( activeCamps.length > 0 ) {
-                        for (let i = 0; i < activeCamps.length; i++) {
-                            if (!availableCampuses.includes(activeCamps[i].Campus)) {
-                                availableCampuses.push(activeCamps[i].Campus)
-                            }            
-                        }
+                    for (let i = 0; i < activeClinics.length; i++) {
+                        if (!availableCampuses.includes(activeClinics[i].Campus)) {
+                            availableCampuses.push(activeClinics[i].Campus)
+                        }            
                     }
-
+                
                     // add available campuses to dropdown
                     for (let i = 0; i < availableCampuses.length; i++) {
                         var li = document.createElement('li');
                         var a = document.createElement('a');
 
-                        a.setAttribute('href', `/clinics-camps/{{ sport }}/` + availableCampuses[i].toLowerCase().replace(/\s/g,'-'));
+                        a.setAttribute('href', `/register?Sport={{ sport }}&Campus=` + availableCampuses[i].toLowerCase().replace(/\s/g,'-') + '&SeasonType=clinic' );
                         a.text = availableCampuses[i];
 
                         li.append(a);
@@ -80,12 +79,11 @@
                     $('#singleCampus').removeClass('hidden');
                 }
 
-                // Success means api returned camps, unhide camps row
+                // Success means api returned clinics, unhide clinics row
                 if ( data.Message === 'Success') {
-                    $('#summerCamps').removeClass('hidden');    
+                    $('#clinics').removeClass('hidden');    
                 }                
             });            
         }        
     });
 </script>
-
