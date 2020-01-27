@@ -43,7 +43,17 @@
 
                 </asp:Panel>
 
-                <asp:Panel ID="pnlResults" runat="server" Visible="false">
+                <asp:Panel ID="pnlResults" runat="server" Visible="false" CssClass="panel-results">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Search Results</h4>
+                        </div>
+                    </div>
+                    <asp:Panel ID="pnlNoSourceLocation" Visible="false" runat="server" CssClass="info-note margin-v-sm alert alert-info">
+                        <div>
+                            <p>We couldn't find this address in our system. The following results will be listed alphabetically instead of by distance.</p>
+                        </div>
+                    </asp:Panel>
 
                     <asp:Literal ID="lMapStyling" runat="server" />
 
@@ -73,6 +83,12 @@
                                     <Rock:RockBoundField DataField="Distance" HeaderText="Distance" DataFormatString="{0:N2} M" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
                                 </Columns>
                             </Rock:Grid>
+                        </div>
+                    </asp:Panel>
+                    
+                    <asp:Panel ID="pnlNoResults" Visible="false" runat="server" CssClass="info-note margin-v-sm alert alert-info">
+                        <div>
+                            <p>No groups found matching the provided search critera.</p>
                         </div>
                     </asp:Panel>
 

@@ -1198,20 +1198,23 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 // if not sorting by ColumnClick and SortByDistance, then sort the groups by distance
                 if ( gGroups.SortProperty == null && GetAttributeValue( "SortByDistance" ).AsBoolean() )
                 {
-                    // new
-                    var groupIdsWithDistance = groupDistanceList.Select( gd => gd.GroupId );
-                    var filteredGroups = groups.Where( g => groupIdsWithDistance.Contains( g.Id ) ).ToList();
+                    // if we have distances, only show groups with a known location, and sort those by distance
+                    if ( distances.Count > 0 )
+                    {
+                        groups = groups.Where( groupObj => distances.Select( distanceObj => distanceObj.Key ) // first, select from the distance list the distance object,
+                                                                   .Contains( groupObj.Id ) // now take the groupObj's ID which is the group id, and see if it exists in the distances list
+                                              ).ToList(); //get a new list of just groups that have the distance
 
-                    // old
-                    // only show groups with a known location, and sort those by distance
-                    var oldFilteredGroups = groups.Where( groupObj =>
-                                                 distances.Select( distanceObj => distanceObj.Key ) // first, select from the distance list the distance object,
-                                                          .Contains( groupObj.Id ) // now take the groupObj's ID which is the group id, and see if it exists in the distances list
-                                          ).ToList(); //get a new list of just groups that have the distance
+                        groups = groups.OrderBy( a => distances[a.Id] ).ThenBy( a => a.Name ).ToList();
 
-                    groups = oldFilteredGroups;
-                    groups = groups.OrderBy( a => distances[a.Id] ).ThenBy( a => a.Name ).ToList();
-                    //
+                        pnlNoSourceLocation.Visible = false;
+                    }
+                    else if ( groups.Any() )
+                    {
+                        // the block is configured to sort by distance, but we don't HAVE distances.
+                        // since the person's source address couldn't be geo-located, notify them.
+                        pnlNoSourceLocation.Visible = true;
+                    }
                 }
 
                 // if limiting by PageSize, limit to the top X groups
@@ -1224,7 +1227,6 @@ namespace RockWeb.Plugins.church_ccv.Groups
                 // If a map is to be shown
                 if ( showMap && groups.Any() )
                 {
-
                     Template template = Template.Parse( GetAttributeValue( "MapInfo" ) );
 
                     bool showDebug = UserCanEdit && GetAttributeValue( "MapInfoDebug" ).AsBoolean();
@@ -1389,6 +1391,8 @@ namespace RockWeb.Plugins.church_ccv.Groups
             // Show the results
             pnlResults.Visible = true;
 
+            // toggle the "No Results Found" panel based on whether we're returning results or not.
+            pnlNoResults.Visible = groups.Any() ? false : true;
         }
 
         /// <summary>

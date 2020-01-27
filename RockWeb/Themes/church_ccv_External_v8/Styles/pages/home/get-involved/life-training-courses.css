@@ -75,6 +75,14 @@
     font-size: 12px;
 }
 
+.info-note p {
+   margin: 0;
+}
+
+.panel-results {
+    margin-top: 25px;
+}
+
 .person-row {
     display: flex;
     flex-direction: column;
