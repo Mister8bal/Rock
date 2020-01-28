@@ -77,10 +77,9 @@
 		{% if showHostedEventsTab == 'True' %}
             <div style="color: #ff0000;" id="hosted-event-button" onClick="linkClicked(this, 'hosted-event', false)">Hosted Event</div>
         {% endif %}
-        <div id="curriculum-button" onClick="linkClicked(this, 'curriculum')">Curriculum</div>
-        <div id="training-center-button" onClick="linkClicked(this, 'training-center')">Training Center</div>
-        <div id="baptisms-button" onClick="linkClicked(this, 'baptisms')">Baptisms</div>
+        <div id="resources-button" onClick="linkClicked(this, 'resources')">Resources</div>
         <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)">Group Details</div>
+        <div id="group-events-button" onClick="linkClicked(this, 'group-events')">Group Events</div>
         <div id="invite-button"><a style="color: inherit; text-decoration: none;" href="/invitelist?GroupId={{ 'Global' | PageParameter:'GroupId' }}">Invite List</a></div>
     </div>
 
@@ -90,10 +89,9 @@
 			{% if showHostedEventsTab == 'True' %}
                 <div style="color: #ff0000;" id="hosted-event-button" onClick="linkClicked(this, 'hosted-event', false)" class="subnav-item">Hosted Event</div>
             {% endif %}
-            <div id="curriculum-mobile-button" onClick="linkClicked(this, 'curriculum')" class="subnav-item">Curriculum</div>
-            <div id="training-center-mobile-button" onClick="linkClicked(this, 'training-center')" class="subnav-item">Training Center</div>
-            <div id="baptisms-mobile-button" onClick="linkClicked(this, 'baptisms')" class="subnav-item">Baptisms</div>
+            <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">Resources</div>
             <div id="group-details-button" onClick="linkClicked(this, 'group-details', false)" class="subnav-item">Group Details</div>
+            <div id="group-events-mobile-button" onClick="linkClicked(this, 'group-events')" class="subnav-item">Group Events</div>
             <div id="invite-button" class="subnav-item"><a style="color: inherit; text-decoration: none;" href="/invitelist?GroupId={{ 'Global' | PageParameter:'GroupId' }}" >Invite List</a></div>
         </div>
     </div>

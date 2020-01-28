@@ -367,11 +367,11 @@
         padding-left: 10px;
     }
 
-    .toolbox-card-content.training-center-panel, .toolbox-card-content.curriculum-panel {
+    .toolbox-card-content.resources-panel {
         margin: 0 0 20px 0;
     }
 
-    .toolbox-card-content.baptisms-panel, .toolbox-card-content.group-details-panel, .toolbox-card-content.hosted-event-panel {
+    .toolbox-card-content.group-events-panel, .toolbox-card-content.group-details-panel, .toolbox-card-content.hosted-event-panel {
         margin: 0 20px 20px 20px;
     }
 
@@ -858,6 +858,13 @@
 }
 
 /* End Area Toolbox */
+
+/* Resources Card */
+.training-center {
+    padding-top: 100px;
+}
+
+/* End Resources Card */
 
 /* Kids Coach Toolbox */
 
