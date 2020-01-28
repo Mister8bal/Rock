@@ -364,7 +364,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
             using ( RockContext rockContext = new RockContext( ) )
             {
                 List<CampusCache> campusCache = CampusCache.All( );
-                DefinedValueService dvService = new DefinedValueService( rockContext );
                 PersonAliasService paService = new PersonAliasService( rockContext );
 
                 // get all volunteer screening instances. This is complicated, so I'll explain:
@@ -482,7 +481,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                                                     CompletedDate = (vs.SentDate == vs.CompletedDate) ? emptyDate : vs.CompletedDate,
                                                     State = VolunteerScreening.GetState( vs.SentDate, vs.CompletedDate, vs.Workflow.Status ),
                                                     Campus = TryGetCampus( campusCache, vs.CampusGuid ),
-                                                    MinistryServingWith = TryGetCampusMinistryServingWith( vs.Workflow, ministryServingWithResult, dvService ),
+                                                    MinistryServingWith = TryGetCampusMinistryServingWith( vs.Workflow, ministryServingWithResult ),
                                                     Requester = TryGetRequester( vs.Workflow, requesterResult, paService ),
                                                     ApplicationType = ParseApplicationType( vs.Workflow )
                                                 } ).ToList();
@@ -673,7 +672,7 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
         /// <param name="ministryServingWithResult">The ministry serving with result.</param>
         /// <param name="dvService">The dv service.</param>
         /// <returns></returns>
-        string TryGetCampusMinistryServingWith( Workflow workflow, List<MinistryServingWithResult> ministryServingWithResult, DefinedValueService dvService )
+        string TryGetCampusMinistryServingWith( Workflow workflow, List<MinistryServingWithResult> ministryServingWithResult )
         {
             // it's possible that no ministry lead has been assigned yet. In that case, we'll return an empty string
             MinistryServingWithResult ministryServingWith = ministryServingWithResult.Where( ml => ml.EntityId == workflow.Id ).SingleOrDefault();
@@ -686,10 +685,13 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                     return string.Empty;
                 }
 
-                string value = dvService.Get( definedValueGuid.Value ).Value;
-                if ( value.IsNotNullOrWhiteSpace() )
+                DefinedValueCache definedValue = DefinedValueCache.Read( definedValueGuid.Value );
+                if ( definedValue != null )
                 {
-                    return value;
+                    if ( definedValue.Value.IsNotNullOrWhiteSpace() )
+                    {
+                        return definedValue.Value;
+                    }
                 }
             }
 
