@@ -1052,6 +1052,18 @@
          max-width: 45%;
          margin-top: unset;
      }
+
+     .mobile-reverse-column {
+         flex-direction: column-reverse;
+     }
+    
+     .mobile-reverse-column .right {
+         margin-top: 0;
+     }
+    
+     .mobile-reverse-column .left {
+         margin-top: 25px;
+     }
  }
  
  @media screen and (max-width: 768px) {
