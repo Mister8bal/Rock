@@ -98,6 +98,17 @@
                 <h6>Coach</h6>            
                 <p>{{ coach.Person.FullName  | Default:'Not Assigned' }}</p>
             </div>
+            <div class="person-details-item">
+                <div class="person-photo">
+                    {% if coach.Person.PhotoId != null %}
+                        <a href="/GetImage.ashx?id={{ coach.Person.PhotoId }}"><img src="/GetImage.ashx?id={{ coach.Person.PhotoId }}&width=600"></a>
+                    {% elseif coach.Person.Gender == 1 %}
+                        <img src="/Assets/Images/person-no-photo-male.svg?" />
+                    {% elseif coach.Person.Gender == 2 %}
+                        <img src="/Assets/Images/person-no-photo-female.svg?" />
+                    {% endif %}
+                </div>
+            </div>        
         </div>
         <div class="person-details-row">
             <div class="person-details-item">
@@ -119,6 +130,7 @@
         <a class="btn btn-primary btn-request" href="https://ccvstars.com/page/2459?GroupId={{ PageParameter.GroupId }}&Campus={{ PageParameter.Campus }}&Sport={{ PageParameter.Sport }}&Player={{ PageParameter.Player }}">Request Team Change</a>
     {% endif %}
 </div>
+
 <div class="person-toolbox-teams"> 
     <div class="toolbox-teams">
         {% if showCoachTools %}

@@ -74,6 +74,7 @@ strong {
     flex-direction: column;
     background-color: #efefef;
     padding: 0 5%;
+    padding-bottom: 10px;
 }
 
 .person-summary h2 {
@@ -85,7 +86,7 @@ strong {
 .person-details {
     display: flex;
     justify-content: space-between;
-    width: 50%;
+    width: 65%;
 }
 
 .person-details-item h6 {
@@ -109,6 +110,11 @@ strong {
     color: #000000;
     text-transform: none;
     text-align: left;
+}
+
+.person-photo img {
+    width: 100px;
+    height: 100px;
 }
 
 .toolbox-teams {
@@ -506,6 +512,10 @@ strong {
 
     .person-details {
         width: 100%;
+    }
+
+    .person-details-row {
+        width: 50%;
     }
 
     .btn-primary {
