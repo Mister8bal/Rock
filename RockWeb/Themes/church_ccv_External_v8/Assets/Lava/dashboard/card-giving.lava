@@ -45,7 +45,7 @@
             </div>
             <div class="giving-content-links">
                 <h5>LEARN HOW YOUR GIVING MAKES AN IMPACT</h5>
-                <a href="https://www.ccvannualreport2018.church/" target="_blank">
+                <a href={{annualReportUrl}} target="_blank">
                     <img src="/Themes/church_ccv_External_v8/Assets/Images/home/about-us/feature-about-us-annual-report.jpg" alt="Annual Report" />
                 </a>
             </div>
