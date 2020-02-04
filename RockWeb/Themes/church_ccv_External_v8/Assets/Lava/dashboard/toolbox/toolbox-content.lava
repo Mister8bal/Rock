@@ -85,8 +85,26 @@
         {% endif %}
     </div>
     <div class="latest-series-title">
-        <p>{{ firstMessage.Name }} - Week {{ firstMessageWeek }}</p>
-        <a href="{{firstMessage.Attributes.DiscussionGuideUrl}}"> <h5><i class="fa fa-file-text discussion-guide-icon"></i> DISCUSSION GUIDE</h5></a>
+		<div>
+			<p>{{ firstMessage.Name }} - Week {{ firstMessageWeek }}</p>
+		</div>
+		<div class="discussion-guide">
+			<div class="header">
+				<div class="discussion-guide-label">
+					<h5>DISCUSSION GUIDE: </h5>
+				</div>
+			</div>
+			<div class="links">
+				<div class="discussion-guide-label">
+					<a href="{{ firstMessage.Attributes.DiscussionGuideUrl }}"><h5><i class="fa fa-mobile discussion-guide-icon mobile"></i> MOBILE</h5></a>
+				</div>
+				<div class="discussion-guide-label">
+					{% if firstMessage.Attributes.DiscussionGuideUrlWebsite != null and firstMessage.Attributes.DiscussionGuideUrlWebsite != empty %}
+						<a href="{{ firstMessage.Attributes.DiscussionGuideUrlWebsite }}"><h5><i class="fa fa-file-text discussion-guide-icon"></i> PRINT</h5></a>
+					{% endif %}
+				</div>
+			</div>
+		</div>	
     </div>
 </div>
 
@@ -132,8 +150,23 @@
                         <p>Week<span class="past-message-info-dash-desktop"> - </span>{{ forloop.rindex }}</p>
                     </div>         
                     <div class="discussion-guide">
-                        <a href="{{message.Attributes.DiscussionGuideUrl}}"><h5><i class="fa fa-file-text discussion-guide-icon"></i> Discussion Guide</h5></a>
-                    </div>
+						<div class="header">
+							<div class="discussion-guide-label">
+								<h5>DISCUSSION GUIDE: </h5>
+							</div>
+						</div>
+						<div class="links">
+							<div class="discussion-guide-label">
+								<a href="{{ message.Attributes.DiscussionGuideUrl }}"><h5><i class="fa fa-mobile discussion-guide-icon mobile"></i> MOBILE</h5></a>
+							</div>
+							<div class="discussion-guide-label">
+								{% if message.Attributes.DiscussionGuideUrlWebsite != null and message.Attributes.DiscussionGuideUrlWebsite != '' %}
+									<a href="{{ message.Attributes.DiscussionGuideUrlWebsite }}"><h5><i class="fa fa-file-text discussion-guide-icon"></i> PRINT</h5></a>
+								{% endif %}
+								
+							</div>
+						</div>
+					</div>	
                 </div>
 
                 {% assign numToRender = numToRender | Minus: 1 %}
