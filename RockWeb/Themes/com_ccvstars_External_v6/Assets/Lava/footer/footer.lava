@@ -36,7 +36,7 @@
             <a href="https://twitter.com/ccvstars" target="_blank"><img src="~~/Assets/Images/icon/twitter.png"></a>
             <a href="https://www.facebook.com/CCVSTARS" target="_blank"><img src="~~/Assets/Images/icon/facebook.png"></a>
         </div>
-        <div class="footer-copyright"><i class="fa fa-copyright"></i>2019 Christ's Church of the Valley</div>
+        <div class="footer-copyright"><i class="fa fa-copyright"></i>2020 Christ's Church of the Valley</div>
         <div class="server-name">
             {[ servername ]}
         </div>
