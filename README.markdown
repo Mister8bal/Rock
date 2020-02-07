@@ -20,6 +20,8 @@ Jump over to our [Rock website](http://www.rockrms.com/) to find out more. Keep 
 ## License
 Rock released under the [Rock Community License](http://www.rockrms.com/license).
 
+CCV Plugins also released under the [Rock Community License](http://www.rockrms.com/license).
+
 ## Crafted By
 
 A community of developers led by the [Spark Development Network](http://www.sparkdevnetwork.com/).
