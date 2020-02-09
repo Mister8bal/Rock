@@ -1993,26 +1993,68 @@ namespace RockWeb.Plugins.church_ccv.Event
                             // we found them
                             person = personMatches.First();
                         }
-                        else
-                        {
-                            person = new Person();
-                            person.FirstName = firstName;
-                            person.LastName = lastName;
-                            person.IsEmailActive = true;
-                            person.Email = email;
-                            person.EmailPreference = EmailPreference.EmailAllowed;
-                            person.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
-                            if ( dvcConnectionStatus != null )
-                            {
-                                person.ConnectionStatusValueId = dvcConnectionStatus.Id;
-                            }
+                    }
 
-                            if ( dvcRecordStatus != null )
+                    // if the person is still null, matching by name/email failed. let's look in the family
+                    // of the person registering.
+                    if ( person == null )
+                    {
+                        // try to find the person by first and last name, within the family of the person registering
+                        if ( registrar != null )
+                        {
+                            var familyMembers = registrar.GetFamilyMembers( true, rockContext )
+                                .Where( m => ( m.Person.FirstName == firstName || m.Person.NickName == firstName ) &&
+                                m.Person.LastName == lastName )
+                                .Select( m => m.Person )
+                                .ToList();
+
+                            if ( familyMembers.Count() == 1 )
                             {
-                                person.RecordStatusValueId = dvcRecordStatus.Id;
+                                person = familyMembers.First();
                             }
                         }
                     }
+
+                    // if the person is STILL null, there's one last thing we can try. Look in the family
+                    // of the person who is logged in.
+                    if ( person == null )
+                    {
+                        if ( CurrentPerson != null )
+                        {
+                            var familyMembers = CurrentPerson.GetFamilyMembers( true, rockContext )
+                                .Where( m => ( m.Person.FirstName == firstName || m.Person.NickName == firstName ) &&
+                                m.Person.LastName == lastName )
+                                .Select( m => m.Person )
+                                .ToList();
+
+                            if ( familyMembers.Count() == 1 )
+                            {
+                                person = familyMembers.First();
+                            }
+                        }
+                    }
+
+                    // finally, if we still couldn't find them, create a new person.
+                    if ( person == null )
+                    {
+                        person = new Person();
+                        person.FirstName = firstName;
+                        person.LastName = lastName;
+                        person.IsEmailActive = true;
+                        person.Email = email;
+                        person.EmailPreference = EmailPreference.EmailAllowed;
+                        person.RecordTypeValueId = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON.AsGuid() ).Id;
+                        if ( dvcConnectionStatus != null )
+                        {
+                            person.ConnectionStatusValueId = dvcConnectionStatus.Id;
+                        }
+
+                        if ( dvcRecordStatus != null )
+                        {
+                            person.RecordStatusValueId = dvcRecordStatus.Id;
+                        }
+                    }
+                
 
                     int? campusId = CampusId;
                     Location location = null;
