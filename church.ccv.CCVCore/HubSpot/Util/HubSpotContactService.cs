@@ -175,7 +175,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 else if ( hubSpotRockId != hubSpotContact.PersonAliasId.ToString() )
                 {
                     // Rock lookup table out of sync with HubSpot, update Rock with person alias id from HubSpot
-                    if ( int.TryParse( hubSpotRockId, out int personAliasId ) )
+                    int personAliasId;
+                    if ( int.TryParse( hubSpotRockId, out personAliasId ) )
                     {
                         hubSpotContact.PersonAliasId = personAliasId;
 
@@ -247,7 +248,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
 
             // load the person alias
             PersonAlias personAlias = null;
-            if ( int.TryParse( hubSpotRockId, out int personAliasId ) )
+            int personAliasId;
+            if ( int.TryParse( hubSpotRockId, out personAliasId ) )
             {
                 personAlias = new PersonAliasService( rockContext ).Get( personAliasId );
             }
@@ -379,7 +381,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
                             bool excludeStaff = hubSpotProperty.GetAttributeValue( "ExcludeStaff" ).AsBoolean();
                             if ( excludeStaff == false && attributeIdValue.IsNotNullOrWhitespace() )
                             {
-                                if ( int.TryParse( attributeIdValue, out int attributeId ) )
+                                int attributeId;
+                                if ( int.TryParse( attributeIdValue, out attributeId ) )
                                 {
                                     UpdatePersonAttributeValueInRock( hubSpotContact, attributeId, attributeFieldType, propertyValue );
                                 }
@@ -466,7 +469,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 hubSpotRockId = ( string ) responseProperties["rock_id"]["value"];
             }
 
-            if ( int.TryParse( hubSpotRockId, out int personAliasId ) )
+            int personAliasId;
+            if ( int.TryParse( hubSpotRockId, out personAliasId ) )
             {
                 personAlias = new PersonAliasService( rockContext ).Get( personAliasId );
             }
@@ -860,12 +864,14 @@ namespace church.ccv.CCVCore.HubSpot.Util
             if ( birthDateValues.Length == 2 || birthDateValues.Length == 3 )
             {
                 // month
-                if ( int.TryParse( birthDateValues[0], out int birthMonth ) )
+                int birthMonth;
+                if ( int.TryParse( birthDateValues[0], out birthMonth ) )
                 {
                     person.BirthMonth = birthMonth;
                 }
                 // day
-                if ( int.TryParse( birthDateValues[1], out int birthDay ) )
+                int birthDay;
+                if ( int.TryParse( birthDateValues[1], out birthDay ) )
                 {
                     person.BirthDay = birthDay;
                 }
@@ -874,7 +880,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
             if ( birthDateValues.Length == 3 && birthDateValues[2].Length == 4 )
             {
                 // year
-                if ( int.TryParse( birthDateValues[2], out int birthYear ) )
+                int birthYear;
+                if ( int.TryParse( birthDateValues[2], out birthYear ) )
                 {
                     person.BirthYear = birthYear;
                 }
