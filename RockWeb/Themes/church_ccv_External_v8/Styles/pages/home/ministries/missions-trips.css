@@ -2,54 +2,120 @@
     background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-missions-trips.jpg");
 }
 
-/* Mobile Background Image */
-@media screen and (max-width: 500px) {
-    .page-background {
-        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-missions-trips.jpg");
-    }
-}
-
 #ternavbar-bg {
     display: flex;
 }
 
-.event-items {
+#zone-singlesection {
+    margin: 0 auto;
+}
+
+.mission-trip-cards {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    flex-basis: 100%;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
     align-items: center;
+    height: 200px;
 }
 
-.event-item-card {
-    width: 30%;
-    height: 30%;
-    margin-top: 15px;
-    margin-bottom: 15px;
+.lds-spinner {
+    display: inline-block;
+    position: relative;
+    width: 64px;
+    height: 64px;
 }
 
-h3 {
-    color: white;
+.season-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.hoverthumb img {
-    width: 100%;
-    height: 250px;
+.season-cards h2 {
+    flex-basis: 100%;
+    font-weight: 200;
+    padding: 30px 0;
+}
+
+.mission-trips {
+    opacity: 0;
+    margin: 0 5%;
+}
+
+.mission-trip-card {
+    display: flex;
+    flex-direction: column;
+    margin: 0 5px 20px 5px;
+    width: 320px;
+    height: 210px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    border-radius: 5px;
+    border: 1px solid #d0d0d0;
+    border-width: thin;
+    background-color: #FFFFFF;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+}
+
+.mission-trip-card h4 {
+    font-weight: 200;
+    padding: 10px 2px 0 2px;
+    height: 60px;
+}
+
+.mission-trip-card a {
+    margin: 0 auto 5px auto;
+    max-width: 150px;
+    min-width: 150px;
+}
+
+.card-summary {
+    height: 60px;
+    padding: 0 4px;
+}
+
+@media screen and (max-width: 1280px) {
+    #zone-singlesection {
+        margin: 0 5%;
+    }
+
+    .mission-trips {
+        opacity: 0;
+        margin: 0 auto;
+    }
+}
+
+/* Small laptop Styling */
+@media screen and (max-width: 1025px) {
+    .mission-trip-cards h2 {
+        margin-left: unset;
+    }
 }
 
 /* Tablet Styling */
 @media screen and (max-width: 768px) {
-    .event-item-card {
+    .mission-trip-card {
         width: 45%;
     }
 }
 
 /* Mobile Styling */
 @media screen and (max-width: 500px) {
-    .event-item-card {
-        width: 100%;
+    .page-background {
+        background-image: url("/Themes/church_ccv_External_v8/Assets/Images/home/ministries/hero-mobile-missions-trips.jpg");
     }
 
-    .hoverthumb img {
+    #zone-singlesection {
+        margin: 0;
+    }
+
+    .mission-trip-card {
         width: 100%;
     }
 }

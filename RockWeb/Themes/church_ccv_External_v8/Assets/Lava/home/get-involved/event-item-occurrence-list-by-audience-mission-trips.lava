@@ -1,16 +1,116 @@
-<div class="event-items">
-    {% for occurrence in EventItemOccurrences %}
-        {% capture itemLink %}{{ EventDetailPage }}?EventOccurrenceId={{ occurrence.Id }}{% endcapture %}
-        <div class="event-item-card">
-            <div class="hoverthumb">
-                <a href="{{ itemLink }}">
-                    <img src="{{ occurrence.EventItem.Photo.Url }}">
-                    <div class="hoverthumb-overlay">
-                        <h3 class="hoverthumb-overlaytitle">{{ occurrence.EventItem.Name | Remove: " Mission Trip"}}</h3>
-                        <div class="hoverthumb-overlaytitle-sub">{{ occurrence.Schedule.EffectiveStartDate | Date: 'MMM d' }} - {{ occurrence.Schedule.EffectiveEndDate | Date: 'MMM d' }}</div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    {% endfor %}
+
+{% comment %} 
+    {% include '~~/Assets/Lava/home/get-involved/event-item-occurrence-list-by-audience-mission-trips.lava' %}
+{% endcomment %}
+
+
+<div class="loading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
+
+<div class="mission-trips"></div>
+
+<script>
+    var CCV = CCV || {}
+    var availableSeasons = [];
+
+    CCV.missionTrips = [
+        {% for eventitemoccurrence in EventItemOccurrences %}
+            {% assign itemYear = eventitemoccurrence.Schedule.EffectiveEndDate | Date: 'yyyy' %}
+            {% assign itemSeason = eventitemoccurrence.EventItem | Attribute:'Season' %}
+            {% if itemSeason == "" %}
+                {% assign itemSeason = "Fall" %}
+            {% endif %}
+            {% capture seasonWithDate %}{{ itemSeason }} {{ itemYear }}{% endcapture %}
+            {% capture itemLink %}{{ EventDetailPage }}?EventOccurrenceId={{ eventitemoccurrence.Id }}{% endcapture %}
+            {
+                name: '{{ eventitemoccurrence.EventItem.Name | Remove: "Colombia Trip -" | Remove: "Medical Mission Trip -" | Remove: "Mission Trip -" | Remove: "Mission Trip" | Trim}}',
+                startDate: '{{ eventitemoccurrence.Schedule.EffectiveStartDate | Date: 'MMM d' }}',
+                endDate: '{{ eventitemoccurrence.Schedule.EffectiveEndDate | Date: 'MMM d' }}',
+                year: '{{ eventitemoccurrence.Schedule.EffectiveEndDate | Date: 'yyyy' }}',
+                season: '{{ seasonWithDate }}',
+                summary: '{{ eventitemoccurrence.EventItem.Summary | Escape | StripNewLines | Truncate:130,'...'}}',
+                url: '{{ itemLink }}',
+            }
+            {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+    ]
+
+    // sort mission trips by year
+    CCV.missionTrips.sort(function(a, b){return a.year - b.year});
+
+    // get a list of available seasons and build div
+    for (var i = 0; i < CCV.missionTrips.length; i++) {
+        if (!availableSeasons.includes(CCV.missionTrips[i].season)) {
+            availableSeasons.push(CCV.missionTrips[i].season);
+            var seasonCard = createSeasonCard(CCV.missionTrips[i].season);
+            $('.mission-trips').append(seasonCard);
+        }
+    }
+
+    for (var i = 0; i < CCV.missionTrips.length; i++) {
+        // create mission trip card
+        var missionTripCard = createMissionTripCard(CCV.missionTrips[i]);
+
+        var season = CCV.missionTrips[i].season.toLowerCase().replace(/ /g,'');
+
+        // add mission trip card to page
+        $('#'+season ).append(missionTripCard);
+    }
+
+    $(document).ready(function() {
+        $('.loading').addClass('hidden');
+        $('.mission-trips').attr("style", "opacity: 1");
+    });
+
+    function createMissionTripCard(missionTripObject) {
+        // create div: mission trip card
+        var div = document.createElement('div');
+        div.setAttribute('class', 'mission-trip-card');
+
+        // create h4: mission trip name
+        var h4MissionTripName = document.createElement('h4');
+        h4MissionTripName.innerText = missionTripObject.name;
+        div.append(h4MissionTripName);
+
+        // create div: card details
+        var divCardDetails = document.createElement('div');
+        divCardDetails.setAttribute('class', 'card-details');
+        div.append(divCardDetails);
+
+        // create p: summary
+        var pSummary = document.createElement('p');
+        pSummary.setAttribute('class', 'card-summary');
+        pSummary.innerText = missionTripObject.summary;
+        divCardDetails.append(pSummary);
+        
+        // create p: start and end date
+        var pMissionTripStartAndEndDate = document.createElement('p');
+        pMissionTripStartAndEndDate.innerText = missionTripObject.startDate + " - " + missionTripObject.endDate;
+        divCardDetails.append(pMissionTripStartAndEndDate);
+
+        // create a: view details
+        var aViewDetails = document.createElement('a');
+        aViewDetails.setAttribute('class', 'btn btn-primary');
+        aViewDetails.innerText = "View Details";
+        aViewDetails.href = missionTripObject.url + "&Missions=true";
+        divCardDetails.append(aViewDetails);
+
+        return div;
+    }
+
+    function createSeasonCard(season) {
+        // create div: season card
+        var div = document.createElement('div');
+        div.setAttribute('id', season.toLowerCase().replace(/ /g,''));
+        div.setAttribute('class', 'season-cards' );
+
+        // create h2: season card name
+        var h2SeasonName = document.createElement('h2');
+        h2SeasonName.innerText = season;
+        div.append(h2SeasonName);
+
+        return div;
+    }
+
+</script>

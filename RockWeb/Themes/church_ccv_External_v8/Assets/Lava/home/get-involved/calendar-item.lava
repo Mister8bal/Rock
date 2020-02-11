@@ -6,9 +6,18 @@
     {% include '~~/Assets/Lava/home/get-involved/calendar-item.lava' %}
 {% endcomment %}
 
+{% comment %} Get audience IDs of current event item {% endcomment %}
+{% for audience in EventItemOccurrence.EventItem.EventItemAudiences %}
+    {% assign eventItemAudience = eventItemAudience | Append: audience.DefinedValueId %}
+{% endfor %}
+
 <div class="events-detail-header">
-        <a href="/get-involved/events" class="btn btn-primary">Return to Events</a>
+    {% comment %} If mission trips audience ID found, add "- Mission Trip"  {% endcomment %}
+    {% if eventItemAudience | Contains: 10977 %}
+        <h1>{{Event.Name}} - Mission Trip</h1>
+    {% else %}
         <h1>{{Event.Name}}</h1>
+    {% endif %}    
 </div>
 
 <div class="events-detail">
@@ -88,7 +97,7 @@
                 </div>
             {% endif %}
         </div>
-         
+
         {% if linkage.RegistrationInstanceId > 0 ) %}
 
             {% assign daysTillStartDate = 'Now' | DateDiff:linkage.RegistrationInstance.StartDateTime,'m' %}
