@@ -46,5 +46,9 @@
         /// </summary>
         public const string CARE_RESULT_STATUS = "C52316F3-882A-4699-AB8C-9745F375BBA9";
 
+        /// <summary>
+        /// Defines a rock attribute to map to a HubSpot property
+        /// </summary>
+        public const string HUBSPOT_PROPERTY_MAP = "74752EA7-7E18-47A5-ADF2-05B470D10410";
     }
 }
