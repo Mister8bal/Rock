@@ -1,0 +1,121 @@
+{% comment %}
+    {% assign disclaimer = "" %}
+    {% include '~~/Assets/Lava/home/ministries/missions-donate.lava' %}
+{% endcomment %}
+
+<style>
+    #missionsDonate {
+        width: 50%
+    }
+
+    .card-body, #missionTripInputs {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-body button {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-body h5 {
+        color: #FFFFFF;
+    }
+
+    #missionTripFunds {
+        position: relative;
+        width: 100%;
+        text-align: center;
+    }
+
+    .bold-text {
+        color: #000;
+        font-weight: 900;
+        font-family: Akrobat;
+    }
+
+    #disclaimerCheckbox {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    #disclaimerCheckbox input {
+        margin-right: 10px;
+    }
+
+    #disclaimer h5 {
+        color: #7A1315;
+    }
+
+    @media screen and (max-width: 768px) {
+        #missionsDonate {
+            width: 100%
+        }
+    }
+</style>
+
+<div id="missionsDonate" class="background-card">
+    <div class="card-header">
+        <h4>Donate to a Mission Trip</h4>
+        <p><span class="bold-text">NOTE:</span> This is for donations only. Trip attendees click <a href="/dashboard/profile">here</a>.</p>
+    </div>
+    <div class="card-body">
+        <div id="disclaimer" class="collapse in" aria-expanded="true">
+            <h5>Mission Trip Donations Disclaimer</h5>
+            <p>{{ disclaimer }}</p>
+        </div>        
+        <div id="disclaimerCheckbox">
+            <input type="checkbox" name="readDisclaimer"> I have read the Mission Trip Donations Disclaimer
+        </div>
+        <div id="missionTripInputs" class="hidden">
+            <label for="#individualName">Trip / Individual's Name</label>
+            <input id="individualName" type="text" disabled />
+            <br />
+            <div class="select-dropdown">
+                <button disabled id="missionTripFundsSelect" class="dropdown-toggle select-dropdown-button btn btn-primary" type="button" data-toggle="dropdown"><h5>Select a trip</h5><b class="fa fa-caret-down"></b></button>
+                <ul id="missionTripFunds" class="dropdown-menu">
+                    {% for fund in Funds %}
+                        <li><a href="https://pushpay.com/g/ccvmissions?rcv=false&fnd={{ fund.FundKey }}&f[1]=" class="mission-donation-item">{{ fund.Name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>        
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#disclaimerCheckbox input').on('change', function() {
+            if ( $(this).is(':checked') ) {
+                // hide disclaimer, show inputs and enable inputs
+                $('#disclaimer').removeClass('in');
+                $('#missionTripInputs').removeClass('hidden');
+                $('#individualName').prop('disabled',false);
+                $('#missionTripFundsSelect').prop('disabled',false);
+            } else {
+                // hide and disable inputs, show disclaimer
+                $('#disclaimer').addClass('in');
+                $('#missionTripInputs').addClass('hidden');
+                $('#individualName').prop('disabled',true);
+                $('#missionTripFundsSelect').prop('disabled',true);
+            }
+        });
+
+        $('#individualName').on('change',function() {
+            // get value of text input and the list of links
+            const textValue = $(this).val();
+            var missionTripFunds = $('.mission-donation-item');
+
+            // loop through all links and update the note to the value of text input
+            for (let i = 0; i < missionTripFunds.length; i++) {
+                const currentHref = $(missionTripFunds[i]).attr('href');
+                var newHref = currentHref.replace(/f\[1\]=.*/, "f[1]=" + textValue);
+                
+                $(missionTripFunds[i]).attr('href', encodeURI(newHref) );                
+            }
+        });
+    });
+</script>

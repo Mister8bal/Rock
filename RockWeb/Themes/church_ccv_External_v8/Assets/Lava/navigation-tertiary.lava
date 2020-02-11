@@ -9,10 +9,11 @@
             {% for childPage in Page.Pages %}
                 <li class="navigation-tertiary-item{% if childPage.Current == 'true' %} active{% endif %}">
                     {% if childPage.Url == "/get-involved/giving/now" %}
-                    <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation"
-                data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
+                        <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation" data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
+                    {% elseif childPage.Url == "/ministries/missions/donate" %}
+                        <a data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>    
                     {% else %}
-                    <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                        <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
                     {% endif %}
                 </li>
             {% endfor %}
@@ -26,10 +27,11 @@
             {% for childPage in Page.Pages %}
                     <li class="navigation-tertiary-item{% if childPage.Current == 'true' %} active{% endif%}">
                         {% if childPage.Url == "/get-involved/giving/now" %}
-						<a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation"
-					data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
-						{% else %}
-						<a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
+                            <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation" data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
+						{% elseif childPage.Url == "/ministries/missions/donate" %}
+                            <a id="mobileTriggerMissionsDonate" data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>
+                        {% else %}
+						    <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
 						{% endif %}
                     </li>
             {% endfor %}
@@ -89,6 +91,10 @@ $(document).ready(function() {
             $('.navigation-tertiary-items-slick').slick('slickGoTo', index);
         }
     });
-});
 
+    // slick slider over writes click events so after page load we have to rehook the modal click event
+    $('#mobileTriggerMissionsDonate').on('click', function (e) {
+        $('#modalMissionsDonate').modal('show');
+    });
+});
 </script>

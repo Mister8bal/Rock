@@ -1,0 +1,128 @@
+{% comment %}
+    // the code used to toggle modal
+    <a href="" data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true"></a>
+
+    {% assign disclaimer = "" %}
+    {% include '~~/Assets/Lava/home/ministries/missions-donate-modal.lava' %}
+{% endcomment %}
+
+<style>
+    #modalMissionsDonate {
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+        padding-top: 20px;
+    }
+
+    #modalMissionsDonate .modal-body, #modalMissionTripInputs {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #modalMissionsDonate .modal-body button {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #modalMissionTripFunds {
+        position: relative;
+        width: 100%;
+        text-align: center;
+    }
+
+    .bold-text {
+        color: #000;
+        font-weight: 900;
+        font-family: Akrobat;
+    }
+
+    #modalDisclaimerCheckbox {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    #modalDisclaimerCheckbox input {
+        margin-right: 10px;
+    }
+
+    #modalDisclaimer h5 {
+        color: #7A1315;
+    }
+
+    #modalMissionTripFundsSelect h5 {
+        color: #FFFFFF;
+    }
+</style>
+
+<div id="modalMissionsDonate" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-header-content">
+                    <h4>Donate to a Mission Trip</h4>
+                    <p><span class="bold-text">NOTE:</span> This is for donations only. Trip attendees click <a href="/dashboard/profile">here</a>.</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="modalDisclaimer" class="collapse in" aria-expanded="true">
+                    <h5>Mission Trip Donations Disclaimer</h5>
+                    <p>{{ disclaimer }}</p>
+                </div>  
+                <div id="modalDisclaimerCheckbox">
+                    <input type="checkbox" name="readDisclaimer"> I have read the Mission Trip Donations Disclaimer
+                </div>
+                <div id="modalMissionTripInputs" class="hidden">
+                    <label for="#modalIndividualName">Trip / Individual's Name</label>
+                    <input id="modalIndividualName" type="text" disabled />
+                    <br />
+                    <div class="select-dropdown">
+                        <button disabled id="modalMissionTripFundsSelect" class="dropdown-toggle select-dropdown-button btn btn-primary" type="button" data-toggle="dropdown"><h5>Select a trip</h5><b class="fa fa-caret-down"></b></button>
+                        <ul id="modalMissionTripFunds" class="dropdown-menu">
+                            {% for fund in Funds %}
+                                <li><a href="https://pushpay.com/g/ccvmissions?rcv=false&fnd={{ fund.FundKey }}&f[1]=" class="modal-mission-donation-item">{{ fund.Name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#modalDisclaimerCheckbox input').on('change', function() {
+            if ( $(this).is(':checked') ) {
+                // hide disclaimer, show and enable inputs
+                $('#modalDisclaimer').removeClass('in');
+                $('#modalMissionTripInputs').removeClass('hidden');
+                $('#modalIndividualName').prop('disabled',false);
+                $('#modalMissionTripFundsSelect').prop('disabled',false);
+            } else {
+                // hide and disable inputs, show disclaimer
+                $('#modalDisclaimer').addClass('in');
+                $('#modalMissionTripInputs').addClass('hidden');
+                $('#modalIndividualName').prop('disabled',true);
+                $('#modalMissionTripFundsSelect').prop('disabled',true);
+            }
+        });
+
+        $('#modalIndividualName').on('change',function() {
+            // get value of text input and the list of links
+            const textValue = $(this).val();
+            var modalMissionTripFunds = $('.modal-mission-donation-item');
+
+            // loop through all links and update the note to the value of text input
+            for (let i = 0; i < modalMissionTripFunds.length; i++) {
+                const currentHref = $(modalMissionTripFunds[i]).attr('href');
+                var newHref = currentHref.replace(/f\[1\]=.*/, "f[1]=" + textValue);
+                
+                $(modalMissionTripFunds[i]).attr('href', encodeURI(newHref) );                
+            }
+        });
+    });
+</script>
