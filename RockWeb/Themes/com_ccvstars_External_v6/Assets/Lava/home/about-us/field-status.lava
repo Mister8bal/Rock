@@ -24,10 +24,25 @@
         type: "GET",
         dataType: 'json',
         success: function(data) {
+            // sort data by campus name
+            data.Data.sort(function(a, b) {
+                var nameA = a.CampusName.toUpperCase();
+                var nameB = b.CampusName.toUpperCase();
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+                // names must be equal
+                return 0;
+            });
+
             for (let i = 0; i < data.Data.length; i++) {
                 // create campus card and add to page
                 var fieldStatusCard = createCampusCard(data.Data[i]);
                 $('#desktopFieldStatus').append(fieldStatusCard);
+                
                 // create campus dropdown li for mobile view
                 var campusDropdownItem = createDropdownItem(data.Data[i]);
                 $('#dropdown-menu').append(campusDropdownItem);
@@ -113,11 +128,11 @@
         var button = document.createElement('button');
         button.innerText = campusObject.CampusName;
         button.onclick = function () {
-           changeCampus(campusObject.CampusName);
+            changeCampus(campusObject.CampusName);
         };
         
         li.append(button);
 
         return li;
     }
-  </script>
+</script>
