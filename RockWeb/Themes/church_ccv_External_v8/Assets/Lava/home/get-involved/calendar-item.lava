@@ -8,12 +8,17 @@
 
 {% comment %} Get audience IDs of current event item {% endcomment %}
 {% for audience in EventItemOccurrence.EventItem.EventItemAudiences %}
-    {% assign eventItemAudience = eventItemAudience | Append: audience.DefinedValueId %}
+    {% if audience.DefinedValueId == 10977  %}
+        {% assign checkForMissionTrip = true %}
+        {% break %}
+    {% else %}
+        {% assign checkForMissionTrip = false %}
+    {% endif %}    
 {% endfor %}
 
 <div class="events-detail-header">
     {% comment %} If mission trips audience ID found, add "- Mission Trip"  {% endcomment %}
-    {% if eventItemAudience | Contains: 10977 %}
+    {% if checkForMissionTrip == true %}
         <h1>{{Event.Name}} - Mission Trip</h1>
     {% else %}
         <h1>{{Event.Name}}</h1>
