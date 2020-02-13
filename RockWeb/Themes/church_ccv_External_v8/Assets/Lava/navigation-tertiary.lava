@@ -11,7 +11,7 @@
                     {% if childPage.Url == "/get-involved/giving/now" %}
                         <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation" data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
                     {% elseif childPage.Url == "/ministries/missions/donate" %}
-                        <a data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>    
+                        <a href="" data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>    
                     {% else %}
                         <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
                     {% endif %}
@@ -29,7 +29,7 @@
                         {% if childPage.Url == "/get-involved/giving/now" %}
                             <a href="{{ childPage.Url }}" class="ccv-modal" data-modal-type="outside-navigation" data-modal-title="Attention" data-modal-content="You will now be taken to our giving provider, Pushpay, to complete your transaction.">{{ childPage.Title }}</a>
 						{% elseif childPage.Url == "/ministries/missions/donate" %}
-                            <a id="mobileTriggerMissionsDonate" data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>
+                            <a href="" id="mobileTriggerMissionsDonate" data-toggle="modal" data-target="#modalMissionsDonate" aria-hidden="true">{{ childPage.Title }}</a>
                         {% else %}
 						    <a href="{{ childPage.Url }}">{{ childPage.Title }}</a>
 						{% endif %}
