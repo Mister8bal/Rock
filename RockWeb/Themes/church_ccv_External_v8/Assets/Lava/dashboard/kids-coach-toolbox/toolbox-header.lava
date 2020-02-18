@@ -17,23 +17,61 @@
     
 {% endcomment %}
 
-<script>
-    // adds on "onload" hook to the window.onload function chain
-    var oldonload = window.onload;
-    window.onload = (typeof window.onload != 'function') ?
-        handleOnLoad : function() { 
-            oldonload(); handleOnLoad(); 
-        };
+{% comment %} canAccessToolbox is set before the include in block settings (dataview has to be hardcoded){% endcomment %}
+{% if canAccessToolbox == false %}
+    {% if CurrentPersonCanEdit %}
+        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because you do not have Kid Coach Toolbox access</p>
+    {% else %}
+        {{ '/dashboard' | PageRedirect }}
+    {% endif %}
+{% endif %}
 
+<div class="header">
+    <h4>{{ title }}</h4>
+</div>
+
+{% comment %} mobile view buttons {% endcomment %}
+<div class="toolbox-subnav-mobile">
+    <div class="toolbox-subnav-mobile-items">
+        <div id="coach-videos-mobile-button" onClick="linkClicked(this, 'coach-videos')" class="subnav-item toolbox-subnav-div-selected">Coach Videos</div>
+        <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item">Coach Guide</div>
+        <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
+        <div id="worship-videos-mobile-button" onClick="linkClicked(this, 'worship-videos')" class="subnav-item">Worship Videos</div>
+    </div>
+</div>
+
+{% comment %} desktop view buttons {% endcomment %}
+<div class="toolbox-subnav-desktop">
+    <div id="coach-videos-button" class="btn tab tab-selected" onClick="linkClicked(this, 'coach-videos')">Coach Videos</div>
+    <div id="coach-guide-button" class="btn tab" onClick="linkClicked(this, 'coach-guide')">Coach Guide</div>
+    <div id="resources-button" class="btn tab" onClick="linkClicked(this, 'resources')">Resources</div>
+    <div id="worship-videos-button" class="btn tab" onClick="linkClicked(this, 'worship-videos')">Worship Videos</div>
+</div>
+
+{% comment %} info banner {% endcomment %}
+<div class="group-info-banner weekend-navigation">
+    <div style="width: 25px;">
+        <i id="previousItem" class="mdi mdi-chevron-left" onClick="previousWeekend_Click(); return false;"></i>
+    </div>
+    <div>
+        <span id="weekendDates" style="color: black;"></span>
+    </div>
+    <div style="width: 25px;">
+        <i id="nextItem" class="mdi mdi-chevron-right hidden" onClick="nextWeekend_Click(); return false;"></i>
+    </div>
+</div>
+
+<script>
     var gCurrentLink;
     var gCurrentPanel;
 
-    function handleOnLoad() {
-        // default to the dashboard panel
+    $(document).ready(function() {
+        // default to the first panel
         gCurrentLink = $("#coach-videos-button")[0];
         gCurrentPanel = $("#coach-videos-panel")[0];
-        togglePanel( gCurrentLink, gCurrentPanel, true );        
-    }
+
+        togglePanel( gCurrentLink, gCurrentPanel, true );
+    });
 
     function togglePanel(panelLink, panelObj, enabled) {
         if( enabled ) {
@@ -45,21 +83,19 @@
             panelObj.style.display="none";
         }
     }
-         
+            
     function linkClicked(linkElement, sectionName, showInfoBanner = true) {
-        if ( document.readyState === "complete") {
-            // remove styling from default mobile panel
-            $('#coach-videos-mobile-button').removeClass('toolbox-subnav-div-selected');
+        // remove styling from default mobile panel - Christopher better way?
+        $('#coach-videos-mobile-button').removeClass('toolbox-subnav-div-selected');
 
-            // turn off existing panel
-            togglePanel( gCurrentLink, gCurrentPanel, false );
-            
-            var targetPanel = $("#" + sectionName + "-panel")[0];
-            gCurrentPanel = targetPanel;
-            gCurrentLink = linkElement;
-            
-            togglePanel( gCurrentLink, gCurrentPanel, true );
-        }
+        // turn off existing panel
+        togglePanel( gCurrentLink, gCurrentPanel, false );
+        
+        var targetPanel = $("#" + sectionName + "-panel")[0];
+        gCurrentPanel = targetPanel;
+        gCurrentLink = linkElement;
+        
+        togglePanel( gCurrentLink, gCurrentPanel, true );
     }
 
     function previousWeekend_Click() {
@@ -69,9 +105,9 @@
         var currentIndex = $('input[name=CurrentIndex]').val();
 
         if (currentIndex < totalItems) {
-            hideAllCoachVideoDivs(totalItems);
+            hideAllCoachAndWorshipVideoDivs(totalItems);
 
-            currentIndex++
+            currentIndex++;
 
             // update weekend date and guide
             $('#weekendDates').text($('input[name=WeekendDates' + currentIndex + ']').val());
@@ -79,6 +115,9 @@
 
             // unhide the new video div
             $('#divCoachVideos' + currentIndex).removeClass('hidden');
+
+            // unhide the new video div
+            $('#divWorshipVideos' + currentIndex).removeClass('hidden');
 
             // update hidden field with new index
             $('input[name=CurrentIndex]').val(currentIndex);
@@ -94,9 +133,9 @@
         var currentIndex = $('input[name=CurrentIndex]').val();
 
         if (currentIndex < totalItems) {
-            hideAllCoachVideoDivs(totalItems);
+            hideAllCoachAndWorshipVideoDivs(totalItems);
 
-            currentIndex--
+            currentIndex--;
 
             // update weekend date and guide
             $('#weekendDates').text($('input[name=WeekendDates' + currentIndex + ']').val());
@@ -104,6 +143,9 @@
 
             // unhide the new video div
             $('#divCoachVideos' + currentIndex).removeClass('hidden');
+
+            // unhide the new video div
+            $('#divWorshipVideos' + currentIndex).removeClass('hidden');
 
             // update hidden field with new index
             $('input[name=CurrentIndex]').val(currentIndex);
@@ -135,53 +177,13 @@
     }
 
     // loop through all divs and hide them
-    function hideAllCoachVideoDivs(totalDivs) {
+    function hideAllCoachAndWorshipVideoDivs(totalDivs) {
         for (let i = 0; i < totalDivs; i++) {
-            $('#divCoachVideos' + (i)).addClass('hidden');         
+            $('#divCoachVideos' + (i)).addClass('hidden');  
+            $('#divWorshipVideos' + (i)).addClass('hidden');          
         }
     }
-</script>
 
-{% comment %} canAccessToolbox is set before the include in block settings (dataview has to be hardcoded){% endcomment %}
-{% if canAccessToolbox == false %}
-    {% if CurrentPersonCanEdit %}
-        <p class="alert alert-warning">If you could not edit you would be redirected to: <a href="/dashboard">Dashboard</a> because you do not have Kid Coach Toolbox access</p>
-    {% else %}
-        {{ '/dashboard' | PageRedirect }}
-    {% endif %}
-{% endif %}
-
-<div class="header">
-    <h4>{{ title }}</h4>
-</div>
-
-<div class="toolbox-subnav-desktop">
-    <div id="coach-videos-button" onClick="linkClicked(this, 'coach-videos')">Coach Videos</div>
-    <div id="coach-guide-button" onClick="linkClicked(this, 'coach-guide')">Coach Guide</div>
-    <div id="resources-button" onClick="linkClicked(this, 'resources')">Resources</div>
-</div>
-
-<div class="toolbox-subnav-mobile">
-    <div class="toolbox-subnav-mobile-items">
-        <div id="coach-videos-mobile-button" onClick="linkClicked(this, 'coach-videos')" class="subnav-item toolbox-subnav-div-selected">Coach Videos</div>
-        <div id="coach-guide-mobile-button" onClick="linkClicked(this, 'coach-guide')" class="subnav-item">Coach Guide</div>
-        <div id="resources-mobile-button" onClick="linkClicked(this, 'resources')" class="subnav-item">resources</div>
-    </div>
-</div>
-
-<div class="group-info-banner weekend-navigation">
-    <div style="width: 25px;">
-        <i id="previousItem" class="mdi mdi-chevron-left" onClick="previousWeekend_Click(); return false;"></i>
-    </div>
-    <div>
-        <span id="weekendDates" style="color: black;"></span>
-    </div>
-    <div style="width: 25px;">
-        <i id="nextItem" class="mdi mdi-chevron-right hidden" onClick="nextWeekend_Click(); return false;"></i>
-    </div>
-</div>
-
-<script>
     $(document).ready(function(){
         $('.toolbox-subnav-mobile-items').slick({
             infinite: false,
@@ -211,4 +213,3 @@
         $('.toolbox-subnav-mobile-items').slick('slickNext');
     });
 </script>
-   

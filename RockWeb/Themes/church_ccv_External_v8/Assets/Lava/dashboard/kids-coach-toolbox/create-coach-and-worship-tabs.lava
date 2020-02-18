@@ -1,0 +1,284 @@
+{% comment %}
+    {% include '~~/Assets/Lava/dashboard/kids-coach-toolbox/create-coach-and-worship-tabs.lava' %}
+{% endcomment %}
+
+{% assign sortedItems = Items | Sort:'Id','desc'  %}
+
+{% comment %} set hidden fields for navigation {% endcomment %}
+<input type="hidden" name="TotalItems" value="{{ sortedItems | Size }}" />
+<input type="hidden" name="CurrentIndex" value="0" />
+
+{% for item in sortedItems %}
+    {% assign cssHiddenClass = "hidden" %}
+
+    {% if forloop.first %}
+        {% assign firstItem = item %}
+
+        {% comment %} first item will not be hidden {% endcomment %}
+        {% assign cssHiddenClass = "" %}
+    {% endif %}
+
+    {% comment %} build the coach videos tab and then prepend it to the coach panel
+                  Note: this is only getting built here and will be prepended out. {% endcomment %}
+    <div id="divCoachVideos{{ forloop.index0 }}" class="{{ cssHiddenClass }}">
+        {% comment %} set hidden fields for updating values in other blocks {% endcomment %}
+        <input type="hidden" name="WeekendDates{{ forloop.index0 }}" value="{{ item.WeekendDates }}" />
+        <input type="hidden" name="Guide{{ forloop.index0 }}" value="{{ item | Attribute:'Guide', 'Url' }}" />
+
+        {% comment %} 2YO, EK & LK {% endcomment %}
+        {% assign weekendMessage1 = item | Attribute: 'WeekendMessage1' %}
+        {% if weekendMessage1 != '' %}
+            <div class="header">
+                <h4>Weekend Message 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ weekendMessage1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign weekendMessage2 = item | Attribute: 'WeekendMessage2' %}
+        {% if weekendMessage2 != '' %}
+            <div class="header">
+                <h4>Weekend Message 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ weekendMessage2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign trainingVideo1 = item | Attribute: 'TrainingVideo1' %}
+        {% if trainingVideo1 != '' %}
+            <div class="header">
+                <h4>Coach Training Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+		{% assign trainingVideo2 = item | Attribute: 'TrainingVideo2' %}
+        {% if trainingVideo2 != '' %}
+            <div class="header">
+                <h4>Coach Training Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+		{% assign trainingVideo3 = item | Attribute: 'TrainingVideo3' %}
+        {% if trainingVideo3 != '' %}
+            <div class="header">
+                <h4>Coach Training Video 3</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ trainingVideo3 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% comment %} Special Needs EK & Special Needs LK {% endcomment %}
+        {% assign ekWeekendMessage1 = item | Attribute: 'EKWeekendMessage1' %}
+        {% if ekWeekendMessage1 != '' %}
+            <div class="header">
+                <h4>Early Kids Message Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekWeekendMessage1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign ekWeekendMessage2 = item | Attribute: 'EKWeekendMessage2' %}
+        {% if ekWeekendMessage2 != '' %}
+            <div class="header">
+                <h4>Early Kids Message Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekWeekendMessage2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign ekTrainingVideo1 = item | Attribute: 'EKTrainingVideo1' %}
+        {% if ekTrainingVideo1 != '' %}
+            <div class="header">
+                <h4>Early Kids Training Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekTrainingVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign ekTrainingVideo2 = item | Attribute: 'EKTrainingVideo2' %}
+        {% if ekTrainingVideo2 != '' %}
+            <div class="header">
+                <h4>Early Kids Training Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekTrainingVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkWeekendMessage1 = item | Attribute: 'LKWeekendMessage1' %}
+        {% if lkWeekendMessage1 != '' %}
+            <div class="header">
+                <h4>Later Kids Message Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkWeekendMessage1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkWeekendMessage2 = item | Attribute: 'LKWeekendMessage2' %}
+        {% if lkWeekendMessage2 != '' %}
+            <div class="header">
+                <h4>Later Kids Message Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkWeekendMessage2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkTrainingVideo1 = item | Attribute: 'LKTrainingVideo1' %}
+        {% if lkTrainingVideo1 != '' %}
+            <div class="header">
+                <h4>Later Kids Training Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkTrainingVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkTrainingVideo2 = item | Attribute: 'LKTrainingVideo2' %}
+        {% if lkTrainingVideo2 != '' %}
+            <div class="header">
+                <h4>Later Kids Training Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkTrainingVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+    </div>
+
+    {% comment %} build the worship videos tab and then prepend it to the worship panel.
+                  Note: this is only getting built here and will be prepended out. {% endcomment %}
+    <div id="divWorshipVideos{{ forloop.index0 }}" class="{{ cssHiddenClass }}">
+        {% comment %} set hidden fields for updating values in other blocks {% endcomment %}
+        <input type="hidden" name="WeekendDates{{ forloop.index0 }}" value="{{ item.WeekendDates }}" />
+        <input type="hidden" name="Guide{{ forloop.index0 }}" value="{{ item | Attribute:'Guide', 'Url' }}" />
+
+        {% comment %} worship videos for 2YO, EK & LK {% endcomment %}
+        {% assign worshipVideo1 = item | Attribute: 'WorshipVideo1' %}
+        {% if worshipVideo1 != '' %}
+            <div class="header">
+                <h4>Worship Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ worshipVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign worshipVideo2 = item | Attribute: 'WorshipVideo2' %}
+        {% if worshipVideo2 != '' %}
+            <div class="header">
+                <h4>Worship Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ worshipVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign worshipVideo3 = item | Attribute: 'WorshipVideo3' %}
+        {% if worshipVideo3 != '' %}
+            <div class="header">
+                <h4>Worship Video 3</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ worshipVideo3 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign worshipVideo4 = item | Attribute: 'WorshipVideo4' %}
+        {% if worshipVideo4 != '' %}
+            <div class="header">
+                <h4>Worship Video 4</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ worshipVideo4 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% comment %} worship videos for Special Needs EK & Special Needs LK {% endcomment %}
+        {% assign ekWorshipVideo1 = item | Attribute: 'EKWorshipVideo1' %}
+        {% if ekWorshipVideo1 != '' %}
+            <div class="header">
+                <h4>EK Worship Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekWorshipVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign ekWorshipVideo2 = item | Attribute: 'EKWorshipVideo2' %}
+        {% if ekWorshipVideo2 != '' %}
+            <div class="header">
+                <h4>EK Worship Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ ekWorshipVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkWorshipVideo1 = item | Attribute: 'LKWorshipVideo1' %}
+        {% if lkWorshipVideo1 != '' %}
+            <div class="header">
+                <h4>LK Worship Video 1</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkWorshipVideo1 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        {% assign lkWorshipVideo2 = item | Attribute: 'LKWorshipVideo2' %}
+        {% if lkWorshipVideo2 != '' %}
+            <div class="header">
+                <h4>LK Worship Video 2</h4>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://player.vimeo.com/video/{{ lkWorshipVideo2 }}" width="320" height="180" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // prepend the divs to there panel
+            $('.coach-videos-panel').prepend($("#divCoachVideos{{forloop.index0}}"));
+            $('.worship-videos-panel').prepend($("#divWorshipVideos{{forloop.index0}}"));  
+        });
+    </script>
+{% endfor %}
+
+<script>
+    $(document).ready(function(){
+        $('#weekendDates').text('{{ firstItem.WeekendDates }}');
+
+        var currentPath = "{{ 'Global' | Page:'Path' }}";
+
+        console.log(currentPath);
+
+        if ( currentPath.includes('special-needs') )
+        {
+            console.log('sn')
+            $('#pdfEKCoachGuide').attr('data', "{{ firstItem | Attribute:'EKCoachGuide', 'Url' }}");
+            $('#pdfEKCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'EKCoachGuide', 'Url' }}" class="coach-guide-pdf">Download Early Kids Guide</a>`);  
+
+            $('#pdfLKCoachGuide').attr('data', "{{ firstItem | Attribute:'LKCoachGuide', 'Url' }}");
+            $('#pdfLKCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'LKCoachGuide', 'Url' }}" class="coach-guide-pdf">Download Later Kids Guide</a>`);
+        }
+        else 
+        {
+            console.log('notsn')
+            $('#pdfCoachGuide').attr('data', "{{ firstItem | Attribute:'Guide', 'Url' }}");
+            $('#pdfCoachGuideDownload').html(`<a href="{{ firstItem | Attribute: 'Guide', 'Url' }}" class="coach-guide-pdf">Download Guide</a>`);  
+        }
+    });
+</script>
