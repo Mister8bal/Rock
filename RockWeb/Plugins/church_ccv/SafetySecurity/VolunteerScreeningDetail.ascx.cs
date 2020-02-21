@@ -287,9 +287,6 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                         workflow.LoadAttributes( );
                     }
 
-                    lNoCharacterRefs.Visible = false;
-                    gCharacterRefs.Visible = true;
-
                     gCharacterRefs.DataSource = charRefWorkflows.Select( cr => new
                     {
                         // IsSystem is used as a flag to disable the delete button.
@@ -323,8 +320,10 @@ namespace RockWeb.Plugins.church_ccv.SafetySecurity
                 }
                 else
                 {
-                    gCharacterRefs.Visible = false;
-                    lNoCharacterRefs.Visible = true;
+                    // this is intentional null since we don't have a data set
+                    // but we still want the grid to show.
+                    gCharacterRefs.DataSource = null;
+                    gCharacterRefs.DataBind();
                 }
             }
             else
