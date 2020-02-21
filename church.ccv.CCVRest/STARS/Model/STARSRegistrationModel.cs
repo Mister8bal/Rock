@@ -7,8 +7,6 @@ namespace church.ccv.CCVRest.STARS.Model
     {
         public int EventOccurrenceId;
 
-        public DateTime? EventOccurrenceDate;
-
         public string EventSummary;
 
         public int? RegistrationInstanceId;
@@ -24,6 +22,10 @@ namespace church.ccv.CCVRest.STARS.Model
         public string Season;
 
         public string SeasonType;
+
+        public string StartDate;
+
+        public string EndDate;
 
         public string Grades;
 

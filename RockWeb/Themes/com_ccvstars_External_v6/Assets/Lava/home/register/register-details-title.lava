@@ -4,6 +4,7 @@
 
 {% comment %} Set hero image {% endcomment %}
 {% assign sport = Event | Attribute:'Sport' %}
+{% assign sportType = '' %}
 
 {% if sport contains 'baseball' %}
     {% assign sportType = "Baseball" %}
@@ -28,9 +29,17 @@
 {% if sport contains 'financial' %}
     {% assign sportType = "Financial Assistance" %}
 {% endif %}
+
+{% comment %} Default to volunteer hero image if no sport secified {% endcomment %}
+{% if sportType == empty %}
+    {% assign sportHeroFileName = 'hero-volunteer.jpg' %}
+{% else %}
+    {% capture sportHeroFileName %}hero-{{ sportType | Downcase | Replace:' ','-' }}.jpg{% endcapture %}
+{% endif %}
+
 <style>
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/hero-{{ sportType | Downcase | Replace:' ','-' }}.jpg");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/{{ sportTypeFileName }}");
     }
 
     @media screen and (max-width: 500px) {

@@ -22,6 +22,8 @@
 
 <script>
     $(window).ready(function(){
+        {% assign sport = Event | Attribute:'Sport' | Default:'volunteer' %}
+
         $('.campus-sport').text('{{ EventItemOccurrence.Campus.Name }} {{ Event | Attribute:'Sport' | Replace:'-',' ' }}');
         $('.division-gender').text('{{ Event | Attribute:'Division' }} {{ Event | Attribute:'Gender' }}');
 
@@ -42,7 +44,7 @@
         {% endif %}
         $('.action').html(actionHtml);
 
-        $('.details-image').html(`<img src="/Themes/com_ccvstars_External_V6/Assets/Images/feature/feature-{{ Event | Attribute:'Sport' }}.jpg" />`);
+        $('.details-image').html(`<img src="/Themes/com_ccvstars_External_V6/Assets/Images/feature/feature-{{ sport }}.jpg" />`);
 
         $('.loading').addClass('hidden');
         $('.details').removeClass('hidden');

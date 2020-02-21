@@ -64,6 +64,13 @@
                         <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
                     </div>
                 </th>
+                <th id="sortDate" onclick="sortGrid('Date')" class="column-date">
+                    <div class="header-item">
+                        Date
+                        <i class="mdi mdi-chevron-up sort-chevron hidden"></i>
+                        <i class="mdi mdi-chevron-down sort-chevron hidden"></i>
+                    </div>
+                </th>
                 <th class="column-action"></th>
             </tr>          
         </table>
@@ -256,7 +263,7 @@
         availableSeasons.push("Spring","Summer","Fall","Winter");
 
         // add season types
-        availableSeasonTypes.push("League","Camp","Clinic");
+        availableSeasonTypes.push("League","Clinic");
 
         // add sports
         availableSports.push("baseball","basketball","exceptional-stars","football","soccer");
@@ -491,7 +498,28 @@
 
                 var waitListActive = items[i].SlotsAvailable !== -1 && items[i].SlotsAvailable === 0 && items[i].WaitListEnabled;
 
-                var newRow = createTableRow(items[i].Sport, items[i].Campus, items[i].Gender, items[i].Division, items[i].Season + " " + items[i].SeasonType, items[i].EventOccurrenceId, waitListActive);
+                var eventStartDateString = '';                
+                if ( items[i].StartDate ) {
+                    var eventStartDate = new Date( items[i].StartDate );
+                    eventStartDateString = ( eventStartDate.getMonth() + 1 ) + '/' + eventStartDate.getDate() + '/' + eventStartDate.getFullYear();
+                }
+
+                var eventEndDateString = '';
+                if ( items[i].EndDate ) {
+                    var eventEndDate = new Date( items[i].EndDate );
+                    eventEndDateString = ( eventEndDate.getMonth() + 1 ) + '/' + eventEndDate.getDate() + '/' + eventEndDate.getFullYear();
+                }
+
+                var newRow = createTableRow(
+                                items[i].Sport, 
+                                items[i].Campus, 
+                                items[i].Gender, 
+                                items[i].Division, 
+                                items[i].Season + " " + items[i].SeasonType, 
+                                items[i].EventOccurrenceId, 
+                                waitListActive, 
+                                eventStartDateString,
+                                eventEndDateString );
 
                 table.appendChild(newRow);
 
@@ -749,15 +777,12 @@
             // undefined items are filtered out by default. Example someone selects league for filter, we
             // we want to be sure no camp or clinic items are shown.
             var league = 'undefined';
-            var camp = 'undefined';
             var clinic = 'undefined';
 
             for (let i = 0; i < seasonTypeFilter.length; i++) {
                 // updating the variable name to its season type, which tells the filter to include the season type
                 if ( seasonTypeFilter[i] === 'League' ) {
                     league = 'league';
-                } else if ( seasonTypeFilter[i] === 'Camp' )  {
-                    camp = 'camp';
                 } else if ( seasonTypeFilter[i] === 'Clinic' ) {
                     clinic = 'clinic';
                 }
@@ -769,7 +794,6 @@
 
             // now apply the filter
             tempRegistrations = tempRegistrations.filter(value => value.SeasonType.toLowerCase().includes(league) ||
-                                                                    value.SeasonType.toLowerCase().includes(camp) ||
                                                                     value.SeasonType.toLowerCase().includes(clinic) );    
         }
 
@@ -1083,13 +1107,19 @@
     }
 
     // return a table row for the desktop grid
-    function createTableRow(program, campus, gender, division, season, eventOccurrenceId, waitListActive) {
+    function createTableRow(program, campus, gender, division, season, eventOccurrenceId, waitListActive, startDate, endDate) {
         var row = document.createElement('tr');
 
         var sport = getSport(program);
 
         var actionText = waitListActive ? 'Join Wait List' : 'Register';
         var actionCSSClass = waitListActive ? 'btn btn-secondary' : 'btn btn-primary';
+
+        var dateRange = startDate;
+
+        if ( endDate && endDate != '' ) {
+            dateRange += ' - ' + endDate;
+        }
 
         // add column data to row
         addCellToRow(row, '<img width="25" height="25" src="/Themes/com_ccvstars_External_v6/Assets/Images/icon/' + sport + '-red.png">');
@@ -1098,6 +1128,7 @@
         addCellToRow(row, gender);
         addCellToRow(row, division, 'grid-division');
         addCellToRow(row, season);
+        addCellToRow(row, dateRange);
         addCellToRow(row, '<a href="/register/details?EventOccurrenceId=' + eventOccurrenceId + '" class="' + actionCSSClass + '">' + actionText + '</a>' );
 
         return row;

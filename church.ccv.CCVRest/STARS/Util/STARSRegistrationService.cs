@@ -69,6 +69,8 @@ namespace church.ccv.CCVRest.STARS.Util
                         string grades = calendarItem.GetAttributeValue( "Grades" );
                         string season = calendarItem.GetAttributeValue( "Season" );
                         string seasonType = calendarItem.GetAttributeValue( "SeasonType" );
+                        string startDate = calendarItem.GetAttributeValue( "StartDate" );
+                        string endDate = calendarItem.GetAttributeValue( "EndDate" );
 
                         // skip if any of these values are missing
                         if ( sport.IsNullOrWhiteSpace() || 
@@ -122,7 +124,6 @@ namespace church.ccv.CCVRest.STARS.Util
                                     // add registration to activeRegistrations
                                     var registration = CreateSTARSRegistration( occurrence.Id,
                                                                                 occurrence.EventItem.Summary,
-                                                                                occurrence.NextStartDateTime,
                                                                                 linkage.RegistrationInstanceId,
                                                                                 campus.Name,
                                                                                 sport,
@@ -132,6 +133,8 @@ namespace church.ccv.CCVRest.STARS.Util
                                                                                 grades,
                                                                                 season,
                                                                                 seasonType,
+                                                                                startDate,
+                                                                                endDate,
                                                                                 slotsAvailable,
                                                                                 linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled,
                                                                                 cost );
@@ -143,7 +146,6 @@ namespace church.ccv.CCVRest.STARS.Util
                                     {
                                         var girlsRegistration = CreateSTARSRegistration( occurrence.Id,
                                                                                          occurrence.EventItem.Summary,
-                                                                                         occurrence.NextStartDateTime,
                                                                                          linkage.RegistrationInstanceId,
                                                                                          campus.Name,
                                                                                          sport,
@@ -152,6 +154,8 @@ namespace church.ccv.CCVRest.STARS.Util
                                                                                          grades,
                                                                                          season,
                                                                                          seasonType,
+                                                                                         startDate,
+                                                                                         endDate,
                                                                                          slotsAvailable,
                                                                                          linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled,
                                                                                          cost );
@@ -171,7 +175,6 @@ namespace church.ccv.CCVRest.STARS.Util
                             // add registration to active registrations
                             var registration = CreateSTARSRegistration( occurrence.Id,
                                                                         occurrence.EventItem.Summary,
-                                                                        occurrence.NextStartDateTime,
                                                                         linkage.RegistrationInstanceId,
                                                                         occurrence.Campus.Name,
                                                                         sport,
@@ -181,6 +184,8 @@ namespace church.ccv.CCVRest.STARS.Util
                                                                         grades,
                                                                         season,
                                                                         seasonType,
+                                                                        startDate,
+                                                                        endDate,
                                                                         slotsAvailable,
                                                                         linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled,
                                                                         cost);
@@ -192,7 +197,6 @@ namespace church.ccv.CCVRest.STARS.Util
                             {
                                 var girlsRegistration = CreateSTARSRegistration( occurrence.Id,
                                                                                  occurrence.EventItem.Summary,
-                                                                                 occurrence.NextStartDateTime,
                                                                                  linkage.RegistrationInstanceId,
                                                                                  occurrence.Campus.Name,
                                                                                  sport,
@@ -201,6 +205,8 @@ namespace church.ccv.CCVRest.STARS.Util
                                                                                  grades,
                                                                                  season,
                                                                                  seasonType,
+                                                                                 startDate,
+                                                                                 endDate,
                                                                                  slotsAvailable,
                                                                                  linkage.RegistrationInstance.RegistrationTemplate.WaitListEnabled,
                                                                                  cost );
@@ -232,7 +238,6 @@ namespace church.ccv.CCVRest.STARS.Util
         /// <returns></returns>
         private static STARSRegistrationModel CreateSTARSRegistration( int eventOccurrenceId,
                                                                        string eventSummary,
-                                                                       DateTime? eventOccurrenceDate,
                                                                        int? registrationInstanceId,
                                                                        string campusName,
                                                                        string sport,
@@ -241,6 +246,8 @@ namespace church.ccv.CCVRest.STARS.Util
                                                                        string grades,
                                                                        string season,
                                                                        string seasonType,
+                                                                       string startDate,
+                                                                       string endDate,
                                                                        int slotsAvailable,
                                                                        bool waitListEnabled,
                                                                        decimal? cost )
@@ -249,7 +256,6 @@ namespace church.ccv.CCVRest.STARS.Util
             {
                 EventOccurrenceId = eventOccurrenceId,
                 EventSummary = eventSummary,
-                EventOccurrenceDate = eventOccurrenceDate,
                 RegistrationInstanceId = registrationInstanceId,
                 Campus = campusName,
                 Sport = sport,
@@ -258,6 +264,8 @@ namespace church.ccv.CCVRest.STARS.Util
                 Grades = grades,
                 Season = season,
                 SeasonType = seasonType,
+                StartDate = startDate,
+                EndDate = endDate,
                 SlotsAvailable = slotsAvailable,
                 WaitListEnabled = waitListEnabled,
                 Cost = cost
