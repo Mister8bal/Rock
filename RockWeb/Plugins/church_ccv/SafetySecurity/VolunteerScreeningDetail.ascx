@@ -99,7 +99,7 @@
 
 
             <div class="panel-body">
-                <Rock:Grid ID="gCharacterRefs" Title="Character References" runat="server" DisplayType="Light" AllowSorting="true" RowItemText="Result" AllowPaging="false">
+                <Rock:Grid ID="gCharacterRefs" Title="Character References" runat="server" DisplayType="Light" AllowSorting="true" RowItemText="Result" AllowPaging="false" EmptyDataText="No Character References have been Issued">
                     <Columns>
                         <Rock:RockBoundField DataField="PersonText" HeaderText="Person" SortExpression="PersonText" />
                         <asp:HyperLinkField DataNavigateUrlFields="WorkflowId" DataTextField="WorkflowText" DataNavigateUrlFormatString="~/page/1492?CharacterReferenceWorkflowId={0}" HeaderText="Review" />
@@ -114,8 +114,6 @@
                         <Rock:DeleteField OnClick="CharacterRef_Delete" />
                     </Columns>
                 </Rock:Grid>
-
-                <asp:Literal ID="lNoCharacterRefs" runat="server">No Character References have been Issued</asp:Literal>
             </div>
         </asp:Panel>
 
