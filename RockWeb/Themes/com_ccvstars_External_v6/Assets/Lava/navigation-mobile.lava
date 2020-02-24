@@ -33,6 +33,9 @@
                             {% endunless %}
                             {% for grandchildPage in childPage.Pages %}
                                 <li><a class="navigation-mobile-item" href="{{ grandchildPage.Url }}">{{ grandchildPage.Title }}</a></li>
+                                {% if grandchildPage.Id == '2375' %}
+                                    <li><a class="navigation-mobile-item" href="/integra-soccer"">Club Soccer</a></li>
+                                {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
