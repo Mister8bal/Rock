@@ -1570,6 +1570,16 @@ namespace RockWeb.Plugins.church_ccv.Event
                             {
                                 if ( !ProcessPayment( rockContext, registration, out errorMessage ) )
                                 {
+                                    // Custom CCV error message
+                                    // The [19] error message is a bit vague but means that the transaction code
+                                    // linked to the saved account has expired with Payflow.  As a temporary
+                                    // work around until we build the Pushpay integration, we will let the end
+                                    // user know to re-enter their card info.
+                                    if ( errorMessage == "[19] Original transaction ID not found" )
+                                    {
+                                        errorMessage = "We were not able to use the card information on file.  Please try again, select \"New Payment Method\" and enter your card details.";
+                                    }
+
                                     throw new Exception( errorMessage );
                                 }
                             }
