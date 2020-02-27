@@ -39,7 +39,7 @@
 
 <style>
     #section-feature-bg {
-        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/{{ sportTypeFileName }}");
+        background-image: url("/Themes/com_ccvstars_External_v6/Assets/Images/hero/{{ sportHeroFileName }}");
     }
 
     @media screen and (max-width: 500px) {
