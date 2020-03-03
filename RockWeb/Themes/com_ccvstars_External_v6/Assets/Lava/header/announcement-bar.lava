@@ -11,7 +11,7 @@
     {% for item in contentchannelitemItems %}
         {% assign itemFieldStatus = "" %}
         {% assign itemFieldStatus = item | Attribute:'FieldStatus' %}
-        {% if itemFieldStatus == "Closed" %}
+        {% if itemFieldStatus == "Closed" or itemFieldStatus == "Modified" %}
             {% capture updatedClosedCampuses %}{{ closedCampuses }}{% unless numberOfClosedCampuses == 0 %},{% endunless %}{{ item.Campus }}{% endcapture %}
             {% assign closedCampuses = updatedClosedCampuses %}
             {% assign numberOfClosedCampuses = numberOfClosedCampuses | Plus:1 %}
@@ -39,11 +39,11 @@
                     {% endfor %}
                 {% endif %}
 
-                have field closures. Click&nbsp<a href="/field-status">here</a>&nbspfor details.
+                field availability has been modified. Click&nbsp<a href="/field-status">here</a>&nbspfor details.
             </p>
         {% else %}
             {% comment %} single campus has closure {% endcomment %}
-            <p>{{ closedCampuses }}'s fields are closed. Click&nbsp<a href="/field-status">here</a>&nbspfor details.<p>
+            <p>{{ closedCampuses }}'s field availability has been modified. Click&nbsp<a href="/field-status">here</a>&nbspfor details.<p>
         {% endif%}
     </div>
 {% else %}

@@ -77,6 +77,10 @@
     background-color: #e73d30;
 }
 
+.field-modified {
+    background-color: #f5d127;
+}
+
 .campus-dropdown {
     display: none;
 }
