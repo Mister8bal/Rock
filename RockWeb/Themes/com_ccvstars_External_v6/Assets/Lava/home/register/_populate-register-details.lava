@@ -35,7 +35,11 @@
 
         $('.cost').html('<h6 id="eventCost">${{ registrationLinkage.RegistrationInstance.Cost | Default:"0.00" }}</h6>');
 
-        var actionHtml = '<a href="/stars-registration?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>';
+		{% if EventItemOccurrence.Campus %}
+			{% capture campusParam %}&CampusId={{ EventItemOccurrence.Campus.Id }}{% endcapture %}
+		{% endif %}
+
+        var actionHtml = '<a href="/stars-registration?EventOccurrenceId={{ registrationLinkage.EventItemOccurrenceId }}&RegistrationInstanceId={{ registrationLinkage.RegistrationInstanceId }}{{ campusParam }}" class="btn {{ actionButtonClass }}" {{ actionButtonDisabled }}>{{ actionButtonText }}</a>';
         
         {% assign newPlayerEventOccurrenceId = Event | Attribute:'NewPlayerEventOccurrenceId' %}
 

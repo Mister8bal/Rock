@@ -1305,6 +1305,27 @@ namespace RockWeb.Plugins.church_ccv.Event
                 }
             }
 
+            // if we still do not have a campus, fetch it directly from
+            // the page parameter
+            if ( !CampusId.HasValue && campusId.HasValue )
+            {
+                CampusId = campusId;
+            }
+
+            // if we still do not have a campus, fetch it from
+            // the current context
+            if ( !CampusId.HasValue )
+            {
+                if ( this.RockPage != null )
+                {
+                    var campus = this.RockPage.GetCurrentContext( EntityTypeCache.Read( "Rock.Model.Campus" ) );
+                    if ( campus != null )
+                    {
+                        CampusId = campus.Id;
+                    }
+                }
+            }
+
             if ( RegistrationState != null )
             {
                 if ( !RegistrationState.RegistrationId.HasValue && RegistrationInstanceState != null && RegistrationInstanceState.MaxAttendees > 0 )
