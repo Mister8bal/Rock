@@ -52,13 +52,17 @@ namespace church.ccv.Badges.Bio
                                                 badgeHtml += ' | ';
                                             }}
                                             badgeHtml += '<span title=""' + this.LeaderNames + '"" data-toggle=""tooltip"">' + this.GroupName + '</span>';
+
+                                            if (this.GroupName === null) {{
+                                                badgeHtml = '<span title=""' + this.LeaderNames + '"" data-toggle=""tooltip"">Not in a Region</span>';
+                                            }}
                                         }});
 
-                                        if (badgeHtml != '') {{
-                                            $badge.show('fast');
-                                        }} else {{
-                                            $badge.hide();
+                                        if (badgeHtml == '' ) {{
+                                            badgeHtml = '<span>Not in a Region</span>';
                                         }}
+
+                                        $badge.show('fast');
                                         $badge.html(badgeHtml);
                                         $badge.find('span').tooltip();
                                     }}
