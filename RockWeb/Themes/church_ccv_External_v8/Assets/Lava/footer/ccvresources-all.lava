@@ -1,15 +1,37 @@
-<div id="previous-series" class="message">
-<div class="messages-list">
-   {% for item in Items %}
-        <div class="event-card" >
-            <div class="image">
-                {% assign imageGuid = item | Attribute:'Image', 'RawValue' %}
-                <a href="{{ LinkedPages.DetailPage }}?Item={{ item.Id }}">
-                    <img src="{{ item | Attribute: 'Image', 'Url' }}" alt="{{ item.Title }}">
-                    <p class="header">LEARN MORE</p>
-                </a>
-            </div>        
-        </div>
-   {% endfor %}
+{% comment %}
+    {% include '~~/Assets/Lava/footer/ccvresources-all.lava' %}
+{% endcomment %}
+
+{% assign isFirstPage = false %}
+{% if PageParameter.Page == 1 or PageParameter.Page == null %}
+    {% assign isFirstPage = true %}
+{% endif %}
+
+<div id="previous-series" class="resource">
+    <div class="resources-list">
+        {% for item in Items %}
+                <div class="event-card" >
+                    <div class="image">
+                        {% assign imageGuid = item | Attribute:'Image', 'RawValue' %}
+                        <a href="{{ LinkedPages.DetailPage }}?Item={{ item.Id }}">
+                            <img src="{{ item | Attribute: 'Image', 'Url' }}" alt="{{ item.Title }}">
+                            <p class="header">LEARN MORE</p>
+                        </a>
+                    </div>        
+                </div>
+        {% endfor %}
+    </div>
 </div>
-</div>
+
+{% assign currentPage = PageParameter.Page | Default: '1' %}
+{% assign nextPage = currentPage | Plus: '1' %}
+{% assign prevPage = currentPage | Minus: '1' %}
+
+<nav>
+    <ul class="watch pager">
+        {% unless isFirstPage %}
+            <li class="watch-previous"><a class="btn btn-primary" href="?Page={{ prevPage }}">Newer</a></li>
+        {% endunless %}
+            <li class="watch-next"><a class="btn btn-primary" href="?Page={{ nextPage }}">Older</i></a></li>
+    </ul>
+</nav>

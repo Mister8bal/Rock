@@ -1,5 +1,14 @@
-<div id="previous-series" class="message">
-    <div class="messages-list">
+{% comment %}
+    {% include '~~/Assets/Lava/footer/ccvresources-students.lava' %}
+{% endcomment %}
+
+{% assign isFirstPage = false %}
+{% if PageParameter.Page == 1 or PageParameter.Page == null %}
+    {% assign isFirstPage = true %}
+{% endif %}
+
+<div id="previous-series" class="resource">
+    <div class="resources-list">
         {% for item in Items %}
                 {% if item.Category == "Students" or item.Subcategory == "Students" %}
                     <div class="event-card" >
@@ -16,3 +25,15 @@
     </div>
 </div>
 
+{% assign currentPage = PageParameter.Page | Default: '1' %}
+{% assign nextPage = currentPage | Plus: '1' %}
+{% assign prevPage = currentPage | Minus: '1' %}
+
+<nav>
+    <ul class="watch pager">
+        {% unless isFirstPage %}
+            <li class="watch-previous"><a class="btn btn-primary" href="?Page={{ prevPage }}">Newer</a></li>
+        {% endunless %}
+            <li class="watch-next"><a class="btn btn-primary" href="?Page={{ nextPage }}">Older</i></a></li>
+    </ul>
+</nav>

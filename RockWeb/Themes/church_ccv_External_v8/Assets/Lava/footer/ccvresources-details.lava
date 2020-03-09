@@ -1,3 +1,7 @@
+{% comment %}
+    {% include '~~/Assets/Lava/footer/ccvresources-details.lava' %}
+{% endcomment %}
+
 {% for item in Items %}
     {% capture pageTitle %}{{ item.Title }} | CCV{% endcapture %}
     {{ pageTitle | SetPageTitle }}
@@ -13,14 +17,11 @@
             </div>
             <div class="right">
                 <h3>{{ item.Title }} </h3> 
-                 {% if item.StartDateTime != '' %}
+                {% if item.StartDateTime != '' %}
                     <p><b>Active Date:</b> {{ item.StartDateTime }} </p> 
                 {% endif %}
                 <p>{{ item.Content }} </p> 
             {% if downloadLink != '' %}
-                <ol class="messages">
-                    {% comment %} <li><a class="downloadLink" href="{{ downloadLink }}" download="{{ item.Title }}">{{ item.Title }}</a></li> {% endcomment %}
-                </ol>
                 <div style="height:7px;font-size:1px;">&nbsp;</div>
                 <a class="btn btn-primary" href="{{ downloadLink }}" download="{{ item.Title }}">Download</a>
             {% endif %}
