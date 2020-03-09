@@ -133,7 +133,16 @@ class HubSpotResponseAsync : IAsyncResult
         }
 
         // ensure the request came from HubSpot
-        bool validRequest = HubSpotContactService.ValidateRequest( request.Headers["X-HubSpot-Signature"], requestBody );
+        string xHubSpotSignature = request.Headers["X-HubSpot-Signature"];
+        if ( xHubSpotSignature.IsNullOrWhiteSpace() )
+        {
+            response.Write( "Missing HubSpot Signature" );
+            _completed = true;
+            _callback( this );
+
+            return;
+        }
+        bool validRequest = HubSpotContactService.ValidateRequest( xHubSpotSignature, requestBody );
         if ( !validRequest )
         {
             response.Write( "Invalid HubSpot Signature" );

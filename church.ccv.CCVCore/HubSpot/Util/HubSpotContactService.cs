@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,11 +12,15 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
 using System.Security.Cryptography;
+using static church.ccv.CCVCore.HubSpot.Util.HubSpotConstants;
+using static church.ccv.CCVCore.HubSpot.Util.HubSpotApi;
 
 namespace church.ccv.CCVCore.HubSpot.Util
 {
     public class HubSpotContactService
     {
+        private readonly DefinedTypeCache HubSpotPropertyMap = DefinedTypeCache.Read( church.ccv.Utility.SystemGuids.DefinedType.HUBSPOT_PROPERTY_MAP.AsGuid() );
+
         /// <summary>
         /// Validate the request came from HubSpot
         /// </summary>
@@ -26,7 +29,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
         /// <returns></returns>
         public static bool ValidateRequest( string xHubSpotSignature, string requestBody )
         {
-            string hubSpot_APIKey = GlobalAttributesCache.Value( "HubSpotAPIKey" );
+            string hubSpot_APIKey = GlobalAttributesCache.Value( HubSpotConstants.Api.Key );
 
             using (SHA256 sha256 = SHA256.Create() )
             {
@@ -89,24 +92,22 @@ namespace church.ccv.CCVCore.HubSpot.Util
             // loop through events and process
             foreach ( JObject eventItem in eventsToProcess )
             {
-                if ( !JsonContainsKey( eventItem, "subscriptionType" ) || !JsonContainsKey( eventItem, "objectId" ) )
+                if ( !HubSpotApi.JsonContainsKey( eventItem, WebHookEventKey.SubscriptionType ) || !HubSpotApi.JsonContainsKey( eventItem, WebHookEventKey.ObjectId ) )
                 {
                     // not a valid event, skip to next one
                     continue;
                 }
                 
                 // process the event
-                string eventType = ( string ) eventItem["subscriptionType"];
+                string eventType = ( string ) eventItem[WebHookEventKey.SubscriptionType];
                 switch ( eventType )
                 {
                     case "contact.creation":
                         await ProcessContactCreation( eventItem );
                         break;
                     case "contact.deletion":
-                        await ProcessContactDeletion( eventItem );
-                        break;
                     case "contact.privacyDeletion":
-                        // need to determine what is legally needed for privacy deletion
+                        await ProcessContactDeletion( eventItem );
                         break;
                     case "contact.propertyChange":
                         await ProcessPropertyChange( eventItem );
@@ -128,7 +129,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
             Service<HubSpotContact> hubSpotContactService = new Service<HubSpotContact>( rockContext );
 
             // check for existing contact
-            int hubSpotObjectId = ( int ) objectToProcess["objectId"];
+            int hubSpotObjectId = ( int ) objectToProcess[WebHookEventKey.ObjectId];
             HubSpotContact hubSpotContact = hubSpotContactService.Queryable().Where( a => a.HubSpotObjectId == hubSpotObjectId ).FirstOrDefault();
 
             if ( hubSpotContact == null )
@@ -139,13 +140,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
             else
             {
                 // we found a contact, ensure person alias id's are in sync in both Rock and HubSpot
-                List<string> contactProperties = new List<string>
-                {
-                    "rock_id"
-                };
-                HttpResponseMessage hubSpotApiResponse = await RequestContactFromHubSpot( hubSpotObjectId, contactProperties );
+                HttpResponseMessage hubSpotApiResponse = await GetContactFromHubSpot( hubSpotObjectId );
                 string responseContent = await hubSpotApiResponse.Content.ReadAsStringAsync();
-
                 if ( hubSpotApiResponse.StatusCode != HttpStatusCode.OK || responseContent.IsNullOrWhiteSpace() )
                 {
                     // api call failed
@@ -154,23 +150,20 @@ namespace church.ccv.CCVCore.HubSpot.Util
 
                 // parse the response string
                 JObject response = JObject.Parse( responseContent );
-                JObject responseProperties = ( JObject ) response["properties"];
-
-                string hubSpotRockId = string.Empty;
-                if ( JsonContainsKey( responseProperties, "rock_id" ) )
-                {
-                    hubSpotRockId = ( string ) responseProperties["rock_id"]["value"];
-                }
-
+                JObject responseProperties = ( JObject ) response[WebHookEventKey.Properties];
+                string hubSpotRockId = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.RockId );
                 if ( hubSpotRockId.IsNullOrWhiteSpace() )
                 {
-                    // HubSpot missing rock_id, add to contact in HubSpot
-                    Dictionary<string, string> propertiesToUpdate = new Dictionary<string, string>
+                    // HubSpot missing rock_id, add to contact in HubSpot 
+                    ApiResult apiResult = await HubSpotApi.UpdateContactInHubSpot( hubSpotContact.HubSpotObjectId,
+                                                                                   hubSpotContact.PersonAlias.PersonId,
+                                                                                   ContactPropertyKey.RockId, 
+                                                                                   hubSpotContact.PersonAliasId.ToString() );     
+                    
+                    if ( apiResult == ApiResult.Failed )
                     {
-                        { "rock_id", hubSpotContact.PersonAliasId.ToString() }
-                    };
-
-                    HttpResponseMessage updateContactApiResponse = await UpdateContactInHubSpot( hubSpotObjectId, propertiesToUpdate );
+                        throw new Exception( "UpdateContact: HubSpot API Error" );
+                    }
                 }
                 else if ( hubSpotRockId != hubSpotContact.PersonAliasId.ToString() )
                 {
@@ -181,6 +174,11 @@ namespace church.ccv.CCVCore.HubSpot.Util
                         hubSpotContact.PersonAliasId = personAliasId;
 
                         rockContext.SaveChanges();
+
+                        HubSpotHistoryService.AddHubSpotHistory( SyncDirection.FromHubSpot, 
+                                                                 hubSpotContact.PersonAlias.PersonId, 
+                                                                 ContactPropertyKey.RockId, 
+                                                                 hubSpotContact.PersonAliasId.ToString() );
                     }
                 }
             }
@@ -194,16 +192,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
         private static async Task ProcessContactDeletion( JObject objectToProcess )
         {
             // lookup contact info to see if this was a delete or a merge
-            int hubSpotObjectId = ( int ) objectToProcess["objectId"];
-            List<string> contactProperties = new List<string>
-            {
-                "rock_id",
-                "firstname",
-                "lastname",
-                "email",
-                "date_of_birth"
-            };
-            HttpResponseMessage hubSpotApiResponse = await RequestContactFromHubSpot( hubSpotObjectId, contactProperties );
+            int hubSpotObjectId = ( int ) objectToProcess[WebHookEventKey.ObjectId];
+            HttpResponseMessage hubSpotApiResponse = await HubSpotApi.GetContactFromHubSpot( hubSpotObjectId );
 
             if ( hubSpotApiResponse.StatusCode == HttpStatusCode.NotFound )
             {
@@ -222,22 +212,12 @@ namespace church.ccv.CCVCore.HubSpot.Util
 
             // parse the response string
             JObject response = JObject.Parse( responseContent );
-            JObject responseProperties = ( JObject ) response["properties"];
+            JObject responseProperties = ( JObject ) response[WebHookEventKey.Properties];
 
             // check for merged vids
-            List<string> mergedVids = new List<string>();
-            if ( JsonContainsKey( response, "merged-vids" ) )
-            {
-                string mergedVidsValue = ( string ) response["merged-vids"];
-                mergedVids = mergedVidsValue.Split( ',' ).ToList();
-            }
-
-            string hubSpotRockId = string.Empty;
-            if ( JsonContainsKey( responseProperties, "rock_id" ) )
-            {
-                hubSpotRockId = ( string ) responseProperties["rock_id"]["value"];
-            }
-
+            string hubSpotRockId = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.RockId );
+            string mergedVidsValue = HubSpotApi.ParseResponseProperty( response, WebHookEventKey.MergedVids);
+            List<string> mergedVids = mergedVidsValue.Split( ',' ).ToList();
             if ( mergedVids.Count <= 0 )
             {
                 // no merged id's, nothing to do
@@ -257,29 +237,10 @@ namespace church.ccv.CCVCore.HubSpot.Util
             if ( personAlias == null )
             {
                 // create a new person
-                string firstName = string.Empty;
-                if ( JsonContainsKey( responseProperties, "firstname" ) )
-                {
-                    firstName = ( string ) responseProperties["firstname"]["value"];
-                }
-
-                string lastName = string.Empty;
-                if ( JsonContainsKey( responseProperties, "lastname" ) )
-                {
-                    lastName = ( string ) responseProperties["lastname"]["value"];
-                }
-
-                string email = string.Empty;
-                if ( JsonContainsKey( responseProperties, "email" ) )
-                {
-                    email = ( string ) responseProperties["email"]["value"];
-                }
-
-                string dateOfBirth = string.Empty;
-                if ( JsonContainsKey( responseProperties, "date_of_birth" ) )
-                {
-                    dateOfBirth = ( string ) responseProperties["date_of_birth"]["value"];
-                }
+                string firstName = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.FirstName );
+                string lastName = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.LastName );
+                string email = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.Email );
+                string dateOfBirth = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.DateOfBirth );
 
                 // we need at least an email address or first and last name
                 if ( email.IsNotNullOrWhiteSpace() || ( firstName.IsNotNullOrWhiteSpace() && lastName.IsNotNullOrWhiteSpace() ) )
@@ -291,7 +252,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
             if ( personAlias == null )
             {
                 // if we still dont have person alias, something went wrong
-                return;
+                throw new Exception( "ContactDeletionMerge: Failed to load Person" );
             }
                         
             // update all hub spot id's in rock to point to same person alias id
@@ -318,7 +279,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
         private static async Task ProcessPropertyChange( JObject objectToProcess )
         {
             // ensure the event has required keys
-            if ( !JsonContainsKey( objectToProcess, "propertyName") || !JsonContainsKey( objectToProcess, "propertyValue" ) )
+            if ( !HubSpotApi.JsonContainsKey( objectToProcess, WebHookEventKey.PropertyName ) || !HubSpotApi.JsonContainsKey( objectToProcess, WebHookEventKey.PropertyValue ) )
             {
                 // missing required keys skip
                 throw new Exception( "PropertyChange: Missing property name or value" );
@@ -328,7 +289,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
             Service<HubSpotContact> hubSpotContactService = new Service<HubSpotContact>( rockContext );
 
             // check for existing contact
-            int hubSpotObjectId = ( int ) objectToProcess["objectId"];
+            int hubSpotObjectId = ( int ) objectToProcess[WebHookEventKey.ObjectId];
             HubSpotContact hubSpotContact = hubSpotContactService.Queryable().Where( a => a.HubSpotObjectId == hubSpotObjectId ).FirstOrDefault();
 
             if ( hubSpotContact == null )
@@ -343,23 +304,30 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 return;
             }
 
-            string propertyName = ( string ) objectToProcess["propertyName"];
-            string propertyValue = ( string ) objectToProcess["propertyValue"];
+            // dont update if its a staff member
+            var staffMembers = new GroupService( rockContext ).Get( Rock.SystemGuid.Group.GROUP_STAFF_MEMBERS.AsGuid() ).Members.Select( a => a.PersonId );
+            if ( staffMembers.Contains( hubSpotContact.PersonAlias.PersonId ) )
+            {
+                return;
+            }
+
+            string propertyName = ( string ) objectToProcess[WebHookEventKey.PropertyName];
+            string propertyValue = ( string ) objectToProcess[WebHookEventKey.PropertyValue];
 
             switch ( propertyName )
             {
-                case "firstname":
-                case "lastname":
-                case "email":
-                case "date_of_birth":
-                case "phone":
-                case "mobilephone":
-                case "address":
-                case "city":
-                case "state":
-                case "zip":
-                case "country":
-                case "hs_email_optout":
+                case ContactPropertyKey.FirstName:
+                case ContactPropertyKey.LastName:
+                case ContactPropertyKey.Email:
+                case ContactPropertyKey.DateOfBirth:
+                case ContactPropertyKey.Phone:
+                case ContactPropertyKey.MobilePhone:
+                case ContactPropertyKey.Address:
+                case ContactPropertyKey.City:
+                case ContactPropertyKey.State:
+                case ContactPropertyKey.Zip:
+                case ContactPropertyKey.Country:
+                case ContactPropertyKey.EmailOptOut:
                 {
                     await UpdatePersonInRock( hubSpotContact, propertyName, propertyValue );
                     break;
@@ -368,25 +336,25 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 {
                     // if no person field was specified, then this is a custom attribute
                     // load the hubSpotPropertyMap to determine if we have a mapped attribute
-                    var hubSpotPropertyMap = DefinedTypeCache.Read( church.ccv.Utility.SystemGuids.DefinedType.HUBSPOT_PROPERTY_MAP.AsGuid() );
-                    if ( hubSpotPropertyMap != null )
+                    DefinedTypeCache hubSpotPropertyMap = DefinedTypeCache.Read( church.ccv.Utility.SystemGuids.DefinedType.HUBSPOT_PROPERTY_MAP.AsGuid() );
+                    if ( hubSpotPropertyMap == null )
                     {
-                        var hubSpotProperty = hubSpotPropertyMap.DefinedValues.Where( a => a.Value == propertyName ).FirstOrDefault();
-
-                        if ( hubSpotProperty != null )
+                        throw new Exception( "PropertyUpdate: Failed to load property map" );
+                    }
+                    
+                    var hubSpotProperty = hubSpotPropertyMap.DefinedValues.Where( a => a.Value == propertyName ).FirstOrDefault();
+                    if ( hubSpotProperty != null )
+                    {
+                        // found mapped property
+                        // get the ExcludeStaff and RockAttribute attribute
+                        Guid rockAttributeGuid = hubSpotProperty.GetAttributeValue( ContactPropertyMapKey.RockAttribute ).AsGuid();
+                        bool excludeStaff = hubSpotProperty.GetAttributeValue( ContactPropertyMapKey.ExcludeStaff ).AsBoolean();
+                        if ( excludeStaff == false && rockAttributeGuid != Guid.Empty )
                         {
-                            // found a property map
-                            string attributeIdValue = hubSpotProperty.GetAttributeValue( "AttributeId" );
-                            string attributeFieldType = hubSpotProperty.GetAttributeValue( "AttributeFieldType" );
-                            bool excludeStaff = hubSpotProperty.GetAttributeValue( "ExcludeStaff" ).AsBoolean();
-                            if ( excludeStaff == false && attributeIdValue.IsNotNullOrWhitespace() )
-                            {
-                                int attributeId;
-                                if ( int.TryParse( attributeIdValue, out attributeId ) )
-                                {
-                                    UpdatePersonAttributeValueInRock( hubSpotContact, attributeId, attributeFieldType, propertyValue );
-                                }
-                            }
+                            // load the attribute
+                            AttributeCache rockAttribute = AttributeCache.Read( rockAttributeGuid );
+
+                            UpdatePersonAttributeValueInRock( hubSpotContact, rockAttribute, propertyName, propertyValue );
                         }
                     }
 
@@ -407,18 +375,10 @@ namespace church.ccv.CCVCore.HubSpot.Util
         /// <returns></returns>
         private static async Task<HubSpotContact> CreateHubSpotContact( RockContext rockContext, int hubSpotObjectId )
         {
-            HubSpotContact hubSpotContact = null;
+            HubSpotContact hubSpotContact;
 
             // get the contact info from HubSpot
-            List<string> contactProperties = new List<string>
-            {
-                "rock_id",
-                "firstname",
-                "lastname",
-                "email",
-                "date_of_birth"
-            };
-            HttpResponseMessage contactRequestApiResponse = await RequestContactFromHubSpot( hubSpotObjectId, contactProperties );
+            HttpResponseMessage contactRequestApiResponse = await HubSpotApi.GetContactFromHubSpot( hubSpotObjectId );
             string contactRequestResponseContent = await contactRequestApiResponse.Content.ReadAsStringAsync();
 
             if ( contactRequestApiResponse.StatusCode != HttpStatusCode.OK || contactRequestResponseContent.IsNullOrWhiteSpace() )
@@ -427,48 +387,18 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 throw new Exception( "RequestContact: HubSpot API Failure" );
             }
 
-            // HubSpot response is not guarenteed to have all the requested properties in its response.
-            // Like the attribute value table, a HubSpot property does not get created for a contact
-            // until a value is entered. We need to check for the keys in the response before we try
-            // to assign their values to avoid null exceptions.
-
             // parse the response string
             JObject response = JObject.Parse( contactRequestResponseContent );
-            JObject responseProperties = ( JObject ) response["properties"];
+            JObject responseProperties = ( JObject ) response[WebHookEventKey.Properties];
 
-            string firstName = string.Empty;
-            if ( JsonContainsKey( responseProperties, "firstname" ) )
-            {
-                firstName = ( string ) responseProperties["firstname"]["value"];
-            }
-
-            string lastName = string.Empty;
-            if ( JsonContainsKey( responseProperties, "lastname" ) )
-            {
-                lastName = ( string ) responseProperties["lastname"]["value"];
-            }
-
-            string email = string.Empty;
-            if ( JsonContainsKey( responseProperties, "email" ) )
-            {
-                email = ( string ) responseProperties["email"]["value"];
-            }
-
-            string dateOfBirth = string.Empty;
-            if ( JsonContainsKey( responseProperties, "date_of_birth" ) )
-            {
-                dateOfBirth = ( string ) responseProperties["date_of_birth"]["value"];
-            }
+            string firstName = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.FirstName );
+            string lastName = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.LastName );
+            string email = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.Email );
+            string dateOfBirth = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.DateOfBirth );
+            string hubSpotRockId = HubSpotApi.ParseResponsePropertyWithValue( responseProperties, ContactPropertyKey.RockId );
 
             // get/create PersonAlias
             PersonAlias personAlias = null;
-
-            string hubSpotRockId = string.Empty;
-            if ( JsonContainsKey( responseProperties, "rock_id" ) )
-            {
-                hubSpotRockId = ( string ) responseProperties["rock_id"]["value"];
-            }
-
             int personAliasId;
             if ( int.TryParse( hubSpotRockId, out personAliasId ) )
             {
@@ -500,22 +430,21 @@ namespace church.ccv.CCVCore.HubSpot.Util
             // if we dont have person alias at this point, something went wrong
             if ( personAlias == null )
             {
-                return null;
+                throw new Exception( "CreateContact: Failed to load person alias" );
             }
 
             // update rock id in HubSpot
             if ( hubSpotRockId != personAlias.Id.ToString() )
             {
-                Dictionary<string, string> propertiesToUpdate = new Dictionary<string, string>
-                {
-                    { "rock_id", personAlias.Id.ToString() }
-                };
+                // HubSpot missing rock_id, add to contact in HubSpot 
+                ApiResult apiResult = await HubSpotApi.UpdateContactInHubSpot( hubSpotObjectId,
+                                                                               personAlias.PersonId,
+                                                                               ContactPropertyKey.RockId,
+                                                                               personAlias.Id.ToString() );
 
-                HttpResponseMessage updateContactApiResponse = await UpdateContactInHubSpot( hubSpotObjectId, propertiesToUpdate );
-
-                if ( updateContactApiResponse.StatusCode != HttpStatusCode.NoContent )
+                if ( apiResult == ApiResult.Failed )
                 {
-                    // should this turn into while loop so that it retries a couple times if the update fails?!?
+                    throw new Exception( "UpdateContact: HubSpot API Error" );
                 }
             }
 
@@ -537,6 +466,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
             hubSpotContactService.Add( hubSpotContact );
 
             rockContext.SaveChanges();
+
+            HubSpotHistoryService.AddHubSpotHistory( "Linked new HubSpotContact: " + hubSpotObjectId.ToString(), personAlias.PersonId );
 
             return hubSpotContact;
         }
@@ -564,15 +495,66 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 RockContext rockContextDelete = new RockContext();
                 Service<HubSpotContact> hubSpotContactDeleteService = new Service<HubSpotContact>( rockContextDelete );
 
+                HubSpotHistoryService.AddHubSpotHistory( "Removed HubSpotConact Link: " + hubSpotContact.HubSpotObjectId, hubSpotContact.PersonAlias.PersonId );
+
                 hubSpotContactDeleteService.Delete( hubSpotContact );
 
                 rockContextDelete.SaveChanges();
             }
         }
 
-#endregion
+        #endregion
 
-#region Rock Person Methods
+        #region Rock Person Methods
+
+        /// <summary>
+        /// Returns an attribute key and value of a person attribute that is mapped to a hubspot property
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="attributeName"></param>
+        /// <param name="hubSpotPropertyKey"></param>
+        /// <param name="attributeValue"></param>
+        public void GetValueFromMappedPersonAttribute( Person person, string attributeName, out string hubSpotPropertyKey, out string attributeValue )
+        {
+            // default to empty
+            hubSpotPropertyKey = string.Empty;
+            attributeValue = string.Empty;
+
+            // loop through mapped properties and look for a match
+            foreach ( var mappedProperty in HubSpotPropertyMap.DefinedValues )
+            {
+                // load the Rock attribute from the mapped property
+                Guid mappedAttributeGuid = mappedProperty.GetAttributeValue( ContactPropertyMapKey.RockAttribute ).AsGuid();
+                AttributeCache mappedAttribute = AttributeCache.Read( mappedAttributeGuid );
+                if ( mappedAttribute != null && mappedAttribute.Name == attributeName )
+                {
+                    // mapped attribute name matches 
+                    person.LoadAttributes();
+                    string unformattedAttributeValue = person.GetAttributeValue( mappedAttribute.Key );
+                    if ( unformattedAttributeValue.IsNotNullOrWhiteSpace() )
+                    {
+                        // format the attribute value as needed
+                        switch ( mappedAttribute.FieldType.Name )
+                        {
+                            case "Boolean":
+                                attributeValue = unformattedAttributeValue.ToLower().Contains("t") || 
+                                                 unformattedAttributeValue.ToLower().Contains("y") 
+                                                 ? "true" 
+                                                 : "false";
+                                break;
+                            default:
+                                attributeValue = unformattedAttributeValue;
+                                break;
+                        }
+
+                        // the hubspot key is the value of the mapped property
+                        hubSpotPropertyKey = mappedProperty.Value;
+                    }
+
+                    return;
+                }
+            }
+        }
 
         /// <summary>
         /// Create and return a new person in Rock
@@ -584,8 +566,6 @@ namespace church.ccv.CCVCore.HubSpot.Util
         /// <returns></returns>
         private static PersonAlias CreatePersonInRock( RockContext rockContext, string email, string firstName, string lastName, string dateOfBirth )
         {
-            PersonService personService = new PersonService( rockContext );
-
             // create new person, if we dont have a first and last name, use email address as first name
             Person newPerson = new Person()
             {
@@ -600,26 +580,10 @@ namespace church.ccv.CCVCore.HubSpot.Util
             PersonService.SaveNewPerson( newPerson, rockContext );
 
             // date of birth in HubSpot is a string field, we can handle month/day or month/day/year using a / or -
-            UpdatePersonDateOfBirth( newPerson, dateOfBirth );                
+            UpdatePersonDateOfBirth( newPerson, dateOfBirth );
 
             // add message in person history that this came from HubSpot Service
-            var changes = new List<string>
-            {
-                "Created by HubSpot Service"
-            };
-            HistoryService.AddChanges( rockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_DEMOGRAPHIC_CHANGES.AsGuid(), newPerson.Id, changes );
-
-            // add person to the HubSpot Prospects group
-            Group hubSpotProspects = new GroupService( rockContext ).Get( church.ccv.Utility.SystemGuids.Group.GROUP_HUBSPOT_PROSPECTS.AsGuid() );
-            GroupTypeRole defaultGroupRole = hubSpotProspects.GroupType.DefaultGroupRole;
-            GroupMember groupMember = new GroupMember()
-            {
-                GroupId = hubSpotProspects.Id,
-                PersonId = newPerson.Id,
-                GroupRoleId = defaultGroupRole.Id,
-                GroupMemberStatus = GroupMemberStatus.Active
-            };
-            hubSpotProspects.Members.Add( groupMember );
+            HubSpotHistoryService.AddRockPersonHistory( "Created by HubSpot Service", newPerson.Id );
 
             rockContext.SaveChanges();
 
@@ -638,44 +602,54 @@ namespace church.ccv.CCVCore.HubSpot.Util
             // get the person object
             RockContext rockContext = new RockContext();
             Person person = new PersonService( rockContext ).Get( hubSpotContact.PersonAlias.Person.Guid );
+            bool addHistoryEntry = true;
 
             switch ( personField )
             {
-                case "firstname":
+                case ContactPropertyKey.FirstName:
                 {
                     person.FirstName = propertyValue.FixCase();
                     person.NickName = propertyValue.FixCase();
                     break;
                 }
-                case "lastname":
+                case ContactPropertyKey.LastName:
                 {
                     person.LastName = propertyValue.FixCase();
                     break;
                 }
-                case "email":
+                case ContactPropertyKey.Email:
                 {
                     person.Email = propertyValue.ToLower();
                     break;
                 }
-                case "date_of_birth":
+                case ContactPropertyKey.DateOfBirth:
                 {
                     UpdatePersonDateOfBirth( person, propertyValue );
                     break;
                 }
-                case "hs_email_optout":
+                case ContactPropertyKey.EmailOptOut:
                 {
                     if ( propertyValue == "true" )
                     {
                         person.EmailPreference = EmailPreference.NoMassEmails;
+                        HubSpotHistoryService.AddHubSpotHistory( SyncDirection.FromHubSpot,
+                                                                    hubSpotContact.PersonAlias.PersonId,
+                                                                    personField,
+                                                                    EmailPreference.NoMassEmails.ToString() );
                     }
                     else
                     {
                         person.EmailPreference = EmailPreference.EmailAllowed;
+                        HubSpotHistoryService.AddHubSpotHistory( SyncDirection.FromHubSpot,
+                                                                    hubSpotContact.PersonAlias.PersonId,
+                                                                    personField,
+                                                                    EmailPreference.EmailAllowed.ToString() );
                     }
+                    addHistoryEntry = false;
                     break;
                 }
-                case "phone":
-                case "mobilephone":
+                case ContactPropertyKey.Phone:
+                case ContactPropertyKey.MobilePhone:
                 {
                     // clean number
                     string newNumber = PhoneNumber.CleanNumber( propertyValue );
@@ -687,7 +661,7 @@ namespace church.ccv.CCVCore.HubSpot.Util
                         DefinedValueCache phoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_MOBILE.AsGuid() );
                         bool isMessagingEnabled = true;
 
-                        if ( personField == "phone" )
+                        if ( personField == ContactPropertyKey.Phone )
                         {
                             // hubspot sent home phone, change phone type and disable messaging
                             phoneType = DefinedValueCache.Read( Rock.SystemGuid.DefinedValue.PERSON_PHONE_TYPE_HOME.AsGuid() );
@@ -699,20 +673,26 @@ namespace church.ccv.CCVCore.HubSpot.Util
 
                     break;
                 }
-                case "address":
-                case "city":
-                case "state":
-                case "zip":
-                case "country":
+                case ContactPropertyKey.Address:
+                case ContactPropertyKey.City:
+                case ContactPropertyKey.State:
+                case ContactPropertyKey.Zip:
+                case ContactPropertyKey.Country:
                 {
                     // we dont update the address using the information passed in the webhook event
                     // instead we query HubSpot api to get full address and then update Rock if needed
                     await UpdatePersonAddress( person, hubSpotContact.HubSpotObjectId, rockContext );
-
+                    addHistoryEntry = false;
                     break;
                 }
                 default:
                     break;
+            }
+
+            // add a hubspot history entry
+            if ( addHistoryEntry == true )
+            {
+                HubSpotHistoryService.AddHubSpotHistory( SyncDirection.FromHubSpot, hubSpotContact.PersonAlias.PersonId, personField, propertyValue );
             }
 
             rockContext.SaveChanges();
@@ -722,27 +702,27 @@ namespace church.ccv.CCVCore.HubSpot.Util
         /// Update person attribute value in Rock
         /// </summary>
         /// <param name="hubSpotContact"></param>
-        /// <param name="attributeId"></param>
-        /// <param name="attributeFieldType"></param>
-        /// <param name="propertyValue"></param>
-        private static void UpdatePersonAttributeValueInRock( HubSpotContact hubSpotContact, int attributeId, string attributeFieldType, string propertyValue )
+        /// <param name="rockAttribute"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param> 
+        private static void UpdatePersonAttributeValueInRock( HubSpotContact hubSpotContact, AttributeCache rockAttribute, string propertyName, string propertyValue )
         {
             RockContext rockContext = new RockContext();
             AttributeValueService attributeValueService = new AttributeValueService( rockContext );
-            AttributeValue attributeValue = attributeValueService.GetByAttributeIdAndEntityId( attributeId, hubSpotContact.PersonAlias.Person.Id );
+            AttributeValue attributeValue = attributeValueService.GetByAttributeIdAndEntityId( rockAttribute.Id, hubSpotContact.PersonAlias.Person.Id );
 
             if ( attributeValue == null )
             {
                 // attribute value doesnt exist, create a new one.
                 attributeValue = new AttributeValue
                 {
-                    AttributeId = attributeId,
+                    AttributeId = rockAttribute.Id,
                     EntityId = hubSpotContact.PersonAlias.Person.Id
                 };
                 attributeValueService.Add( attributeValue );
             }
 
-            if ( attributeFieldType == "boolean" )
+            if ( rockAttribute.FieldType.Name == "Boolean" )
             {
                 attributeValue.Value = propertyValue == "true" ? "True" : "False" ;
             }
@@ -753,6 +733,9 @@ namespace church.ccv.CCVCore.HubSpot.Util
             }
 
             rockContext.SaveChanges();
+
+            // create a person history entry
+            HubSpotHistoryService.AddHubSpotHistory( SyncDirection.FromHubSpot, hubSpotContact.PersonAlias.PersonId, propertyName, propertyValue );
         }
 
         /// <summary>
@@ -765,11 +748,11 @@ namespace church.ccv.CCVCore.HubSpot.Util
         {
             // we dont update the address using the information passed in the webhook event
             // instead we query HubSpot api to get full address and then update Rock if needed                       
-            Location newAddressLocation = await RequestContactAddressFromHubSpot( rockContext, hubSpotObjectId );
+            Location newAddressLocation = await HubSpotApi.GetContactAddressFromHubSpot( rockContext, hubSpotObjectId );
             if ( newAddressLocation == null )
             {
                 // unable to get valid Location, skip update
-                throw new Exception( "Unable to get valid location" );
+                return;
             }
 
             Group family = person.GetFamily();
@@ -833,7 +816,20 @@ namespace church.ccv.CCVCore.HubSpot.Util
                         grouplocation.IsMailingLocation = false;
                     }
                 }
-            }           
+            }
+
+            // create a person history entry
+            List<string> changes = new List<string>
+            {
+                HubSpotHistoryService.CreateChangeEntry( SyncDirection.FromHubSpot, ContactPropertyKey.Address, newAddressLocation.Street1 ),
+                HubSpotHistoryService.CreateChangeEntry( SyncDirection.FromHubSpot, ContactPropertyKey.City, newAddressLocation.City ),
+                HubSpotHistoryService.CreateChangeEntry( SyncDirection.FromHubSpot, ContactPropertyKey.State, newAddressLocation.State ),
+                HubSpotHistoryService.CreateChangeEntry( SyncDirection.FromHubSpot, ContactPropertyKey.Zip, newAddressLocation.PostalCode ),
+                HubSpotHistoryService.CreateChangeEntry( SyncDirection.FromHubSpot, ContactPropertyKey.Country, newAddressLocation.Country ),
+            };
+            HubSpotHistoryService.AddHubSpotHistory( changes, person.Id );
+
+            rockContext.SaveChanges();
         }
         
         /// <summary>
@@ -887,203 +883,8 @@ namespace church.ccv.CCVCore.HubSpot.Util
                 }
             }            
         }
-#endregion
 
-#region HubSpot API Call Methods
+        #endregion
 
-        /// <summary>
-        /// Request contact info from HubSpot
-        /// </summary>
-        /// <param name="hubSpotObjectId"></param>
-        /// <param name="contactProperties"></param>
-        /// <returns></returns>
-        private static async Task<HttpResponseMessage> RequestContactFromHubSpot( int hubSpotObjectId, List<string> contactProperties )
-        {
-            HttpResponseMessage hubSpotResponse = new HttpResponseMessage();
-
-            // hubspot api configuration
-            string hubSpot_APIUrl = GlobalAttributesCache.Value( "HubSpotAPIUrl" );
-            string hubSpot_APIKey = GlobalAttributesCache.Value( "HubSpotAPIKey" );
-            if ( hubSpot_APIUrl.IsNullOrWhiteSpace() || hubSpot_APIKey.IsNullOrWhiteSpace() )
-            {
-                // missing required configuration
-                throw new Exception( "Missing HubSpot API Url or Key" );
-            }
-
-            // build api url
-            StringBuilder requestUrl = new StringBuilder( hubSpot_APIUrl );
-            requestUrl.Append( "/contacts/v1/contact/vid/" + hubSpotObjectId + "/profile" );
-            requestUrl.Append( "?hapikey=" + hubSpot_APIKey );
-            requestUrl.Append( "&propertyMode=value_only" );
-            requestUrl.Append( "&formSubmissionMode=none" );
-
-            // add properties to api url
-            foreach ( string contactProperty in contactProperties )
-            {
-                requestUrl.Append( "&property=" );
-                requestUrl.Append( contactProperty );
-            }
-
-            // make the api request
-            try
-            {
-                HttpClient client = new HttpClient();
-                hubSpotResponse = await client.GetAsync( requestUrl.ToString() );
-            }
-            catch ( Exception e )
-            {
-                Debug.WriteLine( e.Message );
-            }
-
-            return hubSpotResponse;
-        }
-
-        /// <summary>
-        /// Request contact address from HubSpot
-        /// </summary>
-        /// <param name="rockContext"></param>
-        /// <param name="hubSpotObjectId"></param>
-        /// <returns></returns>
-        private static async Task<Location> RequestContactAddressFromHubSpot( RockContext rockContext, int hubSpotObjectId )
-        {
-            List<string> contactProperties = new List<string>
-            {
-                "address",
-                "city",
-                "state",
-                "zip",
-                "country"
-            };            
-            HttpResponseMessage hubSpotApiResponse = await RequestContactFromHubSpot( hubSpotObjectId, contactProperties );
-            string responseString = await hubSpotApiResponse.Content.ReadAsStringAsync();
-            if ( hubSpotApiResponse.StatusCode != HttpStatusCode.OK || responseString.IsNullOrWhiteSpace() )
-            {
-                // fail - api call failed or response empty
-                throw new Exception( "RequestContact: HubSpot API Error" );
-            }
-
-            // HubSpot response is not guarenteed to have all the requested properties in its response.
-            // Like the attribute value table, a HubSpot property does not get created for a contact
-            // until a value is entered. We need to check for the keys in the response before we try
-            // to assign their values to avoid null exceptions.
-            string address = string.Empty;
-            string city = string.Empty;
-            string state = string.Empty;
-            string zip = string.Empty;
-            string country = string.Empty;
-
-            // parse the response string into JObject
-            JObject response = JObject.Parse( responseString );
-            JObject responseProperties = ( JObject ) response["properties"];
-
-            if ( JsonContainsKey( responseProperties, "address" ) )
-            {
-                address = ( string ) responseProperties["address"]["value"];
-            }
-            if ( JsonContainsKey( responseProperties, "city" ) )
-            {
-                city = ( string ) responseProperties["city"]["value"];
-            }
-            if ( JsonContainsKey( responseProperties, "state" ) )
-            {
-                state = ( string ) responseProperties["state"]["value"];
-            }
-            if ( JsonContainsKey( responseProperties, "zip" ) )
-            {
-                zip = ( string ) responseProperties["zip"]["value"];
-            }
-            if ( JsonContainsKey( responseProperties, "country" ) )
-            {
-                country = ( string ) responseProperties["country"]["value"];
-            }
-
-            if ( address.IsNullOrWhiteSpace() || city.IsNullOrWhiteSpace() || state.IsNullOrWhiteSpace() || zip.IsNullOrWhiteSpace() || country.IsNullOrWhiteSpace() )
-            {
-                // missing required info to get new location
-                return null;
-            }
-
-            return new LocationService( rockContext )
-                .Get( address, "", city, state, zip, country, true );;
-        }
-
-        /// <summary>
-        /// Update contact properties in HubSpot
-        /// </summary>
-        /// <param name="hubSpotObjectId"></param>
-        /// <param name="propertiesToUpdate"></param>
-        /// <returns></returns>
-        private static async Task<HttpResponseMessage> UpdateContactInHubSpot( int hubSpotObjectId, Dictionary<string, string> propertiesToUpdate )
-        {
-            HttpResponseMessage hubSpotResponse = new HttpResponseMessage();
-
-            // hubspot api configuration
-            string hubSpot_APIUrl = GlobalAttributesCache.Value( "HubSpotAPIUrl" );
-            string hubSpot_APIKey = GlobalAttributesCache.Value( "HubSpotAPIKey" );
-            if ( hubSpot_APIUrl.IsNullOrWhiteSpace() || hubSpot_APIKey.IsNullOrWhiteSpace() || propertiesToUpdate.Count == 0 )
-            {
-                // missing required configuration or no properties passed to update
-                throw new Exception( "Missing HubSpot API Url or Key" );
-            }
-
-            // build api url
-            StringBuilder requestUrl = new StringBuilder( hubSpot_APIUrl );
-            requestUrl.Append( "/contacts/v1/contact/vid/" + hubSpotObjectId + "/profile" );
-            requestUrl.Append( "?hapikey=" + hubSpot_APIKey );
-
-            // build request body
-            StringBuilder requestBody = new StringBuilder( "{ \"properties\": [" );
-            int numPropertiesAdded = 0;
-            foreach ( var property in propertiesToUpdate )
-            {
-                numPropertiesAdded++;
-
-                requestBody.Append( string.Format( "{{ \"property\": \"{0}\",\"value\": \"{1}\" }}", property.Key, property.Value ) );
-
-                if ( numPropertiesAdded != propertiesToUpdate.Count )
-                {
-                    requestBody.Append( "," );
-                }
-            }
-            requestBody.Append( "] }" );
-
-            // make the api request
-            try
-            {
-                HttpClient client = new HttpClient();
-                hubSpotResponse = await client.PostAsync( requestUrl.ToString(), new StringContent( requestBody.ToString(), Encoding.UTF8, "application/json" ) );
-            }
-            catch ( Exception e )
-            {
-                Debug.WriteLine( e.Message );
-            }
-
-            return hubSpotResponse;
-        }
-
-#endregion
-
-#region Helper Methods
-
-        /// <summary>
-        /// Check if Json object contains specified key
-        /// </summary>
-        /// <param name="jsonObject"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private static bool JsonContainsKey( JObject jsonObject, string key )
-        {
-            foreach ( var item in jsonObject )
-            {
-                if ( item.Key == key )
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-#endregion
     }
 }

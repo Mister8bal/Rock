@@ -44,6 +44,7 @@
       <HintPath>..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -55,7 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HubSpot\Transactions\SyncPersonToHubSpotTransaction.cs" />
+    <Compile Include="HubSpot\Util\HubSpotApi.cs" />
+    <Compile Include="HubSpot\Util\HubSpotConstants.cs" />
     <Compile Include="HubSpot\Util\HubSpotContactService.cs" />
+    <Compile Include="HubSpot\Util\HubSpotHistoryService.cs" />
+    <Compile Include="HubSpot\Workflow\Action\UpdateContactInHubSpot.cs" />
     <Compile Include="Migrations\003_HubSpot_CreateDb.cs" />
     <Compile Include="HubSpot\Model\HubSpotContact.cs" />
     <Compile Include="Migrations\001_PAV_CreateDb.cs" />

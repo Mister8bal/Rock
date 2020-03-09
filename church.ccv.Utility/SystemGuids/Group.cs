@@ -14,10 +14,5 @@
         /// Gets the Care Workers group guid
         /// </summary>
         public const string GROUP_CARE_WORKERS = "67d1e96d-03d2-470c-8c45-2b09e033a240";
-
-        /// <summary>
-        /// Gets the HubSpot Prospects group guid
-        /// </summary>
-        public const string GROUP_HUBSPOT_PROSPECTS = "A2DB0D5A-424D-4616-9F80-736987FF213E";
     }
 }
