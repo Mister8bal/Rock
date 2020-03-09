@@ -171,7 +171,6 @@ namespace church.ccv.Badges.NextSteps
                 if ( data.IsAdult == true )
                 {{
                     var popoverContent = popoverContent + ""<p class='margin-b-none'><a href='/page/"" + connectionGroupRegistrationPage + ""?PersonGuid={1}' class='btn btn-primary btn-block btn-xs'>Find NH Group</a></p>"";
-                    var popoverContent = popoverContent + ""<p class='margin-b-none margin-t-sm'><a href='/page/"" + youngAdultGroupRegistrationPage + ""?PersonGuid={1}' class='btn btn-primary btn-block btn-xs'>Find YA Group</a></p>"";
                 }}
                 else
                 {{
