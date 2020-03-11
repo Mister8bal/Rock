@@ -344,7 +344,11 @@ namespace RockWeb.Plugins.church_ccv.Security
             foreach ( var campus in campuses )
             {
                 // check the location for an active campus name or shortcode
-                if ( campus.IsActive == true && location.Contains( campus.Name ) || location.Contains( campus.ShortCode ) )
+                if ( location.IsNotNullOrWhiteSpace() && 
+                     campus.IsActive == true && 
+                     campus.Name.IsNotNullOrWhiteSpace() &&
+                     campus.ShortCode.IsNotNullOrWhiteSpace() &&
+                     ( location.Contains( campus.Name ) || location.Contains( campus.ShortCode ) ) )
                 {
                     return campus.Id;
                 }
