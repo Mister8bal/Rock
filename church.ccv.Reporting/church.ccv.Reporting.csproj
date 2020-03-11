@@ -54,6 +54,7 @@
     <Compile Include="DataFilter\ContentChannelItem\ItemsFromCategoriesRoute.cs" />
     <Compile Include="DataFilter\ContentChannelItem\RelatedContentChannelItems.cs" />
     <Compile Include="DataFilter\Person\StarsInGroupFilter.cs" />
+    <Compile Include="DataSelect\Group\MemberCountByRoleSelect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataSelect\Person\FirstContributionRecordSelect.cs" />
   </ItemGroup>
