@@ -437,7 +437,7 @@
     var startDate = moment().subtract(4, "w").format("MM-DD-YYYY");
     var endDate = moment().add(4, "w").format("MM-DD-YYYY");
 
-    var getUrl = "/api/PlanAVisit/ScheduledVisits";
+    var getUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/PlanAVisit/ScheduledVisits";
     getUrl += "?startDate=" + startDate;
     getUrl += "&endDate=" + endDate;
 
@@ -792,7 +792,7 @@
             const attendedDate = $("#dpAttendedDate").datepicker("getDate").format("MM-dd-yyyy");
 
             // build post url
-            var postUrl = "/api/PlanAVisit/Attended";
+            var postUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/PlanAVisit/Attended";
             postUrl += "?visitId=" + $('#hfVisitId').val();
             postUrl += "&attendedCampusId=" + attendedCampusId;
             postUrl += "&attendedScheduleId=" + $('#ulServicesForm li.selected').data("value");

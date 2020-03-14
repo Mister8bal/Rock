@@ -30,7 +30,7 @@
     var specifiedCampus = "{{ campusParameter }}";
 
     // setup getUrl
-    var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+    var getUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/STARS/ActiveRegistrations?CalendarId=6";
     getUrl += `&sport={{ 'Global' | Page:'Path' | Split:'/' | First }}`;
 
     if ( specifiedCampus !== '' ) {

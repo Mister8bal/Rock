@@ -77,7 +77,7 @@ Sys.Application.add_load(function(sender, args){
         // check for current person before calling api's
         var currentPersonId = '{{ CurrentPerson.Id }}';
         if (currentPersonId !== '') {
-            $.getJSON('/api/CCV/Badges/TakenStartingPoint/'+currentPersonId, function(data){
+            $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/TakenStartingPoint/"+currentPersonId, function(data){
                 // 0 = step not completed
                 if (data.Status === 0) {
                     // 0 = Starting Point index in JSON
@@ -87,7 +87,7 @@ Sys.Application.add_load(function(sender, args){
                 // check for person guid
                 var currentPersonGuid = '{{ CurrentPerson.Guid }}';
                 if (currentPersonGuid !== '') {
-                    $.getJSON('/api/CCV/Badges/StepsBar/'+currentPersonGuid, function(data){
+                    $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/StepsBar/"+currentPersonGuid, function(data){
                         for (var key in data) {
                             if (data.hasOwnProperty(key)) {
                                 var keyData = data[key];

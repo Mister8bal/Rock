@@ -67,7 +67,7 @@
         var pageId = `{{ 'Global' | Page:'Id' }}`;
 
         $.ajax({
-            url: "/api/RockAuth/Logout?currPageId=" + pageId,
+            url: "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/RockAuth/Logout?currPageId=" + pageId,
             type: "GET",
             xhrFields: {
                 withCredentials: true

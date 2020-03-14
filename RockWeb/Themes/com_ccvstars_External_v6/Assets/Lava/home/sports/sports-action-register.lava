@@ -29,7 +29,7 @@
     // only proceed if we have a sport
     {% if sport != "undefined" %}       
         // setup getUrl
-        var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+        var getUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/STARS/ActiveRegistrations?CalendarId=6";
 
         getUrl += `&sport={{ sport }}`;
 

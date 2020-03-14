@@ -125,7 +125,7 @@
             // check for active registrations for sport / campus
             {% if sport != "" and campus != "" %}       
                 // setup getUrl
-                var getUrl = '/api/STARS/ActiveRegistrations?CalendarId=6';
+                var getUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/STARS/ActiveRegistrations?CalendarId=6";
                 getUrl += `&sport={{ sport }}`;
                 getUrl += "&campusName={{ campus }}";
                 getUrl += '&returnRegistrationData=true';
