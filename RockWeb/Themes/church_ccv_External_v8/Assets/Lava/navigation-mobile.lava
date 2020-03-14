@@ -51,7 +51,7 @@
     {% if CurrentPerson %}
         <li><a class="navigation-mobile-item" onclick="logout();">Logout</a></li>
     {% else %}
-        <li><a class="navigation-mobile-item" href="/plan-your-visit">Plan Your Visit</a></li>
+        {% comment %} <li><a class="navigation-mobile-item" href="/plan-your-visit">Plan Your Visit</a></li> {% endcomment %}
         <li><a class="navigation-mobile-item" href="/create-account">Register</a></li>
         <li><a class="navigation-mobile-item" href="/login">Login</a></li>
     {% endif %}
