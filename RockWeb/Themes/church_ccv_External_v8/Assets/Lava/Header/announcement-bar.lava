@@ -4,21 +4,34 @@
 
 {% assign ccvLive = 'Global' | Attribute:'CCVLive' %}
 {% if ccvLive == 'Yes' %}
+    
+    {% comment %}
     {% if CurrentPerson %}
         {% assign liveURL = '/ssologin' %}
     {% else %}
         {% assign liveURL = 'http://live.ccv.church' %}
     {% endif %}
+    {% endcomment %}
+    
+    {% assign liveURL = 'https://ccv.church/ccv-live.html' %}
     <div class="announcement-bar">
-        <btn id="ccvlive" class="btn btn-default btn-live">Live</btn>CCV is live!<span> <a href="{{ liveURL }}">Tune into the sermon now ></a></span>
+        <btn id="ccvlive" class="btn btn-default btn-live">Live</btn>CCV is live!<span> <a href="{{ liveURL }}">Watch now ></a></span>
     </div>
 {% else %}
-    {% assign upcomingMaintenance = 'Global' | Attribute:'UpcomingMaintenance' %}
 
-    {% unless upcomingMaintenance == '' %}
-        <div class="announcement-bar">
-            CCV's website will be unavailable for scheduled maintenance starting at {{ upcomingMaintenance }}.
-        </div>
-    {% endunless %}
+	{% comment %}
+		{% assign upcomingMaintenance = 'Global' | Attribute:'UpcomingMaintenance' %}
+
+		{% unless upcomingMaintenance == '' %}
+			<div class="announcement-bar">
+				CCV's website will be unavailable for scheduled maintenance starting at {{ upcomingMaintenance }}.
+			</div>
+		{% endunless %}
+	{% endcomment %}
+	
+	<div class="announcement-bar">
+		<a href="https://ccv.church/update.html">Updates on Coronavirus (COVID-19)</a>
+	</div>
+	
 {% endif %}
 
