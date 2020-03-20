@@ -72,7 +72,7 @@
 
             // if true is returned, we're not allowed to view this page anonymously, so redirect them.
             if (returnData == "True") {
-                var uri = window.location.protocol + "//" + window.location.host + "/home";
+                var uri = window.location.protocol + "//" + window.location.host + "/";
                 location.replace(uri);
             }
             else {
