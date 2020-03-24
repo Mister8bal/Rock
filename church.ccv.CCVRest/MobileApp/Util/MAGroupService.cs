@@ -451,6 +451,10 @@ namespace church.ccv.CCVRest.MobileApp
             // the workflow type id for the alert note re-route
             const int AlertNoteReReouteWorkflowId = 166;
 
+            // note type ids
+            const int PersonalNoteTypeId = 8;
+            const int SafetyAndSecurityNoteTypeId = 23;
+
             // setup all variables we'll need
             var rockContext = new RockContext();
             var personService = new PersonService( rockContext );
@@ -510,8 +514,8 @@ namespace church.ccv.CCVRest.MobileApp
                 // (Or nothing if there's no problem but they're already in the group)
                 GroupMember primaryGroupMember = PersonToGroupMember( rockContext, person, requestedGroup );
 
-                // does the person registering have alert notes?
-                int alertNoteCount = new NoteService( rockContext ).Queryable().Where( n => n.EntityId == person.Id && n.IsAlert == true ).Count();
+                // does the person registering have alert notes with a Saftey & Security note type or Personal note type?
+                int alertNoteCount = new NoteService( rockContext ).Queryable().Where( n => n.EntityId == person.Id && n.IsAlert == true && (n.NoteTypeId == SafetyAndSecurityNoteTypeId || n.NoteTypeId == PersonalNoteTypeId) ).Count();
 
                 if ( alertNoteCount > 0 )
                 {
