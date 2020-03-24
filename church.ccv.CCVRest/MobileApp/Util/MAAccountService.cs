@@ -15,29 +15,39 @@ namespace church.ccv.CCVRest.MobileApp
         public static UserLogin CreateNewLogin( NewUserModel newUserModel, Person person, bool autoConfirm )
         {
             RockContext rockContext = new RockContext();
-
-            // and now create the login for this person
-            try
+            
+            // check username for invalid characters and length requirement
+            if (UserLoginService.IsUsernameValid(newUserModel.Username) == true)
             {
-                UserLogin login = UserLoginService.Create(
-                                rockContext,
-                                person,
-                                Rock.Model.AuthenticationServiceType.Internal,
-                                EntityTypeCache.Read( Rock.SystemGuid.EntityType.AUTHENTICATION_DATABASE.AsGuid() ).Id,
-                                newUserModel.Username,
-                                newUserModel.Password,
-                                autoConfirm,
-                                false );
+                // and now create the login for this person
+                try
+                {
+                    UserLogin login = UserLoginService.Create(
+                                    rockContext,
+                                    person,
+                                    Rock.Model.AuthenticationServiceType.Internal,
+                                    EntityTypeCache.Read(Rock.SystemGuid.EntityType.AUTHENTICATION_DATABASE.AsGuid()).Id,
+                                    newUserModel.Username,
+                                    newUserModel.Password,
+                                    autoConfirm,
+                                    false);
 
-                rockContext.SaveChanges();
+                    rockContext.SaveChanges();
 
-                return login;
+                    return login;
+                }
+                catch
+                {
+                    // fail on exception
+                    return null;
+                }
             }
-            catch
+            else
             {
-                // fail on exception
+                // username not valid
                 return null;
             }
+
         }
 
         public static bool RegisterNewPerson( NewUserModel newUserModel )
