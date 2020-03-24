@@ -61,8 +61,8 @@ REQUIRED VARIABLES
             <div class="message-details-title">
                 <h3>{{ Message.Name }}</h3>
                 <ul class="list-inline">
-                <li><strong>{{ Message.Attributes.Speaker }}</strong></li>
-                <li><time datetime="{{ Message.Date | Date: 'MMM d, yyyy' }}" title="{{ Message.Date | Date: 'MMM d, yyyy' }}" data-toggle="tooltip" data-placement="right">{{ Message.Date | HumanizeDateTime }}</time></li>
+                    <li><strong>{{ Message.Attributes.Speaker }}</strong></li>
+                    <li>{{ Message.Date | Date: 'MMM d, yyyy' }}</li>
                 </ul>
             </div>
             <div class="message-details-info">
