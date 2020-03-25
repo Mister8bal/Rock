@@ -315,7 +315,7 @@
             // if current person query api for steps taken
             var currentPersonGuid = '{{ CurrentPerson.Guid }}';
             if (currentPersonGuid !== '') {
-                $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/StepsBar/"+currentPersonGuid, function(data){
+                $.getJSON("{{ 'Global' | Attribute:'PublicApplicationRoot' }}/api/CCV/Badges/StepsBar/"+currentPersonGuid, function(data){
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
                             var keyData = data[key];
@@ -361,7 +361,7 @@
             var currentPersonId = '{{ CurrentPerson.Id }}';
             if (currentPersonId !== '') {
 
-                    $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/TakenStartingPoint/"+currentPersonId, function(data){
+                    $.getJSON("{{ 'Global' | Attribute:'PublicApplicationRoot' }}/api/CCV/Badges/TakenStartingPoint/"+currentPersonId, function(data){
                         apiStartingPointResponse = data;
                     });
                 

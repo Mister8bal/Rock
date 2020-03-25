@@ -108,11 +108,11 @@ CCV.bindUIAfterLoad = function() {
 }
 
 Sys.Application.add_load(function(){
-  $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/StepsBarGroup/"+CURRENT_GROUP_GUID, function(data){
+  $.getJSON("{{ 'Global' | Attribute:'PublicApplicationRoot' }}/api/CCV/Badges/StepsBarGroup/"+CURRENT_GROUP_GUID, function(data){
     CCV.renderBadges(data)
   })
   
-  $.getJSON("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/CCV/Badges/TakenStartingPointGroup/"+CURRENT_GROUP_GUID, function(data){
+  $.getJSON("{{ 'Global' | Attribute:'PublicApplicationRoot' }}/api/CCV/Badges/TakenStartingPointGroup/"+CURRENT_GROUP_GUID, function(data){
     CCV.renderStartingPoint(data)
   })
 })

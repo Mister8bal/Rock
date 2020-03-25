@@ -37,7 +37,7 @@ landingMap.selectCampus = function (campusId) {
 
   // wait until API adds the cookie
   $(document).ajaxComplete(function( event, xhr, settings ) {
-    if (settings.url.indexOf("{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/campuses/SetContext/") > -1) {
+    if (settings.url.indexOf("{{ 'Global' | Attribute:'PublicApplicationRoot' }}/api/campuses/SetContext/") > -1) {
       // using location.replace removes the current page from history
       // .homePageRoute is set in LandingMap.aspx
       if (CCV.homePageRoute)
