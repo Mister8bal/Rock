@@ -20,7 +20,7 @@
 <script type="text/javascript">
     
     $.ajax({
-        url: "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/STARS/FieldStatus",
+        url: "/api/STARS/FieldStatus",
         type: "GET",
         dataType: 'json',
         success: function(data) {

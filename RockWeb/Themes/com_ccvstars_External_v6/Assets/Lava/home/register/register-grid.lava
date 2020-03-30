@@ -211,7 +211,7 @@
     var mobileState = '';
 
     // get active registrations
-    var getUrl = "{{ 'Global' | Attribute:'InternalApplicationRoot' }}api/STARS/ActiveRegistrations?CalendarId=6&returnRegistrationData=true";
+    var getUrl = "/api/STARS/ActiveRegistrations?CalendarId=6&returnRegistrationData=true";
     
     $.get(getUrl, function(data, status){
         activeRegistrations = data.Data;
